@@ -1,0 +1,41 @@
+@use 'mixin.scss';
+@use 'common-class.scss';
+
+* {
+  font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu,
+  Cantarell, 'Open Sans', 'Helvetica Neue', 等线, sans-serif !important;
+
+  user-select: none;
+}
+
+html {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+body {
+  overflow: auto;
+  background-color: rgb(245, 245, 245);
+}
+
+#app {
+  margin: 0 auto;
+  color: #2c3e50;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #d2cfcf;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}

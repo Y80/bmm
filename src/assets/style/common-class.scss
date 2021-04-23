@@ -1,0 +1,47 @@
+@use 'mixin.scss' as *;
+
+.flex-start {
+  @include flex-box(start);
+}
+
+.flex-end {
+  @include flex-box(flex-end);
+}
+
+.flex-center {
+  @include flex-box(center);
+}
+
+.flex-between {
+  @include flex-box(space-between);
+}
+
+.margin-t {
+  margin-top: 0.5rem;
+}
+
+.margin-b {
+  margin-bottom: 0.5rem;
+}
+
+.margin-l {
+  margin-left: 0.5rem;
+}
+
+.margin-r {
+  margin-right: 0.5rem;
+}
+
+.margin-x {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.margin-y {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.round-border {
+  border-radius: 4px;
+}

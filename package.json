@@ -1,0 +1,22 @@
+{
+  "name": "front-end",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "bulma": "^0.9.1",
+    "vue": "^3.0.5",
+    "vue-router": "^4.0.0-rc.3",
+    "vuex": "^4.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.1.5",
+    "@vue/compiler-sfc": "^3.0.5",
+    "sass": "^1.27.0",
+    "vite": "^2.1.2"
+  },
+  "license": ""
+}
