@@ -3,14 +3,14 @@
     <div class="container level">
       <router-link to="/index">
         <div class="level-left">
-          <span class="site-name">🎏 bm-manager</span>
+          <span class="site-name">🎏 BMM</span>
         </div>
       </router-link>
       <div class="level-right">
-        <router-link to="/tags">
+        <router-link to="/admin/tags">
           <button class="button mr-5">管理标签</button>
         </router-link>
-        <router-link to="/bookmarks">
+        <router-link to="/admin/bookmarks">
           <button class="button">管理书签</button>
         </router-link>
       </div>
@@ -30,9 +30,6 @@
 <script>
 export default {
   name: 'App',
-  components: {},
-
-  created() {},
 };
 </script>
 
@@ -47,7 +44,6 @@ nav {
   height: 4rem;
   box-shadow: 0 0, 0 0, 0 3px 8px rgba($color: #000, $alpha: 0.05);
 
-  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(5px);
 
   div.level {
@@ -59,10 +55,6 @@ nav {
     line-height: 3rem;
     cursor: pointer;
   }
-}
-
-main.container {
-  margin-top: 8rem !important;
 }
 
 footer {

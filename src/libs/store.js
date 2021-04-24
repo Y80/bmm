@@ -5,6 +5,7 @@ export default createStore({
     return {
       tags: null,
       bookmarks: null,
+      database: null,
     }
   },
 
@@ -15,6 +16,10 @@ export default createStore({
 
     setBookmarks(state, payload) {
       state.bookmarks = payload
+    },
+
+    setDatabase(state, payload) {
+      state.database = payload
     },
   },
 })

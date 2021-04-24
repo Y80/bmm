@@ -1,5 +1,7 @@
 .vscode
 
+nav
+
 # Logs
 logs
 *.log

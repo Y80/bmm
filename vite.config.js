@@ -9,4 +9,9 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
+  // 部署之后首页为：www.foo.com/nav/index.html
+  base: '/nav/',
+  build: {
+    outDir: 'nav',
+  },
 })

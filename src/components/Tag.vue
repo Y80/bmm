@@ -36,8 +36,7 @@ export default {
     },
   },
 
-  setup() {
-  },
+  setup() {},
 
   data() {
     return {};
@@ -65,6 +64,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.tag {
+  transform: scale(1);
+}
+
 span {
   cursor: pointer;
 

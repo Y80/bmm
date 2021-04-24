@@ -9,7 +9,6 @@ export default function useTagOperator() {
   }
 
   const createTag = async (payload) => {
-    console.log(payload)
     await axios.post('/tag', payload)
     getAllTags()
   }

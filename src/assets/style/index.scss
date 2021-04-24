@@ -3,7 +3,7 @@
 
 * {
   font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu,
-  Cantarell, 'Open Sans', 'Helvetica Neue', 等线, sans-serif !important;
+  Cantarell, 'Open Sans', 'Helvetica Neue', 等线, sans-serif;
 
   user-select: none;
 }
@@ -15,7 +15,7 @@ html {
 
 body {
   overflow: auto;
-  background-color: rgb(245, 245, 245);
+  // background-color: rgb(245, 245, 245);
 }
 
 #app {

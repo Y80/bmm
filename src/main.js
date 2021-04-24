@@ -1,6 +1,6 @@
+import 'bulma'
 import { createApp } from 'vue'
 import App from './App.vue'
-import 'bulma'
 import FormItem from './components/FormItem.vue'
 import * as utils from './libs/utils'
 import router from './libs/router'
