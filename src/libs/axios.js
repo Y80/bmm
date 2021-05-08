@@ -19,12 +19,6 @@ MyAxios.interceptors.response.use(
   },
   (error) => {
     // error 的五个属性：config request response isAxiosError toJSON
-    if (error.response.status === 401) {
-      // 身份校验失败
-      router.push('/index')
-      const input = prompt('身份校验失败，请重新输入密钥')
-      localStorage.setItem('Authorization', input)
-    }
     throw new Error(error)
   }
 )

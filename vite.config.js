@@ -9,6 +9,16 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // additionalData: `@use '${resolve(
+        //   __dirname,
+        //   'src/assets/style/variables'
+        // )}'`,
+      },
+    },
+  },
   // 部署之后首页为：www.foo.com/nav/index.html
   base: '/nav/',
   build: {

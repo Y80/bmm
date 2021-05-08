@@ -37,8 +37,6 @@ import {
 const app = getCurrentInstance();
 const db = app.appContext.config.globalProperties.$db;
 
-console.log('before if, db:', db);
-
 const tip = ref('所有书签');
 let showBookmarks = ref([]);
 
@@ -67,32 +65,6 @@ const resetShowBookmarks = () => {
 </script>
 
 <style lang="scss" scoped>
-div.tag-box {
-  margin-left: -0.75rem;
-
-  .tag {
-    margin: 0.5rem 0.7rem;
-  }
-}
-
-div.bookmark-box {
-  display: grid;
-  margin-bottom: 3rem;
-
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  place-content: flex-start;
-}
-
-.tip {
-  margin: 2rem 0 1rem 0;
-  border-bottom: 2px solid #f5f5f5;
-  font-weight: bold;
-  font-size: 1.5rem;
-
-  span {
-    cursor: pointer;
-  }
-}
+@use './index.scss';
 
 </style>

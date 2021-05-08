@@ -15,9 +15,9 @@
       <span @click="resetShowBookmarks">{{ tip }}</span>
       <div class="button-group">
         <button @click="generateSerializedFile"
-                class="button margin-r"
+                class="button margin-r is-small is-inverted is-info"
                 :class="serializing ? 'is-loading': ''">重置序列化文件</button>
-        <button class="button"
+        <button class="button is-small is-inverted is-info"
                 @click="openDialog()">添加</button>
       </div>
     </div>
@@ -282,6 +282,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use '../home/index.scss';
+
 .btn-add {
   position: fixed;
   right: 5rem;
@@ -298,10 +300,6 @@ export default {
   transform: scale(1.2);
 }
 
-main {
-  margin-top: 5rem;
-}
-
 .picked-tags-box {
   min-height: 2rem;
   p {
@@ -309,37 +307,6 @@ main {
     color: #888;
     font-weight: 100;
     font-size: 0.825rem;
-  }
-}
-
-div.tag-box {
-  margin-top: 5rem;
-  margin-left: -0.75rem;
-
-  .tag {
-    margin: 0 1rem 0.75rem 0;
-  }
-}
-
-div.bookmark-box {
-  display: grid;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-  height: calc(100vh - 21rem);
-
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  place-content: flex-start;
-}
-
-.tip {
-  margin: 2rem 0 1rem 0;
-  border-bottom: 1px solid gray;
-  font-weight: bold;
-  font-size: 2rem;
-
-  span {
-    cursor: pointer;
   }
 }
 
