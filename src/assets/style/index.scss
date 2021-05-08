@@ -1,25 +1,26 @@
 @use 'mixin.scss';
 @use 'common-class.scss';
+@use 'variables.scss';
 
 * {
   font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu,
-  Cantarell, 'Open Sans', 'Helvetica Neue', 等线, sans-serif;
+  Cantarell, 'Open Sans', 'Helvetica Neue', 等线, sans-serif !important;
 
   user-select: none;
 }
 
 html {
+  overflow: auto;
   font-size: 16px;
   line-height: 24px;
 }
 
 body {
   overflow: auto;
-  // background-color: rgb(245, 245, 245);
 }
 
 #app {
-  margin: 0 auto;
+  margin: 0;
   color: #2c3e50;
   font-family: Avenir, Helvetica, Arial, sans-serif;
 
@@ -30,12 +31,10 @@ body {
 ::-webkit-scrollbar-track {
   background-color: transparent;
 }
-
+::-webkit-scrollbar {
+  width: 10px;
+}
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background-color: #d2cfcf;
-}
-
-::-webkit-scrollbar {
-  width: 9px;
 }

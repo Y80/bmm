@@ -7,59 +7,77 @@
         </div>
       </router-link>
       <div class="level-right">
-        <router-link to="/admin/tags">
-          <button class="button mr-5">管理标签</button>
-        </router-link>
-        <router-link to="/admin/bookmarks">
-          <button class="button">管理书签</button>
-        </router-link>
+        <button class="button is-primary is-inverted"
+                @click="goAdminPage">管理书签</button>
+        <template v-if="$route.path.includes('/admin/')">
+          <router-link to="/admin/tags">
+            <button class="button mr-5">管理标签</button>
+          </router-link>
+          <router-link to="/admin/bookmarks">
+            <button class="button">管理书签</button>
+          </router-link>
+        </template>
       </div>
     </div>
   </nav>
 
-  <main class="container">
-    <router-view />
-  </main>
+  <div class="container-wrapper">
+    <main class="container">
+      <router-view />
+    </main>
+  </div>
 
-  <!-- <footer>
-    <p>bm-manager · 2020</p>
-    <p>你的专属书签管理专家</p>
-  </footer> -->
+  <footer>
+    <span>🎏 BMM · 书签管理</span>
+  </footer>
 </template>
 
-<script>
-export default {
-  name: 'App',
-};
+<script setup>
+import router from './libs/router';
+
+function goAdminPage() {
+  router.push('/bookmarks');
+  // TODO 校验密钥是否有效
+}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 nav {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 1;
+  box-sizing: border-box;
   padding: 0.5rem 0;
   height: 4rem;
   box-shadow: 0 0, 0 0, 0 3px 8px rgba($color: #000, $alpha: 0.05);
 
-  backdrop-filter: blur(5px);
+  // backdrop-filter: blur(5px);
 
   div.level {
     height: 3rem;
   }
 
   .site-name {
-    font-size: 2.5rem;
+    font-size: 1.7rem;
     line-height: 3rem;
     cursor: pointer;
   }
 }
 
-footer {
-  margin: 1rem 0;
-  text-align: center;
+div.container-wrapper {
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 1rem 0;
+  height: calc(100vh - 4rem - 3rem);
 }
 
+footer {
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3rem;
+  background-color: white;
+  box-shadow: 0 -3px 5px rgba($color: #000, $alpha: 0.05);
+  color: #363636;
+  font-weight: 100;
+  font-size: 14px;
+}
 </style>

@@ -287,8 +287,7 @@ export default {
   right: 5rem;
   bottom: 8.1rem;
   z-index: 1;
-
-// color: rgb(65, 65, 65);
+  // color: rgb(65, 65, 65);
   text-shadow: 1px 1px 5px #00002e;
   font-size: 5rem;
   cursor: pointer;

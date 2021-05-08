@@ -68,9 +68,8 @@ export default {
 div.bookmark-block {
   display: inline-block;
   padding: 0.5rem 1rem;
-  border: 1px solid rgba(37, 37, 37, 0.082);
   border-radius: 0.5rem;
-  // box-shadow: 0 3px 8px rgba($color: #000, $alpha: 0.1);
+  box-shadow: 3px 3px 10px #6aa3ff36;
 
   .icons {
     text-align: right;
@@ -104,7 +103,6 @@ div.bookmark-block {
     white-space: nowrap;
     font-size: 1.125rem;
     line-height: 1.625rem;
-    transition: all 0.2s ease-out;
   }
 
   .name:hover {
@@ -117,7 +115,8 @@ div.bookmark-block {
     margin: 0.5rem 0 -0.5rem;
     padding-top: 0.5rem;
     height: 2.6rem;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid #f5f5f5;
   }
 }
+
 </style>

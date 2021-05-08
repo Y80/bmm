@@ -1,6 +1,7 @@
 .vscode
 
 nav
+yarn.lock
 
 # Logs
 logs
