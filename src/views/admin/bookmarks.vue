@@ -15,8 +15,8 @@
       <span @click="resetShowBookmarks">{{ tip }}</span>
       <div class="button-group">
         <button @click="generateSerializedFile"
-                class="button margin-r is-small is-inverted is-info"
-                :class="serializing ? 'is-loading': ''">重置序列化文件</button>
+                class="button margin-r is-small is-ghost"
+                :class="{ 'is-loading': serializing }">重置序列化文件</button>
         <button class="button is-small is-inverted is-info"
                 @click="openDialog()">添加</button>
       </div>
@@ -236,7 +236,9 @@ export default {
       this.serializing = true;
       this.$axios.get('/serialize').then(() => {
         this.serializing = false;
-        alert('已重置远程序列化文件');
+        this.$nextTick(() => {
+          alert('已重置远程序列化文件');
+        });
       });
     },
 
@@ -309,5 +311,4 @@ export default {
     font-size: 0.825rem;
   }
 }
-
 </style>

@@ -1,4 +1,4 @@
-import { inject, ref, reactive } from 'vue'
+import { inject, ref, reactive, getCurrentInstance } from 'vue'
 
 export default function useTagOperator() {
   const axios = inject('axios')
