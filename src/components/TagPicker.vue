@@ -1,6 +1,5 @@
 <template>
-  <div class="box tag-picker"
-       v-show="visible">
+  <div class="box tag-picker">
     <div class="block tags">
       <span class="tag"
             :class="tag.picked ? 'is-primary' : ''"
@@ -9,7 +8,6 @@
             :key="tag.name">{{ tag.name }}</span>
     </div>
     <div class="flex-end">
-      <!-- <button class="button is-text" @click="close">关闭</button> -->
       <!-- <button class="button is-text" @click="confirmHandler">确认</button> -->
       <!-- <button class="button is-text" @click="refresh">刷新</button> -->
       <i class="iconfont iconshuaxin"
@@ -24,10 +22,6 @@ import useTagOperator from '../composables/useTagOperator';
 
 export default {
   props: {
-    visible: {
-      type: Boolean,
-      required: true,
-    },
     // 已经选中的标签列表
     pickedTagList: {
       type: Array,
@@ -51,11 +45,6 @@ export default {
   },
 
   methods: {
-    // 触发 @update:visible 事件，将该值设为 false
-    close() {
-      this.$emit('update:visible', false);
-    },
-
     confirmHandler() {
       const pickedTagList = [];
       this.tagList.forEach((tag) => {
@@ -65,7 +54,6 @@ export default {
       });
       // this.$emit('confirm', pickedTagList);
       this.confirm(pickedTagList);
-      // this.close()
     },
 
     onClickTag(index) {
@@ -100,12 +88,6 @@ export default {
   },
 
   watch: {
-    visible(newValue, oldValue) {
-      if (oldValue === false && newValue === true) {
-        this.hightLightPickedTag();
-      }
-    },
-
     pickedTagList() {
       this.hightLightPickedTag();
     },

@@ -1,4 +1,3 @@
-import { getCurrentInstance } from 'vue'
 import { createStore } from 'vuex'
 import { getDatabase } from '@/libs/api'
 import { useRouter } from 'vue-router'
@@ -29,8 +28,8 @@ export default createStore({
       return []
     },
     getBookmarksByTagId: (state) => (tagId) => {
-      return Object.values(state.bookmarks).filter((bookmarks) =>
-        bookmarks.tagIdList.includes(tagId)
+      return Object.values(state.bookmarks).filter((bookmark) =>
+        bookmark.tagIdList.includes(tagId)
       )
     },
     getTagsByIdList: (state) => (idList) => {
@@ -39,12 +38,37 @@ export default createStore({
   },
 
   mutations: {
+    // tag: {id: string, name: string, hue?:number}
     setTags(state, payload) {
-      state.tags = payload
+      if (payload instanceof Array) {
+        const result = {}
+        payload.forEach((tag) => {
+          result[tag.id] = tag
+        })
+        state.tags = result
+      } else if (payload instanceof Object) {
+        state.tags = payload
+      } else {
+        alert('store setTags 出现错误')
+      }
     },
 
     setBookmarks(state, payload) {
-      state.bookmarks = payload
+      if (payload instanceof Object) {
+        state.bookmarks = payload
+      } else if (payload instanceof Array) {
+        const result = {}
+        payload.forEach((bookmark) => {
+          result[bookmark.id] = {
+            ...bookmark,
+            tagIdList:
+              bookmark.tagIdList || bookmark.tagList.map((tag) => tag.id),
+          }
+        })
+        state.bookmarks = result
+      } else {
+        alert('store setBookmarks 出现错误')
+      }
     },
   },
 })

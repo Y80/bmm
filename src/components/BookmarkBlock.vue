@@ -100,7 +100,7 @@ div.bookmark-block {
     color: hsl(200, 100%, 5%);
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 1.125rem;
+    font-size: 1rem;
     line-height: 1.625rem;
   }
 
@@ -115,7 +115,9 @@ div.bookmark-block {
     padding-top: 0.5rem;
     height: 2.6rem;
     border-top: 1px solid #f5f5f5;
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
   }
 }
-
 </style>

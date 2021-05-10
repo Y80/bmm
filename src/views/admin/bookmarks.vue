@@ -6,87 +6,77 @@
            showBoxShadow
            :key="item.id"
            :entity="item"
-           @click="clickTag(item)" />
+           @click="filterBookmarksByTag(item)" />
     </div>
 
-    <!-- <i class="iconfont icontianjia btn-add" @click="openDialog()" ></i> -->
-
     <div class="flex-between tip">
-      <span @click="resetShowBookmarks">{{ tip }}</span>
+      <span @click="resetBookmarks">{{ tip }}</span>
       <div class="button-group">
         <button @click="generateSerializedFile"
                 class="button margin-r is-small is-ghost"
-                :class="{ 'is-loading': serializing }">重置序列化文件</button>
+                :class="{ 'is-loading': isSerializing }">重置序列化文件</button>
         <button class="button is-small is-inverted is-info"
-                @click="openDialog()">添加</button>
+                @click="openModal()">添加</button>
       </div>
     </div>
 
     <div class="bookmark-box">
-      <BookmarkBlock v-for="item of showBookmarks"
+      <BookmarkBlock v-for="item of bookmarks"
+                     @clickTag="filterBookmarksByTag"
                      :key="item.name"
                      :entity="item"
-                     :edit="openDialog"
-                     :del="openDelDialog" />
+                     :edit="openModal"
+                     :del="openRemoveModal" />
     </div>
   </main>
 
   <!-- 删除对话框 -->
-  <Confirm :message="delDialog.message"
-           v-model:visible="delDialog.visible"
-           @confirm="deleteBookmark(delDialog.bookmark.id)" />
+  <Confirm :message="removeModal.message"
+           :title="`确定要删除书签“${removeModal.bookmark.name}”吗？`"
+           :isSubmitting="removeModal.isSubmitting"
+           v-model:visible="removeModal.visible"
+           @confirm="removeBookmark" />
 
   <!-- 新建书签对话框 -->
-  <Confirm :title="dialog.isAdd ? '新建书签' : '编辑书签'"
-           @confirm="dialogConfirm"
-           v-model:visible="dialog.visible">
+  <Confirm :title="modal.title"
+           @confirm="sendBookmark"
+           v-model:visible="modal.visible">
     <FormItem label="名称"
-              v-model="dialog.bookmark.name" />
+              v-model="modal.bookmark.name" />
     <FormItem label="链接"
-              v-model="dialog.bookmark.url" />
+              v-model="modal.bookmark.url" />
     <FormItem label="描述"
-              v-model="dialog.bookmark.description" />
+              v-model="modal.bookmark.description" />
     <FormItem label="图标">
       <p class="flex-between">
         <button class="button margin-r"
-                :class="{'is-loading': loadingIcon}"
-                @click="getFavicon">获取图标</button>
+                :class="{'is-loading': isFetchingIcon}"
+                @click="fetchIcon">获取图标</button>
         <input class="input"
-               :value="dialog.bookmark.icon">
-        <img v-show="dialog.bookmark.icon"
+               :value="modal.bookmark.icon">
+        <img v-show="modal.bookmark.icon"
              style="width: 64px"
              class="margin-l round-border"
-             :src="dialog.bookmark.icon"
-             alt="">
+             :src="modal.bookmark.icon">
       </p>
     </FormItem>
-
     <FormItem label="关联标签">
       <div class="tags picked-tags-box">
-        <!-- <button
-          class="tag button"
-          @click="dialog.showTagPicker = true"
-          v-if="false"
-        >
-          编辑标签
-        </button> -->
-        <Tag v-for="tag of dialog.pickedTagList"
+        <Tag v-for="tag of modal.pickedTagList"
              :key="tag.name"
              :entity="tag" />
-        <p v-if="!dialog.pickedTagList?.length"
+        <p v-if="!modal.pickedTagList?.length"
            class="empty-tip">
           暂无关联标签，请从下方选取
         </p>
       </div>
-      <TagPicker v-model:visible="dialog.showTagPicker"
-                 :pickedTagList="dialog.pickedTagList"
-                 :confirm="tagPickerConfirm" />
+      <TagPicker :pickedTagList="modal.pickedTagList"
+                 :confirm="(tags) => modal.pickedTagList = tags" />
     </FormItem>
   </Confirm>
 </template>
 
-<script>
-import useBookmarkOperator from '@/composables/useBookmarkOperator';
+<script setup>
 import useLinkOperator from '@/composables/useLinkOperator';
 import Tag from '@/components/Tag.vue';
 import Confirm from '@/components/Confirm.vue';
@@ -95,191 +85,157 @@ import Table from '@/components/Table.vue';
 import FormItem from '@/components/FormItem.vue';
 import BookmarkBlock from '@/components/BookmarkBlock.vue';
 import useTagOperator from '@/composables/useTagOperator';
-import { getCurrentInstance } from 'vue';
+import { reactive, ref, watch } from 'vue';
+import * as api from '@/libs/api';
+import { handleError } from '@/libs/utils';
+import { useStore } from 'vuex';
+import { setLoadingState } from '@/hooks/usePageLoading';
 
-export default {
-  name: 'bookmark',
-  components: {
-    FormItem,
-    Tag,
-    BookmarkBlock,
-    TagPicker,
-    Confirm,
-    Table,
-  },
+const store = useStore();
+const { tagList, getAllTags } = useTagOperator();
+const { addLinks, delLinks } = useLinkOperator();
 
-  setup() {
-    const { proxy } = getCurrentInstance().root;
-    const {
-      bookmarkList,
-      getBookmarkList,
-      deleteBookmark,
-      addBookmark,
-      updateBookmark,
-    } = useBookmarkOperator();
-    const { tagList, getAllTags } = useTagOperator();
+const bookmarks = ref([]);
+const tip = ref('');
+const modal = reactive({
+  visible: false,
+  bookmark: {},
+  tags: [],
+});
+const removeModal = reactive({
+  visible: false,
+  isSubmitting: false,
+  bookmark: {},
+});
 
-    proxy.isLoading.fullScreen = true;
-    Promise.all([getBookmarkList(), getAllTags()]).finally(() => {
-      proxy.isLoading.fullScreen = false;
+getAllTags().then((tags) => store.commit('setTags', tags));
+
+function getData() {
+  setLoadingState(true);
+  api.bookmark.getAll().then((list) => {
+    setLoadingState(false);
+    bookmarks.value = list;
+
+    const payload = {};
+    list.forEach((bookmark) => {
+      payload[bookmark.id] = {
+        ...bookmark,
+        tagIdList: bookmark.tagList.map((tag) => tag.id),
+      };
     });
+    store.commit('setBookmarks', payload);
+  });
+}
 
-    const { addLinks, delLinks } = useLinkOperator();
+getData();
 
-    return {
-      bookmarkList,
-      getBookmarkList,
-      deleteBookmark,
-      addBookmark,
-      updateBookmark,
-      addLinks,
-      delLinks,
-      tagList,
-    };
-  },
+function openRemoveModal(bookmark) {
+  removeModal.bookmark = bookmark;
+  removeModal.visible = true;
+}
 
-  data() {
-    return {
-      dialog: {
-        visible: false,
-        isAdd: false,
-        bookmark: {
-          name: '',
-          url: '',
-          icon: '',
-          description: '',
-        },
-        showTagPicker: false,
-        tags: [],
-      },
-      delDialog: {
-        visible: false,
-        message: '',
-        bookmarkName: '',
-      },
-      showBookmarks: [],
-      tip: '所有书签',
-      serializing: false,
-      loadingIcon: false,
-    };
-  },
+function removeBookmark() {
+  removeModal.isSubmitting = true;
+  api.bookmark.remove(removeModal.bookmark.id).then(() => {
+    removeModal.isSubmitting = false;
+    getData();
+  });
+}
 
-  methods: {
-    openDelDialog(bookmark) {
-      this.delDialog = {
-        visible: true,
-        message: `确定要删除"${bookmark.name}"吗`,
-        bookmark,
-      };
-    },
+// 打开创建、编辑对话框
+function openModal(bookmark) {
+  if (bookmark) {
+    modal.title = '书签';
+    modal.bookmark = { ...bookmark };
+    modal.pickedTagList = bookmark.tagList;
+  } else {
+    modal.title = '新增书签';
+    modal.bookmark = { name: '', url: '', description: '' };
+    modal.pickedTagList = [];
+  }
+  modal.visible = true;
+}
 
-    // 打开创建、编辑对话框
-    openDialog(bookmark = { name: '', url: '', icon: '', description: '' }) {
-      this.dialog = {
-        visible: true,
-        isAdd: !bookmark.id,
-        showTagPicker: true,
-        bookmark,
-        pickedTagList: bookmark.tagList || [],
-      };
-    },
+// 确认添加、编辑书签
+function sendBookmark() {
+  const newTagIdList = this.modal.pickedTagList.map((tag) => tag.id);
 
-    // 确认添加、编辑书签
-    async dialogConfirm() {
-      const { dialog } = this;
-      // let discardTagIdList = []
-      const newTagIdList = this.dialog.pickedTagList.map((tag) => {
-        return tag.id;
-      });
+  if (!modal.bookmark.id) {
+    // 添加书签
+    api.bookmark
+      .add(modal.bookmark)
+      .then(({ id }) => {
+        addLinks({ bookmarkId: id, tagIdList: newTagIdList }).then(getData);
+      })
+      .catch(handleError);
+  } else {
+    // 编辑书签
+    delete modal.bookmark.tagList;
+    api.bookmark
+      .update({
+        ...modal.bookmark,
+        tagIdList: newTagIdList,
+      })
+      .then(getData)
+      .catch(handleError);
+  }
+  // 滚动至底部
+  window.scrollTo(0, Number.MAX_SAFE_INTEGER);
+}
 
-      if (dialog.isAdd) {
-        // 添加书签
-        this.addBookmark(dialog.bookmark)
-          .then(({ id }) => {
-            this.addLinks({ bookmarkId: id, tagIdList: newTagIdList }).then(
-              this.getBookmarkList
-            );
-          })
-          .catch((err) => {
-            alert(err.message);
-          });
-      } else {
-        // 编辑书签
-        delete dialog.bookmark.tagList;
-        await this.updateBookmark({
-          ...dialog.bookmark,
-          tagIdList: newTagIdList,
-        });
-        this.getBookmarkList();
-      }
-      // 滚动至底部
-      window.scrollTo(0, Number.MAX_SAFE_INTEGER);
-    },
+function filterBookmarksByTag(tag) {
+  tip.value = `“${tag.name}”关联的书签`;
+  bookmarks.value = store.getters.getBookmarksByTagId(tag.id);
+}
 
-    tagPickerConfirm(tagList) {
-      this.dialog.pickedTagList = tagList;
-    },
+function resetBookmarks() {
+  tip.value = '所有书签';
+  bookmarks.value = store.getters.getBookmarks;
+}
 
-    clickTag(tag) {
-      this.tip = `“${tag.name}”关联的书签`;
-      this.showBookmarks = this.$store.getters.getBookmarksByTagId(tag.id);
-    },
+const isSerializing = ref(false);
+// 生成序列化文件
+function generateSerializedFile() {
+  isSerializing.value = true;
+  api
+    .generateSerializedFile()
+    .then(() => {
+      alert('已重置序列化文件');
+    })
+    .catch(handleError)
+    .finally(() => {
+      isSerializing.value = false;
+    });
+}
 
-    resetShowBookmarks() {
-      this.tip = '所有书签';
-      this.showBookmarks = this.$store.getters.getBookmarks;
-    },
-
-    // 生成序列化文件
-    generateSerializedFile() {
-      this.serializing = true;
-      this.$axios.get('/serialize').then(() => {
-        this.serializing = false;
-        this.$nextTick(() => {
-          alert('已重置远程序列化文件');
-        });
-      });
-    },
-
-    // 根据域名获取响应的图标地址
-    getFavicon() {
-      let domain;
-      try {
-        const arr = this.dialog.bookmark.url.split('.');
-        domain = arr[arr.length - 2] + '.' + arr[arr.length - 1];
-        if (!domain) throw new Error();
-      } catch (error) {
-        alert('请输入有效的链接');
-        return;
-      }
-      this.dialog.bookmark.icon = '';
-      this.loadingIcon = true;
-      this.$axios
-        .get(
-          `https://service-j3cuc7cz-1257263957.sh.apigw.tencentcs.com/get-favicon/${domain}`
-        )
-        .then((iconSrc) => {
-          this.dialog.bookmark.icon = iconSrc;
-        })
-        .catch(() => {
-          alert('获取图标失败，请重试');
-        })
-        .finally(() => {
-          this.loadingIcon = false;
-        });
-    },
-  },
-
-  watch: {
-    bookmarkList() {
-      this.showBookmarks = this.bookmarkList;
-    },
-  },
-
-  created() {
-    this.$utils.setSiteTitle('管理书签');
-  },
-};
+const isFetchingIcon = ref(false);
+// 根据域名获取响应的图标地址
+function fetchIcon() {
+  let domain;
+  try {
+    const arr = modal.bookmark.url.split('.');
+    domain = arr[arr.length - 2] + '.' + arr[arr.length - 1];
+    if (!domain) throw new Error();
+  } catch (error) {
+    alert('请输入有效的链接');
+    return;
+  }
+  modal.bookmark.icon = '';
+  isFetchingIcon.value = true;
+  $axios
+    .get(
+      `https://service-j3cuc7cz-1257263957.sh.apigw.tencentcs.com/get-favicon/${domain}`
+    )
+    .then((iconSrc) => {
+      modal.bookmark.icon = iconSrc;
+    })
+    .catch(() => {
+      alert('获取图标失败，请重试');
+    })
+    .finally(() => {
+      isFetchingIcon.value = false;
+    });
+}
 </script>
 
 <style lang="scss" scoped>

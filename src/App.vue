@@ -38,7 +38,7 @@
 
   <transition name="fade">
     <div class="loading"
-         v-show="isLoading.fullScreen">
+         v-show="pageIsLoading">
       <div>
         <svg t="1620615950650"
              class="icon"
@@ -64,6 +64,7 @@ import { computed, onUpdated, reactive, ref, watch, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { getDatabase } from '@/libs/api';
+import { isLoading as pageIsLoading } from '@/hooks/usePageLoading';
 
 const router = useRouter();
 const store = useStore();
@@ -72,21 +73,7 @@ const isLoading = reactive({
   adminPage: false,
   bookmarksPage: false,
   tagsPage: false,
-  fullScreen: false,
 });
-
-// if (!store.state.bookmarks) {
-//   isLoading.fullScreen = true;
-//   getDatabase()
-//     .then((database) => {
-//       store.commit('setTags', database.tags);
-//       store.commit('setBookmarks', database.bookmarks);
-//       router.push('/index');
-//     })
-//     .finally(() => {
-//       isLoading.fullScreen = false;
-//     });
-// }
 
 function goAdminPage() {
   const key = localStorage.getItem('Authorization');

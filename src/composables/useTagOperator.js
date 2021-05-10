@@ -1,4 +1,4 @@
-import { inject, ref, reactive, getCurrentInstance } from 'vue'
+import { inject, ref, reactive } from 'vue'
 
 export default function useTagOperator() {
   const axios = inject('axios')
@@ -6,6 +6,7 @@ export default function useTagOperator() {
 
   const getAllTags = async () => {
     tagList.value = await axios.get(`/tag`)
+    return tagList.value
   }
 
   const createTag = async (payload) => {

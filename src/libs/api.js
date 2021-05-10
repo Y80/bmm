@@ -76,3 +76,8 @@ export const link = {
     return axios.delete('link', payload)
   },
 }
+
+// 重置序列化文件
+export function generateSerializedFile() {
+  return axios.get('/serialize')
+}

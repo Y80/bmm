@@ -1,56 +1,48 @@
 <template>
   <div>
     <div class="tag-box">
-      <Tag v-for="(tag, tagId) of tags"
+      <Tag v-for="(tag, tagId) of $store.getters.getTags"
            size="medium"
            showBoxShadow
            :key="tagId"
            :entity="tag"
-           @click="clickTag(tag)" />
+           @click="handleClickTag(tag)" />
     </div>
 
     <div class="tip">
-      <span @click="resetShowBookmarks">{{ tip }}</span>
+      <span @click="resetBookmarks">{{ tip }}</span>
     </div>
 
     <div class="container bookmark-box">
-      <BookmarkBlock v-for="item of shownBookmarks"
+      <BookmarkBlock v-for="item of bookmarks"
                      :key="item.id"
-                     @click-tag="clickTag"
+                     @click-tag="handleClickTag"
                      :entity="item" />
     </div>
   </div>
 </template>
 
 <script setup>
-import BookmarkBlock from '@/components/BookmarkBlock.vue';
 import Tag from '@/components/Tag.vue';
-import {
-  getCurrentInstance,
-  onBeforeMount,
-  onMounted,
-  onUpdated,
-  reactive,
-  ref,
-} from 'vue';
+import BookmarkBlock from '@/components/BookmarkBlock.vue';
+import { ref } from 'vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
-const bookmarks = store.getters.getBookmarks;
-const tags = store.getters.getTags;
+const tip = ref('');
+const bookmarks = ref([]);
 
-const tip = ref('所有书签');
-const shownBookmarks = ref(Object.values(bookmarks));
-
-const clickTag = (tag) => {
+function handleClickTag(tag) {
   tip.value = `“${tag.name}”关联的书签`;
-  shownBookmarks.value = store.getters.getBookmarksByTagId(tag.id);
-};
+  bookmarks.value = store.getters.getBookmarksByTagId(tag.id);
+}
 
-const resetShowBookmarks = () => {
+function resetBookmarks() {
   tip.value = '所有书签';
-  shownBookmarks.value = Object.values(bookmarks);
-};
+  bookmarks.value = store.getters.getBookmarks;
+}
+
+resetBookmarks();
 </script>
 
 <style lang="scss" scoped>

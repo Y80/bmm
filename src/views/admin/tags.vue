@@ -35,23 +35,15 @@
 </template>
 
 <script setup>
-import {
-  ref,
-  reactive,
-  watch,
-  computed,
-  provide,
-  inject,
-  getCurrentInstance,
-} from 'vue';
+import { reactive } from 'vue';
 import Table from '@/components/Table.vue';
 import Confirm from '@/components/Confirm.vue';
 import * as api from '@/libs/api';
 import { handleError } from '@/libs/utils';
 import { useStore } from 'vuex';
+import { setLoadingState } from '@/hooks/usePageLoading';
 
 const store = useStore();
-const { isLoading } = getCurrentInstance().root.proxy;
 
 const table = reactive({
   columnList: [
@@ -82,7 +74,7 @@ const removeModal = reactive({
 });
 
 function getTags() {
-  isLoading.fullScreen = true;
+  setLoadingState(true);
   api.tag
     .getAll()
     .then((data) => {
@@ -93,7 +85,7 @@ function getTags() {
       store.commit('setTags', tags);
     })
     .finally(() => {
-      isLoading.fullScreen = false;
+      setLoadingState(false);
     });
 }
 

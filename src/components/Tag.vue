@@ -22,7 +22,7 @@ export default {
       type: String,
       default: 'medium',
       validator(value) {
-        return ['normal', 'medium', 'large'].includes(value);
+        return ['small', 'normal', 'medium', 'large'].includes(value);
       },
     },
     // 可否删除
@@ -68,10 +68,19 @@ export default {
   transform: scale(1);
 }
 
+.tag {
+  &.is-normal {
+    height: 1.8em;
+  }
+  &.is-medium {
+    height: 1.725em;
+    font-weight: 100;
+  }
+}
+
 span {
   cursor: pointer;
 
   user-select: none;
 }
-
 </style>
