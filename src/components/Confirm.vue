@@ -5,7 +5,8 @@
     <div class="box mx-5">
       <!-- 弹框标题 -->
       <section class="block">
-        <p class="title is-5" v-if="title">
+        <p class="title is-5"
+           v-if="title">
           {{ title }}
         </p>
       </section>
@@ -17,18 +18,14 @@
       </section>
       <!-- 弹框底部操作区域 -->
       <section class="block has-text-right">
-        <button
-          class="button is-rounded mr-1 is-outlined"
-          :class="`is-${cancelType}`"
-          @click="close"
-        >
+        <button class="button is-rounded mr-1 is-outlined "
+                :class="`is-${cancelType}`"
+                @click="close">
           {{ cancelText }}
         </button>
-        <button
-          class="button is-rounded is-outlined"
-          :class="`is-${confirmType}`"
-          @click="confirm"
-        >
+        <button class="button is-rounded is-outlined"
+                :class="{ 'is-loading': isSubmitting, [`is-${confirmType}`]: true }"
+                @click="confirm">
           {{ confirmText }}
         </button>
       </section>
@@ -37,7 +34,7 @@
 </template>
 
 <script>
-import Dialog from './Dialog.vue'
+import Dialog from './Dialog.vue';
 
 export default {
   components: {
@@ -77,34 +74,38 @@ export default {
       type: String,
       default: 'primary',
     },
+    // 处理正在提交的状态
+    isSubmitting: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
     return {
       visible_: this.visible,
-    }
+    };
   },
 
   watch: {
     visible_() {
       // 触发 @update:visible 事件,即更新父组件中的 visible 值
-      this.$emit('update:visible', this.visible_)
+      this.$emit('update:visible', this.visible_);
     },
 
     visible() {
-      this.visible_ = this.visible
+      this.visible_ = this.visible;
     },
   },
 
   methods: {
     close() {
-      this.visible_ = false
+      this.visible_ = false;
     },
     // 触发 @confirm 事件
     confirm() {
-      this.close()
-      this.$emit('confirm')
+      this.$emit('confirm');
     },
   },
-}
+};
 </script>

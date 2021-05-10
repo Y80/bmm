@@ -17,9 +17,15 @@ MyAxios.interceptors.response.use(
   (response) => {
     return response.data
   },
+
   (error) => {
     // error 的五个属性：config request response isAxiosError toJSON
-    throw new Error(error)
+
+    if (error?.response.data) {
+      return Promise.reject(error.response.data)
+    } else {
+      return Promise.reject(error)
+    }
   }
 )
 

@@ -1,184 +1,154 @@
 <template>
-  <div class="block flex-between"
-       style="margin-top: 6rem">
-    <span>共 <span class="is-size-3">{{ tagList.length }}</span> 个标签</span>
+  <div class="block flex-between">
+    <span>共 <span class="is-size-3">{{ table.data.length }}</span> 个标签</span>
     <button class="level-item button is-primary"
-            @click="openAddDialog">
+            @click="openModal()">
       创建新标签
     </button>
   </div>
 
-  <Table :value="tagList"
-         :buttonList="tableButtonList"
-         :config="tableConfig" />
+  <Table :data="table.data"
+         :buttonList="table.buttonList"
+         :columnList="table.columnList" />
 
-  <!-- 创建新标签 -->
-  <Confirm v-model:visible="addDialog.visible"
-           title="新建标签"
-           @confirm="onConfirmCreateTag">
+  <!-- 创建、编辑标签 -->
+  <Confirm v-model:visible="modal.visible"
+           :title="modal.title"
+           :isSubmitting="modal.isSubmitting"
+           @confirm="sendTag">
     <div>
       <FormItem label="名称"
-                v-model="addDialog.tag.name" />
+                v-model="modal.tag.name" />
       <FormItem label="Hue"
                 type="number"
-                v-model="addDialog.tag.hue" />
+                v-model="modal.tag.hue" />
     </div>
   </Confirm>
 
   <!-- 确认删除对话框 -->
-  <Confirm v-model:visible="delDialog.visible"
-           confirmText="删除"
+  <Confirm v-model:visible="removeModal.visible"
            confirmType="danger"
-           :title="`确定要删除标签“${delDialog.tagName}”吗？`"
-           @confirm="deleteTag(delDialog.id)">
-  </Confirm>
+           :isSubmitting="removeModal.isSubmitting"
+           :title="`确定要删除标签“${removeModal.tag.name}”吗？`"
+           @confirm="removeTag" />
 
-  <!-- 编辑标签对话框 -->
-  <Confirm v-model:visible="editDialog.visible"
-           title="编辑标签"
-           cancelText="关闭"
-           @confirm="onConfirmUpdateTag"
-           confirmText="更新">
-    <div>
-      <div class="field">
-        <label class="label">标签名称</label>
-        <input class="input"
-               type="text"
-               v-model="editDialog.name"
-               placeholder="请输入新标签名称" />
-      </div>
-      <div class="field">
-        <label class="label">Hue</label>
-        <input class="input"
-               v-model="editDialog.hue"
-               type="number" />
-      </div>
-    </div>
-  </Confirm>
 </template>
 
-<script>
-import { ref, reactive, watch, computed, provide, inject } from 'vue';
-import Confirm from '../../components/Confirm.vue';
-import useTagOperator from '../../composables/useTagOperator';
-import Table from '../../components/Table.vue';
+<script setup>
+import {
+  ref,
+  reactive,
+  watch,
+  computed,
+  provide,
+  inject,
+  getCurrentInstance,
+} from 'vue';
+import Table from '@/components/Table.vue';
+import Confirm from '@/components/Confirm.vue';
+import * as api from '@/libs/api';
+import { handleError } from '@/libs/utils';
+import { useStore } from 'vuex';
 
-const DEFAULT_HUE_VALUE = 200;
+const store = useStore();
+const { isLoading } = getCurrentInstance().root.proxy;
 
-export default {
-  components: {
-    Confirm,
-    Table,
-  },
+const table = reactive({
+  columnList: [
+    { label: '标签名', prop: 'name' },
+    { label: '色相值', prop: 'hue' },
+    { label: '关联书签数量', prop: 'bookmarkNum' },
+  ],
+  buttonList: [
+    { text: '编辑', handler: openModal },
+    { text: '删除', handler: openRemoveModal },
+  ],
+  data: [],
+});
 
-  setup() {
-    const {
-      tagList,
-      getAllTags,
-      createTag,
-      deleteTag,
-      updateTag,
-    } = useTagOperator();
+const modal = reactive({
+  visible: false,
+  title: '',
+  isSubmitting: false,
+  tag: {},
+});
 
-    getAllTags();
+// 删除对话框
+const removeModal = reactive({
+  visible: false,
+  title: '',
+  isSubmitting: false,
+  tag: {},
+});
 
-    return { tagList, getAllTags, createTag, deleteTag, updateTag };
-  },
+function getTags() {
+  isLoading.fullScreen = true;
+  api.tag
+    .getAll()
+    .then((data) => {
+      table.data = data;
 
-  data() {
-    return {
-      tableConfig: {
-        columnList: [
-          { label: '标签名', prop: 'name' },
-          { label: '色相值', prop: 'hue' },
-          { label: '关联书签数量', prop: 'bookmarkNum' },
-        ],
-      },
-      tableButtonList: [
-        { text: '编辑', handler: this.openUpdateDialog },
-        { text: '删除', handler: this.openDelDialog },
-      ],
-      addDialog: {
-        visible: false,
-        tag: { name: '', hue: 1 },
-      },
+      const tags = {};
+      data.forEach((tag) => (tags[tag.id] = tag));
+      store.commit('setTags', tags);
+    })
+    .finally(() => {
+      isLoading.fullScreen = false;
+    });
+}
 
-      delDialog: {
-        visible: false,
-        id: '',
-        tagName: '',
-      },
+getTags();
 
-      editDialog: {
-        visible: false,
-        id: '',
-        name: '',
-        hue: 1,
-      },
+function openModal(row) {
+  if (row) {
+    modal.title = `编辑标签“${row.name}”`;
+    modal.tag = { ...row };
+  } else {
+    modal.title = '新增标签';
+    modal.tag = { name: '', hue: parseInt(Math.random() * 360) };
+  }
+  modal.visible = true;
+}
 
-      list: [],
-    };
-  },
+function openRemoveModal(tag) {
+  removeModal.tag = tag;
+  removeModal.visible = true;
+}
 
-  methods: {
-    openAddDialog() {
-      this.addDialog = {
-        visible: true,
-        tag: { name: '', hue: parseInt(Math.random() * 360) },
-      };
-    },
+function sendTag() {
+  if (!modal.tag.name || !modal.tag.hue) {
+    alert('请填写完整表单');
+    return;
+  }
 
-    openDelDialog(tag) {
-      this.delDialog = {
-        visible: true,
-        id: tag.id,
-        tagName: tag.name,
-      };
-    },
+  const promise = modal.tag.id
+    ? api.tag.update(modal.tag)
+    : api.tag.add(modal.tag);
 
-    openUpdateDialog(tag) {
-      this.editDialog = {
-        visible: true,
-        id: tag.id,
-        name: tag.name,
-        hue: tag.hue,
-      };
-    },
+  modal.isSubmitting = true;
+  promise
+    .then(() => {
+      modal.visible = false;
+      getTags();
+    })
+    .catch(handleError)
+    .finally(() => {
+      modal.isSubmitting = false;
+    });
+}
 
-    onConfirmCreateTag() {
-      const payload = {
-        name: this.addDialog.tag.name,
-        hue: this.addDialog.tag.hue || DEFAULT_HUE_VALUE,
-      };
-
-      if (!payload.name) {
-        alert('请输入有效标签名称');
-        return;
-      }
-
-      this.createTag(payload).catch(alert);
-    },
-
-    onConfirmUpdateTag() {
-      const payload = {
-        id: this.editDialog.id,
-        name: this.editDialog.name,
-        hue: Number(this.editDialog.hue),
-      };
-
-      if (!payload.name) {
-        alert('请输入有效标签名称');
-        return;
-      }
-
-      this.updateTag(payload).catch(alert);
-    },
-  },
-
-  created() {
-    this.$utils.setSiteTitle('管理标签');
-  },
-};
+function removeTag() {
+  removeModal.isSubmitting = true;
+  api.tag
+    .remove(removeModal.tag.id)
+    .then(() => {
+      removeModal.visible = false;
+      getTags();
+    })
+    .finally(() => {
+      removeModal.isSubmitting = false;
+    });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -188,5 +158,4 @@ export default {
   height: 3rem;
   border-radius: 50%;
 }
-
 </style>

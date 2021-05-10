@@ -2,41 +2,34 @@
   <table class="table is-fullwidth">
     <thead>
       <tr>
+        <!-- 列表序号 -->
         <th v-if="showIndex"></th>
-        <th v-for="column of config.columnList" :key="column.label">
+        <th v-for="column of columnList"
+            :key="column.label">
           {{ column.label }}
         </th>
-        <th v-if="isBookmark" style="min-width: 12rem">关联标签</th>
-
         <th v-if="buttonList.length">操作</th>
       </tr>
     </thead>
-    <div v-if="value?.length === 0" class="empty-tip">暂无数据</div>
+
+    <div v-if="!data?.length"
+         class="empty-tip">暂无数据</div>
     <tbody v-else>
-      <tr v-for="(row, idx) of value" :key="idx">
+      <tr v-for="(row, idx) of data"
+          :key="idx">
         <th v-if="showIndex">{{ idx + 1 }}</th>
-        <td v-for="column of config.columnList" :key="column.label">
+        <td v-for="column of columnList"
+            :key="column.label">
           {{ column.output ? column.output(row) : row[column.prop] }}
-        </td>
-        <td v-if="isBookmark">
-          <span class="tags">
-            <Tag
-              v-for="tag of row.tagList"
-              :key="tag"
-              size="normal"
-              :data="tag"
-            />
-          </span>
         </td>
 
         <!-- 操作列 -->
-        <td v-if="buttonList.length" style="min-width: 150px">
-          <button
-            class="button is-small mr-1"
-            v-for="btn of buttonList"
-            :key="btn.text"
-            @click="btn.handler(row)"
-          >
+        <td v-if="buttonList.length"
+            style="min-width: 150px">
+          <button class="button is-small mr-1 is-ghost"
+                  v-for="btn of buttonList"
+                  :key="btn.text"
+                  @click="btn.handler(row)">
             {{ btn.text }}
           </button>
         </td>
@@ -46,27 +39,17 @@
 </template>
 
 <script>
-import Tag from './Tag.vue'
-
 export default {
-  components: {
-    Tag,
-  },
   props: {
-    value: {
+    // 表格的数据源
+    data: {
       type: Array,
       required: true,
     },
-    config: {
-      type: Object,
-      default() {
-        return {
-          // 存放表格数据
-          data: [],
-          // 表格里的列
-          columnList: [{ label: '', prop: '' }],
-        }
-      },
+    // 表头配置
+    columnList: {
+      type: Array, // {label: string, prop: string, output?: (row) => string}[]
+      required: true,
     },
     // 展示序号
     showIndex: {
@@ -75,29 +58,21 @@ export default {
     },
     //  "操作"列允许的操作
     buttonList: {
-      type: Array,
+      type: Array, // {text: string | () => string, handler: (row) => void}[]
+      required: false,
       default: [],
     },
-
-    isBookmark: {
-      type: Boolean,
-      default: false,
-    },
   },
-
-  data() {
-    return {}
-  },
-
-  methods: {},
-
-  created() {},
-}
+};
 </script>
 
 <style lang="scss" scoped>
 .empty-tip {
-  opacity: 0.8;
   height: 10rem;
+  opacity: 0.8;
+}
+
+tbody > tr:hover {
+  background-color: rgba(230, 230, 230, 0.383);
 }
 </style>

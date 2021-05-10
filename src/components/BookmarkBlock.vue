@@ -16,6 +16,7 @@
       <div class="tags">
         <Tag v-for="item of tagList"
              size="normal"
+             @click="$emit('click-tag',item)"
              :key="item.id"
              :entity="item" />
       </div>
@@ -32,6 +33,7 @@ export default {
   },
 
   props: {
+    // {id, name, url, icon, tagIdList}
     entity: {
       type: Object,
       required: true,
@@ -46,20 +48,17 @@ export default {
     },
   },
 
-  data() {
-    return {};
-  },
+  emits: ['click-tag'],
 
-  computed: {
-    tagList() {
-      if (this.entity.tagIdList) {
-        return this.entity.tagIdList.map((tagId) => {
-          return this.$db.tags[tagId];
-        });
-      } else if (this.entity.tagList) {
-        return this.entity.tagList;
-      }
-    },
+  data() {
+    let tagList = [];
+    if (this.entity.tagIdList) {
+      tagList = this.$store.getters.getTagsByIdList(this.entity.tagIdList);
+    } else if (this.entity.tagList) {
+      tagList = this.entity.tagList;
+    }
+
+    return { tagList };
   },
 };
 </script>

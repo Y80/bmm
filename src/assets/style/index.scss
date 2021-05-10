@@ -37,3 +37,9 @@ body {
   border-radius: 5px;
   background-color: #d2cfcf;
 }
+
+@keyframes rotate360 {
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,12 +1,12 @@
 <template>
-  <div v-if="db">
+  <div>
     <div class="tag-box">
-      <tag v-for="item of db.tags"
+      <Tag v-for="(tag, tagId) of tags"
            size="medium"
            showBoxShadow
-           :key="item.id"
-           :entity="item"
-           @click="clickTag(item)" />
+           :key="tagId"
+           :entity="tag"
+           @click="clickTag(tag)" />
     </div>
 
     <div class="tip">
@@ -14,9 +14,10 @@
     </div>
 
     <div class="container bookmark-box">
-      <bookmark-block v-for="item of showBookmarks"
-                      :key="item.id"
-                      :entity="item" />
+      <BookmarkBlock v-for="item of shownBookmarks"
+                     :key="item.id"
+                     @click-tag="clickTag"
+                     :entity="item" />
     </div>
   </div>
 </template>
@@ -24,7 +25,6 @@
 <script setup>
 import BookmarkBlock from '@/components/BookmarkBlock.vue';
 import Tag from '@/components/Tag.vue';
-import router from '@/libs/router';
 import {
   getCurrentInstance,
   onBeforeMount,
@@ -33,38 +33,26 @@ import {
   reactive,
   ref,
 } from 'vue';
+import { useStore } from 'vuex';
 
-const app = getCurrentInstance();
-const db = app.appContext.config.globalProperties.$db;
+const store = useStore();
+const bookmarks = store.getters.getBookmarks;
+const tags = store.getters.getTags;
 
 const tip = ref('所有书签');
-let showBookmarks = ref([]);
-
-if (!db) {
-  // db 为空，router.push() 可以正常执行，但不会立马跳转到对应的页面
-  // 因此下面的代码会继续执行
-  router.push('/loading');
-} else {
-  showBookmarks.value = Object.values(db.bookmarks);
-}
+const shownBookmarks = ref(Object.values(bookmarks));
 
 const clickTag = (tag) => {
   tip.value = `“${tag.name}”关联的书签`;
-  showBookmarks.value = [];
-  Object.values(db.bookmarks).forEach((bookmark) => {
-    if (bookmark.tagIdList.includes(tag.id)) {
-      showBookmarks.value.push(bookmark);
-    }
-  });
+  shownBookmarks.value = store.getters.getBookmarksByTagId(tag.id);
 };
 
 const resetShowBookmarks = () => {
   tip.value = '所有书签';
-  showBookmarks.value = db.bookmarks;
+  shownBookmarks.value = Object.values(bookmarks);
 };
 </script>
 
 <style lang="scss" scoped>
 @use './index.scss';
-
 </style>

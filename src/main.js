@@ -3,13 +3,14 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import FormItem from './components/FormItem.vue'
 import * as utils from './libs/utils'
-import router from './libs/router'
+import router from '@/libs/router'
+import store from '@/libs/store'
 import myAxios from '@/libs/axios'
 import '@/assets/style/index.scss'
 
 const app = createApp(App)
 
-app.use(router)
+app.use(router).use(store)
 
 // inject('axios) 获取 axios
 app.provide('axios', myAxios)
@@ -21,6 +22,8 @@ app.component('FormItem', FormItem)
 app.config.globalProperties = {
   $axios: myAxios,
   $utils: utils,
-  $db: null,
+  $store: store,
+  $router: router,
 }
+
 app.mount('#app')

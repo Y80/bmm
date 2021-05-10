@@ -86,15 +86,16 @@
 </template>
 
 <script>
-import useBookmarkOperator from '../../composables/useBookmarkOperator';
-import useLinkOperator from '../../composables/useLinkOperator';
-import Tag from '../../components/Tag.vue';
-import Confirm from '../../components/Confirm.vue';
-import TagPicker from '../../components/TagPicker.vue';
-import Table from '../../components/Table.vue';
-import FormItem from '../../components/FormItem.vue';
-import BookmarkBlock from '../../components/BookmarkBlock.vue';
-import useTagOperator from '../../composables/useTagOperator';
+import useBookmarkOperator from '@/composables/useBookmarkOperator';
+import useLinkOperator from '@/composables/useLinkOperator';
+import Tag from '@/components/Tag.vue';
+import Confirm from '@/components/Confirm.vue';
+import TagPicker from '@/components/TagPicker.vue';
+import Table from '@/components/Table.vue';
+import FormItem from '@/components/FormItem.vue';
+import BookmarkBlock from '@/components/BookmarkBlock.vue';
+import useTagOperator from '@/composables/useTagOperator';
+import { getCurrentInstance } from 'vue';
 
 export default {
   name: 'bookmark',
@@ -108,6 +109,7 @@ export default {
   },
 
   setup() {
+    const { proxy } = getCurrentInstance().root;
     const {
       bookmarkList,
       getBookmarkList,
@@ -117,8 +119,10 @@ export default {
     } = useBookmarkOperator();
     const { tagList, getAllTags } = useTagOperator();
 
-    getBookmarkList();
-    getAllTags();
+    proxy.isLoading.fullScreen = true;
+    Promise.all([getBookmarkList(), getAllTags()]).finally(() => {
+      proxy.isLoading.fullScreen = false;
+    });
 
     const { addLinks, delLinks } = useLinkOperator();
 
@@ -218,17 +222,12 @@ export default {
 
     clickTag(tag) {
       this.tip = `“${tag.name}”关联的书签`;
-      this.showBookmarks = [];
-      Object.values(this.$db.bookmarks).forEach((bookmark) => {
-        if (bookmark.tagIdList.includes(tag.id)) {
-          this.showBookmarks.push(bookmark);
-        }
-      });
+      this.showBookmarks = this.$store.getters.getBookmarksByTagId(tag.id);
     },
 
     resetShowBookmarks() {
       this.tip = '所有书签';
-      this.showBookmarks = this.$db.bookmarks;
+      this.showBookmarks = this.$store.getters.getBookmarks;
     },
 
     // 生成序列化文件

@@ -140,10 +140,4 @@ export default {
   animation: rotate360 0.3s linear infinite;
   animation-play-state: paused;
 }
-
-@keyframes rotate360 {
-  100% {
-    transform: rotate(360deg);
-  }
-}
 </style>
