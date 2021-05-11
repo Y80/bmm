@@ -11,12 +11,7 @@ export default defineConfig({
   },
   css: {
     preprocessorOptions: {
-      scss: {
-        // additionalData: `@use '${resolve(
-        //   __dirname,
-        //   'src/assets/style/variables'
-        // )}'`,
-      },
+      scss: {},
     },
   },
   // 部署之后首页为：www.foo.com/nav/index.html
