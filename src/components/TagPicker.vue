@@ -8,8 +8,6 @@
             :key="tag.name">{{ tag.name }}</span>
     </div>
     <div class="flex-end">
-      <!-- <button class="button is-text" @click="confirmHandler">确认</button> -->
-      <!-- <button class="button is-text" @click="refresh">刷新</button> -->
       <i class="iconfont iconshuaxin"
          @click="refresh"></i>
     </div>
@@ -17,7 +15,6 @@
 </template>
 
 <script>
-import { registerRuntimeCompiler } from 'vue';
 import useTagOperator from '../composables/useTagOperator';
 
 export default {
@@ -103,7 +100,7 @@ export default {
 .tag-picker {
   padding-bottom: 1em;
   box-shadow: inset 2px 2px 2px rgba(0, 0, 0, 0.15),
-    inset -2px -2px 2px rgba(236, 236, 236, 0.5);
+  inset -2px -2px 2px rgba(236, 236, 236, 0.5);
 
   & > .tags {
     margin-bottom: 0;
@@ -122,4 +119,5 @@ export default {
   animation: rotate360 0.3s linear infinite;
   animation-play-state: paused;
 }
+
 </style>

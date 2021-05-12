@@ -22,6 +22,11 @@ div.bookmark-box {
   font-size: 1.5rem;
 
   span {
+    color: #7e7e7e;
     cursor: pointer;
+
+    &:hover {
+      color: #444;
+    }
   }
 }

@@ -8,20 +8,22 @@
         </div>
       </router-link>
       <div class="level-right">
-        <template v-if="isAdminPage">
+        <template v-if="$router.currentRoute.value.path?.includes('/admin/')">
           <router-link to="/admin/tags">
             <button class="button mr-5  is-ghost"
+                    :disabled="/admin\/tags/.test($router.currentRoute.value.path)"
                     :class="{ 'is-loading': isLoading.tagsPage }">管理标签</button>
           </router-link>
           <router-link to="/admin/bookmarks">
             <button class="button is-ghost"
+                    :disabled="/admin\/bookmarks/.test($router.currentRoute.value.path)"
                     :class="{ 'is-loading': isLoading.bookmarksPage }">管理书签</button>
           </router-link>
         </template>
         <button v-else
                 class="button is-ghost"
                 :class="{ 'is-loading': isLoading.adminPage }"
-                @click="goAdminPage($route)">登录</button>
+                @click="goAdminPage()">登录</button>
       </div>
     </div>
   </nav>
@@ -60,15 +62,12 @@
 
 <script setup>
 import { login } from '@/libs/api';
-import { computed, onUpdated, reactive, ref, watch, nextTick } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
 import { getDatabase } from '@/libs/api';
 import { isLoading as pageIsLoading } from '@/hooks/usePageLoading';
 
 const router = useRouter();
-const store = useStore();
-const isAdminPage = ref(false);
 const isLoading = reactive({
   adminPage: false,
   bookmarksPage: false,
@@ -104,14 +103,6 @@ function goAdminPage() {
     goAdminPage();
   }
 }
-
-watch(
-  () => router.currentRoute.value,
-  () => {
-    isAdminPage.value = router.currentRoute.value.path?.includes('/admin/');
-  },
-  { deep: true, immediate: true }
-);
 </script>
 
 <style lang="scss" scoped>
@@ -206,4 +197,14 @@ div.loading {
 .fade-leave-to {
   opacity: 0;
 }
+
+.button[disabled] {
+  border: none;
+  background: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 </style>
