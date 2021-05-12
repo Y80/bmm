@@ -25,8 +25,16 @@
 <script setup>
 import Tag from '@/components/Tag.vue';
 import BookmarkBlock from '@/components/BookmarkBlock.vue';
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const targetPath = router.currentRoute.value.query.targetPath;
+if (targetPath) {
+  nextTick(() => router.push(decodeURIComponent(targetPath)));
+}
 
 const store = useStore();
 const tip = ref('');
