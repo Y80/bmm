@@ -14,10 +14,14 @@
     </div>
 
     <div class="container bookmark-box">
-      <BookmarkBlock v-for="item of bookmarks"
-                     :key="item.id"
-                     @click-tag="handleClickTag"
-                     :entity="item" />
+      <transition-group name="flip-list"
+                        tag="div">
+        <BookmarkBlock v-for="item of bookmarks"
+                       :key="item.id"
+                       class="flip-list-item"
+                       @click-tag="handleClickTag"
+                       :entity="item" />
+      </transition-group>
     </div>
   </div>
 </template>
@@ -55,4 +59,5 @@ resetBookmarks();
 
 <style lang="scss" scoped>
 @use './index.scss';
+
 </style>

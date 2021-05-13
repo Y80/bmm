@@ -21,12 +21,16 @@
     </div>
 
     <div class="bookmark-box">
-      <BookmarkBlock v-for="item of bookmarks"
-                     @clickTag="filterBookmarksByTag"
-                     :key="item.name"
-                     :entity="item"
-                     :edit="openModal"
-                     :del="openRemoveModal" />
+      <transition-group name="flip-list"
+                        tag="div">
+        <BookmarkBlock v-for="item of bookmarks"
+                       @clickTag="filterBookmarksByTag"
+                       :key="item.name"
+                       :entity="item"
+                       class="flip-list-item"
+                       :edit="openModal"
+                       :del="openRemoveModal" />
+      </transition-group>
     </div>
   </main>
 
@@ -266,4 +270,5 @@ function fetchIcon() {
     font-size: 0.825rem;
   }
 }
+
 </style>

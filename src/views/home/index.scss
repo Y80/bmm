@@ -6,7 +6,7 @@ div.tag-box {
   }
 }
 
-div.bookmark-box {
+div.bookmark-box > div {
   display: grid;
   margin-bottom: 3rem;
 
@@ -28,5 +28,32 @@ div.bookmark-box {
     &:hover {
       color: #444;
     }
+  }
+}
+
+.flip-list-item {
+  transition: all 300ms ease;
+}
+
+.flip-list-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.flip-list-leave-to {
+  opacity: 0;
+}
+
+.flip-list-leave-active {
+  position: absolute;
+  box-shadow: none !important;
+  transition: all 300ms ease-in, box-shadow 0s;
+
+  :deep(a.name) {
+    color: white;
+  }
+
+  :deep(i.iconfont) {
+    display: none;
   }
 }
