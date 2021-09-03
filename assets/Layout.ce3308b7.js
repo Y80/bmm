@@ -1,0 +1,1 @@
+import{d as a,c as t,m as d,n as e}from"./vendor.1631031d.js";var l=a({name:"Layout",setup:(a,{slots:l})=>()=>t(d,null,{default:()=>[t(e,{contentStyle:{padding:"10vh 10px 50px 10px",maxWidth:"1295px",overflow:"hidden",margin:"0 auto"}},{default:()=>{var a;return[null==(a=l.default)?void 0:a.call(l)]}})]})});export{l as L};
