@@ -1,5 +1,5 @@
 import { NButton } from 'naive-ui'
-import classes from '../../style/login.module.css'
+import classes from '../../style/pages/login.module.css'
 import router from '../router'
 
 // https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps#web-application-flow

@@ -1,3 +1,4 @@
+// TODO: 不同搜索引擎的可用性检测
 import { NButton, NConfigProvider, NInput, NPopselect, NSpace } from 'naive-ui'
 import { Search } from '@vicons/tabler'
 import { computed, CSSProperties, reactive } from 'vue'
@@ -34,6 +35,18 @@ const searchEngines: SearchConfigOption[] = [
     icon: 'http://cdn.gu13.cn/favicon/stackoverflow.com.png',
     getSearchUrl: (q) => 'https://stackoverflow.com/search?q=' + encodeURI(q),
   },
+  {
+    value: 'npm',
+    name: 'npm',
+    icon: 'http://cdn.gu13.cn/favicon/www.npmjs.com.png',
+    getSearchUrl: (q) => 'https://www.npmjs.com/search?q=' + encodeURI(q),
+  },
+  {
+    value: 'github',
+    name: 'Github',
+    icon: 'http://cdn.gu13.cn/favicon/github.com.svg',
+    getSearchUrl: (q) => 'https://github.com/search?q=' + encodeURI(q),
+  },
 ]
 
 const style: CSSProperties = {
@@ -48,6 +61,7 @@ export default function SearchBox() {
     engine: searchEngines[0].value,
     icon: searchEngines[0].icon,
     question: '',
+    showPopSelect: false,
   })
 
   const currentEngineConfig = computed(() => {
@@ -58,6 +72,7 @@ export default function SearchBox() {
   })
 
   function handleChangeEngine(value: string) {
+    state.showPopSelect = false
     state.engine = value
     state.icon = searchEngines.find((itme) => itme.value === value)?.icon!
   }
@@ -82,11 +97,20 @@ export default function SearchBox() {
         placeholder="搜点什么？"
         value={state.question}
         onUpdateValue={(v) => (state.question = v)}
+        onKeyup={(keyEvent) => {
+          if (keyEvent.key === 'Enter') {
+            handleSearch()
+          } else if (keyEvent.key === 'Tab') {
+            state.showPopSelect = true
+          }
+        }}
         onBlur={() => (state.question = state.question.trim())}
         v-slots={{
           prefix: () => (
             <NPopselect
               value={state.engine}
+              show={state.showPopSelect}
+              onUpdateShow={(v) => (state.showPopSelect = v)}
               onUpdateValue={handleChangeEngine}
               trigger="click"
               placement="bottom-start"

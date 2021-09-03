@@ -3,7 +3,7 @@ import { defineComponent, PropType, ref, watchEffect } from 'vue'
 import { Edit, TrashOff, Plus } from '@vicons/tabler'
 import { IBookmark } from '../interface'
 import store from '../store'
-import classes from '../style/bookmark-card.module.css'
+import classes from '../style/components/bookmark-card.module.css'
 
 export default defineComponent({
   props: {
@@ -18,6 +18,9 @@ export default defineComponent({
     onEdit: {
       required: true,
       type: Function as PropType<(bookmark: IBookmark) => void>,
+    },
+    editable: {
+      type: Boolean as PropType<boolean>,
     },
   },
 
@@ -66,33 +69,34 @@ export default defineComponent({
                 />
               </>
             ),
-            'header-extra': () => (
-              <>
-                <NButton
-                  text
-                  style="margin-right: 5px"
-                  onClick={() => props.onEdit(props.dataSource)}
-                  v-slots={{
-                    icon: () => (
-                      <NIcon>
-                        <Edit />
-                      </NIcon>
-                    ),
-                  }}
-                />
-                <NButton
-                  text
-                  onClick={() => props.onRemove(props.dataSource)}
-                  v-slots={{
-                    icon: () => (
-                      <NIcon>
-                        <TrashOff />
-                      </NIcon>
-                    ),
-                  }}
-                />
-              </>
-            ),
+            'header-extra': () =>
+              props.editable && (
+                <>
+                  <NButton
+                    text
+                    style="margin-right: 5px"
+                    onClick={() => props.onEdit(props.dataSource)}
+                    v-slots={{
+                      icon: () => (
+                        <NIcon>
+                          <Edit />
+                        </NIcon>
+                      ),
+                    }}
+                  />
+                  <NButton
+                    text
+                    onClick={() => props.onRemove(props.dataSource)}
+                    v-slots={{
+                      icon: () => (
+                        <NIcon>
+                          <TrashOff />
+                        </NIcon>
+                      ),
+                    }}
+                  />
+                </>
+              ),
             default: () => (
               <div class={classes.tagsBox}>
                 {props.dataSource.tags.map((tag) => (

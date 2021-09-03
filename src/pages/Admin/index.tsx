@@ -1,38 +1,43 @@
-import { defineComponent, reactive, ref, watch } from 'vue'
-import { NButton, NSpace, NSpin, NEmpty, NIcon } from 'naive-ui'
+import { defineComponent, reactive, watch } from 'vue'
+import { NButton, NSpace, NEmpty, NIcon } from 'naive-ui'
 import TagManager from '../../components/TagManager'
 import TagPool from '../../components/TagPool'
 import BookmarkCard from '../../components/BookmarkCard'
 import BookmarkModal from '../../components/BookmarkModal'
+import SearchBox from '../../components/SearchBar'
+import Layout from '../../components/Layout'
+import BookmarkContainer from '../../components/BookmarkContainer'
 import { IBookmark } from '../../interface'
 import BookmarkAPI from '../../api/bookmark'
 import { Plus } from '@vicons/tabler'
-import SearchBox from '../../components/SearchBox'
-import classes from '../../style/index.module.css'
-import Layout from '../../components/Layout'
-import store from '../../store'
 
 export default defineComponent({
   setup() {
-    const showTagManger = ref(false)
-    const bookmarks = ref<IBookmark[]>([])
-    const bookmarkModal = reactive<{ show: boolean; dataSource: IBookmark | null }>({
+    const state = reactive({
+      showTagManger: false,
+      // 当前选中的标签id
+      currentTagId: undefined as number | undefined,
+      loading: false,
+      // 筛选出来的书签数据源
+      bookmarks: [] as IBookmark[],
+      bookmarkEditable: false,
+    })
+    const bookmarkModal = reactive<{ show: boolean; dataSource?: IBookmark | null }>({
       show: false,
       dataSource: null,
     })
-    const loadingBookmarks = ref(false)
-    const currentTagId = ref<number>()
-
-    store.dispatch('getAllTags')
 
     function getBookmarks() {
-      loadingBookmarks.value = true
-      BookmarkAPI.query(currentTagId.value)
+      // 不允许获取所有书签
+      if (!state.currentTagId) return
+
+      state.loading = true
+      BookmarkAPI.query(state.currentTagId)
         .then((data) => {
-          bookmarks.value = data
+          state.bookmarks = data
         })
         .finally(() => {
-          loadingBookmarks.value = false
+          state.loading = false
         })
     }
     getBookmarks()
@@ -47,7 +52,7 @@ export default defineComponent({
             getBookmarks()
             dialog.destroy()
           })
-          // 默认不关闭确认框
+          // 点击“确定”后，不立即关闭dialog
           return false
         },
       })
@@ -57,22 +62,15 @@ export default defineComponent({
       bookmarkModal.show = true
     }
 
-    watch(() => currentTagId.value, getBookmarks)
+    watch(() => state.currentTagId, getBookmarks)
 
     return () => (
       <Layout>
         <SearchBox />
-        <TagManager
-          show={showTagManger.value}
-          onClose={() => {
-            showTagManger.value = false
-            getBookmarks()
-          }}
-        />
         <TagPool
-          currentTagId={currentTagId.value}
-          onManagerClick={() => (showTagManger.value = true)}
-          onTagClick={(tagId) => (currentTagId.value = tagId)}
+          currentTagId={state.currentTagId}
+          onManagerClick={() => (state.showTagManger = true)}
+          onTagClick={(tagId) => (state.currentTagId = tagId)}
         />
         <NSpace style={{ margin: '1em 0' }}>
           <NButton type="primary" onClick={() => openBookmarkModal()} ghost>
@@ -85,24 +83,38 @@ export default defineComponent({
               ),
             }}
           </NButton>
+          <NButton ghost onClick={() => (state.bookmarkEditable = !state.bookmarkEditable)}>
+            {state.bookmarkEditable ? '关闭编辑' : '开启编辑'}
+          </NButton>
         </NSpace>
-        <NSpin show={loadingBookmarks.value} style={{ minHeight: '50px' }}>
-          <div class={classes.bookmarkContainer}>
-            {bookmarks.value.map((bookmark) => (
-              <BookmarkCard
-                key={bookmark.id}
-                dataSource={bookmark}
-                onEdit={openBookmarkModal}
-                onRemove={handleRemoveBookmark}
-              />
-            ))}
-          </div>
-          <NEmpty
-            v-show={!bookmarks.value.length && !loadingBookmarks.value}
-            style={{ marginTop: '5em' }}
-            description="没有获取到书签数据"
-          />
-        </NSpin>
+        <BookmarkContainer loading={state.loading}>
+          {state.bookmarks.map((bookmark) => (
+            <BookmarkCard
+              editable={state.bookmarkEditable}
+              key={bookmark.id}
+              dataSource={bookmark}
+              onEdit={openBookmarkModal}
+              onRemove={handleRemoveBookmark}
+            />
+          ))}
+        </BookmarkContainer>
+        <NEmpty
+          v-show={!state.bookmarks.length && !state.loading}
+          style={{ marginTop: '5em' }}
+          description={
+            state.currentTagId
+              ? '当前标签没有关联书签，快去添加吧 🥳'
+              : '请从上方标签池选择你感兴趣的标签'
+          }
+        />
+
+        <TagManager
+          show={state.showTagManger}
+          onClose={() => {
+            state.showTagManger = false
+            getBookmarks()
+          }}
+        />
         <BookmarkModal
           show={bookmarkModal.show}
           dataSource={bookmarkModal.dataSource}

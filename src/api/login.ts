@@ -1,7 +1,7 @@
 import { http } from './http'
 
 export function authenticate(code: string) {
-  return http.get<{ token: string }>('/authenticate', { params: { code } })
+  return http.get<null, { token: string }>('/authenticate', { params: { code } })
 }
 
 /** 验证已存在的 token 是否有效 */

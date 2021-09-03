@@ -87,7 +87,6 @@ function IconSetter(props: { favicon: string; url: string; setFavicon(value: str
               </NButton>
             </NInputGroup>
           </NTabPane>
-          <NTabPane name="手动上传" disabled></NTabPane>
         </NTabs>
       )}
     </>
@@ -202,7 +201,7 @@ export default defineComponent({
           model={formModel}
           ref={formRef}
           rules={formRules}
-          labelPlacement="left"
+          labelPlacement={store.state.isMobile ? 'top' : 'left'}
           labelWidth="70"
         >
           <NFormItem label="网址" path="url">

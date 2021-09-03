@@ -10,4 +10,5 @@ export default defineConfig({
     vueJsx(),
     // https://vanilla-extract.style/documentation/setup/
   ],
+  base: '/bmm/',
 })
