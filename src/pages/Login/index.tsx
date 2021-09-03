@@ -13,7 +13,7 @@ export default function Login() {
    */
   function handleClick() {
     // const REDIRECT_URI = 'http://localhost:3000'
-    const REDIRECT_URI = location.origin
+    const REDIRECT_URI = new URL('/bmm/', location.origin).href
     const CLIENT_ID = 'e2694ff6d268a2124f44'
     const url = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`
     console.log({ url })
