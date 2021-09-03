@@ -38,6 +38,9 @@ export default defineComponent({
           Card: {
             paddingMedium: store.state.isMobile ? '5px 7px' : '5px 15px',
           },
+          Tag: {
+            textColor: '#2626268f',
+          },
         }}
       >
         <NCard

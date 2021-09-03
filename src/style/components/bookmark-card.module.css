@@ -19,9 +19,10 @@
   overflow-x: scroll;
   display: flex;
   column-gap: 5px;
-  font-weight: lighter;
+  font-weight: 400;
   padding-bottom: 3px;
   margin-top: 8px;
+  color: #2626268f;
 }
 
 .tagsBox::-webkit-scrollbar {
