@@ -15,9 +15,10 @@ export default function Login() {
     // const REDIRECT_URI = 'http://localhost:3000'
     const REDIRECT_URI = location.origin
     const CLIENT_ID = 'e2694ff6d268a2124f44'
-    const childWindow = window.open(
-      `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`
-    )
+    const url = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`
+    console.log({ url })
+
+    const childWindow = window.open(url)
     window.handleSuccessLogin = () => {
       childWindow?.close()
       router.replace('/admin')
