@@ -1,3 +1,3 @@
 interface ImportMetaEnv {
-  VITE_SERVER_BASEURL: string
+    VITE_SERVER_BASEURL: string
 }

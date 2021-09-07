@@ -45,7 +45,6 @@ export default defineComponent({
       >
         <NCard
           class={classes.root}
-          hoverable
           v-slots={{
             header: () => (
               <>
