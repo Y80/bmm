@@ -1,5 +1,5 @@
 // TODO: 不同搜索引擎的可用性检测
-import { NButton, NConfigProvider, NInput, NPopselect, NSpace } from 'naive-ui'
+import { NButton, NConfigProvider, NIcon, NInput, NPopselect, NSpace } from 'naive-ui'
 import { Search } from '@vicons/tabler'
 import { computed, CSSProperties, reactive } from 'vue'
 
@@ -56,7 +56,7 @@ const style: CSSProperties = {
   lineHeight: '1.3',
 }
 
-export default function SearchBox() {
+export default function SearchBar() {
   const state = reactive({
     engine: searchEngines[0].value,
     icon: searchEngines[0].icon,
@@ -119,25 +119,18 @@ export default function SearchBox() {
                   value: item.value,
                   label: () => (
                     <NSpace align="center">
-                      <img style={{ display: 'block' }} src={item.icon} width={24} />
+                      <img style={{ display: 'block', width: '24px' }} src={item.icon} />
                       <span>{item.name}</span>
                     </NSpace>
                   ),
                 }
               })}
-              v-slots={{
-                default: () => (
-                  <NButton
-                    text
-                    size="large"
-                    style="margin: 0 8px 0 2px"
-                    v-slots={{
-                      icon: () => <img src={state.icon} />,
-                    }}
-                  />
-                ),
-              }}
-            />
+            >
+              <img
+                src={state.icon}
+                style={{ display: 'block', width: '24px', borderRadius: '4px' }}
+              />
+            </NPopselect>
           ),
           suffix: () => (
             <NButton
@@ -149,7 +142,11 @@ export default function SearchBox() {
               onClick={handleSearch}
               v-slots={{
                 default: () => '搜索',
-                icon: () => <Search />,
+                icon: () => (
+                  <NIcon>
+                    <Search />
+                  </NIcon>
+                ),
               }}
             />
           ),

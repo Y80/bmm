@@ -11,12 +11,9 @@ async function handleGithubOAuth(code: string) {
   try {
     const { token } = await loginApi.authenticate(code)
     if (!token) throw new Error('认证失败')
-    localStorage.setItem('token', token)
     // 通过父窗口关闭当前窗口，父窗口路由至 /admin 页面
-    window.opener?.handleSuccessLogin()
-  } catch (error) {
-    window.$message.error(error?.message || '认证发生未知错误')
-  }
+    window.opener?.handleSuccessLogin(token)
+  } catch {}
 }
 
 export default defineComponent({

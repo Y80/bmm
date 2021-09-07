@@ -1,6 +1,7 @@
-import { NButton } from 'naive-ui'
+import { NButton, NIcon } from 'naive-ui'
 import classes from '../../style/pages/login.module.css'
 import router from '../router'
+import { BrandGithub } from '@vicons/tabler'
 
 // https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps#web-application-flow
 
@@ -19,7 +20,9 @@ export default function Login() {
     console.log({ url })
 
     const childWindow = window.open(url)
-    window.handleSuccessLogin = () => {
+    // 在 Mac Safari 上，跨标签调用 localStorage.setItem() 可能出现 localStorage 不同步的问题
+    window.handleSuccessLogin = (token) => {
+      localStorage.setItem('token', token)
       childWindow?.close()
       router.replace('/admin')
     }
@@ -27,7 +30,19 @@ export default function Login() {
 
   return (
     <div class={classes.root}>
-      <NButton type="primary" onClick={handleClick}>
+      <NButton
+        type="primary"
+        size="large"
+        round
+        onClick={handleClick}
+        v-slots={{
+          icon: () => (
+            <NIcon>
+              <BrandGithub />
+            </NIcon>
+          ),
+        }}
+      >
         使用 Github 登录
       </NButton>
     </div>
