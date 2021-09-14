@@ -1,14 +1,8 @@
 import { NButton, NIcon, NSpace, NTag, NThing } from 'naive-ui'
-import { CSSProperties, defineComponent, PropType } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import { Tag, ArrowRight } from '@vicons/tabler'
 import store from '../store'
-
-const style: CSSProperties = {
-  boxShadow: '5px 5px 10px #ebebeb, -5px -5px 10px #ffffff',
-  borderRadius: '8px',
-  margin: '1rem 0 3rem',
-  padding: '1rem 0.5rem',
-}
+import classes from '../style/components/tag-pool.module.css'
 
 export default defineComponent({
   props: {
@@ -29,7 +23,7 @@ export default defineComponent({
     store.dispatch('getAllTags')
 
     return () => (
-      <NThing style={style}>
+      <NThing class={classes.root}>
         {{
           avatar: () => (
             <NIcon size="25">
@@ -60,7 +54,9 @@ export default defineComponent({
                 <NButton
                   text
                   onClick={() =>
-                    props.onTagClick(props.currentTagId === tag.id ? undefined : tag.id)
+                    props.onTagClick(
+                      props.currentTagId === tag.id ? undefined : tag.id
+                    )
                   }
                 >
                   <NTag

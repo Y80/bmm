@@ -1,7 +1,15 @@
 // TODO: 不同搜索引擎的可用性检测
-import { NButton, NConfigProvider, NIcon, NInput, NPopselect, NSpace } from 'naive-ui'
+import {
+  NButton,
+  NConfigProvider,
+  NIcon,
+  NInput,
+  NPopselect,
+  NSpace,
+} from 'naive-ui'
 import { Search } from '@vicons/tabler'
-import { computed, CSSProperties, reactive } from 'vue'
+import { computed, reactive } from 'vue'
+import classes from '../style/components/search-bar.module.css'
 
 interface SearchConfigOption {
   value: string
@@ -49,13 +57,6 @@ const searchEngines: SearchConfigOption[] = [
   },
 ]
 
-const style: CSSProperties = {
-  maxWidth: '600px',
-  margin: '0 auto 100px',
-  display: 'flex',
-  lineHeight: '1.3',
-}
-
 export default function SearchBar() {
   const state = reactive({
     engine: searchEngines[0].value,
@@ -85,14 +86,12 @@ export default function SearchBar() {
     <NConfigProvider
       themeOverrides={{
         Popover: { padding: '0', space: '12px' },
-        Input: { paddingMedium: '0' },
         InternalSelectMenu: { optionPaddingMedium: '0 36px 0 12px' },
+        Input: { border: 'none', borderRadius: '99px', heightMedium: '1.2em' },
       }}
     >
       <NInput
-        style={style}
-        size="large"
-        round
+        class={classes.root}
         clearable
         placeholder="搜点什么？"
         value={state.question}
@@ -119,7 +118,10 @@ export default function SearchBar() {
                   value: item.value,
                   label: () => (
                     <NSpace align="center">
-                      <img style={{ display: 'block', width: '24px' }} src={item.icon} />
+                      <img
+                        style={{ display: 'block', width: '24px' }}
+                        src={item.icon}
+                      />
                       <span>{item.name}</span>
                     </NSpace>
                   ),
@@ -143,7 +145,7 @@ export default function SearchBar() {
               v-slots={{
                 default: () => '搜索',
                 icon: () => (
-                  <NIcon>
+                  <NIcon style={{ color: 'inherit' }}>
                     <Search />
                   </NIcon>
                 ),

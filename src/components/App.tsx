@@ -36,7 +36,7 @@ export default defineComponent({
             textColor3: '#9EA4AAFF',
           },
           Layout: {
-            color: '#f8f8f8',
+            color: '#f5faff',
           },
           Card: {
             borderRadius: '8px',
