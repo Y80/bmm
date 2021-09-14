@@ -92,6 +92,7 @@ export default function SearchBar() {
     >
       <NInput
         class={classes.root}
+        style={{ maxWidth: '500px', display: 'flex' }}
         clearable
         placeholder="搜点什么？"
         value={state.question}
