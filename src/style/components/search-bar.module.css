@@ -12,3 +12,10 @@
   justify-content: center;
   margin: 10px 0;
 }
+
+@media screen and (max-width: 768px) {
+  .root {
+    transform: scale(1);
+    margin: 0 auto 20px;
+  }
+}
