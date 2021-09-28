@@ -22,7 +22,10 @@ export default defineComponent({
       bookmarks: [] as IBookmark[],
       bookmarkEditable: false,
     })
-    const bookmarkModal = reactive<{ show: boolean; dataSource?: IBookmark | null }>({
+    const bookmarkModal = reactive<{
+      show: boolean
+      dataSource?: IBookmark | null
+    }>({
       show: false,
       dataSource: null,
     })
@@ -73,7 +76,12 @@ export default defineComponent({
           onTagClick={(tagId) => (state.currentTagId = tagId)}
         />
         <NSpace style={{ margin: '1em 0' }}>
-          <NButton type="primary" onClick={() => openBookmarkModal()} ghost>
+          <NButton
+            type="primary"
+            onClick={() => openBookmarkModal()}
+            ghost
+            round
+          >
             {{
               default: () => '添加书签',
               icon: () => (
@@ -83,9 +91,15 @@ export default defineComponent({
               ),
             }}
           </NButton>
-          <NButton ghost onClick={() => (state.bookmarkEditable = !state.bookmarkEditable)}>
-            {state.bookmarkEditable ? '关闭编辑' : '开启编辑'}
-          </NButton>
+          {!!state.bookmarks?.length && (
+            <NButton
+              ghost
+              round
+              onClick={() => (state.bookmarkEditable = !state.bookmarkEditable)}
+            >
+              {state.bookmarkEditable ? '关闭编辑' : '开启编辑'}
+            </NButton>
+          )}
         </NSpace>
         <BookmarkContainer loading={state.loading}>
           {state.bookmarks.map((bookmark) => (

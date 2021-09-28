@@ -60,7 +60,12 @@ export default defineComponent({
                   }
                 >
                   <NTag
-                    style={{ cursor: 'pointer' }}
+                    style={{
+                      cursor: 'pointer',
+                      background: 'white',
+                      border: 'none',
+                    }}
+                    round
                     type={props.currentTagId === tag.id ? 'primary' : 'default'}
                   >
                     {tag.name}
