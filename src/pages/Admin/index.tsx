@@ -1,5 +1,6 @@
 import { defineComponent, reactive, watch } from 'vue'
 import { NButton, NSpace, NEmpty, NIcon } from 'naive-ui'
+import { Plus as IconPlus } from '@vicons/tabler'
 import TagManager from '../../components/TagManager'
 import TagPool from '../../components/TagPool'
 import BookmarkCard from '../../components/BookmarkCard'
@@ -9,7 +10,6 @@ import Layout from '../../components/Layout'
 import BookmarkContainer from '../../components/BookmarkContainer'
 import { IBookmark } from '../../interface'
 import BookmarkAPI from '../../api/bookmark'
-import { Plus } from '@vicons/tabler'
 
 export default defineComponent({
   setup() {
@@ -86,7 +86,7 @@ export default defineComponent({
               default: () => '添加书签',
               icon: () => (
                 <NIcon>
-                  <Plus />
+                  <IconPlus />
                 </NIcon>
               ),
             }}

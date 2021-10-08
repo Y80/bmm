@@ -47,8 +47,12 @@ export default defineComponent({
 
     return () => (
       <div>
-        <div v-show={state.githubAuthenticating}>正在处理 Github 认证，请稍后...</div>
-        <div v-show={state.tokenVerifying}>已检测到 token，正在验证有效性...</div>
+        <div v-show={state.githubAuthenticating}>
+          正在处理 Github 认证，请稍后...
+        </div>
+        <div v-show={state.tokenVerifying}>
+          已检测到 token，正在验证有效性...
+        </div>
       </div>
     )
   },

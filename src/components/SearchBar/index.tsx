@@ -1,4 +1,5 @@
 // TODO: 不同搜索引擎的可用性检测
+
 import {
   NButton,
   NConfigProvider,
@@ -7,66 +8,21 @@ import {
   NPopselect,
   NSpace,
 } from 'naive-ui'
-import { Search } from '@vicons/tabler'
+import { Search as SearchIcon } from '@vicons/tabler'
+import { SearchEngines } from './engines'
 import { computed, reactive } from 'vue'
-import classes from '../style/components/search-bar.module.css'
-
-interface SearchConfigOption {
-  value: string
-  name: string
-  icon: string
-  getSearchUrl(question: string): string
-}
-
-const searchEngines: SearchConfigOption[] = [
-  {
-    value: 'baidu',
-    name: '百度搜索',
-    icon: 'http://cdn.gu13.cn/favicon/www.baidu.com.svg',
-    getSearchUrl: (q) => 'https://baidu.com/s?wd=' + encodeURI(q),
-  },
-  {
-    value: 'google',
-    name: '谷歌搜索',
-    icon: 'http://cdn.gu13.cn/favicon/www.google.com.ico',
-    getSearchUrl: (q) => 'https://google.com/search?q=' + encodeURI(q),
-  },
-  {
-    value: 'bing',
-    name: '必应搜索',
-    icon: 'http://cdn.gu13.cn/favicon/bing.com.ico',
-    getSearchUrl: (q) => 'https://bing.com/search?q' + encodeURI(q),
-  },
-  {
-    value: 'stack overflow',
-    name: 'Stack Overflow',
-    icon: 'http://cdn.gu13.cn/favicon/stackoverflow.com.png',
-    getSearchUrl: (q) => 'https://stackoverflow.com/search?q=' + encodeURI(q),
-  },
-  {
-    value: 'npm',
-    name: 'npm',
-    icon: 'http://cdn.gu13.cn/favicon/www.npmjs.com.png',
-    getSearchUrl: (q) => 'https://www.npmjs.com/search?q=' + encodeURI(q),
-  },
-  {
-    value: 'github',
-    name: 'Github',
-    icon: 'http://cdn.gu13.cn/favicon/github.com.svg',
-    getSearchUrl: (q) => 'https://github.com/search?q=' + encodeURI(q),
-  },
-]
+import classes from '@style/components/search-bar.module.css'
 
 export default function SearchBar() {
   const state = reactive({
-    engine: searchEngines[0].value,
-    icon: searchEngines[0].icon,
+    engine: SearchEngines[0].value,
+    icon: SearchEngines[0].icon,
     question: '',
     showPopSelect: false,
   })
 
   const currentEngineConfig = computed(() => {
-    const rst = searchEngines.find((item) => item.value === state.engine)
+    const rst = SearchEngines.find((item) => item.value === state.engine)
     if (!rst) throw new Error('搜索配置有误')
 
     return rst
@@ -75,7 +31,7 @@ export default function SearchBar() {
   function handleChangeEngine(value: string) {
     state.showPopSelect = false
     state.engine = value
-    state.icon = searchEngines.find((itme) => itme.value === value)?.icon!
+    state.icon = SearchEngines.find((item) => item.value === value)?.icon!
   }
 
   function handleSearch() {
@@ -93,9 +49,9 @@ export default function SearchBar() {
           heightMedium: '1.3em',
         },
       }}
+      class={classes.searchBar}
     >
       <NInput
-        class={classes.root}
         clearable
         placeholder="搜点什么？"
         value={state.question}
@@ -117,20 +73,18 @@ export default function SearchBar() {
               onUpdateValue={handleChangeEngine}
               trigger="click"
               placement="bottom-start"
-              options={searchEngines.map((item) => {
-                return {
-                  value: item.value,
-                  label: () => (
-                    <NSpace align="center">
-                      <img
-                        style={{ display: 'block', width: '24px' }}
-                        src={item.icon}
-                      />
-                      <span>{item.name}</span>
-                    </NSpace>
-                  ),
-                }
-              })}
+              options={SearchEngines.map((item) => ({
+                value: item.value,
+                label: () => (
+                  <NSpace align="center">
+                    <img
+                      style={{ display: 'block', width: '24px' }}
+                      src={item.icon}
+                    />
+                    <span>{item.name}</span>
+                  </NSpace>
+                ),
+              }))}
             >
               <img
                 src={state.icon}
@@ -150,7 +104,7 @@ export default function SearchBar() {
                 default: () => '搜索',
                 icon: () => (
                   <NIcon style={{ color: 'inherit' }}>
-                    <Search />
+                    <SearchIcon />
                   </NIcon>
                 ),
               }}

@@ -1,11 +1,9 @@
-.root {
-  max-width: 600px !important;
-  display: flex !important;
+.searchBar {
+  max-width: 600px;
   margin: 0 auto 100px;
-  box-shadow: 0 3px 5px rgb(235, 235, 235);
 }
 
-.root :global .n-input__input {
+.searchBar :global .n-input__input {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -13,7 +11,7 @@
 }
 
 @media screen and (max-width: 768px) {
-  .root {
+  .searchBar {
     margin: 0 auto 20px;
   }
 }
