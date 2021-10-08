@@ -15,6 +15,10 @@
   white-space: nowrap;
 }
 
+.root:hover {
+  box-shadow: 0 4px 16px rgb(228, 228, 228);
+}
+
 .tagsBox {
   overflow-x: scroll;
   display: flex;

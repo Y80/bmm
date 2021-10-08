@@ -87,12 +87,15 @@ export default function SearchBar() {
       themeOverrides={{
         Popover: { padding: '0', space: '12px' },
         InternalSelectMenu: { optionPaddingMedium: '0 36px 0 12px' },
-        Input: { border: 'none', borderRadius: '99px', heightMedium: '1.2em' },
+        Input: {
+          border: 'var(--primary-color) 2px solid',
+          borderRadius: '99px',
+          heightMedium: '1.3em',
+        },
       }}
     >
       <NInput
         class={classes.root}
-        style={{ maxWidth: '500px', display: 'flex' }}
         clearable
         placeholder="搜点什么？"
         value={state.question}

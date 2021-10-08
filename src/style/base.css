@@ -10,6 +10,10 @@
   background-color: transparent;
 }
 
+:root {
+  --primary-color: #8c5aee;
+}
+
 html {
   font-size: 14px;
   background-color: #f5faff;

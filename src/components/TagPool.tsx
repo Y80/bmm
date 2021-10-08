@@ -42,7 +42,7 @@ export default defineComponent({
                 default: () => '管理标签',
                 icon: () => (
                   <NIcon size="16">
-                    <ArrowRight></ArrowRight>
+                    <ArrowRight />
                   </NIcon>
                 ),
               }}
@@ -64,9 +64,12 @@ export default defineComponent({
                       cursor: 'pointer',
                       background: 'white',
                       border: 'none',
+                      color:
+                        props.currentTagId === tag.id
+                          ? 'var(--primary-color)'
+                          : '#777',
                     }}
                     round
-                    type={props.currentTagId === tag.id ? 'primary' : 'default'}
                   >
                     {tag.name}
                   </NTag>
