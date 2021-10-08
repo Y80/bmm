@@ -1,1 +1,0 @@
-import{d as a,c as t,p as e,q as l}from"./vendor.0b981585.js";var d=a({name:"Layout",setup:(a,{slots:d})=>()=>t(e,null,{default:()=>[t(l,{contentStyle:{padding:"10vh 10px 50px 10px",maxWidth:"1295px",overflow:"hidden",margin:"0 auto"}},{default:()=>{var a;return[null==(a=d.default)?void 0:a.call(d)]}})]})});export{d as L};
