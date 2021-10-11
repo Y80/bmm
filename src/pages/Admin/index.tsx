@@ -133,7 +133,10 @@ export default defineComponent({
           show={bookmarkModal.show}
           dataSource={bookmarkModal.dataSource}
           onClose={() => (bookmarkModal.show = false)}
-          onSuccess={getBookmarks}
+          onSuccess={({ tagIds = [] }) => {
+            state.currentTagId = tagIds.pop() || state.currentTagId
+            getBookmarks()
+          }}
         />
       </Layout>
     )

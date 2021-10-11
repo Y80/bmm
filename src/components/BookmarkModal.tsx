@@ -1,3 +1,4 @@
+import { defineComponent, ref, reactive, watch, PropType, computed } from 'vue'
 import {
   FormInst,
   FormRules,
@@ -13,35 +14,46 @@ import {
   NButton,
   NInputGroup,
 } from 'naive-ui'
-import { defineComponent, ref, reactive, watch, PropType } from 'vue'
+import { Bookmarks as IconBookmarks, Trash as IconTrash } from '@vicons/tabler'
 import { IBookmark, ITag } from '../interface'
 import store from '../store'
-import BookmarkAPI from '../api/bookmark'
-import { Bookmarks, Trash } from '@vicons/tabler'
+import BookmarkAPI from '@api/bookmark'
 
-const iconApiPrefix = 'https://favicon-finder.aliyun-api.workers.dev/'
-const proxyApiPrefix = 'https://proxy.aliyun-api.workers.dev/?url='
-function IconSetter(props: { favicon: string; url: string; setFavicon(value: string): void }) {
+const URLPrefix = {
+  // 通过代理，获取图标资源
+  proxy: 'https://proxy.aliyun-api.workers.dev/?url=',
+  // 解析 HTML，获取图标资源
+  parser: 'https://favicon-finder.aliyun-api.workers.dev/',
+}
+
+function IconSetter(props: {
+  // 传给后端的图标地址或 dataURI
+  favicon: string
+  bookmarkUrl: string
+  setFavicon(value: string): void
+}) {
   const state = reactive({
     loading: false,
     inputSrc: '',
   })
 
   async function fetchIcon(iconSrc?: string) {
+    // 待请求的地址
     let url
     if (iconSrc) {
-      url = proxyApiPrefix + iconSrc
+      url = URLPrefix.proxy + iconSrc
     } else {
-      const { host } = new URL(props.url)
-      if (!host) return window.$message.warning('请先输入网址')
-      url = iconApiPrefix + host
+      try {
+        const { host } = new URL(props.bookmarkUrl)
+        url = URLPrefix.parser + host
+      } catch (error) {
+        return window.$message.warning('请输入有效网址')
+      }
     }
-
     state.loading = true
     try {
       const rsp = await fetch(url)
       if (rsp.status !== 200) throw new Error()
-
       const blob = await rsp.blob()
       await new Promise((resolve, reject) => {
         const fileReader = new FileReader()
@@ -63,26 +75,46 @@ function IconSetter(props: { favicon: string; url: string; setFavicon(value: str
     <>
       {props.favicon ? (
         <NSpace align="center">
-          <img style={{ display: 'block', width: '24px' }} src={props.favicon} />
+          <img
+            style={{ display: 'block', width: '24px' }}
+            src={props.favicon}
+          />
           <NButton
             text
             type="error"
             style={{ display: 'block' }}
             onClick={() => props.setFavicon('')}
-            v-slots={{ icon: () => <Trash /> }}
+            v-slots={{ icon: () => <IconTrash /> }}
           />
         </NSpace>
       ) : (
         <NTabs defaultValue="自动获取">
-          <NTabPane name="自动获取">
-            <NButton loading={state.loading} onClick={() => fetchIcon()} disabled={!props.url}>
+          <NTabPane
+            name="自动获取"
+            disabled={!props.bookmarkUrl || state.loading}
+          >
+            <NButton
+              loading={state.loading}
+              onClick={() => fetchIcon()}
+              disabled={!props.bookmarkUrl}
+            >
               点击获取
             </NButton>
           </NTabPane>
-          <NTabPane name="手动输入">
+          <NTabPane
+            name="手动输入"
+            disabled={!props.bookmarkUrl || state.loading}
+          >
             <NInputGroup>
-              <NInput placeholder="请输入图标地址" onChange={(v) => (state.inputSrc = v)} />
-              <NButton loading={state.loading} onClick={() => fetchIcon(state.inputSrc)}>
+              <NInput
+                placeholder="请输入图标地址"
+                onChange={(v) => (state.inputSrc = v)}
+              />
+              <NButton
+                loading={state.loading}
+                disabled={!props.bookmarkUrl}
+                onClick={() => fetchIcon(state.inputSrc)}
+              >
                 确定
               </NButton>
             </NInputGroup>
@@ -94,8 +126,16 @@ function IconSetter(props: { favicon: string; url: string; setFavicon(value: str
 }
 
 const formRules: FormRules = {
-  name: { required: true, message: '请输入书签名称', trigger: ['blur', 'input'] },
-  url: { required: true, message: '请输入书签网址', trigger: ['blur', 'input'] },
+  name: {
+    required: true,
+    message: '请输入书签名称',
+    trigger: ['blur', 'input'],
+  },
+  url: {
+    required: true,
+    message: '请输入书签网址',
+    trigger: ['blur', 'input'],
+  },
 }
 function getFormInitialValues() {
   return {
@@ -122,7 +162,11 @@ export default defineComponent({
     },
     onSuccess: {
       required: true,
-      type: Function as PropType<() => any>,
+      type: Function as PropType<
+        (
+          entity: ReturnType<typeof getFormInitialValues> & { tagIds: number[] }
+        ) => any
+      >,
     },
   },
 
@@ -151,7 +195,9 @@ export default defineComponent({
           state.isEdited = true
           Object.assign(formModel, props.dataSource)
           const linkedTagIds = props.dataSource.tags.map((tag) => tag.id)
-          state.tags.forEach((tag) => (tag.checked = linkedTagIds.includes(tag.id)))
+          state.tags.forEach(
+            (tag) => (tag.checked = linkedTagIds.includes(tag.id))
+          )
         } else {
           state.isEdited = false
           Object.assign(formModel, getFormInitialValues())
@@ -160,21 +206,25 @@ export default defineComponent({
       }
     )
 
+    const checkedTags = computed(() => state.tags.filter((tag) => tag.checked))
+
     async function handleSubmit() {
       await formRef.value?.validate()
       state.isSubmitting = true
       const payload = {
         ...formModel,
-        tagIds: state.tags.filter((tag) => tag.checked).map((tag) => tag.id),
+        tagIds: checkedTags.value.map((tag) => tag.id),
       }
       const promise = state.isEdited
-        ? BookmarkAPI.update(Object.assign(payload, { id: props.dataSource?.id! }))
+        ? BookmarkAPI.update(
+            Object.assign(payload, { id: props.dataSource?.id! })
+          )
         : BookmarkAPI.add(payload)
 
       try {
         await promise
         props.onClose()
-        props.onSuccess()
+        props.onSuccess(payload)
       } finally {
         state.isSubmitting = false
       }
@@ -189,7 +239,7 @@ export default defineComponent({
         positiveText="提交"
         icon={() => (
           <NIcon>
-            <Bookmarks />
+            <IconBookmarks />
           </NIcon>
         )}
         onPositiveClick={handleSubmit}
@@ -202,7 +252,7 @@ export default defineComponent({
           ref={formRef}
           rules={formRules}
           labelPlacement={store.state.isMobile ? 'top' : 'left'}
-          labelWidth="70"
+          labelWidth="80"
         >
           <NFormItem label="网址" path="url">
             <NInput v-model={[formModel.url, 'value']} />
@@ -213,17 +263,34 @@ export default defineComponent({
           <NFormItem label="图标" path="favicon">
             <IconSetter
               favicon={formModel.favicon}
-              url={formModel.url}
+              bookmarkUrl={formModel.url}
               setFavicon={(value) => (formModel.favicon = value)}
             />
           </NFormItem>
           <NFormItem label="描述" path="description">
-            <NInput type="textarea" v-model={[formModel.description, 'value']} />
+            <NInput
+              type="textarea"
+              v-model={[formModel.description, 'value']}
+            />
           </NFormItem>
-          <NFormItem label="关联标签" path="tags">
-            <NSpace>
+          <NFormItem
+            label={`关联标签(${checkedTags.value.length})`}
+            path="tags"
+          >
+            <NSpace
+              style={{
+                maxHeight: '125px',
+                overflow: 'auto',
+                borderRadius: '3px',
+                border: '1px solid #e0e0e6',
+              }}
+            >
               {state.tags.map((tag) => (
-                <NTag key={tag.name} checkable v-model={[tag.checked, 'checked']}>
+                <NTag
+                  key={tag.name}
+                  checkable
+                  v-model={[tag.checked, 'checked']}
+                >
                   {tag.name}
                 </NTag>
               ))}

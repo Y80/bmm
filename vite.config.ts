@@ -12,9 +12,10 @@ const tsConfig = fs
 const {
   compilerOptions: { paths },
 } = JSON.parse(tsConfig)
+// 格式：{ '@style': '/src/style' }
 const alias = {}
 Object.keys(paths).forEach((key) => {
-  alias[key.replace(/\*$/, '')] = paths[key].pop().replace(/\*$/, '')
+  alias[key.replace(/\*$/, '')] = paths[key].pop().replace(/[\.\*$]/g, '')
 })
 
 // https://vitejs.dev/config/

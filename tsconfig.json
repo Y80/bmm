@@ -12,9 +12,9 @@
     "noUnusedLocals": true,
     "baseUrl": ".",
     "paths": {
-      "@style*": ["/src/style*"],
-      "@components*": ["/src/components*"],
-      "@api*": ["/src/api*"]
+      "@style*": ["./src/style*"],
+      "@components*": ["./src/components*"],
+      "@api*": ["./src/api*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
