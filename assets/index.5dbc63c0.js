@@ -1,1 +1,0 @@
-import{L as a}from"./Layout.9638a5e5.js";import{d as t,c as u,l as e}from"./vendor.d3b36857.js";var d=t({setup(){return()=>u(a,null,{default:()=>[u("p",null,[e("index \u9875\u9762")]),u("p",null,[e("TODO: \u5C55\u793A\u6E38\u5BA2\u53EF\u89C1\u7684\u4E66\u7B7E")])]})}});export{d as default};
