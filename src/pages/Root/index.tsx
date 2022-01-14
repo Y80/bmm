@@ -40,9 +40,16 @@ export default defineComponent({
     }
 
     return () => (
-      <div>
-        <div v-show={state.tokenVerifying}>已检测到 token，正在验证有效性</div>
-        <li>耗时：{state.timer}</li>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <h3 v-show={state.tokenVerifying}>已检测到 token，正在验证有效性</h3>
+        <span>耗时：{state.timer}s</span>
       </div>
     )
   },
