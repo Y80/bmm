@@ -47,8 +47,9 @@ export default defineComponent({
           alignItems: 'center',
           justifyContent: 'center',
         }}
+        v-show={state.tokenVerifying}
       >
-        <h3 v-show={state.tokenVerifying}>已检测到 token，正在验证有效性</h3>
+        <h3>已检测到 token，正在验证有效性</h3>
         <span>耗时：{state.timer}s</span>
       </div>
     )
