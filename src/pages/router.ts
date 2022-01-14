@@ -8,5 +8,6 @@ export default createRouter({
     { path: '/login', component: () => import('./Login') },
     { path: '/index', component: () => import('./Index') },
     { path: '/admin', component: () => import('./Admin') },
+    { path: '/oauth', component: () => import('./OAuth') },
   ],
 })

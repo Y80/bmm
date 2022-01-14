@@ -11,12 +11,14 @@ import BookmarkContainer from '../../components/BookmarkContainer'
 import { IBookmark } from '../../interface'
 import BookmarkAPI from '../../api/bookmark'
 
+const DEFAULT_TAG_ID = 44
+
 export default defineComponent({
   setup() {
     const state = reactive({
       showTagManger: false,
       // 当前选中的标签id
-      currentTagId: undefined as number | undefined,
+      currentTagId: DEFAULT_TAG_ID as number,
       loading: false,
       // 筛选出来的书签数据源
       bookmarks: [] as IBookmark[],
@@ -76,12 +78,7 @@ export default defineComponent({
           onTagClick={(tagId) => (state.currentTagId = tagId)}
         />
         <NSpace style={{ margin: '1em 0' }}>
-          <NButton
-            type="primary"
-            onClick={() => openBookmarkModal()}
-            ghost
-            round
-          >
+          <NButton type="primary" onClick={() => openBookmarkModal()} ghost round>
             {{
               default: () => '添加书签',
               icon: () => (
@@ -92,11 +89,7 @@ export default defineComponent({
             }}
           </NButton>
           {!!state.bookmarks?.length && (
-            <NButton
-              ghost
-              round
-              onClick={() => (state.bookmarkEditable = !state.bookmarkEditable)}
-            >
+            <NButton ghost round onClick={() => (state.bookmarkEditable = !state.bookmarkEditable)}>
               {state.bookmarkEditable ? '关闭编辑' : '开启编辑'}
             </NButton>
           )}
@@ -115,11 +108,7 @@ export default defineComponent({
         <NEmpty
           v-show={!state.bookmarks.length && !state.loading}
           style={{ marginTop: '5em' }}
-          description={
-            state.currentTagId
-              ? '当前标签没有关联书签，快去添加吧 🥳'
-              : '请从上方标签池选择你感兴趣的标签'
-          }
+          description={state.currentTagId ? '当前标签没有关联书签，快去添加吧 🥳' : '请从上方标签池选择你感兴趣的标签'}
         />
 
         <TagManager

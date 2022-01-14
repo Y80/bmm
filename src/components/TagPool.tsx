@@ -11,7 +11,7 @@ export default defineComponent({
     },
     onTagClick: {
       required: true,
-      type: Function as PropType<(tagId?: number) => void>,
+      type: Function as PropType<(tagId: number) => void>,
     },
     onManagerClick: {
       required: true,
@@ -32,12 +32,7 @@ export default defineComponent({
           ),
           header: () => '标签池',
           'header-extra': () => (
-            <NButton
-              bordered={false}
-              size="small"
-              iconPlacement="right"
-              onClick={props.onManagerClick}
-            >
+            <NButton bordered={false} size="small" iconPlacement="right" onClick={props.onManagerClick}>
               {{
                 default: () => '管理标签',
                 icon: () => (
@@ -51,23 +46,17 @@ export default defineComponent({
           default: () => (
             <NSpace>
               {store.state.tags.map((tag) => (
-                <NButton
-                  text
-                  onClick={() =>
-                    props.onTagClick(
-                      props.currentTagId === tag.id ? undefined : tag.id
-                    )
-                  }
-                >
+                <NButton text disabled={props.currentTagId === tag.id} onClick={() => props.onTagClick(tag.id)}>
                   <NTag
                     style={{
                       cursor: 'pointer',
                       background: 'white',
                       border: 'none',
-                      color:
-                        props.currentTagId === tag.id
-                          ? 'var(--primary-color)'
-                          : '#777',
+                      color: props.currentTagId === tag.id ? 'var(--primary-color)' : '#999',
+                    }}
+                    themeOverrides={{
+                      fontSizeMedium: '12px',
+                      heightMedium: '24px',
                     }}
                     round
                   >
