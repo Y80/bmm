@@ -1,4 +1,4 @@
-import { defineComponent, reactive } from 'vue'
+import { defineComponent } from 'vue'
 
 interface Props {
   count: number
