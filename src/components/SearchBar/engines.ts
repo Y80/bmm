@@ -42,4 +42,10 @@ export const SearchEngines: SearchConfigOption[] = [
     icon: 'http://cdn.gu13.cn/favicon/github.com.svg',
     getSearchUrl: (q) => 'https://github.com/search?q=' + encodeURI(q),
   },
+  {
+    value: 'MDN',
+    name: 'MDN Web Docs',
+    icon: 'http://cdn.gu13.cn/favicon/developer.mozilla.org.png',
+    getSearchUrl: (q) => 'https://developer.mozilla.org/zh-CN/search?q=' + encodeURI(q),
+  },
 ]

@@ -1,9 +1,12 @@
-import { NButton, NCard, NConfigProvider, NIcon, NTag, NTooltip } from 'naive-ui'
-import { defineComponent, PropType, ref, watchEffect } from 'vue'
+import { defineComponent, PropType, reactive, watchEffect } from 'vue'
+import { NButton, NCard, NConfigProvider, NIcon, NTooltip } from 'naive-ui'
 import { Edit, TrashOff, Plus } from '@vicons/tabler'
-import { IBookmark } from '../interface'
-import store from '../store'
-import classes from '../style/components/bookmark-card.module.css'
+import { IBookmark } from '../../interface'
+import store from '../../store'
+import classes from '@style/components/bookmark-card.module.css'
+
+const DEFAULT_FAVICON = 'http://cdn.gu13.cn/favicon/default.svg'
+const FAILED_FAVICON = 'http://cdn.gu13.cn/favicon/img_fail.svg'
 
 export default defineComponent({
   props: {
@@ -19,57 +22,44 @@ export default defineComponent({
       required: true,
       type: Function as PropType<(bookmark: IBookmark) => void>,
     },
+    onTagClick: {
+      required: true,
+      type: Function as PropType<(tagId: number) => void>,
+    },
     editable: {
       type: Boolean as PropType<boolean>,
     },
   },
 
   setup(props) {
-    const imgSrc = ref('')
+    const state = reactive({
+      favicon: '',
+    })
 
     watchEffect(() => {
-      imgSrc.value = props.dataSource.favicon || 'http://cdn.gu13.cn/favicon/default.svg'
+      state.favicon = props.dataSource.favicon || DEFAULT_FAVICON
     })
 
     return () => (
-      <NConfigProvider
-        themeOverrides={{
-          Button: { textColorText: '#8f8f8f' },
-          Card: {
-            paddingMedium: store.state.isMobile ? '5px 7px' : '5px 15px',
-          },
-          Tag: {
-            textColor: '#2626268f',
-          },
-        }}
-      >
+      <NConfigProvider themeOverrides={{ Card: { paddingMedium: store.state.isMobile ? '5px 7px' : '5px 15px' } }}>
         <NCard
           class={classes.root}
           v-slots={{
             header: () => (
-              <>
-                <img
-                  style={{ display: 'block', borderRadius: '2px' }}
-                  src={imgSrc.value}
-                  alt="favicon"
-                  width={20}
-                  onError={() => (imgSrc.value = 'http://cdn.gu13.cn/favicon/img_fail.svg')}
-                />
+              <div class={classes.header}>
+                <img src={state.favicon} alt="favicon" onError={() => (state.favicon = FAILED_FAVICON)} />
                 <NTooltip
                   placement="top-start"
                   displayDirective="if"
                   v-slots={{
                     trigger: () => (
-                      <span onClick={() => window.open(props.dataSource.url)}>
-                        {props.dataSource.name}
-                      </span>
+                      <span onClick={() => window.open(props.dataSource.url)}>{props.dataSource.name}</span>
                     ),
                     default: () =>
-                      props.dataSource.name +
-                      (props.dataSource.description && `: ${props.dataSource.description}`),
+                      props.dataSource.name + (props.dataSource.description && `: ${props.dataSource.description}`),
                   }}
                 />
-              </>
+              </div>
             ),
             'header-extra': () =>
               props.editable && (
@@ -102,9 +92,9 @@ export default defineComponent({
             default: () => (
               <div class={classes.tagsBox}>
                 {props.dataSource.tags.map((tag) => (
-                  <NTag size="small" key={tag.id}>
+                  <NButton size="tiny" secondary type="tertiary" key={tag.id} onClick={() => props.onTagClick(tag.id)}>
                     {tag.name}
-                  </NTag>
+                  </NButton>
                 ))}
                 <NButton
                   size="tiny"

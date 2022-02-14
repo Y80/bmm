@@ -1,19 +1,12 @@
 // TODO: 不同搜索引擎的可用性检测
 
-import {
-  NButton,
-  NConfigProvider,
-  NIcon,
-  NInput,
-  NPopselect,
-  NSpace,
-} from 'naive-ui'
+import { NButton, NConfigProvider, NIcon, NInput, NPopselect, NSpace } from 'naive-ui'
 import { Search as SearchIcon } from '@vicons/tabler'
 import { SearchEngines } from './engines'
-import { computed, reactive } from 'vue'
+import { computed, defineComponent, reactive } from 'vue'
 import classes from '@style/components/search-bar.module.css'
 
-export default function SearchBar() {
+export default defineComponent(() => {
   const state = reactive({
     engine: SearchEngines[0].value,
     icon: SearchEngines[0].icon,
@@ -38,15 +31,15 @@ export default function SearchBar() {
     window.open(currentEngineConfig.value.getSearchUrl(state.question))
   }
 
-  return (
+  return () => (
     <NConfigProvider
       themeOverrides={{
         Popover: { padding: '0', space: '12px' },
         InternalSelectMenu: { optionPaddingMedium: '0 36px 0 12px' },
         Input: {
-          border: 'var(--primary-color) 2px solid',
           borderRadius: '99px',
           heightMedium: '1.3em',
+          boxShadowFocus: '0 0 8px var(--primary-color)',
         },
       }}
       class={classes.searchBar}
@@ -55,7 +48,7 @@ export default function SearchBar() {
         clearable
         placeholder="搜点什么？"
         value={state.question}
-        onUpdateValue={(v) => (state.question = v)}
+        onUpdateValue={(v) => Reflect.set(state, 'question', v)}
         onKeyup={(keyEvent) => {
           if (keyEvent.key === 'Enter') {
             handleSearch()
@@ -63,7 +56,7 @@ export default function SearchBar() {
             state.showPopSelect = true
           }
         }}
-        onBlur={() => (state.question = state.question.trim())}
+        onBlur={() => Reflect.set(state, 'question', state.question.trim())}
         v-slots={{
           prefix: () => (
             <NPopselect
@@ -77,10 +70,7 @@ export default function SearchBar() {
                 value: item.value,
                 label: () => (
                   <NSpace align="center">
-                    <img
-                      style={{ display: 'block', width: '24px' }}
-                      src={item.icon}
-                    />
+                    <img style={{ display: 'block', width: '24px' }} src={item.icon} />
                     <span>{item.name}</span>
                   </NSpace>
                 ),
@@ -88,7 +78,7 @@ export default function SearchBar() {
             >
               <img
                 src={state.icon}
-                style={{ display: 'block', width: '24px', borderRadius: '4px' }}
+                style={{ display: 'block', width: '24px', borderRadius: '4px', cursor: 'pointer' }}
               />
             </NPopselect>
           ),
@@ -98,12 +88,13 @@ export default function SearchBar() {
               size="small"
               type="primary"
               style={{ margin: '0 -6px 0 6px' }}
+              themeOverrides={{}}
               round
               onClick={handleSearch}
               v-slots={{
                 default: () => '搜索',
                 icon: () => (
-                  <NIcon style={{ color: 'inherit' }}>
+                  <NIcon color="white">
                     <SearchIcon />
                   </NIcon>
                 ),
@@ -114,4 +105,4 @@ export default function SearchBar() {
       />
     </NConfigProvider>
   )
-}
+})

@@ -3,11 +3,11 @@ import { NButton, NSpace, NEmpty, NIcon } from 'naive-ui'
 import { Plus as IconPlus } from '@vicons/tabler'
 import TagManager from '../../components/TagManager'
 import TagPool from '../../components/TagPool'
-import BookmarkCard from '../../components/BookmarkCard'
-import BookmarkModal from '../../components/BookmarkModal'
+import { BookmarkCard } from '../../components/bookmark'
+import { BookmarkModal } from '../../components/bookmark'
 import SearchBox from '../../components/SearchBar'
 import Layout from '../../components/Layout'
-import BookmarkContainer from '../../components/BookmarkContainer'
+import { BookmarkContainer } from '../../components/bookmark'
 import { IBookmark } from '../../interface'
 import BookmarkAPI from '../../api/bookmark'
 
@@ -102,6 +102,7 @@ export default defineComponent({
               dataSource={bookmark}
               onEdit={openBookmarkModal}
               onRemove={handleRemoveBookmark}
+              onTagClick={(tagId) => Reflect.set(state, 'currentTagId', tagId)}
             />
           ))}
         </BookmarkContainer>

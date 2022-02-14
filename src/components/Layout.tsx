@@ -2,8 +2,6 @@ import { defineComponent } from 'vue'
 import { NLayout, NLayoutContent } from 'naive-ui'
 
 export default defineComponent({
-  name: 'Layout',
-
   setup(props, { slots }) {
     return () => (
       <NLayout>

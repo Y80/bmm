@@ -71,7 +71,7 @@ export default defineComponent({
               </NSpace>
             ),
           }}
-        ></NResult>
+        />
       </div>
     )
   },

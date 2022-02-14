@@ -15,7 +15,7 @@ export default defineComponent({
     },
     onManagerClick: {
       required: true,
-      type: Function as PropType<() => void>,
+      type: Function,
     },
   },
 
@@ -32,7 +32,7 @@ export default defineComponent({
           ),
           header: () => '标签池',
           'header-extra': () => (
-            <NButton bordered={false} size="small" iconPlacement="right" onClick={props.onManagerClick}>
+            <NButton bordered={false} size="small" iconPlacement="right" onClick={() => props.onManagerClick()}>
               {{
                 default: () => '管理标签',
                 icon: () => (

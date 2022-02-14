@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "vue": "^3.1.5",
+    "vue": "^3.2.29",
     "vue-router": "4",
     "vuex": "^4.0.2"
   },

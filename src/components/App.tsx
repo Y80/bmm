@@ -1,12 +1,4 @@
-import {
-  dateZhCN,
-  NConfigProvider,
-  NDialogProvider,
-  NMessageProvider,
-  useDialog,
-  useMessage,
-  zhCN,
-} from 'naive-ui'
+import { dateZhCN, NConfigProvider, NDialogProvider, NMessageProvider, useDialog, useMessage, zhCN } from 'naive-ui'
 import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
 
@@ -45,7 +37,6 @@ export default defineComponent({
           Dialog: {
             borderRadius: '8px',
           },
-          Modal: {},
           Tag: {
             color: '#e8eaed',
             border: 'none',
