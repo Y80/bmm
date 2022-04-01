@@ -48,4 +48,10 @@ export const SearchEngines: SearchConfigOption[] = [
     icon: 'http://cdn.gu13.cn/favicon/developer.mozilla.org.png',
     getSearchUrl: (q) => 'https://developer.mozilla.org/zh-CN/search?q=' + encodeURI(q),
   },
+  {
+    value: '维基百科',
+    name: 'wikipedia',
+    icon: 'http://cdn.gu13.cn/favicon/zh.wikipedia.org.png',
+    getSearchUrl: (q) => 'https://zh.wikipedia.org/w/index.php?search=' + encodeURI(q),
+  },
 ]
