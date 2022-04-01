@@ -13,7 +13,7 @@ export default function Login() {
     const { href: REDIRECT_URI } = new URL(
       import.meta.env.BASE_URL,
       // ! 本地启动时，先去 https://github.com/settings/developers 设置 Authorization callback URL 为 http://localhost
-      import.meta.env.DEV ? 'http://localhost:3000' : location.origin,
+      import.meta.env.DEV ? location.origin : location.origin,
     )
     const CLIENT_ID = 'e2694ff6d268a2124f44'
     const url = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`

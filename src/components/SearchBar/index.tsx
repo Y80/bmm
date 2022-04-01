@@ -40,6 +40,7 @@ export default defineComponent(() => {
           borderRadius: '99px',
           heightMedium: '1.3em',
           boxShadowFocus: '0 0 8px var(--primary-color)',
+          border: '1px solid var(--primary-color)',
         },
       }}
       class={classes.searchBar}

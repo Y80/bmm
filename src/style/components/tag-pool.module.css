@@ -1,11 +1,6 @@
 .root {
   /* box-shadow: 5px 5px 10px #ebebeb, -5px -5px 10px #ffffff; */
-  background-image: linear-gradient(
-    -8deg,
-    #d7c3ff 0%,
-    #efe9ff 50%,
-    #f7ffff 100%
-  );
+  background-image: linear-gradient(320deg, #d7c3ff 00%, #ffd8d8 30%, #efe9ff 50%, #f7ffff 100%);
   border-radius: 18px;
   margin: 1rem 0 3rem;
   padding: 1rem 2.5rem 1.5rem;

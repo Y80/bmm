@@ -3,6 +3,13 @@
   margin: 0 auto 100px;
 }
 
+/* 点击时的特效 */
+/* .searchBar :global .n-input--focus {
+  z-index: 999;
+  outline: rgba(182, 182, 182, 0.205) solid 9999px;
+  margin-bottom: 100vh;
+} */
+
 .searchBar :global .n-input__input {
   display: flex;
   flex-direction: column;
