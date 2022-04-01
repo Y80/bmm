@@ -1,1 +1,0 @@
-import{d as n,c as t,q as d,s as o}from"./vendor.6706f749.js";var u=n({setup(p,{slots:a}){return()=>t(d,null,{default:()=>[t(o,{contentStyle:{padding:"10vh 10px 50px 10px",maxWidth:"1295px",overflow:"hidden",margin:"0 auto"}},{default:()=>{var e;return[(e=a.default)==null?void 0:e.call(a)]}})]})}});export{u as L};
