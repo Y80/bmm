@@ -1,0 +1,12 @@
+.bookmarkContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 30px 50px;
+}
+
+@media screen and (max-width: 768px) {
+  .bookmarkContainer {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px 10px;
+  }
+}

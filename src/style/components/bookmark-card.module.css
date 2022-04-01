@@ -1,0 +1,44 @@
+.root :global .n-button {
+  color: hsl(0, 0%, 74%);
+}
+.root:hover {
+  box-shadow: 0 4px 16px hsl(0, 0%, 89%);
+}
+/* header main 是 flex 中的一个 item，可 grow */
+.root :global .n-card-header__main {
+  /* 下面两种方式可以保证容器不溢出 */
+  /* min-width: 0; */
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+}
+.header span {
+  font-weight: normal;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.header img {
+  display: block;
+  border-radius: 2px;
+  width: 20px;
+  height: 20px;
+}
+
+.tagsBox {
+  overflow-x: scroll;
+  display: flex;
+  column-gap: 5px;
+  font-weight: 400;
+  padding-bottom: 3px;
+  margin-top: 8px;
+}
+.tagsBox::-webkit-scrollbar {
+  height: 3px;
+}

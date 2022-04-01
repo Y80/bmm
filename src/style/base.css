@@ -1,0 +1,25 @@
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 18px;
+  background-color: hsla(0, 0%, 50%, 0.445);
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+:root {
+  --primary-color: hsl(260, 81%, 64%);
+  --secondary-text-color: hsl(210deg 7% 64%);
+}
+
+html {
+  font-size: 14px;
+  background-color: hsl(210, 100%, 98%);
+}
+
+body {
+  overflow-y: auto;
+}
