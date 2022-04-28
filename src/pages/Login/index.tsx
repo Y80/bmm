@@ -1,5 +1,5 @@
 import { NButton, NIcon } from 'naive-ui'
-import classes from '../../style/pages/login.module.css'
+import classes from './styles.module.css'
 import { BrandGithub } from '@vicons/tabler'
 
 // Github OAuth 文档：

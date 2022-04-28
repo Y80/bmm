@@ -22,4 +22,6 @@ html {
 
 body {
   overflow-y: auto;
+  font-family: system-ui, -apple-system, v-sans, BlinkMacSystemFont, 'Segoe UI', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol';
 }

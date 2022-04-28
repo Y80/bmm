@@ -1,9 +1,9 @@
 import { defineComponent, PropType, reactive, watchEffect } from 'vue'
 import { NButton, NCard, NConfigProvider, NIcon, NTooltip } from 'naive-ui'
 import { Edit, TrashOff, Plus } from '@vicons/tabler'
-import { IBookmark } from '../../interface'
-import store from '../../store'
-import classes from '@style/components/bookmark-card.module.css'
+import { IBookmark } from '../../../interface'
+import store from '../../../store'
+import styles from './styles.module.css'
 
 const DEFAULT_FAVICON = 'http://cdn.gu13.cn/favicon/default.svg'
 const FAILED_FAVICON = 'http://cdn.gu13.cn/favicon/img_fail.svg'
@@ -43,10 +43,10 @@ export default defineComponent({
     return () => (
       <NConfigProvider themeOverrides={{ Card: { paddingMedium: store.state.isMobile ? '5px 7px' : '5px 15px' } }}>
         <NCard
-          class={classes.root}
+          class={styles.root}
           v-slots={{
             header: () => (
-              <div class={classes.header}>
+              <div class={styles.header} style={{ marginTop: 8 }}>
                 <img src={state.favicon} alt="favicon" onError={() => (state.favicon = FAILED_FAVICON)} />
                 <NTooltip
                   placement="top-start"
@@ -90,7 +90,7 @@ export default defineComponent({
                 </>
               ),
             default: () => (
-              <div class={classes.tagsBox}>
+              <div class={styles.tagsBox}>
                 {props.dataSource.tags.map((tag) => (
                   <NButton size="tiny" secondary type="tertiary" key={tag.id} onClick={() => props.onTagClick(tag.id)}>
                     {tag.name}

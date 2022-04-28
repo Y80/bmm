@@ -1,8 +1,8 @@
 import { NButton, NIcon, NResult, NSpace } from 'naive-ui'
 import { defineComponent, reactive } from 'vue'
-import classes from '@style/pages/oauth.module.css'
+import styles from './styles.module.css'
 import { BrandGithub } from '@vicons/tabler'
-import router from './router'
+import router from '../router'
 import * as loginApi from '@api/login'
 
 export default defineComponent({
@@ -45,7 +45,7 @@ export default defineComponent({
     authenticate()
 
     return () => (
-      <div class={classes.root}>
+      <div class={styles.root}>
         <NSpace v-show={state.isAuthenticating} justify="center" vertical align="center">
           <NIcon style={{ transform: 'scale(2)' }}>
             <BrandGithub />

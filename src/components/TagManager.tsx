@@ -52,7 +52,7 @@ export default defineComponent({
         render(row) {
           return (
             <NSpace>
-              <NButton tertiary size="small" onClick={() => openModal(row)}>
+              <NButton text type="info" size="small" onClick={() => openModal(row)}>
                 编辑
               </NButton>
               <NPopconfirm
@@ -62,7 +62,7 @@ export default defineComponent({
                 v-slots={{
                   default: () => `确定要删除标签【${row.name}】吗？`,
                   trigger: () => (
-                    <NButton tertiary size="small" type="error">
+                    <NButton text type="error" size="small">
                       删除
                     </NButton>
                   ),
@@ -133,7 +133,7 @@ export default defineComponent({
           <NDrawerContent title="标签管理" closable>
             <NSpace align="center" justify="space-between" style={{ marginBottom: '.5em' }}>
               <span>当前有 {store.state.tags?.length || 0} 个标签</span>
-              <NButton tertiary type="primary" onClick={() => openModal()}>
+              <NButton type="primary" onClick={() => openModal()}>
                 {{
                   default: () => '添加标签',
                   icon: () => (

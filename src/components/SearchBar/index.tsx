@@ -4,7 +4,7 @@ import { NButton, NConfigProvider, NIcon, NInput, NPopselect, NSpace } from 'nai
 import { Search as SearchIcon } from '@vicons/tabler'
 import { SearchEngines } from './engines'
 import { computed, defineComponent, reactive } from 'vue'
-import classes from '@style/components/search-bar.module.css'
+import classes from './styles.module.css'
 
 export default defineComponent(() => {
   const state = reactive({

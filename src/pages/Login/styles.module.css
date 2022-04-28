@@ -33,9 +33,9 @@
 }
 
 @media screen and (max-width: 768px) {
-  .root {
-    /* width: 300px; */
-  }
+  /* .root { */
+  /* width: 300px; */
+  /* } */
 }
 
 .root :global .n-button {

@@ -1,6 +1,6 @@
 import { NSpace, NSpin } from 'naive-ui'
 import { defineComponent } from 'vue'
-import classes from '@style/components/bookmark-container.module.css'
+import styles from './styles.module.css'
 
 export default defineComponent({
   props: { loading: Boolean },
@@ -12,7 +12,7 @@ export default defineComponent({
           <NSpin v-show={props.loading} style={{ minHeight: '100px' }} />
         </NSpace>
 
-        <div v-show={!props.loading} class={classes.bookmarkContainer}>
+        <div v-show={!props.loading} class={styles.bookmarkContainer}>
           {slots.default?.()}
         </div>
       </>
