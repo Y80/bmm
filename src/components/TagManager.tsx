@@ -13,6 +13,7 @@ import {
   FormInst,
   NSpin,
   NIcon,
+  NSwitch,
 } from 'naive-ui'
 import { TableColumn } from 'naive-ui/lib/data-table/src/interface'
 import { defineComponent, reactive, ref, watch } from 'vue'
@@ -45,6 +46,11 @@ export default defineComponent({
       {
         title: '关联书签数量',
         key: 'bookmarkNum',
+      },
+      {
+        title: '是否展示在标签池中',
+        key: 'bookmarkNum',
+        render: (row, idx) => <NSwitch />,
       },
       {
         title: '操作',
@@ -119,7 +125,7 @@ export default defineComponent({
       () => props.show,
       (value) => {
         if (value) refreshTagData()
-      },
+      }
     )
 
     return () => (
@@ -160,7 +166,11 @@ export default defineComponent({
           onClose={() => (modalState.show = false)}
         >
           <NForm labelPlacement="left" ref={formRef} model={modalState.formModel}>
-            <NFormItem label="名称" path="name" rule={{ required: true, message: '请输入标签名称' }}>
+            <NFormItem
+              label="名称"
+              path="name"
+              rule={{ required: true, message: '请输入标签名称' }}
+            >
               <NInput
                 maxlength={15}
                 showCount

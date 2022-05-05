@@ -3,8 +3,25 @@
 import { NButton, NConfigProvider, NIcon, NInput, NPopselect, NSpace } from 'naive-ui'
 import { Search as SearchIcon } from '@vicons/tabler'
 import { SearchEngines } from './engines'
-import { computed, defineComponent, reactive } from 'vue'
+import { computed, defineComponent, onMounted, reactive } from 'vue'
 import classes from './styles.module.css'
+import logo from '../../../public/favicon.png'
+
+function throttle(fn: (...args: any[]) => void, wait: number = 100) {
+  let timerId: any
+  return (...args: any[]) => {
+    if (!timerId) {
+      timerId = setTimeout(() => {
+        fn(...args)
+      }, wait)
+    } else {
+      clearTimeout(timerId)
+      timerId = setTimeout(() => {
+        fn(...args)
+      }, wait)
+    }
+  }
+}
 
 export default defineComponent(() => {
   const state = reactive({
@@ -31,20 +48,39 @@ export default defineComponent(() => {
     window.open(currentEngineConfig.value.getSearchUrl(state.question))
   }
 
+  onMounted(() => {
+    window.addEventListener(
+      'scroll',
+      throttle(() => {
+        const { scrollY } = window
+        if (scrollY > 120 && scrollY < 300) {
+          window.scrollTo({ top: 300, behavior: 'smooth' })
+        }
+      })
+    )
+  })
+
   return () => (
     <NConfigProvider
       themeOverrides={{
         Popover: { padding: '0', space: '12px' },
         InternalSelectMenu: { optionPaddingMedium: '0 36px 0 12px' },
         Input: {
-          borderRadius: '99px',
-          heightMedium: '1.3em',
-          boxShadowFocus: '0 0 8px var(--primary-color)',
-          border: '1px solid var(--primary-color)',
+          borderRadius: '8px',
+          heightMedium: '2rem',
+          fontSizeMedium: '1.25rem',
+          boxShadowFocus: '0 0 0 9999px hsla(0, 0%, 30%, 0.50)',
+          border: 'none',
+          borderFocus: 'none',
+          borderHover: 'none',
         },
       }}
       class={classes.searchBar}
     >
+      <div class={classes.brand}>
+        <img src={logo} width="64" style={{ marginRight: '8px' }} />
+        <h1>BMM</h1>
+      </div>
       <NInput
         clearable
         placeholder="搜点什么？"
@@ -86,7 +122,6 @@ export default defineComponent(() => {
           suffix: () => (
             <NButton
               bordered={false}
-              size="small"
               type="primary"
               style={{ margin: '0 -6px 0 6px' }}
               themeOverrides={{}}

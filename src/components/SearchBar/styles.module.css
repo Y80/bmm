@@ -1,6 +1,8 @@
 .searchBar {
   max-width: 600px;
-  margin: 0 auto 100px;
+  margin: 0 auto;
+  height: 240px;
+  padding-top: 80px;
 }
 
 /* 点击时的特效 */
@@ -19,6 +21,12 @@
 
 @media screen and (max-width: 768px) {
   .searchBar {
-    margin: 0 auto 20px;
+    margin: 20px 10px;
   }
+}
+
+.brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

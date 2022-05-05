@@ -1,3 +1,7 @@
+.root {
+  min-height: calc(100vh - 320px);
+}
+
 .bookmarkContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -9,4 +13,10 @@
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 20px 10px;
   }
+}
+
+.dividerText {
+  color: gray;
+  font-size: 12px;
+  font-weight: normal;
 }

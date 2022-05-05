@@ -6,7 +6,7 @@ import TagPool from '../../components/TagPool'
 import { BookmarkCard } from '../../components/bookmark'
 import { BookmarkModal } from '../../components/bookmark'
 import SearchBox from '../../components/SearchBar'
-import Layout from '../../components/Layout'
+import Layout from '@components/Layout'
 import { BookmarkContainer } from '../../components/bookmark'
 import { IBookmark } from '../../interface'
 import BookmarkAPI from '../../api/bookmark'
@@ -70,65 +70,75 @@ export default defineComponent({
     watch(() => state.currentTagId, getBookmarks)
 
     return () => (
-      <Layout>
+      <>
         <SearchBox />
-        <TagPool
-          currentTagId={state.currentTagId}
-          onManagerClick={() => (state.showTagManger = true)}
-          onTagClick={(tagId) => (state.currentTagId = tagId)}
-        />
-        <NSpace style={{ margin: '1em 0' }}>
-          <NButton type="primary" onClick={() => openBookmarkModal()} ghost round>
-            {{
-              default: () => '添加书签',
-              icon: () => (
-                <NIcon>
-                  <IconPlus />
-                </NIcon>
-              ),
-            }}
-          </NButton>
-          {!!state.bookmarks?.length && (
-            <NButton ghost round onClick={() => (state.bookmarkEditable = !state.bookmarkEditable)}>
-              {state.bookmarkEditable ? '关闭编辑' : '开启编辑'}
+        <Layout>
+          <TagPool
+            currentTagId={state.currentTagId}
+            onManagerClick={() => (state.showTagManger = true)}
+            onTagClick={(tagId) => (state.currentTagId = tagId)}
+          />
+          <NSpace style={{ margin: '1em 0' }}>
+            <NButton type="primary" onClick={() => openBookmarkModal()} ghost round>
+              {{
+                default: () => '添加书签',
+                icon: () => (
+                  <NIcon>
+                    <IconPlus />
+                  </NIcon>
+                ),
+              }}
             </NButton>
-          )}
-        </NSpace>
-        <BookmarkContainer loading={state.loading}>
-          {state.bookmarks.map((bookmark) => (
-            <BookmarkCard
-              editable={state.bookmarkEditable}
-              key={bookmark.id}
-              dataSource={bookmark}
-              onEdit={openBookmarkModal}
-              onRemove={handleRemoveBookmark}
-              onTagClick={(tagId) => Reflect.set(state, 'currentTagId', tagId)}
-            />
-          ))}
-        </BookmarkContainer>
-        <NEmpty
-          v-show={!state.bookmarks.length && !state.loading}
-          style={{ marginTop: '5em' }}
-          description={state.currentTagId ? '当前标签没有关联书签，快去添加吧 🥳' : '请从上方标签池选择你感兴趣的标签'}
-        />
+            {!!state.bookmarks?.length && (
+              <NButton
+                ghost
+                round
+                onClick={() => (state.bookmarkEditable = !state.bookmarkEditable)}
+              >
+                {state.bookmarkEditable ? '关闭编辑' : '开启编辑'}
+              </NButton>
+            )}
+          </NSpace>
+          <BookmarkContainer loading={state.loading}>
+            {state.bookmarks.map((bookmark) => (
+              <BookmarkCard
+                editable={state.bookmarkEditable}
+                key={bookmark.id}
+                dataSource={bookmark}
+                onEdit={openBookmarkModal}
+                onRemove={handleRemoveBookmark}
+                onTagClick={(tagId) => Reflect.set(state, 'currentTagId', tagId)}
+              />
+            ))}
+          </BookmarkContainer>
+          <NEmpty
+            v-show={!state.bookmarks.length && !state.loading}
+            style={{ marginTop: '5em' }}
+            description={
+              state.currentTagId
+                ? '当前标签没有关联书签，快去添加吧 🥳'
+                : '请从上方标签池选择你感兴趣的标签'
+            }
+          />
 
-        <TagManager
-          show={state.showTagManger}
-          onClose={() => {
-            state.showTagManger = false
-            getBookmarks()
-          }}
-        />
-        <BookmarkModal
-          show={bookmarkModal.show}
-          dataSource={bookmarkModal.dataSource}
-          onClose={() => (bookmarkModal.show = false)}
-          onSuccess={({ tagIds = [] }) => {
-            state.currentTagId = tagIds.pop() || state.currentTagId
-            getBookmarks()
-          }}
-        />
-      </Layout>
+          <TagManager
+            show={state.showTagManger}
+            onClose={() => {
+              state.showTagManger = false
+              getBookmarks()
+            }}
+          />
+          <BookmarkModal
+            show={bookmarkModal.show}
+            dataSource={bookmarkModal.dataSource}
+            onClose={() => (bookmarkModal.show = false)}
+            onSuccess={({ tagIds = [] }) => {
+              state.currentTagId = tagIds.pop() || state.currentTagId
+              getBookmarks()
+            }}
+          />
+        </Layout>
+      </>
     )
   },
 })
