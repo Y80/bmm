@@ -46,6 +46,7 @@ export default defineComponent({
             heightSmall: '18px',
             fontSizeSmall: '12px',
           },
+          Popover: { borderRadius: '8px' },
         }}
       >
         <NMessageProvider>

@@ -1,8 +1,7 @@
 import { defineComponent, PropType, reactive, watchEffect } from 'vue'
-import { NButton, NCard, NConfigProvider, NIcon, NTooltip } from 'naive-ui'
+import { NButton, NIcon } from 'naive-ui'
 import { Edit, TrashOff, Plus } from '@vicons/tabler'
 import { IBookmark } from '../../../interface'
-import store from '../../../store'
 import styles from './styles.module.css'
 
 const DEFAULT_FAVICON = 'http://cdn.gu13.cn/favicon/default.svg'
@@ -41,80 +40,62 @@ export default defineComponent({
     })
 
     return () => (
-      <NConfigProvider themeOverrides={{ Card: { paddingMedium: store.state.isMobile ? '5px 7px' : '5px 15px' } }}>
-        <NCard
-          class={styles.root}
-          v-slots={{
-            header: () => (
-              <div class={styles.header} style={{ marginTop: 8 }}>
-                <img src={state.favicon} alt="favicon" onError={() => (state.favicon = FAILED_FAVICON)} />
-                <NTooltip
-                  placement="top-start"
-                  displayDirective="if"
-                  v-slots={{
-                    trigger: () => (
-                      <span onClick={() => window.open(props.dataSource.url)}>{props.dataSource.name}</span>
-                    ),
-                    default: () =>
-                      props.dataSource.name + (props.dataSource.description && `: ${props.dataSource.description}`),
-                  }}
-                />
-              </div>
-            ),
-            'header-extra': () =>
-              props.editable && (
-                <>
-                  <NButton
-                    text
-                    style="margin-right: 5px"
-                    onClick={() => props.onEdit(props.dataSource)}
-                    v-slots={{
-                      icon: () => (
-                        <NIcon>
-                          <Edit />
-                        </NIcon>
-                      ),
-                    }}
-                  />
-                  <NButton
-                    text
-                    onClick={() => props.onRemove(props.dataSource)}
-                    v-slots={{
-                      icon: () => (
-                        <NIcon>
-                          <TrashOff />
-                        </NIcon>
-                      ),
-                    }}
-                  />
-                </>
+      <div class={styles.root}>
+        <div class={styles.header} onClick={() => window.open(props.dataSource.url)}>
+          <img src={state.favicon} alt="favicon" onError={() => (state.favicon = FAILED_FAVICON)} />
+          <h2 class="text-gray-6 hover:text-gray-8">{props.dataSource.name}</h2>
+          <div style={{ width: props.editable ? '42px' : '0px' }} class={styles.buttonGroup}>
+            <NButton
+              text
+              class="text-gray-4"
+              onClick={(e) => {
+                e.stopPropagation()
+                props.onEdit(props.dataSource)
+              }}
+              v-slots={{
+                icon: () => (
+                  <NIcon>
+                    <Edit />
+                  </NIcon>
+                ),
+              }}
+            />
+            <NButton
+              text
+              class="text-gray-4"
+              onClick={(e) => {
+                e.stopPropagation()
+                props.onRemove(props.dataSource)
+              }}
+              v-slots={{
+                icon: () => (
+                  <NIcon>
+                    <TrashOff />
+                  </NIcon>
+                ),
+              }}
+            />
+          </div>
+        </div>
+        <p class="text-gray-4">{props.dataSource.description}</p>
+        <div class={styles.tagsBox}>
+          {props.dataSource.tags.map((tag) => (
+            <NButton size="tiny" secondary type="tertiary" key={tag.id} onClick={() => props.onTagClick(tag.id)}>
+              {tag.name}
+            </NButton>
+          ))}
+          <NButton size="tiny" v-show={!props.dataSource.tags.length} onClick={() => props.onEdit(props.dataSource)}>
+            {{
+              default: () => '添加标签',
+              icon: () => (
+                <NIcon>
+                  <Plus />
+                </NIcon>
               ),
-            default: () => (
-              <div class={styles.tagsBox}>
-                {props.dataSource.tags.map((tag) => (
-                  <NButton size="tiny" secondary type="tertiary" key={tag.id} onClick={() => props.onTagClick(tag.id)}>
-                    {tag.name}
-                  </NButton>
-                ))}
-                <NButton
-                  size="tiny"
-                  v-show={!props.dataSource.tags.length}
-                  onClick={() => props.onEdit(props.dataSource)}
-                >
-                  {{
-                    default: () => '添加标签',
-                    icon: () => (
-                      <NIcon>
-                        <Plus />
-                      </NIcon>
-                    ),
-                  }}
-                </NButton>
-              </div>
-            ),
-          }}
-        />
-      </NConfigProvider>
+            }}
+          </NButton>
+        </div>
+      </div>
     )
   },
 })

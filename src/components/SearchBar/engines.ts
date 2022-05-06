@@ -7,17 +7,18 @@ interface SearchConfigOption {
 
 export const SearchEngines: SearchConfigOption[] = [
   {
-    value: 'baidu',
-    name: '百度搜索',
-    icon: 'http://cdn.gu13.cn/favicon/www.baidu.com.svg',
-    getSearchUrl: (q) => 'https://baidu.com/s?wd=' + encodeURI(q),
-  },
-  {
     value: 'google',
     name: '谷歌搜索',
     icon: 'http://cdn.gu13.cn/favicon/www.google.com.ico',
     getSearchUrl: (q) => 'https://google.com/search?q=' + encodeURI(q),
   },
+  {
+    value: 'baidu',
+    name: '百度搜索',
+    icon: 'http://cdn.gu13.cn/favicon/www.baidu.com.svg',
+    getSearchUrl: (q) => 'https://baidu.com/s?wd=' + encodeURI(q),
+  },
+
   {
     value: 'bing',
     name: '必应搜索',

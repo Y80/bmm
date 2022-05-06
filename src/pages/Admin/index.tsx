@@ -1,6 +1,5 @@
 import { defineComponent, reactive, watch } from 'vue'
-import { NButton, NSpace, NEmpty, NIcon } from 'naive-ui'
-import { Plus as IconPlus } from '@vicons/tabler'
+import { NButton, NSpace, NEmpty } from 'naive-ui'
 import TagManager from '../../components/TagManager'
 import TagPool from '../../components/TagPool'
 import { BookmarkCard } from '../../components/bookmark'
@@ -78,23 +77,14 @@ export default defineComponent({
             onManagerClick={() => (state.showTagManger = true)}
             onTagClick={(tagId) => (state.currentTagId = tagId)}
           />
-          <NSpace style={{ margin: '1em 0' }}>
-            <NButton type="primary" onClick={() => openBookmarkModal()} ghost round>
+          <NSpace style={{ marginBottom: '1.5rem' }}>
+            <NButton onClick={() => openBookmarkModal()} round>
               {{
                 default: () => '添加书签',
-                icon: () => (
-                  <NIcon>
-                    <IconPlus />
-                  </NIcon>
-                ),
               }}
             </NButton>
             {!!state.bookmarks?.length && (
-              <NButton
-                ghost
-                round
-                onClick={() => (state.bookmarkEditable = !state.bookmarkEditable)}
-              >
+              <NButton round onClick={() => (state.bookmarkEditable = !state.bookmarkEditable)}>
                 {state.bookmarkEditable ? '关闭编辑' : '开启编辑'}
               </NButton>
             )}
@@ -115,9 +105,7 @@ export default defineComponent({
             v-show={!state.bookmarks.length && !state.loading}
             style={{ marginTop: '5em' }}
             description={
-              state.currentTagId
-                ? '当前标签没有关联书签，快去添加吧 🥳'
-                : '请从上方标签池选择你感兴趣的标签'
+              state.currentTagId ? '当前标签没有关联书签，快去添加吧 🥳' : '请从上方标签池选择你感兴趣的标签'
             }
           />
 

@@ -1,8 +1,32 @@
 .searchBar {
+  padding-top: 72px;
+  position: relative;
+  z-index: 1;
+}
+
+.searchBar::before,
+.searchBar::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+}
+.searchBar::before {
+  background-image: url('https://api.btstu.cn/sjbz/api.php?lx=fengjing');
+  filter: brightness(0.6);
+}
+.searchBar::after {
+  backdrop-filter: blur(12px);
+}
+
+.searchBar > div {
   max-width: 600px;
   margin: 0 auto;
-  height: 240px;
-  padding-top: 80px;
+  overflow-y: visible;
 }
 
 /* 点击时的特效 */
@@ -21,7 +45,7 @@
 
 @media screen and (max-width: 768px) {
   .searchBar {
-    margin: 20px 10px;
+    padding: 56px 10px 0;
   }
 }
 
@@ -29,4 +53,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 16px;
 }

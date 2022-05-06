@@ -1,0 +1,6 @@
+/* 全局覆盖组件库自带样式 */
+
+.n-base-select-menu-option-wrapper > * {
+  margin: 4px;
+  border-radius: 4px;
+}

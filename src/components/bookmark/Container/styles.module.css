@@ -1,11 +1,18 @@
 .root {
-  min-height: calc(100vh - 320px);
+  /* TOOD */
+  --search-bar-height: 290px;
+  min-height: calc(100vh - var(--search-bar-height));
 }
 
 .bookmarkContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 30px 50px;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 56px 32px;
+}
+
+.dividerText {
+  font-size: 12px;
+  font-weight: normal;
 }
 
 @media screen and (max-width: 768px) {
@@ -13,10 +20,4 @@
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 20px 10px;
   }
-}
-
-.dividerText {
-  color: gray;
-  font-size: 12px;
-  font-weight: normal;
 }

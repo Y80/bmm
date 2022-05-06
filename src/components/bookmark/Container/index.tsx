@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { NSpace, NSpin, NDivider } from 'naive-ui'
 import { defineComponent } from 'vue'
 import styles from './styles.module.css'
@@ -14,7 +15,7 @@ export default defineComponent({
         <div v-show={!props.loading}>
           <div class={styles.bookmarkContainer}>{slots.default?.()}</div>
           <NDivider>
-            <span class={styles.dividerText}>完</span>
+            <span class={classNames(styles.dividerText, 'text-gray-3')}>完</span>
           </NDivider>
         </div>
       </div>
