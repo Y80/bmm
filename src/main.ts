@@ -9,7 +9,3 @@ import './style/base.css'
 import 'uno.css'
 
 createApp(App).use(store).use(router).mount('#app')
-
-window.handleSuccessLogin = () => {
-  alert('window.handleSuccessLogin 占位函数')
-}

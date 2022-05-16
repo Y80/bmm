@@ -5,6 +5,5 @@ declare global {
   interface Window {
     $message: MessageApiInjection
     $dialog: DialogApiInjection
-    handleSuccessLogin(token: string): void
   }
 }
