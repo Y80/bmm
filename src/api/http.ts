@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios'
-import { useRouter } from 'vue-router'
+// useRouter() 只能在 setup() 内使用
+import router from '../router'
 
 const axiosInstance = axios.create({ baseURL: import.meta.env.VITE_SERVER_BASEURL, timeout: 50000 })
 
@@ -21,7 +22,6 @@ axiosInstance.interceptors.response.use(
       const { data } = error.response
       msg = data.message
       if (data.code === 401) {
-        const router = useRouter()
         msg = '身份验证失败，请重新登录'
         router.push('/login')
       }

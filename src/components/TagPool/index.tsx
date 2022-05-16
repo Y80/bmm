@@ -3,6 +3,7 @@ import { defineComponent, PropType } from 'vue'
 import { Tag, ArrowRight } from '@vicons/tabler'
 import store from '../../store'
 import styles from './styles.module.css'
+import classNames from 'classnames'
 
 export default defineComponent({
   props: {
@@ -23,7 +24,7 @@ export default defineComponent({
     store.dispatch('getAllTags')
 
     return () => (
-      <NThing class={styles.root}>
+      <NThing class={classNames(styles.root, 'border', 'border-slate-200')}>
         {{
           avatar: () => (
             <NIcon size="25">

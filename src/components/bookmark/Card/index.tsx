@@ -3,6 +3,7 @@ import { NButton, NIcon } from 'naive-ui'
 import { Edit, TrashOff, Plus } from '@vicons/tabler'
 import { IBookmark } from '../../../interface'
 import styles from './styles.module.css'
+import classNames from 'classnames'
 
 const DEFAULT_FAVICON = 'http://cdn.gu13.cn/favicon/default.svg'
 const FAILED_FAVICON = 'http://cdn.gu13.cn/favicon/img_fail.svg'
@@ -40,7 +41,7 @@ export default defineComponent({
     })
 
     return () => (
-      <div class={styles.root}>
+      <div class={classNames('border-slate-200', 'border', styles.root)}>
         <div class={styles.header} onClick={() => window.open(props.dataSource.url)}>
           <img src={state.favicon} alt="favicon" onError={() => (state.favicon = FAILED_FAVICON)} />
           <h2 class="text-gray-6 hover:text-gray-8">{props.dataSource.name}</h2>

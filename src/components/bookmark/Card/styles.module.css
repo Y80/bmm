@@ -1,7 +1,7 @@
 .root {
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 1px 4px hsl(0, 0%, 89%);
+  /* box-shadow: 0 1px 4px hsl(0, 0%, 89%); */
   padding: 12px 16px;
   /* height: 128px; */
 }
