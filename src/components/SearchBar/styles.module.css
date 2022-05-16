@@ -59,3 +59,12 @@
   align-items: center;
   margin-bottom: 16px;
 }
+
+@media screen and (max-width: 768px) {
+  .brand > h1 {
+    font-size: 3rem;
+    text-shadow: 1px 1px 4px var(--primary-color);
+
+    opacity: 0.85;
+  }
+}

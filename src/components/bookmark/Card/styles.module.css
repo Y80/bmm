@@ -57,3 +57,10 @@
 .tagsBox::-webkit-scrollbar {
   height: 3px;
 }
+
+@media screen and (max-width: 768px) {
+  .root > p {
+    --line-height: 1.25rem;
+    font-size: 0.85rem;
+  }
+}
