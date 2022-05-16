@@ -17,10 +17,14 @@
 }
 .searchBar::before {
   background-image: url('https://api.btstu.cn/sjbz/api.php?lx=fengjing');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   filter: brightness(0.6);
 }
 .searchBar::after {
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .searchBar > div {

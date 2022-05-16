@@ -3,9 +3,9 @@
  * - 仅用作各种状态的跳转
  */
 
-import router from '../router'
 import * as loginApi from '../../api/login'
 import { defineComponent, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   setup() {
@@ -13,6 +13,7 @@ export default defineComponent({
       tokenVerifying: false,
       timer: 0,
     })
+    const router = useRouter()
 
     setInterval(() => {
       state.timer += 1

@@ -2,11 +2,12 @@ import { NButton, NIcon, NResult, NSpace } from 'naive-ui'
 import { defineComponent, reactive } from 'vue'
 import styles from './styles.module.css'
 import { BrandGithub } from '@vicons/tabler'
-import router from '../router'
 import * as loginApi from '@api/login'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   setup() {
+    const router = useRouter()
     const code = router.currentRoute.value.query.code as string
     if (!code) {
       router.push('/login')
