@@ -12,7 +12,7 @@ export default defineConfig({
     vueJsx(),
     Unocss(),
   ],
-  base: '/bmm/',
+  // base: '/bmm/',
   resolve: {
     alias: { ...makeAlias() },
   },
