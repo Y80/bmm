@@ -5,7 +5,7 @@ import TagPool from '../../components/TagPool'
 import { BookmarkCard } from '../../components/bookmark'
 import { BookmarkModal } from '../../components/bookmark'
 import SearchBox from '../../components/SearchBar'
-import Layout from '@components/Layout'
+// import div from '@components/Layout'
 import { BookmarkContainer } from '../../components/bookmark'
 import { IBookmark } from '../../interface'
 import BookmarkAPI from '../../api/bookmark'
@@ -69,9 +69,16 @@ export default defineComponent({
     watch(() => state.currentTagId, getBookmarks)
 
     return () => (
-      <>
+      <div>
         <SearchBox />
-        <Layout>
+        <div
+          style={{
+            padding: '0 10px 50px 10px',
+            maxWidth: '1295px',
+            overflow: 'hidden',
+            margin: '0 auto',
+          }}
+        >
           <TagPool
             currentTagId={state.currentTagId}
             onManagerClick={() => (state.showTagManger = true)}
@@ -125,8 +132,8 @@ export default defineComponent({
               getBookmarks()
             }}
           />
-        </Layout>
-      </>
+        </div>
+      </div>
     )
   },
 })
