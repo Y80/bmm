@@ -1,9 +1,10 @@
-import { defineComponent, PropType, reactive, watchEffect } from 'vue'
+import { defineComponent, PropType, reactive, watch, watchEffect } from 'vue'
 import { NButton, NIcon } from 'naive-ui'
 import { Edit, TrashOff, Plus } from '@vicons/tabler'
 import { IBookmark } from '../../../interface'
 import styles from './styles.module.css'
 import classNames from 'classnames'
+import useImgLoad from '../../../hooks/useImgLoad'
 
 const DEFAULT_FAVICON = 'http://cdn.gu13.cn/favicon/default.svg'
 const FAILED_FAVICON = 'http://cdn.gu13.cn/favicon/img_fail.svg'
@@ -40,10 +41,17 @@ export default defineComponent({
       state.favicon = props.dataSource.favicon || DEFAULT_FAVICON
     })
 
+    const imgState = useImgLoad(state.favicon)
+
     return () => (
       <div class={classNames('border-slate-200', 'border', 'rounded-lg', 'px-5 py-3.5 lt-sm:p-3', 'bg-white')}>
         <div class={classNames(styles.header, 'gap-2')} onClick={() => window.open(props.dataSource.url)}>
-          <img src={state.favicon} class="h-6 rounded" alt="favicon" onError={() => (state.favicon = FAILED_FAVICON)} />
+          <img
+            src={state.favicon}
+            class={classNames('h-6 rounded', 'scale-x-0', 'transition-all', imgState.finished && 'scale-x-100')}
+            alt="favicon"
+            onError={() => (state.favicon = FAILED_FAVICON)}
+          />
           <h2 class="text-gray-6 hover:text-gray-8 text-lg">{props.dataSource.name}</h2>
           <div style={{ width: props.editable ? '42px' : '0px' }} class={styles.buttonGroup}>
             <NButton
