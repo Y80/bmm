@@ -1,6 +1,6 @@
-import { defineComponent, PropType, reactive, watch, watchEffect } from 'vue'
+import { defineComponent, PropType, reactive, watchEffect } from 'vue'
 import { NButton, NIcon } from 'naive-ui'
-import { Edit, TrashOff, Plus } from '@vicons/tabler'
+import { Edit, TrashOff } from '@vicons/tabler'
 import { IBookmark } from '../../../interface'
 import styles from './styles.module.css'
 import classNames from 'classnames'
