@@ -41,10 +41,10 @@ export default defineComponent({
     })
 
     return () => (
-      <div class={classNames('border-slate-200', 'border', styles.root)}>
-        <div class={styles.header} onClick={() => window.open(props.dataSource.url)}>
-          <img src={state.favicon} alt="favicon" onError={() => (state.favicon = FAILED_FAVICON)} />
-          <h2 class="text-gray-6 hover:text-gray-8">{props.dataSource.name}</h2>
+      <div class={classNames('border-slate-200', 'border', 'rounded-lg', 'px-5 py-3.5 lt-sm:p-3', 'bg-white')}>
+        <div class={classNames(styles.header, 'gap-2')} onClick={() => window.open(props.dataSource.url)}>
+          <img src={state.favicon} class="h-6 rounded" alt="favicon" onError={() => (state.favicon = FAILED_FAVICON)} />
+          <h2 class="text-gray-6 hover:text-gray-8 text-lg">{props.dataSource.name}</h2>
           <div style={{ width: props.editable ? '42px' : '0px' }} class={styles.buttonGroup}>
             <NButton
               text
@@ -78,14 +78,20 @@ export default defineComponent({
             />
           </div>
         </div>
-        <p class="text-gray-4">{props.dataSource.description}</p>
-        <div class={styles.tagsBox}>
+        <p class={classNames(styles.description, 'text-gray-4', 'mt-2 mb-0', 'text-base')}>
+          {props.dataSource.description}
+        </p>
+        <div class={classNames(styles.tagsBox, 'gap-2', 'mt-1')}>
           {props.dataSource.tags.map((tag) => (
-            <NButton size="tiny" secondary type="tertiary" key={tag.id} onClick={() => props.onTagClick(tag.id)}>
+            <a
+              key={tag.id}
+              class="cursor-pointer bg-gray-100 text-slate-400 text-sm px-2 py-0.5 rounded whitespace-nowrap"
+              onClick={() => props.onTagClick(tag.id)}
+            >
               {tag.name}
-            </NButton>
+            </a>
           ))}
-          <NButton size="tiny" v-show={!props.dataSource.tags.length} onClick={() => props.onEdit(props.dataSource)}>
+          {/* <NButton size="tiny" v-show={!props.dataSource.tags.length} onClick={() => props.onEdit(props.dataSource)}>
             {{
               default: () => '添加标签',
               icon: () => (
@@ -94,7 +100,7 @@ export default defineComponent({
                 </NIcon>
               ),
             }}
-          </NButton>
+          </NButton> */}
         </div>
       </div>
     )

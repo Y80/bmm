@@ -31,3 +31,9 @@ body {
     'Segoe UI Emoji', 'Segoe UI Symbol';
   overflow-y: auto;
 }
+
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 12px;
+  }
+}

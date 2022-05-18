@@ -5,7 +5,6 @@ import { Search as SearchIcon } from '@vicons/tabler'
 import { SearchEngines } from './engines'
 import { computed, defineComponent, reactive, watch } from 'vue'
 import styles from './styles.module.css'
-import logo from '../../../public/favicon.png'
 import { useScroll } from '@vueuse/core'
 
 export default defineComponent(() => {
@@ -65,7 +64,7 @@ export default defineComponent(() => {
     <div class={styles.searchBar} style={{ height: '320px' }}>
       <div style={{ transform: `scale(${scaleValue.value})` }}>
         <div class={styles.brand}>
-          <img src={logo} width="64" style={{ marginRight: '8px' }} />
+          <img src="./favicon.png" width="64" style={{ marginRight: '8px' }} />
           <h1 style={{ color: 'white' }}>BMM</h1>
         </div>
         <NInput

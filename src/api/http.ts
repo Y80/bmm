@@ -25,6 +25,7 @@ axiosInstance.interceptors.response.use(
         msg = '身份验证失败，请重新登录'
         router.push('/login')
       }
+      window.$message?.error(msg)
       return Promise.reject(data)
     }
     window.$message?.error(msg)
