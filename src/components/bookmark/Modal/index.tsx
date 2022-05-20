@@ -87,9 +87,9 @@ export default defineComponent({
       state.isSubmitting = true
       const payload = {
         ...formModel,
-        favicon: 'https://cdn.jsdelivr.net/gh/y80/img/favicon/_default.svg',
         tagIds: checkedTags.value.map((tag) => tag.id),
       }
+      payload.favicon ||= 'https://cdn.jsdelivr.net/gh/y80/img/favicon/_default.svg'
       const task = state.isEdited
         ? BookmarkAPI.update(Object.assign(payload, { id: props.dataSource?.id! }))
         : BookmarkAPI.add(payload)
@@ -137,7 +137,10 @@ export default defineComponent({
             <IconSetter
               favicon={formModel.favicon}
               bookmarkUrl={formModel.url}
-              setFavicon={(value) => Reflect.set(formModel, 'favicon', value)}
+              setFavicon={(value) => {
+                console.log(value)
+                Reflect.set(formModel, 'favicon', value)
+              }}
             />
           </NFormItem>
           <NFormItem label="描述" path="description">

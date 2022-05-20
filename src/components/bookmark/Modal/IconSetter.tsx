@@ -21,6 +21,7 @@ export default defineComponent({
       required: true,
     },
   },
+
   setup(props) {
     const state = reactive({
       loading: false,
