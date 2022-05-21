@@ -44,11 +44,24 @@ export default defineComponent({
     const imgState = useImgLoad(state.favicon)
 
     return () => (
-      <div class={classNames('border-slate-200', 'border', 'rounded-lg', 'px-5 py-3.5 lt-sm:p-3', 'bg-white')}>
-        <div class={classNames(styles.header, 'gap-2')} onClick={() => window.open(props.dataSource.url)}>
+      <div
+        class={classNames(
+          'border-slate-200',
+          'border',
+          'rounded-lg',
+          'px-5 py-3.5 lt-sm:p-3',
+          'bg-white'
+        )}
+      >
+        <div
+          class={classNames(styles.header, 'gap-2')}
+          onClick={() => window.open(props.dataSource.url)}
+        >
           <img
             src={state.favicon}
-            class={classNames('h-6 rounded', 'scale-x-0', 'transition-all', imgState.finished && 'scale-x-100')}
+            class={classNames('h-6 rounded scale-x-0 transition-all text-gray-6', {
+              'scale-x-100': imgState.finished,
+            })}
             alt="favicon"
             onError={() => (state.favicon = FAILED_FAVICON)}
           />
