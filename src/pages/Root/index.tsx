@@ -20,10 +20,14 @@ export default defineComponent({
     }, 1000)
 
     // GitHub 授权成功后返回的 code
-    const code = router.currentRoute.value.query.code
+    let code = router.currentRoute.value.query.code || ''
+    // if (!code) {
+    //   const matched = location.search.match(/(?<=\?code=)\w{20}/)
+    //   code = matched?.[0] || ''
+    // }
 
     const token = localStorage.getItem('token')
-    if (typeof code === 'string' && code.length === 20) {
+    if (code.length === 20) {
       router.push('/oauth?code=' + code)
       return
     } else if (token) {
