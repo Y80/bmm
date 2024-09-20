@@ -86,7 +86,7 @@ BMM 使用 Github 授权登录，因此需要一个 Github OAuth APP 。
 
 ## 项目部署
 
-### 方式一: git 拉取部署
+### 方式一：git 拉取部署
 
 1. git clone 项目
 
