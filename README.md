@@ -1,3 +1,38 @@
+<div align="center">
+  <img width="120" src="./doc/images/logo.svg">
+  <br>
+  <h3 style="font-size: 30px">BMM</h3>
+  <p>收纳、分享、探索优质网站</p>
+  <i>BMM / bookmark master / 你的专属书签管家</i>
+</div>
+
+## 功能
+
+访客功能：
+- [x] 书签关键词搜索
+- [x] 根据标签筛选书签
+- [x] 标签过滤
+
+后台管理功能：
+
+- [x] Github 授权登录
+- [x] 导入浏览器导出的书签
+- [x] 标签、书签的增删改查
+- [x] 标签间的相互关联
+- [x] 标签和书签的相互关联
+- [x] 标签排序
+- [x] 根据网站 HTML 解析标题、图标、简介
+- [x] AI 解析网站标题、图标、简介、打标签
+- [x] AI 为标签设置关联标签
+- [x] 多个 API 自动获取网站图标
+
+待实现：
+
+- [] 定期检测书签可用性
+- [] 书签置顶
+- [] 稍后阅读系统
+- [] 用户系统
+
 ## 项目部署
 
 ### 方式一: git 拉取部署
@@ -49,21 +84,7 @@
 
 对于会多处使用到的图标，可以将类名单独存放在 `@cfg:IconNames` 中，然后用在标签上即可，如 `<span className={IconNames.EDIT} />`。
 
-## 功能
 
-- 书签关键词搜索
-- 标签过滤、切换「仅展示主标签」
-- 根据标签筛选书签
-- 管理员使用 Github 授权登录
-- 完整的后台管理
-  - [x] 标签、书签的增删改查
-  - [x] 标签间的相互关联
-  - [x] 标签和书签的相互关联
-  - [x] 标签排序
-  - [x] 导入浏览器导出的书签
-- 书签置顶
-- 用户系统
-- 定期检测网站可用性
 
 ## 给网站打标签的基本原则
 
@@ -109,3 +130,22 @@ function coze() {
 `@/lib/ai/servers` 提供了使用 扣子 和 OpenAI 的代码示例可供参考。
 
 
+## 常见问题
+
+<details>
+  <summary>
+    Github 登录失败：redirect_uri 错误
+  </summary>
+
+
+如果在 Github 授权之后出现如下错误提示：
+
+![github-redirect-uri-error](./doc/images/github-redirect-uri-err.png)
+
+这表示授权之后 Github 需要跳转的地址和 [Github:OAuth Apps](https://github.com/settings/developers) 中的配置不一致。
+
+**请保证下方配置的 Authorization callback URL 和你部署的域名一致。**
+
+![](./doc/images/github-oauth-cb-url.png)
+
+</details>
