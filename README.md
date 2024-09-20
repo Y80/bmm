@@ -35,7 +35,7 @@
 
 ## 目录
 
-- [前置](xxx) 
+- [准备工作](xxx) 
 - [项目部署](xxx)
 
 ## 准备工作
@@ -67,21 +67,17 @@ BMM 使用 Github 授权登录，因此需要一个 Github OAuth APP 。
 
 2. 依次填写表单内容
 
-![](./doc/images/github-oauth-new.png)
+<img width="480" src="./doc/images/github-oauth-new.png">
 
-其中最重要的是 `Authorization callback URL` 这一项，它将是你的项目最终部署的线上地址！如果项目部署上线后，登录失败，记得来检查它的配置！
+其中最重要的是 `Authorization callback URL` 这一项，请保证它和你的项目最终部署的线上地址一致！
 
 3. 创建一个 Client secret
 
-![](./doc/images/github-oauth-new-secret.png)
+<img width="480" src="./doc/images/github-oauth-new-secret.png">
 
-4. 妥善保存 Client ID 和 Client Secret！
 </details>
 
-<br>
-
 **Github OAuth APP 的 Client ID 和 Client Secret 将分别用作环境变量 `AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`，填写的 Authorization callback URL 将用作环境变量 `AUTH_URL`。**
-
 
 ## 项目部署
 
@@ -99,26 +95,28 @@ git clone https://github.com/Y80/bmm.git
 
 4. `pnpm dev` 启动项目
 
-对于开发环境，`AUTH_URL` 可以被自动侦测到，`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET` 有一对默认的配置。
+对于开发环境，`AUTH_URL` 可以被自动侦测到，`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET` 也有一对可用的配置，因此无需配置。
 
-如果需要通过 `pnpm build` 构建生产产物，需要明确配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。（建议放在 **.env.production** 文件中）
-
+通过 `pnpm build` 构建生产产物时，需要明确配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。（建议放在 **.env.production** 文件中）
 
 
 ### 方式二：部署至 Vercel
 
 1. fork 当前 Github 仓库
 
-2. 登入 <a href="https://vercel.com" target="_blank">Vercel</a>，新建项目，将 fork 的项目关联至项目
+2. 登入 <a href="https://vercel.com" target="_blank">Vercel</a>，新建项目，并关联 fork 的项目
 
 3. 在当前项目下的 Environment Variables 页面中配置环境变量：
 `DB_CONNECTION_URL`、`AUTH_URL`、`AUTH_GITHUB_SECRET` 和 `AUTH_GITHUB_ID`。
 
-![vercel-settings-env](./doc/images/vercel-settings-env.png)
+<details>
+  <summary>查看截图</summary>
+  
+  ![vercel-settings-env](./doc/images/vercel-settings-env.png)
+</details>
+
 
 4. 在 Deployments 面板再重新部署一下即可
-
-提示：在 Vercel 创建项目后将会被分配一个域名，如 `https://bmm.vercel.app`，如果 Github OAuth APP 中填写的 Authorization callback URL 和该域名一致，并且最终也通过这个域名访问 BMM，那么也可以不填写 `AUTH_URL`。
 
 ### 方式三：使用 Docker 部署
 
@@ -157,10 +155,9 @@ function coze() {
 }
 ```
 
-`@/lib/ai/servers` 提供了使用 **扣子** 和 **OpenAI** 的代码示例可供参考。
+`src/lib/ai/servers.ts` 文件提供了使用 **扣子** 和 **OpenAI** 的代码示例可供参考。
 
-配置环境变量注意敏感数据泄露！，
-
+> 配置环境变量注意敏感数据泄露！更多内容可参考 [.env](./.env)
 
 ## 常见问题
 
@@ -168,7 +165,6 @@ function coze() {
   <summary>
     Github 登录失败：redirect_uri 错误
   </summary>
-
 
 如果在 Github 授权之后出现如下错误提示：
 
