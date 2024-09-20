@@ -6,7 +6,7 @@
   <i>BMM / bookmark master / 你的专属书签管家</i>
 </div>
 
-## 功能
+## ✨ 功能
 
 - [x] 书签关键词搜索
 - [x] 根据标签筛选书签
@@ -33,7 +33,7 @@
 - [ ] 稍后阅读系统
 - [ ] 用户系统
 
-## 目录
+## 🗂️ 目录
 
 - [准备工作](#准备工作) 
 - [项目部署](#项目部署)
@@ -43,9 +43,9 @@
 - [接入 AI 服务](#接入-ai-服务)
 - [常见问题](#常见问题)
 
-## 准备工作
+## 🍽️ 准备内容
 
-主要需要准备的内容包括数据库和 Github OAuth APP 配置。下面分别介绍。
+需要准备的内容包括数据库和 Github OAuth APP，下面分别介绍。
 
 ### 数据库
 
@@ -84,7 +84,7 @@ BMM 使用 Github 授权登录，因此需要一个 Github OAuth APP 。
 
 **Github OAuth APP 的 Client ID 和 Client Secret 将分别用作环境变量 `AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`，填写的 Authorization callback URL 将用作环境变量 `AUTH_URL`。**
 
-## 项目部署
+## 🚀 项目部署
 
 ### 方式一：git 拉取部署
 
@@ -127,7 +127,7 @@ git clone https://github.com/Y80/bmm.git
 
 使用这种方式部署时，必须提供 Github OAuth 密钥对，而对于 PostgreSQL 数据库连接 URL 有没有都行。
 
-## 接入 AI 服务
+## 🤖 接入 AI 服务
 
 本项目通过 AI 实现了 **分析总结网站、给网站打标签、分析相关联的标签** 的功能，可大大减少维护书签数据的工作量。
 
@@ -164,7 +164,7 @@ function coze() {
 
 > 配置环境变量注意敏感数据泄露！更多内容可参考 [.env](./.env)
 
-## 常见问题
+## 🤔 常见问题
 
 <details>
   <summary>
