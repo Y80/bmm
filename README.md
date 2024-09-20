@@ -37,7 +37,10 @@
 
 - [准备工作](#准备工作) 
 - [项目部署](#项目部署)
-- [接入 AI 服务](#接入 AI 服务)
+  - [git 拉取部署](#方式一:-git-拉取部署)
+  - [部署至 Vercel](#方式二：部署至-vercel)
+  - [使用 Docker 部署](#方式三：使用-docker-部署)
+- [接入 AI 服务](#接入-ai-服务)
 - [常见问题](#常见问题)
 
 ## 准备工作
@@ -176,7 +179,7 @@ function coze() {
 
 **请保证下方配置的 Authorization callback URL 和你部署的域名一致。**
 
-![](./doc/images/github-oauth-cb-url.png)
+![github-oauth-cb-url](./doc/images/github-oauth-cb-url.png)
 
 </details>
 
