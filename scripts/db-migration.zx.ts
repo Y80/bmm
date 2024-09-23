@@ -26,7 +26,7 @@ async function main() {
       echo(chunk)
     }
     echo(chalk.green('✅ 数据库迁移成功'))
-    echo('\n💡 建议通过 git 提交生成的快照，以便后续数据库迁移\n')
+    !process.env.VERCEL && echo('\n💡 建议通过 git 提交生成的快照，以便后续数据库迁移\n')
   }
   exitWithDbEnd()
 }
