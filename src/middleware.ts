@@ -11,6 +11,9 @@ const { auth } = NextAuth(authConfig)
 export default auth((req) => {
   const method = req.method as any
   const pathname = req.nextUrl.pathname
+  if (pathname === '/favicon.ico') {
+    return NextResponse.rewrite(req.nextUrl.origin + '/logo.svg')
+  }
   // 默认为 true，仅对于少数请求免除验证
   let checkAdmin = true
   if (method === Method.GET) {
