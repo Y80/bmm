@@ -4,29 +4,26 @@
 import NextAuth from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authConfig } from './lib/auth/config'
-import { Method, StatusCode } from './lib/http'
+import { StatusCode } from './lib/http'
 
 const { auth } = NextAuth(authConfig)
 
 export default auth((req) => {
-  const method = req.method as any
+  // const method = req.method
   const pathname = req.nextUrl.pathname
   if (pathname === '/favicon.ico') {
     return NextResponse.rewrite(req.nextUrl.origin + '/logo.svg')
   }
   // 默认为 true，仅对于少数请求免除验证
   let checkAdmin = true
-  if (method === Method.GET) {
-    if (
-      pathname.endsWith('.svg') ||
-      pathname.endsWith('.png') ||
-      pathname === '/' ||
-      pathname.startsWith('/api/auth') ||
-      pathname.startsWith('/recent') ||
-      pathname.startsWith('/search')
-    ) {
-      checkAdmin = false
-    }
+  const prefixes = ['/_next', '/api/auth']
+  const affixes = ['.svg', '.png']
+  if (
+    affixes.some((p) => pathname.endsWith(p)) ||
+    prefixes.some((p) => pathname.startsWith(p)) ||
+    ['/', '/recent', '/search', '/login'].includes(pathname)
+  ) {
+    checkAdmin = false
   }
   if (checkAdmin) {
     if (!req.auth?.user) {
