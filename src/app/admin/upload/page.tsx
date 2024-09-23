@@ -71,7 +71,8 @@ export default function Page() {
         const node: CategoryNode = {
           id: window.crypto.randomUUID(),
           type: 'category',
-          name: h3.innerText,
+          // 目录名称最终会作为标签成为 url 中的一部分，因此不能带 / 字符
+          name: h3.innerText.replaceAll('/', '-'),
           nodes: [],
         }
         const nodes = traverseDl(dl, parentCates.concat(pick(node, 'id', 'name')))
