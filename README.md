@@ -1,87 +1,141 @@
-## 项目部署
+<div align="center">
+  <img width="120" src="./doc/images/logo.svg">
+  <br>
+  <h3 style="font-size: 30px">BMM</h3>
+  <p>收纳、分享、探索优质网站</p>
+  <i>BMM / bookmark master / 你的专属书签管家</i>
+</div>
 
-### 方式一: git 拉取部署
+## ✨ 功能
+
+- [x] 书签关键词搜索
+- [x] 根据标签筛选书签
+- [x] 标签过滤
+- [x] 首页样式兼容移动端、桌面端
+
+后台管理功能：
+
+- [x] Github 授权登录
+- [x] 导入浏览器导出的书签
+- [x] 标签、书签的增删改查
+- [x] 标签间的相互关联
+- [x] 标签和书签的相互关联
+- [x] 标签排序
+- [x] 爬取网站标题、图标、简介
+- [x] AI 解析网站标题、图标、简介、关联标签
+- [x] AI 为标签关联标签
+- [x] 多个 API 自动获取网站图标
+
+待实现：
+
+- [ ] 定期检测书签可用性
+- [ ] 书签置顶
+- [ ] 稍后阅读系统
+- [ ] 用户系统
+
+## 🗂️ 目录
+
+- [准备工作](#%EF%B8%8F-准备内容) 
+- [项目部署](#-项目部署)
+  - [方式一：git 拉取部署](#方式一git-拉取部署)
+  - [方式二：部署至 Vercel](#方式二部署至-vercel)
+  - [方式三：使用 Docker 部署](#方式三使用-docker-部署)
+- [接入 AI 服务](#-接入-ai-服务)
+- [常见问题](#-常见问题)
+
+## 🍽️ 准备内容
+
+需要准备的内容包括数据库和 Github OAuth APP，下面分别介绍。
+
+### 数据库
+
+BMM 通过 `drizzle-orm` 将数据存在 PostgreSQL 数据库中。因此需要准备一个 PostgreSQL 的数据库连接 URL。
+
+如果使用 Docker 部署当前项目，数据库连接 URL 是可选的。如果没有提供，将会在内部启用一个 PostgreSQL 服务。
+
+如果你已经有数据库服务，创建一个新的数据库然后拿到连接 URL 即可。
+
+如果没有，这里有一些获取免费 PostgreSQL 云服务的方式：[查看](https://juejin.cn/post/7411047482651951119)。
+
+**数据库连接 URL 将用于项目中的环境变量 `DB_CONNECTION_URL`。**
+
+### Github OAuth App
+
+BMM 使用 Github 授权登录，因此需要一个 Github OAuth APP 。
+
+<details>
+  <summary>
+  查看创建步骤
+  </summary>
+
+1. 访问 https://github.com/settings/applications/new
+
+2. 依次填写表单内容
+
+<img width="480" src="./doc/images/github-oauth-new.png">
+
+其中最重要的是 `Authorization callback URL` 这一项，请保证它和你的项目最终部署的线上地址一致！
+
+3. 创建一个 Client secret
+
+<img width="480" src="./doc/images/github-oauth-new-secret.png">
+
+</details>
+
+**Github OAuth APP 的 Client ID 和 Client Secret 将分别用作环境变量 `AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`，填写的 Authorization callback URL 将用作环境变量 `AUTH_URL`。**
+
+## 🚀 项目部署
+
+### 方式一：git 拉取部署
 
 1. git clone 项目
 
-2. `pnpm install` 安装依赖
+```sh
+git clone https://github.com/Y80/bmm.git
+```
 
-3. .env 配置环境变量 `DB_CONNECTION_URL`
+2. **.env** 文件中配置 `DB_CONNECTION_URL`
 
-4. 执行 `pnpm db:migrate`，创建数据表
+3. `pnpm install` 安装依赖
 
-如果数据库链接异常，这一步会执行失败。
+4. `pnpm dev` 启动项目
 
-5. `pnpm dev` 启动项目
+对于开发环境，`AUTH_URL` 可以被自动侦测到，`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET` 也有一对可用的配置，因此无需配置。
+
+通过 `pnpm build` 构建生产产物时，需要明确配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。（建议放在 **.env.production** 文件中）
+
 
 ### 方式二：部署至 Vercel
 
-准备内容：PostgreSQL 数据库连接 URL、Github OAuth 密钥对
-
 1. fork 当前 Github 仓库
 
-2. 登入 [Vercel](https://vercel.com/)，将 Github 仓库访问权限授权给 Vercel
+2. 登入 <a href="https://vercel.com" target="_blank">Vercel</a>，新建项目，并关联 fork 的项目
 
-3. 在当前项目下的 Settings/Environment Variables 中配置：
-  - DB_CONNECTION_URL
-  - AUTH_GITHUB_SECRET
-  - AUTH_GITHUB_ID
+3. 在当前项目下的 Environment Variables 页面中配置环境变量：
+`DB_CONNECTION_URL`、`AUTH_URL`、`AUTH_GITHUB_SECRET` 和 `AUTH_GITHUB_ID`。
+
+<details>
+  <summary>查看截图</summary>
+  
+  ![vercel-settings-env](./doc/images/vercel-settings-env.png)
+</details>
+
+
+4. 在 Deployments 面板再重新部署一下即可
 
 ### 方式三：使用 Docker 部署
 
 使用这种方式部署时，必须提供 Github OAuth 密钥对，而对于 PostgreSQL 数据库连接 URL 有没有都行。
 
-**因为如果不提供数据库连接 URL，将会使用 Docker 自行部署一个 PostgreSQL 数据库服务。**
-
-
-## 图标
-
-当前项目安装了两个图标集合：
-
-- `Table Icons` 对应的 npm 包：@iconify-json/tabler
-- `Material Design Icons` 对应的 npm 包：@iconify-json/mdi
-
-搭配 `@iconify/tailwind` Tailwind 插件，通过类名即可直接引用图标，例如：
-
-```html
-<span class="icon-[tabler--check]" />
-```
-
-对于会多处使用到的图标，可以将类名单独存放在 `@cfg:IconNames` 中，然后用在标签上即可，如 `<span className={IconNames.EDIT} />`。
-
-## 功能
-
-- 书签关键词搜索
-- 标签过滤、切换「仅展示主标签」
-- 根据标签筛选书签
-- 管理员使用 Github 授权登录
-- 完整的后台管理
-  - [x] 标签、书签的增删改查
-  - [x] 标签间的相互关联
-  - [x] 标签和书签的相互关联
-  - [x] 标签排序
-  - [x] 导入浏览器导出的书签
-- 书签置顶
-- 用户系统
-- 定期检测网站可用性
-
-## 给网站打标签的基本原则
-
-- 根据网站的属性、类型打标签，而非网站的功能点。因为网站的功能点可能会很多、很碎，没必要为每个功能点都打上标签。
-
-- 标签允许包含广义含义的标签，如「云服务」是囊括了「云函数」的。但是如果一个网站主要内容是提供「云函数」服务，就无须再为它打上「云服务」标签。只需要让「云服务」和「云函数」标签互为关联标签即可。
-
-## 接入 AI 服务
+## 🤖 接入 AI 服务
 
 本项目通过 AI 实现了 **分析总结网站、给网站打标签、分析相关联的标签** 的功能，可大大减少维护书签数据的工作量。
 
-由于目前 AI 服务商众多，且不同服务商提供的 API 格式并不相同，因此这里会有轻微的编码工作。
+由于目前 AI 服务商众多，且不同服务商提供的 API 并不相同，因此这里会有轻微的编码工作。
 
 下面是使用 [字节跳动-扣子](https://www.coze.cn/docs/developer_guides/coze_api_overview) AI 能力的示例：
 
 ```ts
-// @/lib/ai/servers
-
 export const getServer = coze
 
 function coze() {
@@ -106,6 +160,35 @@ function coze() {
 }
 ```
 
-`@/lib/ai/servers` 提供了使用 扣子 和 OpenAI 的代码示例可供参考。
+`src/lib/ai/servers.ts` 文件提供了使用 **扣子** 和 **OpenAI** 的代码示例可供参考。
 
+> 配置环境变量注意敏感数据泄露！更多内容可参考 [.env](./.env)
 
+## 🤔 常见问题
+
+<details>
+  <summary>
+    Github 登录失败：redirect_uri 错误
+  </summary>
+
+如果在 Github 授权之后出现如下错误提示：
+
+![github-redirect-uri-error](./doc/images/github-redirect-uri-err.png)
+
+这表示授权之后 Github 需要跳转的地址和 [Github:OAuth Apps](https://github.com/settings/developers) 中的配置不一致。
+
+**请保证下方配置的 Authorization callback URL 和你部署的域名一致。**
+
+![github-oauth-cb-url](./doc/images/github-oauth-cb-url.png)
+
+</details>
+
+<br>
+
+<details>
+  <summary>
+    支持其他数据库吗？
+  </summary>
+
+  由于 `drizzle-orm` 除了支持 PostgreSQL，还支持 MySQL 和 Sqlite，因此对项目做少许编码改造，即可切换数据库。
+</details>
