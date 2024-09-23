@@ -1,7 +1,6 @@
 // https://nextjs.org/docs/app/building-your-application/routing/middleware
 // https://authjs.dev/getting-started/session-management/protecting#nextjs-middleware
 
-import { ApiRoutes } from '@cfg'
 import NextAuth from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authConfig } from './lib/auth/config'
@@ -11,18 +10,23 @@ const { auth } = NextAuth(authConfig)
 
 export default auth((req) => {
   const method = req.method as any
-  const pathname = req.nextUrl.pathname as any
-  let checkAdmin = false
-  if (
-    [ApiRoutes.Public.TAG, ApiRoutes.Public.BOOKMARK].includes(pathname) &&
-    [Method.POST, Method.PATCH, Method.DELETE].includes(method)
-  ) {
-    checkAdmin = true
-  } else if (
-    [ApiRoutes.Ai.ANALYZE_WEBSITE, ApiRoutes.Ai.ANALYZE_RELATED_TAGS].includes(pathname) &&
-    Method.POST === method
-  ) {
-    checkAdmin = true
+  const pathname = req.nextUrl.pathname
+  if (pathname === '/favicon.ico') {
+    return NextResponse.rewrite(req.nextUrl.origin + '/logo.svg')
+  }
+  // 默认为 true，仅对于少数请求免除验证
+  let checkAdmin = true
+  if (method === Method.GET) {
+    if (
+      pathname.endsWith('.svg') ||
+      pathname.endsWith('.png') ||
+      pathname === '/' ||
+      pathname.startsWith('/api/auth') ||
+      pathname.startsWith('/recent') ||
+      pathname.startsWith('/search')
+    ) {
+      checkAdmin = false
+    }
   }
   if (checkAdmin) {
     if (!req.auth?.user) {
