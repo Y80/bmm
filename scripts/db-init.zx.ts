@@ -23,7 +23,7 @@ async function main() {
     if (res.length === 1) {
       echo(prefix + '已经初始化，跳过本次任务\n')
     } else {
-      echo('开始数据库初始化')
+      echo(prefix + '开始数据库初始化')
       await $`pnpm drizzle-kit generate`
       echo(prefix + chalk.green('✅ 已生成本地快照'))
       await $`pnpm drizzle-kit migrate`
@@ -32,8 +32,10 @@ async function main() {
     }
     await pgSql.end()
     process.exit(0)
-  } catch {
+  } catch (err) {
+    console.error(err)
     echo(chalk.red(prefix + '数据库初始化失败'))
+    await pgSql.end()
     process.exit(1)
   }
 }

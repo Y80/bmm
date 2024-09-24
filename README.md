@@ -37,7 +37,7 @@
 
 - [准备工作](#%EF%B8%8F-准备内容) 
 - [项目部署](#-项目部署)
-  - [方式一：git 拉取部署](#方式一git-拉取部署)
+  - [方式一：git 拉取部署](#方式一常规部署)
   - [方式二：部署至 Vercel](#方式二部署至-vercel)
   - [方式三：使用 Docker 部署](#方式三使用-docker-部署)
 - [接入 AI 服务](#-接入-ai-服务)
@@ -86,7 +86,7 @@ BMM 使用 Github 授权登录，因此需要一个 Github OAuth APP 。
 
 ## 🚀 项目部署
 
-### 方式一：git 拉取部署
+### 方式一：常规部署
 
 1. git clone 项目
 
@@ -102,8 +102,7 @@ git clone https://github.com/Y80/bmm.git
 
 对于开发环境，`AUTH_URL` 可以被自动侦测到，`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET` 也有一对可用的配置，因此无需配置。
 
-通过 `pnpm build` 构建生产产物时，需要明确配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。（建议放在 **.env.production** 文件中）
-
+通过 `pnpm build` 构建生产产物时，需要明确配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。
 
 ### 方式二：部署至 Vercel
 
@@ -125,7 +124,21 @@ git clone https://github.com/Y80/bmm.git
 
 ### 方式三：使用 Docker 部署
 
-使用这种方式部署时，必须提供 Github OAuth 密钥对，而对于 PostgreSQL 数据库连接 URL 有没有都行。
+1. git clone 项目
+
+```sh
+git clone https://github.com/Y80/bmm.git
+```
+
+2. **.env** 文件中配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。
+
+3. 使用 docker compose 运行服务
+
+```sh
+docker compose up -d
+```
+
+数据库文件已创建 docker volumes，名称为 **bmm_postgres_data**。
 
 ## 🤖 接入 AI 服务
 
