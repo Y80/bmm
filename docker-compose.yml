@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: bmm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  # nextjs:
+  #   environment:
+  #     DB_CONNECTION_URL: 'postgresql://postgres:postgres@postgres:5432/bmm'
+  #   build:
+  #     context: .
+  #   image: bmm
+  #   working_dir: /app
+  #   volumes:
+  #     - .:/app
+
+  #   command: sh -c "until pg_isready -h postgres -U postgres; do echo waiting for postgres; sleep 2; pnpm build && pnpm run start"
+  #   ports:
+  #     - '9090:9090'
+  #   depends_on:
+  #     - postgres
+
+volumes:
+  postgres_data:
