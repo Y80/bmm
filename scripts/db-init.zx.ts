@@ -32,7 +32,8 @@ async function main() {
     }
     await pgSql.end()
     process.exit(0)
-  } catch {
+  } catch (err) {
+    console.error(err)
     echo(chalk.red(prefix + '数据库初始化失败'))
     process.exit(1)
   }
