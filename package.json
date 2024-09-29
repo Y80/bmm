@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx scripts/db-init.zx && next dev",
     "build": "next build",
-    "start": "tsx scripts/db-init.zx -P && next start --port 9090",
+    "start": "tsx scripts/db-init.zx -P && next start",
     "lint": "next lint",
     "test": "vitest",
     "dk": "drizzle-kit",

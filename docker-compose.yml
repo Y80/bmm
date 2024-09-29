@@ -4,22 +4,30 @@ services:
     environment:
       POSTGRES_DB: bmm
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: 666888
     volumes:
-      - bmm_data/db:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
+      - postgres_data:/var/lib/postgresql/data
+    # 如果需要外部链接当前数据库，可以放开这里的端口映射
+    # ports:
+    # - '5432:5432'
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'bmm']
+      interval: 3s
+      timeout: 3s
+      retries: 3
 
   nextjs:
-    build: .
+    build:
+      context: .
+      args:
+        DB_CONNECTION_URL: postgresql://postgres:666888@postgres:5432/bmm
     working_dir: /app
-    volumes:
-      - .:/app
     command: sh -c "pnpm run start"
     ports:
-      - '9000:9090'
+      - '3000:3000'
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
 volumes:
-  bmm_data:
+  postgres_data:

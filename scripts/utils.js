@@ -55,6 +55,12 @@ export function checkEnvs() {
     'AUTH_SECRET',
   ]
   const unsetEnv = requiredVariables.filter((variable) => !process.env[variable])
+  if (!process.env.AUTH_URL && process.env.VERCEL_URL) {
+    process.env.AUTH_URL = process.env.VERCEL_URL
+  }
+  if (process.env.NODE_ENV === 'production' && !process.env.AUTH_URL) {
+    unsetEnv.push('AUTH_URL')
+  }
   if (unsetEnv.length) {
     zx.echo(zx.chalk.red('环境变量缺失: ' + unsetEnv.join(', ') + '\n'))
     process.exit(1)
