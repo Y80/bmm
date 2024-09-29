@@ -81,14 +81,18 @@ export default function UploadList(props: Props) {
           (name) => tags.find((t) => t.name === name)!.id
         ),
       }
-      const [err] = await to(insertBookmark(entity))
+      const [err, data] = await to(insertBookmark(entity))
       setState((state) => {
         return { ...state, finishedNum: (state.finishedNum || 0) + 1 }
       })
       setBookmarks((bookmarks) => {
         const b = bookmarks.find((_bookmark) => _bookmark.id === bookmark.id)!
-        b.state = err ? UploadState.FAILED : UploadState.SUCCESS
-        b.errorMsg = err?.message || ''
+        if (err || data.errorMsg) {
+          b.state = UploadState.FAILED
+          b.errorMsg = data?.errorMsg || err?.message || ''
+        } else {
+          b.state = UploadState.SUCCESS
+        }
         return [...bookmarks]
       })
     })

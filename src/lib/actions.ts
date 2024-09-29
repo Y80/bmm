@@ -6,6 +6,7 @@ import PublicBookmarkController, {
 } from '@/controllers/PublicBookmark.controller'
 import PublicTagController from '@/controllers/PublicTag.controller'
 import { zodSchema } from '@/db/zod'
+import { to } from '@/utils'
 
 const getAllPublicTags = PublicTagController.getAll
 
@@ -18,21 +19,19 @@ export const tryCreateTags = PublicTagController.tryCreateTags
 export async function insertBookmark(payload: InsertPublicBookmark) {
   const parseRes = zodSchema.publicBookmarks.insert().safeParse(payload)
   if (parseRes.error) {
-    throw new Error(parseRes.error.toString())
+    return { errorMsg: parseRes.error.toString() }
   }
-  try {
-    await PublicBookmarkController.insert(parseRes.data)
-  } catch (error: any) {
-    if (error instanceof Error) {
-      if (error.message.includes('duplicate key value violates unique constraint')) {
-        if (error.message.includes('publicBookmarks_name_unique')) {
-          throw new Error('创建失败：已存在相同名称的书签')
-        }
-        if (error.message.includes('publicBookmarks_url_unique')) {
-          throw new Error('创建失败：已存在相同 URL 的书签')
-        }
-      }
+  const [error] = await to(PublicBookmarkController.insert(parseRes.data))
+  if (!error) {
+    return {}
+  }
+  let errorMsg = ''
+  if (error.message.includes('duplicate key value violates unique constraint')) {
+    if (error.message.includes('publicBookmarks_name_unique')) {
+      errorMsg = '创建失败：已存在相同名称的书签'
+    } else if (error.message.includes('publicBookmarks_url_unique')) {
+      errorMsg = '创建失败：已存在相同 URL 的书签'
     }
-    throw error
   }
+  return { errorMsg: errorMsg || error?.message || '未知错误' }
 }
