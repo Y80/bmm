@@ -4,8 +4,8 @@ import { BorderBeam } from '@/components/magicui/border-beam'
 import NumberTicker from '@/components/magicui/number-ticker'
 import ReButton from '@/components/re-export/ReButton'
 import ReTooltip from '@/components/re-export/ReTooltip'
-import { ExternalLinks, IconNames } from '@cfg'
-import { Checkbox, CheckboxGroup, cn, Divider, Link, Radio, RadioGroup } from '@nextui-org/react'
+import { IconNames } from '@cfg'
+import { Checkbox, CheckboxGroup, cn, Divider, Radio, RadioGroup } from '@nextui-org/react'
 import { useSetState } from 'ahooks'
 import { TreeDataNode } from 'antd'
 import { motion } from 'framer-motion'
@@ -14,6 +14,7 @@ import dynamic from 'next/dynamic'
 import { useMemo, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { LinkTagStrategy } from './common'
+import ExportBookmarksGuide from './components/ExportBookmarksGuide'
 import Panel from './components/Panel'
 import UploadList from './components/UploadList'
 
@@ -103,8 +104,8 @@ export default function Page() {
     const nodes: CategoryNode['nodes'] = [
       { id: ROOT_ID, name: '(Root)', type: 'category', nodes: traverseDl(dl) },
     ]
-    console.log(doc)
-    console.log(nodes)
+    // console.log(doc)
+    // console.log(nodes)
     setState({ nodes, openedCategoryIds: [ROOT_ID] })
   }
 
@@ -163,17 +164,19 @@ export default function Page() {
   }, [state.nodes])
 
   const linkableTags = useMemo<string[]>(() => {
-    const names = allCategories
-      .filter((cate) => {
-        return cate.id !== ROOT_ID && state.checkedTreeKeys.includes(cate.id)
-      })
-      .map((e) => e.name)
+    let names: string[] = []
+    if (state.linkTagStrategy !== LinkTagStrategy.OTHER) {
+      names = allCategories
+        .filter((cate) => cate.id !== ROOT_ID && state.checkedTreeKeys.includes(cate.id))
+        .map((e) => e.name)
+    }
     names.unshift('其它')
-    setState({ checkedLinkableTags: [...new Set(names)] })
     // 标签名称可能存在重复的。这里去重。
-    // 由于在数据库中创建标签、书签关联标签都是对标签名称进行操作，所以这样不会有什么问题
-    return [...new Set(names)]
-  }, [allCategories, setState, state.checkedTreeKeys])
+    // 由于接下来在数据库中创建标签、书签关联标签都是对标签名称进行操作，所以这样不会有什么问题
+    names = [...new Set(names)]
+    setState({ checkedLinkableTags: names })
+    return [...names]
+  }, [allCategories, setState, state.checkedTreeKeys, state.linkTagStrategy])
 
   /**
    * 将要导入的所有书签的 id
@@ -330,15 +333,7 @@ export default function Page() {
             }}
           />
         </div>
-        <Link
-          isExternal
-          href={ExternalLinks.EXPORT_BOOKMARKS_GUIDE}
-          showAnchorIcon
-          size="sm"
-          className="mt-8 opacity-80 hover:opacity-100"
-        >
-          查看如何导出浏览器书签
-        </Link>
+        <ExportBookmarksGuide />
       </div>
 
       <div className={cn((!state.file || state.showUploadList) && 'hidden')}>
@@ -396,10 +391,7 @@ export default function Page() {
               selectable={false}
               treeData={categoryTree}
               checkedKeys={state.checkedTreeKeys}
-              onCheck={(keys) => {
-                console.log(keys)
-                setState({ checkedTreeKeys: keys as string[] })
-              }}
+              onCheck={(keys) => setState({ checkedTreeKeys: keys as string[] })}
             />
             <p className="mt-2 text-sm text-foreground-400">
               将导入 <NumberTicker value={waitUploadBookmarkIds.length} /> 个书签 / 共{' '}
