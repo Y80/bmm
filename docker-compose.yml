@@ -9,7 +9,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     # 如果需要外部链接当前数据库，可以放开这里的端口映射
     # ports:
-    # - '5432:5432'
+    # - 5432:5432
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'bmm']
       interval: 3s
@@ -24,7 +24,7 @@ services:
     working_dir: /app
     command: sh -c "pnpm run start"
     ports:
-      - '3000:3000'
+      - 3000:3000
     depends_on:
       postgres:
         condition: service_healthy

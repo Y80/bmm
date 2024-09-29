@@ -130,7 +130,9 @@ git clone https://github.com/Y80/bmm.git
 git clone https://github.com/Y80/bmm.git
 ```
 
-2. **.env** 文件中配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。
+2. 配置环境变量
+
+**.env** 文件中配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。
 
 3. 使用 docker compose 运行服务
 
@@ -138,7 +140,7 @@ git clone https://github.com/Y80/bmm.git
 docker compose up -d
 ```
 
-数据库文件已创建 docker volumes，名称为 **bmm_postgres_data**。
+数据库文件已创建 docker volumes，名称为 **bmm_postgres_data**，你可以通过 `pg_dump` 备份数据库。
 
 ## 🤖 接入 AI 服务
 
@@ -175,9 +177,28 @@ function coze() {
 
 `src/lib/ai/servers.ts` 文件提供了使用 **扣子** 和 **OpenAI** 的代码示例可供参考。
 
-> 配置环境变量注意敏感数据泄露！更多内容可参考 [.env](./.env)
+---
+
+> 配置环境变量注意敏感数据泄露！不同的环境也可以配置不同的环境变量！更多内容可参考 [.env](./.env)
 
 ## 🤔 常见问题
+
+<details>
+  <summary>
+    如何设置环境变量 `AUTH_URL` 和 Github 中的 Authorization callback URL?
+  </summary>
+
+  首先需要明确， `AUTH_URL` 和 Github OAuth App 中的 Authorization callback URL 是要一致的，用于指定用户在 Github 确认授权后，浏览器需要重定向的服务器地址。
+
+  它们的值如何设定，简单来说，通过什么地址访问 BMM 服务，就把该地址作为它们的值，例如：
+
+  - http://localhost:3000 - 本地开发
+  - https://foo.vercel.app - 部署到 Vercel 的平台上，使用 Vercel 为你分配的域名
+  - https://example.com - 用 nginx 代理了本机地址，线上通过域名访问服务
+  - http://10.1.2.3:3000 - 线上通过 IP:PORT 直接访问服务
+  
+</details>
+
 
 <details>
   <summary>
@@ -196,12 +217,22 @@ function coze() {
 
 </details>
 
-<br>
 
 <details>
   <summary>
     支持其他数据库吗？
   </summary>
 
-  由于 `drizzle-orm` 除了支持 PostgreSQL，还支持 MySQL 和 Sqlite，因此对项目做少许编码改造，即可切换数据库。
+  由于 `drizzle-orm` 除了支持 PostgreSQL，还支持 MySQL 和 SQLite，因此对项目做少许编码改造，即可切换数据库。
+</details>
+
+
+<details>
+  <summary>
+    如何导出浏览器书签？
+  </summary>
+
+  这里以 Chrome 浏览器为例：
+  
+
 </details>
