@@ -1,4 +1,4 @@
-import { Assets } from '@cfg'
+import { Assets, ExternalLinks } from '@cfg'
 import { Link } from '@nextui-org/react'
 import Image from 'next/image'
 
@@ -9,7 +9,7 @@ export default function Page() {
       <h1 className="mt-6 text-3xl text-foreground-900">对不起，您不具备管理员权限</h1>
       <h3>
         如果您是网站开发者，请参考 &nbsp;
-        <Link target="_blank" href="/">
+        <Link target="_blank" href={ExternalLinks.REPO}>
           项目文档
         </Link>
         &nbsp; 进行身份配置

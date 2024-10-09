@@ -140,7 +140,7 @@ export default function Nav() {
                 <div className="p-2">
                   <ReButton
                     className="bg-gradient-to-tr from-rose-500/80 to-purple-500 px-8"
-                    href="https://github.com/y80/bmm"
+                    href={ExternalLinks.REPO}
                     target="_blank"
                     rel="noreferrer"
                     startContent={

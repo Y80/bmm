@@ -54,7 +54,7 @@ BMM 使用 Drizzle ORM 将数据存在 PostgreSQL 数据库中。因此需要准
 
 如果没有，这里有一些获取免费 PostgreSQL 云服务的方式：[查看](https://juejin.cn/post/7411047482651951119)。
 
-如果使用 Docker 部署当前项目，将会启用一个 PostgreSQL 服务，并自动设置数据库连接 URL。
+如果使用 Docker 部署当前项目，将会内部启用一个 PostgreSQL 服务，并自动设置数据库连接 URL。
 
 **数据库连接 URL 需要设置为项目中的环境变量 `DB_CONNECTION_URL`。**
 
@@ -81,7 +81,7 @@ BMM 使用 Github 授权登录，认证管理员身份，因此需要配置 Gith
 
 </details>
 
-**Github OAuth APP 的 Client ID 和 Client Secret 将分别用作环境变量 `AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`，填写的 Authorization callback URL 将用作环境变量 `AUTH_URL`。**
+Github OAuth App 的 Client ID 和 Client Secret 将分别用作环境变量 `AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`，填写的 Authorization callback URL 要和环境变量 `AUTH_URL` 保持一致。
 
 ## 🚀 项目部署
 
@@ -117,7 +117,7 @@ git clone https://github.com/Y80/bmm.git
   
   ![vercel-settings-env](./doc/images/vercel-settings-env.png)
 
-  Vercel 上每个项目都会被自动分配一个域名，如 https://bmm.vercel.app，如果你最终使用这个域名访问 BMM 服务，那么可以不用配置 `AUTH_URL`，否则必须配置该环境变量。
+  Vercel 上每个项目都会被自动分配一个域名，如 bmm.vercel.app，如果你最终使用这个域名访问 BMM 服务，那么可以不用配置 `AUTH_URL`，否则必须配置该环境变量。
 </details>
 
 

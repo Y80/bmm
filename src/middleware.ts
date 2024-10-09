@@ -21,7 +21,7 @@ export default auth((req) => {
   if (
     affixes.some((p) => pathname.endsWith(p)) ||
     prefixes.some((p) => pathname.startsWith(p)) ||
-    ['/', '/recent', '/search', '/login'].includes(pathname)
+    ['/', '/recent', '/search', '/login', '/forbidden'].includes(pathname)
   ) {
     checkAdmin = false
   }
@@ -30,7 +30,7 @@ export default auth((req) => {
       return NextResponse.json({ msg: '请登录' }, { status: StatusCode.UNAUTHORIZED })
     }
     if (!req.auth.user.isAdmin) {
-      return NextResponse.json({ msg: '暂无权限' }, { status: StatusCode.FORBIDDEN })
+      return NextResponse.redirect(req.nextUrl.origin + '/forbidden')
     }
   }
   return NextResponse.next()
