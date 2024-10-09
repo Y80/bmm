@@ -1,0 +1,18 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "cSpell.words": [
+    "ilike",
+    "libsql",
+    "neno",
+    "nextauth",
+    "nextui",
+    "openai",
+    "tabler",
+    "tailwindcss",
+    "turso"
+  ],
+  "files.associations": {
+    ".env**": "dotenv"
+  }
+}
