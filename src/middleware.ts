@@ -16,7 +16,7 @@ export default auth((req) => {
   }
   // 默认为 true，仅对于少数请求免除验证
   let checkAdmin = true
-  const prefixes = ['/_next', '/api/auth']
+  const prefixes = ['/_next', '/api/auth', '/tag']
   const affixes = ['.svg', '.png']
   if (
     affixes.some((p) => pathname.endsWith(p)) ||

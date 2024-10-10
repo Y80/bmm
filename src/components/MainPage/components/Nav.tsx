@@ -13,7 +13,7 @@ import {
   NavbarMenu,
   NavbarMenuToggle,
 } from '@nextui-org/react'
-import { useDebounceEffect, useEventListener, useMemoizedFn, useSetState } from 'ahooks'
+import { useDebounceEffect, useEventListener, useMemoizedFn, useMount, useSetState } from 'ahooks'
 import clsx from 'clsx'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -71,6 +71,12 @@ export default function Nav() {
     wait: 500,
     leading: false,
     trailing: true,
+  })
+
+  useMount(() => {
+    if (location.pathname === PageRoutes.Public.SEARCH && inputRef.current) {
+      inputRef.current.querySelector('input')?.focus()
+    }
   })
 
   return (
