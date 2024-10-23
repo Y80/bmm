@@ -34,7 +34,7 @@
 
 ## 🗂️ 目录
 
-- [🍽️ 准备内容](#%EF%B8%8F-准备内容) 
+- [🍽️ 准备内容](#%EF%B8%8F-准备内容)
 - [🚀 项目部署](#-项目部署)
   - [方式一：Node 项目常规部署](#方式一node-项目常规部署)
   - [方式二：部署至 Vercel](#方式二部署至-vercel)
@@ -110,16 +110,16 @@ git clone https://github.com/Y80/bmm.git
 2. 登入 <a href="https://vercel.com" target="_blank">Vercel</a>，新建项目，并关联 fork 的 Github 仓库
 
 3. 在当前项目下的 Environment Variables 页面中配置环境变量：
-`DB_CONNECTION_URL`、`AUTH_URL`、`AUTH_GITHUB_SECRET` 和 `AUTH_GITHUB_ID`。
+   `DB_CONNECTION_URL`、`AUTH_URL`、`AUTH_GITHUB_SECRET` 和 `AUTH_GITHUB_ID`。
 
 <details>
   <summary>查看截图</summary>
   
   ![vercel-settings-env](./doc/images/vercel-settings-env.png)
 
-  Vercel 上每个项目都会被自动分配一个域名，如 bmm.vercel.app，如果你最终使用这个域名访问 BMM 服务，那么可以不用配置 `AUTH_URL`，否则必须配置该环境变量。
-</details>
+Vercel 上每个项目都会被自动分配一个域名，如 bmm.vercel.app，如果你最终使用这个域名访问 BMM 服务，那么可以不用配置 `AUTH_URL`，否则必须配置该环境变量。
 
+</details>
 
 4. 在 「Deployments 面板」再重新部署一下即可
 
@@ -149,36 +149,38 @@ docker compose up -d
 
 由于目前 AI 服务商众多，且不同服务商提供的 API 并不相同，因此这里会有轻微的编码工作。
 
-下面是使用 [字节跳动-扣子](https://www.coze.cn/docs/developer_guides/coze_api_overview) AI 能力的示例：
+### 配置步骤
 
-```ts
-export const getServer = coze
+1. 在 `src/lib/ai/servers.ts` 文件中，选择或添加您想使用的 AI 服务。目前已提供了扣子（Coze）和 OpenAI 的示例。
 
-function coze() {
-  if (!env.COZE_API_KEY || !env.COZE_BOT_ID) {
-    throw new Error('请配置环境变量 COZE_API_KEY、COZE_BOT_ID')
-  }
-  return {
-    responseContentPath: 'messages[0].content',
-    sendRequest(query: string) {
-      return commonFetch({
-        url: 'https://api.coze.cn/open_api/v2/chat',
-        token: process.env.COZE_API_KEY!,
-        body: {
-          bot_id: process.env.COZE_BOT_ID,
-          user: 'user',
-          query,
-          stream: false,
-        },
-      })
-    },
-  }
-}
-```
+2. 在 `.env` 文件中，添加相应的环境变量。例如，如果使用扣子 AI，需要添加：
 
-`src/lib/ai/servers.ts` 文件提供了使用 **扣子** 和 **OpenAI** 的代码示例可供参考。
+   ```
+   COZE_API_KEY=your_coze_api_key
+   COZE_BOT_ID=your_coze_bot_id
+   ```
 
-> 配置环境变量注意敏感数据泄露！不同的环境可以配置不同的环境变量！更多内容可参考 [.env](./.env)
+   如果使用 OpenAI，需要添加：
+
+   ```
+   OPENAI_API_KEY=your_openai_api_key
+   ```
+
+3. 在 `.env` 文件中，设置 `AI_SERVER` 环境变量来指定使用哪个 AI 服务。例如：
+
+   ```
+   AI_SERVER=coze
+   ```
+
+   或
+
+   ```
+   AI_SERVER=openai
+   ```
+
+4. 如果您想使用其他 AI 服务，可以参考现有的示例，在 `src/lib/ai/servers.ts` 文件中添加新的服务配置，并在 `getServer` 函数中添加相应的判断逻辑。
+
+注意：配置环境变量时要注意敏感数据泄露！不同的环境可以配置不同的环境变量！更多内容可参考 [.env](./.env) 文件。
 
 ## 🤔 常见问题
 
@@ -187,17 +189,16 @@ function coze() {
     如何设置环境变量 AUTH_URL 和 Github 中的 Authorization callback URL?
   </summary>
 
-  首先需要明确， `AUTH_URL` 和 Github OAuth App 中的 Authorization callback URL 是要一致的，用于指定用户在 Github 确认授权后，浏览器需要重定向的服务器地址。
+首先需要明确， `AUTH_URL` 和 Github OAuth App 中的 Authorization callback URL 是要一致的，用于指定用户在 Github 确认授权后，浏览器需要重定向的服务器地址。
 
-  它们的值如何设定，简单来说，通过什么地址访问 BMM 服务，就把该地址作为它们的值，例如：
+它们的值如何设定，简单来说，通过什么地址访问 BMM 服务，就把该地址作为它们的值，例如：
 
-  - http://localhost:3000 - 本地开发
-  - https://bmm.vercel.app - 部署到 Vercel 的平台上，使用 Vercel 为你分配的域名
-  - https://example.com - 用 nginx 代理了本机地址，线上通过域名访问服务
-  - http://10.1.2.3:3000 - 线上通过 IP:PORT 直接访问服务
-  
+- http://localhost:3000 - 本地开发
+- https://bmm.vercel.app - 部署到 Vercel 的平台上，使用 Vercel 为你分配的域名
+- https://example.com - 用 nginx 代理了本机地址，线上通过域名访问服务
+- http://10.1.2.3:3000 - 线上通过 IP:PORT 直接访问服务
+
 </details>
-
 
 <details>
   <summary>
@@ -216,12 +217,11 @@ function coze() {
 
 </details>
 
-
 <details>
   <summary>
     支持其他数据库吗？
   </summary>
 
-  由于 `drizzle-orm` 除了支持 PostgreSQL，还支持 MySQL 和 SQLite，因此对项目做少许编码改造，即可切换数据库。
-</details>
+由于 `drizzle-orm` 除了支持 PostgreSQL，还支持 MySQL 和 SQLite，因此对项目做少许编码改造，即可切换数据库。
 
+</details>
