@@ -37,6 +37,7 @@ export default function Nav() {
   const [state, setState] = useSetState({
     input: searchParams.get('keyword') || '',
     focusInput: false,
+    isSelectedMenuToggle: false,
   })
   const inputRef = useRef<null | HTMLDivElement>(null)
 
@@ -87,7 +88,11 @@ export default function Nav() {
       isBlurred
       disableAnimation
     >
-      <NavbarMenuToggle className="xs:hidden" />
+      <NavbarMenuToggle
+        className="xs:hidden"
+        // isSelected={state.isSelectedMenuToggle}
+        onChange={(v) => setState({ isSelectedMenuToggle: v })}
+      />
       <NavbarBrand className="grow-0 max-xs:basis-16 xs:basis-56">
         <Link href="/" className="gap-4 flex-items-center">
           <Image
@@ -165,7 +170,8 @@ export default function Nav() {
       </NavbarContent>
 
       <NavbarMenu className={clsx(Background.CLASS, 'dark:bg-opacity-50')}>
-        <TagPicker />
+        {/* 没展开的时候，不渲染 */}
+        {state.isSelectedMenuToggle && <TagPicker />}
       </NavbarMenu>
     </Navbar>
   )
