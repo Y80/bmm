@@ -52,10 +52,9 @@ export default function TagPicker(props: { className?: string; style?: CSSProper
     } else {
       showTags = state.onlyMain ? tags.filter((tag) => tag.isMain) : tags
     }
-    if (showTags.length === state.showTags.length || isEqual(showTags, state.showTags)) {
-      return
+    if (!isEqual(showTags, state.showTags)) {
+      setState({ showTags })
     }
-    setState({ showTags })
   }, [state.filterTagInput, state.onlyMain, tags, state.showTags, setState])
 
   useUpdateEffect(() => {

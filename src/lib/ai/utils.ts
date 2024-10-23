@@ -96,7 +96,7 @@ export function chatResultAdapter(input: string) {
   if (typeof favicon === 'string') {
     res.favicon = favicon
   }
-  if (Array.isArray(tags) && tags.length && tags.every((el) => typeof el === 'string')) {
+  if (Array.isArray(tags) && tags.every((el) => typeof el === 'string')) {
     res.tags = tags
   }
   return res
@@ -109,11 +109,7 @@ export function chatResultAdapter2(input: string) {
     color: '',
   }
   const { relatedTags, color } = data
-  if (
-    Array.isArray(relatedTags) &&
-    relatedTags.length &&
-    relatedTags.every((el) => typeof el === 'string')
-  ) {
+  if (Array.isArray(relatedTags) && relatedTags.every((el) => typeof el === 'string')) {
     res.relatedTags = relatedTags
   }
   if (typeof color === 'string') {
