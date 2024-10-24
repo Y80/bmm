@@ -93,11 +93,7 @@ export default function TagPicker(props: { className?: string; style?: CSSProper
                 )}
                 onClick={(e) => onClickTag({ event: e, tag })}
               >
-                {tag.icon ? (
-                  <ClientIcon color={tag.color || undefined} icon={tag.icon} />
-                ) : (
-                  <span className={IconNames.TAG} />
-                )}
+                <ClientIcon color={tag.color || undefined} icon={tag.icon || IconNames.TAG} />
                 <span className="grow text-foreground-600">{tag.name}</span>
               </div>
             )
