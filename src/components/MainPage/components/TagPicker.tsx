@@ -7,7 +7,7 @@ import { ScrollShadow, Switch } from '@nextui-org/react'
 import { useMount, useSetState, useUpdateEffect } from 'ahooks'
 import clsx from 'clsx'
 import { isEqual } from 'lodash'
-import { CSSProperties, useEffect, useRef } from 'react'
+import { CSSProperties, useLayoutEffect, useRef } from 'react'
 import { useMainPageContext } from '../ctx'
 
 const SCROLL_DIV_ROLE = 'tag-picker-scroll-div'
@@ -34,17 +34,7 @@ export default function TagPicker(props: { className?: string; style?: CSSProper
     showTags: tags,
   })
 
-  // 每次进入不同的 /tag/$slug，元素滚动位置都会丢失，这里手动恢复
-  useMount(() => {
-    const lastPosition = parseInt(localStorage.getItem(TAG_PICKER_SCROLL_TOP_KEY) || '')
-    if (lastPosition > 0) {
-      scrollDivRef.current?.scrollTo({ top: lastPosition })
-    }
-    localStorage.removeItem(TAG_PICKER_SCROLL_TOP_KEY)
-    setState({ onlyMain: localStorage.getItem(ONLY_MAIN_KEY) === 'true' })
-  })
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     let showTags = []
     if (state.filterTagInput) {
       // 输入了关键词，从所有标签中过滤
@@ -55,7 +45,18 @@ export default function TagPicker(props: { className?: string; style?: CSSProper
     if (!isEqual(showTags, state.showTags)) {
       setState({ showTags })
     }
+    // 每次进入不同的 /tag/$slug，元素滚动位置都会丢失，这里手动恢复
+    setTimeout(() => {
+      const lastPosition = parseInt(localStorage.getItem(TAG_PICKER_SCROLL_TOP_KEY) || '')
+      if (lastPosition > 0) {
+        scrollDivRef.current?.scrollTo({ top: lastPosition })
+      }
+    })
   }, [state.filterTagInput, state.onlyMain, tags, state.showTags, setState])
+
+  useMount(() => {
+    setState({ onlyMain: localStorage.getItem(ONLY_MAIN_KEY) === 'true' })
+  })
 
   useUpdateEffect(() => {
     localStorage.setItem(ONLY_MAIN_KEY, String(state.onlyMain))
