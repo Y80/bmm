@@ -6,13 +6,15 @@
   <i>BMM / bookmark master / 你的专属书签管家</i>
 </div>
 
+<br>
+
 <div align="center">
 
   <img alt="PC 端明亮/暗夜主题" src="./doc/images/screenshot-pc-light-dark.webp">
 
-  <img alt="移动端" src="./doc/images/screenshot-mobile.png">
+  <img width="680" alt="移动端" src="./doc/images/screenshot-mobile.png">
 
-  <img alt="AI 解析网站" src="./doc/images/screenshot-ai-analyse.gif">
+  <img alt="AI 解析网站" width="680" src="./doc/images/screenshot-ai-analyse.gif">
 
 </div>
 
