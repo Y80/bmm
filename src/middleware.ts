@@ -4,7 +4,6 @@
 import NextAuth from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authConfig } from './lib/auth/config'
-import { StatusCode } from './lib/http'
 
 const { auth } = NextAuth(authConfig)
 
@@ -27,7 +26,8 @@ export default auth((req) => {
   }
   if (checkAdmin) {
     if (!req.auth?.user) {
-      return NextResponse.json({ msg: '请登录' }, { status: StatusCode.UNAUTHORIZED })
+      return NextResponse.redirect(req.nextUrl.origin + '/login')
+      // return NextResponse.json({ msg: '请登录' }, { status: StatusCode.UNAUTHORIZED })
     }
     if (!req.auth.user.isAdmin) {
       return NextResponse.redirect(req.nextUrl.origin + '/forbidden')
