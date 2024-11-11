@@ -12,7 +12,7 @@
 
   <img alt="PC 端明亮/暗夜主题" src="./doc/images/screenshot-pc-light-dark.webp">
 
-  <img alt="后台管理" src="./doc/images/screenshot-cms.jpg">
+  <img alt="后台管理" src="./doc/images/screenshot-pc-cms-light-dark.png">
 
   <img width="680" alt="移动端" src="./doc/images/screenshot-mobile.png">
 
