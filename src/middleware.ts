@@ -15,12 +15,15 @@ export default auth((req) => {
   }
   // 默认为 true，仅对于少数请求免除验证
   let checkAdmin = true
-  const prefixes = ['/_next', '/api/auth', '/tag']
-  const affixes = ['.svg', '.png']
+  const whitelist = {
+    prefixes: ['/_next', '__next', '/api/auth', '/tag'],
+    affixes: ['.svg', '.png'],
+    pathnames: ['/', '/recent', '/search', '/login', '/forbidden', '/404', '/500', '/_error'],
+  }
   if (
-    affixes.some((p) => pathname.endsWith(p)) ||
-    prefixes.some((p) => pathname.startsWith(p)) ||
-    ['/', '/recent', '/search', '/login', '/forbidden'].includes(pathname)
+    whitelist.affixes.some((p) => pathname.endsWith(p)) ||
+    whitelist.prefixes.some((p) => pathname.startsWith(p)) ||
+    whitelist.pathnames.includes(pathname)
   ) {
     checkAdmin = false
   }
