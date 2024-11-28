@@ -1,5 +1,3 @@
-'use server'
-
 import MainPage from '@/components/MainPage'
 import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
 import PublicTagController from '@/controllers/PublicTag.controller'

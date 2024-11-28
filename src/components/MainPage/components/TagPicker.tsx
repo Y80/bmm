@@ -22,11 +22,9 @@ export function getScrollElement() {
 
 export default function TagPicker(props: { className?: string; style?: CSSProperties }) {
   const { tags } = useGlobalContext()
-
-  const scrollDivRef = useRef<null | HTMLDivElement>(null)
-
   const { selectedTags, onClickTag } = useMainPageContext()
 
+  const scrollDivRef = useRef<null | HTMLDivElement>(null)
   const [state, setState] = useSetState({
     filterTagInput: '',
     onlyMain: false,
@@ -46,12 +44,10 @@ export default function TagPicker(props: { className?: string; style?: CSSProper
       setState({ showTags })
     }
     // 每次进入不同的 /tag/$slug，元素滚动位置都会丢失，这里手动恢复
-    setTimeout(() => {
-      const lastPosition = parseInt(localStorage.getItem(TAG_PICKER_SCROLL_TOP_KEY) || '')
-      if (lastPosition > 0) {
-        scrollDivRef.current?.scrollTo({ top: lastPosition })
-      }
-    })
+    const lastPosition = parseInt(localStorage.getItem(TAG_PICKER_SCROLL_TOP_KEY) || '')
+    if (lastPosition > 0) {
+      scrollDivRef.current?.scrollTo({ top: lastPosition })
+    }
   }, [state.filterTagInput, state.onlyMain, tags, state.showTags, setState])
 
   useMount(() => {
