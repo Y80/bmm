@@ -22,9 +22,8 @@ interface Props {
 }
 
 export default function MainPage(props: Props) {
-  const params = useParams()
-
   const router = useRouter()
+  const params = useParams()
 
   const { tags } = useGlobalContext()
 
