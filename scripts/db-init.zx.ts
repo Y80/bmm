@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 
 import 'zx/globals'
-import { loadEnv, testDbConnect } from './utils'
+import { exitWithCloseDb, loadEnv, testDbConnect } from './utils'
 
 async function main() {
   const prefix = chalk.bold.cyan('[INIT-DATABASE]: ')
@@ -37,8 +37,7 @@ async function main() {
   } catch (err) {
     console.error(err)
     echo(chalk.red(prefix + '数据库初始化失败'))
-    await pgSql.end()
-    process.exit(1)
+    await exitWithCloseDb(1)
   }
 }
 

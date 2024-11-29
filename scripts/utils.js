@@ -67,7 +67,7 @@ export function checkEnvs() {
   }
 }
 
-export async function exitWithDbEnd(code = 0) {
+export async function exitWithCloseDb(code = 0) {
   const { pgSql } = await import('@/db')
   await pgSql.end()
   process.exit(code)

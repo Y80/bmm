@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 
 import 'zx/globals'
-import { exitWithDbEnd, loadEnv, testDbConnect } from './utils'
+import { exitWithCloseDb, loadEnv, testDbConnect } from './utils'
 
 async function main() {
   await loadEnv()
@@ -28,7 +28,7 @@ async function main() {
     echo(chalk.green('✅ 数据库迁移成功'))
     !process.env.VERCEL && echo('\n💡 建议通过 git 提交生成的快照，以便后续数据库迁移\n')
   }
-  exitWithDbEnd()
+  exitWithCloseDb()
 }
 
 main()

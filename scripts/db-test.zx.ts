@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 
 import 'zx/globals'
-import { exitWithDbEnd, loadEnv, testDbConnect } from './utils'
+import { exitWithCloseDb, loadEnv, testDbConnect } from './utils'
 
 async function main() {
   await loadEnv()
@@ -15,7 +15,7 @@ async function main() {
     } else {
       echo(chalk.red('❌ 数据库连接失败，请检查'))
     }
-    exitWithDbEnd()
+    exitWithCloseDb()
   })
 }
 

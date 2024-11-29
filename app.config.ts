@@ -34,14 +34,14 @@ export const ApiRoutes = {
 export const PageRoutes = {
   LOGIN: '/login',
   FORBIDDEN: '/forbidden',
-  User: {
-    INDEX: '/user',
-    SETTINGS: '/user/settings',
-    TAG_INDEX: '/user/tag',
-    BOOKMARK_INDEX: '/user/bookmark',
-    TAG_SLUG: (slug: 'new' | number) => '/user/tag/' + slug,
-    BOOKMARK_SLUG: (slug: 'new' | number) => '/user/bookmark/' + slug,
-  },
+  // User: {
+  //   INDEX: '/user',
+  //   SETTINGS: '/user/settings',
+  //   TAG_INDEX: '/user/tag',
+  //   BOOKMARK_INDEX: '/user/bookmark',
+  //   TAG_SLUG: (slug: 'new' | number) => '/user/tag/' + slug,
+  //   BOOKMARK_SLUG: (slug: 'new' | number) => '/user/bookmark/' + slug,
+  // },
   Admin: {
     INDEX: '/admin',
     TAG_LIST: '/admin/tag/list',
@@ -94,5 +94,5 @@ export const Assets = {
 }
 
 export const ExternalLinks = {
-  REPO: 'https://github.com/y80/bmm',
+  REPO: 'https://github.com/Y80/bmm',
 } as const
