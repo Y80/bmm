@@ -4,7 +4,7 @@ import { useGlobalContext } from '@/app/ctx'
 import { NavIconOnlyButtonProps } from '@/components/MainPage/components/Nav'
 import ReButton from '@/components/re-export/ReButton'
 import ThemeToggle from '@/components/ThemeToggle'
-import { ADMIN_NAV_LINKS, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
+import { ADMIN_NAV_LINKS, Assets, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import { cn, Link, Navbar, NavbarContent } from '@nextui-org/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -48,7 +48,7 @@ export default function AdminNav() {
         <Link href="/admin" color="foreground">
           <div className="flex cursor-pointer items-center gap-4">
             <Image
-              src="/logo-no-bg.svg"
+              src={Assets.LOGO_NO_BG_SVG}
               width={48}
               height={48}
               className="hidden sm:inline-block"

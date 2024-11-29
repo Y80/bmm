@@ -1,7 +1,7 @@
 'use client'
 
 import ReButton from '@/components/re-export/ReButton'
-import { PageRoutes, WEBSITE_NAME } from '@cfg'
+import { Assets, PageRoutes, WEBSITE_NAME } from '@cfg'
 import { Spinner } from '@nextui-org/react'
 import clsx from 'clsx'
 import { signIn } from 'next-auth/react'
@@ -26,7 +26,7 @@ export default function Page() {
   return (
     <>
       <Link href="/" className="fixed left-6 top-4 rounded-xl bg-white/30 backdrop-blur">
-        <Image src="/logo-no-bg.svg" width={42} height={42} alt="logo" />
+        <Image src={Assets.LOGO_NO_BG_SVG} width={42} height={42} alt="logo" />
       </Link>
       <div className="grow flex-col flex-center">
         <h1 className="mb-4 text-4xl text-black/65">Log in to {WEBSITE_NAME}</h1>

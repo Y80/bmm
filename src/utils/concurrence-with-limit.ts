@@ -1,4 +1,4 @@
-interface ConcurrenceWithLimitOptions {
+interface ConcurrenceWithLimitParams {
   tasks: Array<() => Promise<any> | any>
   /**
    * 并发数
@@ -18,7 +18,7 @@ interface ConcurrenceWithLimitOptions {
 /**
  * 限定并发执行 limit 个任务
  */
-export function concurrenceWithLimit(options: ConcurrenceWithLimitOptions) {
+export function concurrenceWithLimit(options: ConcurrenceWithLimitParams) {
   const { tasks = [], limit = 4, ignoreError = true } = options
   const results = [] as any[]
   let runTaskIdx = 0

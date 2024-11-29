@@ -16,7 +16,7 @@ export default auth((req) => {
   // 默认为 true，仅对于少数请求免除验证
   let checkAdmin = true
   const whitelist = {
-    prefixes: ['/_next', '__next', '/api/auth', '/tag'],
+    prefixes: ['/_next', '/__next', '/api/auth', '/tag'],
     affixes: ['.svg', '.png'],
     pathnames: ['/', '/recent', '/search', '/login', '/forbidden', '/404', '/500', '/_error'],
   }

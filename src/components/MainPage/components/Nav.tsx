@@ -3,7 +3,7 @@
 import ThemeToggle from '@/components/ThemeToggle'
 import ReButton from '@/components/re-export/ReButton'
 import ReInput from '@/components/re-export/ReInput'
-import { Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
+import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import {
   ButtonProps,
   Kbd,
@@ -22,13 +22,11 @@ import { useRef } from 'react'
 import TagPicker from './TagPicker'
 import User from './User'
 
-export const NavIconOnlyButtonProps: Required<
-  Pick<ButtonProps, 'className' | 'isIconOnly' | 'variant'>
-> = {
+export const NavIconOnlyButtonProps = {
   className: 'text-2xl text-foreground-600 xs:hover:text-foreground-800 outline-none',
   isIconOnly: true,
   variant: 'light',
-}
+} satisfies ButtonProps
 
 export default function Nav() {
   const router = useRouter()
@@ -96,7 +94,7 @@ export default function Nav() {
       <NavbarBrand className="grow-0 max-xs:basis-16 xs:basis-56">
         <Link href="/" className="gap-4 flex-items-center">
           <Image
-            src="/logo-no-bg.svg"
+            src={Assets.LOGO_NO_BG_SVG}
             width={32}
             height={32}
             className="rounded-lg dark:bg-gray-50"
@@ -155,7 +153,7 @@ export default function Nav() {
                     target="_blank"
                     rel="noreferrer"
                     startContent={
-                      <span className="icon-[tabler--star-filled] text-xl text-yellow-400" />
+                      <span className="icon-[tabler--star-filled] text-xl text-yellow-300" />
                     }
                   >
                     <span className="text-white">欢迎 Star</span>

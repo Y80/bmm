@@ -7,7 +7,7 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import type { Metadata } from 'next'
 import { PropsWithChildren } from 'react'
 import { Toaster } from 'react-hot-toast'
-import './globals.css'
+import '../globals.css'
 import Providers from './providers'
 
 // 禁止动态缓存这个 RSC；还可以通过 ISR 增量更新
@@ -43,6 +43,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
         )}
         <Toaster />
         <Providers session={session} tags={tags} totalBookmarks={totalBookmarks}>
+          {/* 将 antd 首屏样式按需抽离并植入到 HTML 中，以避免页面闪动 */}
           <AntdRegistry>
             {/* 整个应用容器为 垂直的 flex 布局，子元素设置 'flex-1' 即可撑满页面高度 */}
             <div className="flex min-h-screen flex-col">{children}</div>

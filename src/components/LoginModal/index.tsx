@@ -1,4 +1,4 @@
-import { WEBSITE_NAME } from '@cfg'
+import { Assets, WEBSITE_NAME } from '@cfg'
 import { Button, Modal, ModalBody, ModalContent } from '@nextui-org/react'
 import { useSetState } from 'ahooks'
 import { signIn } from 'next-auth/react'
@@ -21,7 +21,13 @@ export default function LoginModal(props: Props) {
     <Modal backdrop="blur" isOpen={props.isOpen} onClose={props.onClose}>
       <ModalContent>
         <ModalBody className="pt-8">
-          <Image src="/logo-no-bg.svg" width={48} height={48} className="inline-block" alt="logo" />
+          <Image
+            src={Assets.LOGO_NO_BG_SVG}
+            width={48}
+            height={48}
+            className="inline-block"
+            alt="logo"
+          />
           <div className="text-4xl">欢迎登录 {WEBSITE_NAME}</div>
           <div className="text-gray-400">使用独特的标签系统管理您的书签</div>
 
