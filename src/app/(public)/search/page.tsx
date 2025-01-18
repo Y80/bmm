@@ -7,7 +7,7 @@ import { mergeWebsiteTitle } from '@/utils'
 import { redirect } from 'next/navigation'
 
 export const generateMetadata: GenerateMetadata = (props) => {
-  return { title: mergeWebsiteTitle(`「${props.searchParams.keyword as string}」的搜索结果`) }
+  return { title: mergeWebsiteTitle(`${props.searchParams.keyword as string}的搜索结果`) }
 }
 
 export default async function Page(props: RSCPageProps) {

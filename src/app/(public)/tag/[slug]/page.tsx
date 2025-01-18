@@ -8,7 +8,7 @@ import { mergeWebsiteTitle } from '@/utils'
 
 export const generateMetadata: GenerateMetadata<{ slug: string }> = (props) => {
   return {
-    title: mergeWebsiteTitle(`「${decodeURIComponent(props.params.slug)}」相关的书签`),
+    title: mergeWebsiteTitle(`${decodeURIComponent(props.params.slug)}相关的书签`),
   }
 }
 
