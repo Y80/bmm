@@ -158,7 +158,7 @@ export default function BookmarkSlug() {
       { name: 'Google', src: 'https://www.google.com/s2/favicons?domain=' + host },
       { name: 'DuckDuckGo', src: `https://icons.duckduckgo.com/ip3/${host}.ico` },
       { name: 'Yandex', src: `https://favicon.yandex.net/favicon/${host}` },
-      { name: '令川', src: 'https://api.lcll.cc/favicon?host=+' + host },
+      { name: '令川', src: 'https://api.lcll.cc/favicon?host=' + host },
       { name: 'Favicon.im', src: `https://favicon.im/${host}` },
       // { name: '一为', src: `https://api.iowen.cn/favicon/${host}.png` },
       // {
