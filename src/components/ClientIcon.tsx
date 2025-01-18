@@ -18,6 +18,10 @@ function ClientIcon(props: Props) {
     return calcForegroundColor(props.color, isDark).hex()
   }, [props.color, isDark])
 
-  return <Icon icon={props.icon} className="size-5 text-xl" style={{ color }} />
+  return (
+    <span className="size-5 text-xl" style={{ color }}>
+      <Icon icon={props.icon} />
+    </span>
+  )
 }
 export default memo(ClientIcon)

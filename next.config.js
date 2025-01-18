@@ -18,8 +18,15 @@ export default async function setup() {
       dangerouslyAllowSVG: true,
     },
 
-    webpack: (config) => {
+    webpack: (config, { webpack, nextRuntime }) => {
       config.plugins.push(codeInspectorPlugin({ bundler: 'webpack', hideDomPathAttr: false }))
+      // https://github.com/vercel/next.js/discussions/39705
+      // fix: edge 环境无法加载环境变量
+      if (nextRuntime === 'edge') {
+        config.plugins.push(new webpack.DefinePlugin({
+          "process.env.AUTH_SECRET": JSON.stringify(process.env.AUTH_SECRET),
+        }))
+      }
       return config
     },
   }

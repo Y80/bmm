@@ -14,6 +14,8 @@ async function main() {
     process.exit(1)
   }
 
+  echo(chalk.green('✅ 数据库连接成功'))
+
   const { pgSql } = await import('@/db/postgres/drivers/postgres')
   try {
     const res = await pgSql`
