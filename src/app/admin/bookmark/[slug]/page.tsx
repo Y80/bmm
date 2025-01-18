@@ -155,17 +155,18 @@ export default function BookmarkSlug() {
     if (!isValidUrl(bookmark.url)) return null
     const { host } = new URL(bookmark.url)
     const list = [
-      { name: '一为', src: `https://api.iowen.cn/favicon/${host}.png` },
-      { name: 'Favicon.im', src: `https://favicon.im/${host}` },
       { name: 'Google', src: 'https://www.google.com/s2/favicons?domain=' + host },
       { name: 'DuckDuckGo', src: `https://icons.duckduckgo.com/ip3/${host}.ico` },
       { name: 'Yandex', src: `https://favicon.yandex.net/favicon/${host}` },
+      { name: '令川', src: 'https://api.lcll.cc/favicon?host=+' + host },
+      { name: 'Favicon.im', src: `https://favicon.im/${host}` },
+      // { name: '一为', src: `https://api.iowen.cn/favicon/${host}.png` },
       // {
       //   name: '付之轻',
       //   src: `https://favicons.fuzqing.workers.dev/api/getFavicon?url=${host}&size=64`,
       // },
       { name: 'Xinac', src: `https://api.xinac.net/icon/?url=${host}` },
-      { name: '15777', src: `https://api.15777.cn/get.php?url=${host}` },
+      // { name: '15777', src: `https://api.15777.cn/get.php?url=${host}` },
       // { name: '记磊工具箱', src: `https://tools.ly522.com/ico/favicon.php?url=${host}` },
       // { name: 'Qqsuu', src: `https://api.qqsuu.cn/api/dm-get?url=${host}` },
       // { name: 'Uomg', src: 'https://api.uomg.com/api/get.favicon?url=' + host },
