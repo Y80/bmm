@@ -1,5 +1,5 @@
 import { WEBSITE_NAME } from '@cfg'
-import { Button, Modal, ModalBody, ModalContent } from '@nextui-org/react'
+import { Button, Modal, ModalBody, ModalContent } from "@heroui/react"
 import { useSetState } from 'ahooks'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'

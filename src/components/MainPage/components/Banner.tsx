@@ -1,7 +1,7 @@
 import { useGlobalContext } from '@/app/ctx'
 import { cn } from '@/lib/utils'
 import { WEBSITE_NAME } from '@cfg'
-import { Chip } from '@nextui-org/react'
+import { Chip } from "@heroui/react"
 import dayjs from 'dayjs'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { PropsWithChildren } from 'react'

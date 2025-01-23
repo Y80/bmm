@@ -10,7 +10,7 @@ import {
   ModalFooter,
   ModalHeader,
   Tooltip,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useSetState } from 'ahooks'
 import Color from 'color'
 import { useLayoutEffect, useMemo } from 'react'

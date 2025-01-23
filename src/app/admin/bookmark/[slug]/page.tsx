@@ -19,7 +19,7 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useSetState, useUpdateEffect } from 'ahooks'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'

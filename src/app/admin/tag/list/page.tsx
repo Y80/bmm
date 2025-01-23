@@ -17,7 +17,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useSetState } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'

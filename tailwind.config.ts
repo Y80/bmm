@@ -1,5 +1,5 @@
 import { addDynamicIconSelectors } from '@iconify/tailwind'
-import { nextui } from '@nextui-org/react'
+import { heroui } from "@heroui/react"
 import type { Config } from 'tailwindcss'
 import plugin from 'tailwindcss/plugin'
 
@@ -8,7 +8,7 @@ const config: Config = {
     './app.config.ts',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     container: {
@@ -50,7 +50,7 @@ const config: Config = {
   },
   darkMode: 'class',
   plugins: [
-    nextui(),
+    heroui(),
     require('tailwindcss-animate'),
     addDynamicIconSelectors(),
     plugin(function ({ addUtilities, addVariant }) {

@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Tooltip,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { ComponentProps, ReactNode, forwardRef, useState } from 'react'
 import ReTooltip from './ReTooltip'
 

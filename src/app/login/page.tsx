@@ -2,7 +2,7 @@
 
 import ReButton from '@/components/re-export/ReButton'
 import { PageRoutes, WEBSITE_NAME } from '@cfg'
-import { Spinner } from '@nextui-org/react'
+import { Spinner } from "@heroui/react"
 import clsx from 'clsx'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'

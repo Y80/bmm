@@ -2,7 +2,7 @@
 
 import useIsClient from '@/hooks/useIsClient'
 import { IconNames } from '@cfg'
-import { cn, Listbox, ListboxItem } from '@nextui-org/react'
+import { cn, Listbox, ListboxItem } from "@heroui/react"
 import { useTheme } from 'next-themes'
 import { useState } from 'react'
 import { NavIconOnlyButtonProps } from './MainPage/components/Nav'

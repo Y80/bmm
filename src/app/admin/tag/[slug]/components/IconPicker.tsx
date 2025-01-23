@@ -9,7 +9,7 @@ import {
   Select,
   SelectItem,
   Spinner,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useMemoizedFn, useSetState, useThrottleEffect, useUpdateEffect } from 'ahooks'
 import clsx from 'clsx'
 import { useEffect, useMemo } from 'react'

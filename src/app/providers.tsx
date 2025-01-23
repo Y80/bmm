@@ -3,7 +3,7 @@
 import useIsDark from '@/hooks/useIsDark'
 import { getAllPublicTags } from '@/lib/actions'
 import { Background, PageRoutes } from '@cfg'
-import { cn, NextUIProvider, semanticColors } from '@nextui-org/react'
+import { cn, HeroUIProvider, semanticColors } from "@heroui/react"
 import { ConfigProvider as AntdConfigProvider, theme as antdTheme } from 'antd'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
@@ -61,13 +61,13 @@ export default function Providers(props: PropsWithChildren<Props>) {
         <div className="absolute left-[-12rem] top-[5rem] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.1),rgba(255,255,255,0))]" />
         <div className="absolute bottom-[-200px] right-[-200px] size-[50rem] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.1),rgba(255,255,255,0))]" />
       </div>
-      <NextUIProvider>
+      <HeroUIProvider>
         <ThemeProvider attribute="class" defaultTheme="dark">
           <AntdConfigProviderWrapper>
             <SessionProvider session={props.session}>{props.children}</SessionProvider>
           </AntdConfigProviderWrapper>
         </ThemeProvider>
-      </NextUIProvider>
+      </HeroUIProvider>
     </GlobalContextProvider>
   )
 }

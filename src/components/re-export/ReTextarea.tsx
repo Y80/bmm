@@ -1,4 +1,4 @@
-import { Textarea } from '@nextui-org/react'
+import { Textarea } from '@heroui/react'
 import { ComponentProps } from 'react'
 
 export default function ReTextarea(props: ComponentProps<typeof Textarea>) {

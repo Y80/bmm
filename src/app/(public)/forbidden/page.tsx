@@ -1,5 +1,5 @@
 import { Assets, ExternalLinks } from '@cfg'
-import { Link } from '@nextui-org/react'
+import { Link } from "@heroui/react"
 import Image from 'next/image'
 
 export default function Page() {

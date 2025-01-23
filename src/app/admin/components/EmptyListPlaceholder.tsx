@@ -1,5 +1,5 @@
 import { Assets, IconNames } from '@cfg'
-import { cn, Image, Link } from '@nextui-org/react'
+import { cn, Image, Link } from "@heroui/react"
 
 interface Props {
   href: string

@@ -23,7 +23,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from '@nextui-org/react'
+} from "@heroui/react"
 import { useDebounceFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
