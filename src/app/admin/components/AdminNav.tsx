@@ -5,7 +5,7 @@ import { NavIconOnlyButtonProps } from '@/components/MainPage/components/Nav'
 import ReButton from '@/components/re-export/ReButton'
 import ThemeToggle from '@/components/ThemeToggle'
 import { ADMIN_NAV_LINKS, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
-import { cn, Link, Navbar, NavbarContent } from "@heroui/react"
+import { cn, Link, Navbar, NavbarContent } from '@heroui/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
@@ -15,31 +15,18 @@ export default function AdminNav() {
 
   function renderLinks() {
     if (pathname === PageRoutes.Admin.INDEX) return null
-    return (
-      <>
-        {ADMIN_NAV_LINKS.map((link) => (
-          <Link
-            key={link.href}
-            underline={pathname.includes(link.href) ? 'always' : undefined}
-            isBlock
-            color="foreground"
-            href={link.href}
-            className="px-3 py-2 underline-offset-8"
-          >
-            {link.label}
-          </Link>
-        ))}
-        <Link
-          underline={pathname.includes(PageRoutes.Admin.UPLOAD) ? 'always' : undefined}
-          isBlock
-          color="foreground"
-          href={PageRoutes.Admin.UPLOAD}
-          className="px-3 py-2 underline-offset-8"
-        >
-          导入浏览器书签
-        </Link>
-      </>
-    )
+    return ADMIN_NAV_LINKS.map((link) => (
+      <Link
+        key={link.href}
+        underline={pathname.includes(link.href) ? 'always' : undefined}
+        isBlock
+        color="foreground"
+        href={link.href}
+        className="px-3 py-2 underline-offset-8"
+      >
+        {link.label}
+      </Link>
+    ))
   }
 
   return (
