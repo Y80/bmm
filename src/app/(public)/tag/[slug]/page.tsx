@@ -21,7 +21,11 @@ export default async function Page(props: RSCPageProps) {
     tag && tagIds.push(tag.id)
   })
   const bookmarks = tagIds.length
-    ? (await PublicBookmarkController.findMany(findManyBookmarksSchema.parse({ tagIds }))).list
+    ? (
+        await PublicBookmarkController.findMany(
+          findManyBookmarksSchema.parse({ tagIds, limit: 999 })
+        )
+      ).list
     : []
 
   return <MainPage bookmarks={bookmarks} />

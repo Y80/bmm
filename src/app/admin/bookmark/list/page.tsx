@@ -84,12 +84,12 @@ export default function BookmarkListPage() {
   )
 
   useUpdateEffect(() => {
-    const payload = {
+    const payload: Record<string, string> = {
       page: state.pager.page.toString(),
-      keyword: state.keyword,
       sorterKey: state.sorterKey,
-      ...(state.selectedTag && { tag: state.selectedTag }),
     }
+    state.selectedTag && (payload.tag = state.selectedTag)
+    state.keyword && (payload.keyword = state.keyword)
     router.push('?' + new URLSearchParams(payload).toString())
   }, [state.keyword, state.sorterKey, state.pager.page, state.selectedTag])
 

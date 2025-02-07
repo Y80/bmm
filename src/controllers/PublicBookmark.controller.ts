@@ -95,7 +95,6 @@ const PublicBookmarkController = {
   },
   /**
    * 高级搜索书签列表
-   * - 有 tagIds 时，不分页；其他情况下都会走分页查询
    */
   async findMany(query: z.output<typeof findManyBookmarksSchema>) {
     const { keyword, tagIds, page, limit, sorterKey } = query
@@ -121,10 +120,8 @@ const PublicBookmarkController = {
       await db.query.publicBookmarks.findMany({
         where: filters,
         with: { relatedTagIds: true },
-        ...(!tagIds?.length && {
-          limit,
-          offset: (page - 1) * limit,
-        }),
+        limit,
+        offset: (page - 1) * limit,
         orderBy: (() => {
           const sort = sorterKey.startsWith('-') ? desc : asc
           const field = sorterKey.includes('update')
