@@ -39,7 +39,7 @@ function ReButton_(props: ReButtonProps, ref: any) {
       as={props.href ? 'a' : undefined}
       disabled={mergedLoading || props.disabled}
       isLoading={mergedLoading}
-      onClick={onClickWrapper}
+      onPress={onClickWrapper}
       ref={ref}
     >
       {props.children}
