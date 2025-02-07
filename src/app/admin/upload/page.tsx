@@ -5,7 +5,7 @@ import NumberTicker from '@/components/magicui/number-ticker'
 import ReButton from '@/components/re-export/ReButton'
 import ReTooltip from '@/components/re-export/ReTooltip'
 import { IconNames } from '@cfg'
-import { Checkbox, CheckboxGroup, cn, Divider, Radio, RadioGroup } from '@nextui-org/react'
+import { Checkbox, CheckboxGroup, cn, Divider, Radio, RadioGroup } from "@heroui/react"
 import { useSetState } from 'ahooks'
 import { TreeDataNode } from 'antd'
 import { motion } from 'framer-motion'

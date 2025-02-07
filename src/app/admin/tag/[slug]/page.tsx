@@ -11,7 +11,7 @@ import useSlug from '@/hooks/useSlug'
 import http from '@/lib/http'
 import { ApiRoutes, PageRoutes } from '@cfg'
 import { Icon } from '@iconify/react'
-import { Accordion, AccordionItem, Switch } from '@nextui-org/react'
+import { Accordion, AccordionItem, Switch } from "@heroui/react"
 import { useSetState } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'

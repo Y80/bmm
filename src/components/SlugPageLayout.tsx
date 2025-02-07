@@ -1,4 +1,4 @@
-import { Button, Divider } from '@nextui-org/react'
+import { Button, Divider } from "@heroui/react"
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { PropsWithChildren } from 'react'
 import ReButton from './re-export/ReButton'

@@ -1,14 +1,14 @@
 import { useGlobalContext } from '@/app/ctx'
-import { cn } from '@/lib/utils'
+import GradientText from '@/components/GradientText'
 import { WEBSITE_NAME } from '@cfg'
-import { Chip } from '@nextui-org/react'
+import { Chip } from '@heroui/react'
 import dayjs from 'dayjs'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { PropsWithChildren } from 'react'
 import { useMainPageContext } from '../ctx'
 
 function Wrapper(props: PropsWithChildren) {
-  return <header className="flex-center xs:pb-16 flex-col gap-4 py-8">{props.children}</header>
+  return <header className="flex-col gap-4 py-8 flex-center xs:pb-16">{props.children}</header>
 }
 
 const H1_CLS = 'text-3xl font-bold flex-center text-foreground-700'
@@ -24,16 +24,15 @@ export default function Banner() {
   if (pathname === '/') {
     return (
       <Wrapper>
-        <h1
-          className={cn(
-            H1_CLS,
-            'mb-4 bg-gradient-to-r from-blue-500 via-purple-500 via-30% to-rose-500 bg-clip-text font-serif text-6xl font-extralight text-transparent'
-          )}
+        <GradientText
+          className="text-6xl"
+          animationSpeed={5}
+          colors={['#f86d60', '#9c57f6', '#19b6f5', '#78DDBC', '#E2C66A']}
         >
           {WEBSITE_NAME}
-        </h1>
+        </GradientText>
         <div className="text-foreground-800">收纳、分享、探索优质网站</div>
-        <div className="text-foreground-500 text-sm">
+        <div className="text-sm text-foreground-500">
           已收录 {totalBookmarks} 个书签，共 {tags.length} 个标签
         </div>
       </Wrapper>
@@ -54,7 +53,7 @@ export default function Banner() {
               <Chip
                 key={tag.id}
                 variant="flat"
-                className="text-foreground-500 hover:text-foreground-800 cursor-pointer"
+                className="cursor-pointer text-foreground-500 hover:text-foreground-800"
                 onClose={() => {
                   const tagNames = selectedTags
                     .map((t) => (t.name === tag.name ? null : t.name))
@@ -79,7 +78,7 @@ export default function Banner() {
                 <Chip
                   key={id}
                   variant="flat"
-                  className="text-foreground-500 hover:text-foreground-800 cursor-pointer active:opacity-50"
+                  className="cursor-pointer text-foreground-500 hover:text-foreground-800 active:opacity-50"
                   onClick={(e) => onClickTag({ tag, event: e })}
                 >
                   {tag.name}
@@ -111,7 +110,7 @@ export default function Banner() {
         <h1 className={H1_CLS}>搜索结果</h1>
         <div className="text-sm text-zinc-400">
           关键词：
-          <strong className="text-foreground-600 italic underline underline-offset-4">
+          <strong className="italic text-foreground-600 underline underline-offset-4">
             {keyword?.toUpperCase()}
           </strong>
         </div>

@@ -8,7 +8,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Link,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { useSetState } from 'ahooks'
 import clsx from 'clsx'
 import { signOut, useSession } from 'next-auth/react'
@@ -44,21 +44,26 @@ export default function NavUser() {
         <Avatar isBordered src={user.image!} className="cursor-pointer" />
       </DropdownTrigger>
       <DropdownMenu aria-label="user menu action">
-        <DropdownItem showDivider textValue="info">
+        <DropdownItem key="" showDivider textValue="info">
           <span>{user.name}</span>
         </DropdownItem>
-        <DropdownItem textValue="settings">
+        <DropdownItem key="" textValue="settings">
           <Link href="/user" color="foreground" className="w-full">
             个人中心
           </Link>
         </DropdownItem>
-        <DropdownItem showDivider textValue="admin" className={clsx(!user.isAdmin && 'hidden')}>
+        <DropdownItem
+          key=""
+          showDivider
+          textValue="admin"
+          className={clsx(!user.isAdmin && 'hidden')}
+        >
           <Link href="/admin" isExternal showAnchorIcon color="foreground" className="w-full">
             后台管理
           </Link>
         </DropdownItem>
 
-        <DropdownItem textValue="logout">
+        <DropdownItem key="" textValue="logout">
           <Link color="danger" className="w-full" onClick={() => signOut({ callbackUrl: '/' })}>
             退出登录
           </Link>

@@ -12,7 +12,7 @@ import {
   NavbarContent,
   NavbarMenu,
   NavbarMenuToggle,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { useDebounceEffect, useEventListener, useMemoizedFn, useMount, useSetState } from 'ahooks'
 import clsx from 'clsx'
 import Image from 'next/image'

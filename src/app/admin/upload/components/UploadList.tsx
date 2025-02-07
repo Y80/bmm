@@ -6,7 +6,7 @@ import { insertBookmark, tryCreateTags } from '@/lib/actions'
 import { to } from '@/utils'
 import { concurrenceWithLimit } from '@/utils/concurrence-with-limit'
 import { PageRoutes } from '@cfg'
-import { cn, Divider, Link, ScrollShadow } from '@nextui-org/react'
+import { cn, Divider, Link, ScrollShadow } from "@heroui/react"
 import { useSetState } from 'ahooks'
 import { pick } from 'lodash'
 import { useEffect, useState } from 'react'

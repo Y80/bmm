@@ -19,7 +19,7 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { useSetState, useUpdateEffect } from 'ahooks'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
@@ -144,8 +144,12 @@ export default function BookmarkSlug() {
           </ReButton>
         </DropdownTrigger>
         <DropdownMenu>
-          <DropdownItem onClick={parseWebsite}>解析 HTML</DropdownItem>
-          <DropdownItem onClick={aiAnalyzeWebsite}>AI 智能解析</DropdownItem>
+          <DropdownItem key="parse" onClick={parseWebsite}>
+            解析 HTML
+          </DropdownItem>
+          <DropdownItem key="ai" onClick={aiAnalyzeWebsite}>
+            AI 智能解析
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
     )

@@ -4,7 +4,7 @@ import { useGlobalContext } from '@/app/ctx'
 import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import { PageRoutes } from '@cfg'
-import { Divider } from '@nextui-org/react'
+import { Divider } from "@heroui/react"
 import { useSetState } from 'ahooks'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'

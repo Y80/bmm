@@ -2,7 +2,7 @@ import { useGlobalContext } from '@/app/ctx'
 import Favicon from '@/components/Favicon'
 import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
-import { Chip } from '@nextui-org/react'
+import { Chip } from "@heroui/react"
 import { twMerge } from 'tailwind-merge'
 import { useMainPageContext } from '../ctx'
 

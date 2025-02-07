@@ -1,6 +1,6 @@
 'use client'
 
-import { Image } from '@nextui-org/react'
+import { Image } from "@heroui/react"
 import { useSetState, useUpdateEffect } from 'ahooks'
 import { PropsWithChildren } from 'react'
 import { twMerge } from 'tailwind-merge'

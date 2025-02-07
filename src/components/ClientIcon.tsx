@@ -1,6 +1,7 @@
 'use client'
 
 import useIsDark from '@/hooks/useIsDark'
+import { cn } from '@/utils'
 import { calcForegroundColor } from '@/utils/color'
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { memo, useMemo } from 'react'
@@ -8,6 +9,7 @@ import { memo, useMemo } from 'react'
 interface Props {
   icon: string
   color?: string
+  className?: string
 }
 
 function ClientIcon(props: Props) {
@@ -19,7 +21,7 @@ function ClientIcon(props: Props) {
   }, [props.color, isDark])
 
   return (
-    <span className="size-5 text-xl" style={{ color }}>
+    <span className={cn('size-5 text-xl flex-center', props.className)} style={{ color }}>
       <Icon icon={props.icon} />
     </span>
   )

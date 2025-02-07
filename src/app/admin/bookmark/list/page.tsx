@@ -1,6 +1,7 @@
 'use client'
 
 import { useGlobalContext } from '@/app/ctx'
+import ClientIcon from '@/components/ClientIcon'
 import Favicon from '@/components/Favicon'
 import ListPageLayout from '@/components/ListPageLayout'
 import ReButton from '@/components/re-export/ReButton'
@@ -16,6 +17,8 @@ import {
   DropdownTrigger,
   Link,
   Pagination,
+  Select,
+  SelectItem,
   Spinner,
   Table,
   TableBody,
@@ -23,7 +26,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { useDebounceFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -45,6 +48,7 @@ export default function BookmarkListPage() {
     loading: true,
     sorterKey: searchParams.get('sorterKey') || SORTERS[0].key,
     keyword: searchParams.get('keyword') || '',
+    selectedTag: searchParams.get('tag'),
     bookmarks: [] as SelectPublicBookmark[],
     pager: {
       page: Number(searchParams.get('page')) || 1,
@@ -62,6 +66,7 @@ export default function BookmarkListPage() {
         page: state.pager.page.toString(),
         keyword: state.keyword,
         sorterKey: state.sorterKey,
+        ...(state.selectedTag && { tagIds: state.selectedTag }),
       }
       setState({ loading: true })
       const { data } = await http.get(ApiRoutes.Public.BOOKMARK_LIST, payload)
@@ -75,17 +80,18 @@ export default function BookmarkListPage() {
         },
       }))
     },
-    { refreshDeps: [state.keyword, state.sorterKey, state.pager.page] }
+    { refreshDeps: [state.keyword, state.sorterKey, state.pager.page, state.selectedTag] }
   )
 
   useUpdateEffect(() => {
-    const payload = {
+    const payload: Record<string, string> = {
       page: state.pager.page.toString(),
-      keyword: state.keyword,
       sorterKey: state.sorterKey,
     }
+    state.selectedTag && (payload.tag = state.selectedTag)
+    state.keyword && (payload.keyword = state.keyword)
     router.push('?' + new URLSearchParams(payload).toString())
-  }, [state.keyword, state.sorterKey, state.pager.page])
+  }, [state.keyword, state.sorterKey, state.pager.page, state.selectedTag])
 
   function renderRelatedTags(tagIds: number[] = []) {
     return tagIds
@@ -121,7 +127,7 @@ export default function BookmarkListPage() {
   return (
     <ListPageLayout>
       <div className={cn('grid grid-cols-2 gap-2 sm:grid-cols-5', !totalBookmarks && 'hidden')}>
-        <div className="inline-grid sm:col-end-5">
+        <div className="inline-grid sm:col-end-4">
           <ReInput
             size="sm"
             placeholder="输入书签名称、地址"
@@ -132,6 +138,25 @@ export default function BookmarkListPage() {
             onClear={() => onNameChange('')}
           />
         </div>
+        <Select
+          aria-label="选择标签"
+          placeholder="选择标签"
+          size="sm"
+          selectedKeys={state.selectedTag ? [state.selectedTag] : []}
+          onSelectionChange={(val) => {
+            console.log(val)
+            setState({ selectedTag: val.currentKey || null, pager: { ...state.pager, page: 1 } })
+          }}
+        >
+          {tags.map((tag) => (
+            <SelectItem
+              key={tag.id}
+              startContent={tag.icon ? <ClientIcon icon={tag.icon} /> : null}
+            >
+              {tag.name}
+            </SelectItem>
+          ))}
+        </Select>
         <Dropdown>
           <DropdownTrigger className="justify-start">
             {(function () {
@@ -141,7 +166,7 @@ export default function BookmarkListPage() {
                 <ReButton
                   variant="flat"
                   size="sm"
-                  startContent={<span className={target.iconCls} />}
+                  startContent={<span className={cn(target.iconCls, 'text-base')} />}
                 >
                   {target.name}
                 </ReButton>

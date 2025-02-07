@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Tooltip,
-} from '@nextui-org/react'
+} from '@heroui/react'
 import { ComponentProps, ReactNode, forwardRef, useState } from 'react'
 import ReTooltip from './ReTooltip'
 
@@ -39,7 +39,7 @@ function ReButton_(props: ReButtonProps, ref: any) {
       as={props.href ? 'a' : undefined}
       disabled={mergedLoading || props.disabled}
       isLoading={mergedLoading}
-      onClick={onClickWrapper}
+      onPress={onClickWrapper}
       ref={ref}
     >
       {props.children}
