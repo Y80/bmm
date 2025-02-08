@@ -20,6 +20,7 @@ import {
   Select,
   SelectItem,
   Spinner,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -29,6 +30,7 @@ import {
 } from '@heroui/react'
 import { useDebounceFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useRef } from 'react'
 import toast from 'react-hot-toast'
 import EmptyListPlaceholder from '../../components/EmptyListPlaceholder'
 
@@ -55,6 +57,7 @@ export default function BookmarkListPage() {
       total: 1,
     },
   })
+  const dataRef = useRef({ loadingMutable: true })
 
   const { tags, totalBookmarks } = useGlobalContext()
 
@@ -68,9 +71,10 @@ export default function BookmarkListPage() {
         sorterKey: state.sorterKey,
         ...(state.selectedTag && { tagIds: state.selectedTag }),
       }
-      setState({ loading: true })
+      dataRef.current.loadingMutable && setState({ loading: true })
       const { data } = await http.get(ApiRoutes.Public.BOOKMARK_LIST, payload)
       setState({ loading: false })
+      dataRef.current.loadingMutable = true
       if (!data) return
       setState((state) => ({
         bookmarks: data.list,
@@ -122,6 +126,13 @@ export default function BookmarkListPage() {
 
   function onPageChange(page: number) {
     setState({ pager: { ...state.pager, page } })
+  }
+
+  function onChangeIsPinned(bookmark: SelectPublicBookmark, isPinned: boolean) {
+    bookmark.isPinned = isPinned
+    setState({ bookmarks: [...state.bookmarks] })
+    dataRef.current.loadingMutable = false
+    http.patch(ApiRoutes.Public.BOOKMARK, bookmark).then(() => refresh())
   }
 
   return (
@@ -201,6 +212,7 @@ export default function BookmarkListPage() {
           <TableColumn>名称</TableColumn>
           <TableColumn className="max-xs:hidden">地址</TableColumn>
           <TableColumn>关联标签</TableColumn>
+          <TableColumn>置顶</TableColumn>
           <TableColumn>操作</TableColumn>
         </TableHeader>
         <TableBody
@@ -227,6 +239,13 @@ export default function BookmarkListPage() {
                   <div className="truncate text-sm max-xs:max-w-[6rem]">
                     {renderRelatedTags(bookmark.relatedTagIds)}
                   </div>
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    size="sm"
+                    isSelected={bookmark.isPinned || false}
+                    onValueChange={(v) => onChangeIsPinned(bookmark, v)}
+                  />
                 </TableCell>
                 <TableCell>
                   <ReButton

@@ -4,7 +4,7 @@ import { useGlobalContext } from '@/app/ctx'
 import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import { PageRoutes } from '@cfg'
-import { Divider } from "@heroui/react"
+import { Divider } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
@@ -33,7 +33,13 @@ export default function MainPage(props: Props) {
   })
 
   useEffect(() => {
-    setState({ bookmarks: props.bookmarks || [] })
+    const bookmarks = props.bookmarks || []
+    bookmarks.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1
+      if (!a.isPinned && b.isPinned) return 1
+      return 0
+    })
+    setState({ bookmarks })
   }, [props.bookmarks, setState])
 
   useEffect(() => {
