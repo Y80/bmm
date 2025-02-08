@@ -19,6 +19,7 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
+  Switch,
 } from '@heroui/react'
 import { useSetState, useUpdateEffect } from 'ahooks'
 import clsx from 'clsx'
@@ -43,6 +44,7 @@ export default function BookmarkSlug() {
     icon: '',
     description: '',
     relatedTagIds: [],
+    isPinned: false,
   })
 
   const [invalidInfos, setInvalidInfos] = useSetState<z.infer<typeof formSchema>>({
@@ -112,12 +114,12 @@ export default function BookmarkSlug() {
   async function onSave() {
     if (!validateAll()) return
     if (slug.isNew) {
-      const { error } = await http.post(ApiRoutes.Public.BOOKMARK, { ...bookmark })
+      const { error } = await http.post(ApiRoutes.Public.BOOKMARK, bookmark)
       if (error) return
       toast.success('创建成功')
       router.push(PageRoutes.Admin.BOOKMARK_LIST)
     } else {
-      const { error } = await http.patch(ApiRoutes.Public.BOOKMARK, { ...bookmark })
+      const { error } = await http.patch(ApiRoutes.Public.BOOKMARK, bookmark)
       if (error) return
       toast.success('更新成功')
       router.back()
@@ -266,6 +268,13 @@ export default function BookmarkSlug() {
         <TagSelect
           value={bookmark.relatedTagIds}
           onChange={(v) => setBookmark({ relatedTagIds: v })}
+        />
+      </div>
+      <div className="justify-between flex-items-center">
+        <label className="text-sm">置顶书签</label>
+        <Switch
+          isSelected={bookmark.isPinned || false}
+          onValueChange={(v) => setBookmark({ isPinned: v })}
         />
       </div>
     </SlugPageLayout>
