@@ -67,6 +67,7 @@ export const publicBookmarks = pgTable('publicBookmarks', {
   icon: varchar('icon', { length: 255 }),
   pinyin: varchar('pinyin', { length: 255 }),
   description: varchar('description', { length: 255 }),
+  isPinned: boolean('isPinned'),
   createdAt: timestamp('createdAt', { mode: 'date' }).$defaultFn(() => new Date()),
   updatedAt: timestamp('updatedAt', { mode: 'date' }).$defaultFn(() => new Date()),
 })

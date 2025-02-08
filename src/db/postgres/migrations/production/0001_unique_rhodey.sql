@@ -1,0 +1,1 @@
+ALTER TABLE "publicBookmarks" ADD COLUMN "isPinned" boolean;
