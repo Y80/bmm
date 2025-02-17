@@ -22,7 +22,7 @@ services:
       args:
         DB_CONNECTION_URL: postgresql://postgres:666888@postgres:5432/bmm
     working_dir: /app
-    command: sh -c "pnpm run start"
+    command: sh -c "pnpm build && pnpm start"
     ports:
       - 3000:3000
     depends_on:
