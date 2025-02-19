@@ -5,6 +5,8 @@ export default async function setup() {
   tryLoadParentGitRepoEnv()
   checkEnvs()
 
+  const domainHost = new URL(process.env.AUTH_URL || 'http://localhost').host
+
   /** @type {import('next').NextConfig} */
   const nextConfig = {
     images: {
@@ -31,7 +33,7 @@ export default async function setup() {
     },
 
     experimental: {
-      serverActions: { allowedOrigins: ['localhost:9002', 'localhost:3000', process.env.AUTH_URL] }
+      serverActions: { allowedOrigins: ['localhost:9002', 'localhost:3000', domainHost] }
     }
   }
   return nextConfig
