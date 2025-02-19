@@ -29,6 +29,8 @@ export default async function setup() {
       }
       return config
     },
+
+    experimental: { serverActions: { allowedOrigins: ['localhost'] } }
   }
   return nextConfig
 }

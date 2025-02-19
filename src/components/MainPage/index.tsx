@@ -120,9 +120,7 @@ export default function MainPage(props: Props) {
           )}
           {isHomePage && (
             <LoadMore
-              onChange={(bookmarks) => {
-                setState({ bookmarks: state.bookmarks.concat(bookmarks) })
-              }}
+              onChange={(bookmarks) => setState({ bookmarks: state.bookmarks.concat(bookmarks) })}
               onLoading={(val) => setState({ loadingMore: val })}
             />
           )}
