@@ -96,3 +96,6 @@ export const Assets = {
 export const ExternalLinks = {
   REPO: 'https://github.com/y80/bmm',
 } as const
+
+/** 默认情况下每页获取的书签个数；出于栅格布局的考虑这里选用 24 */
+export const DEFAULT_BOOKMARK_PAGESIZE = 24

@@ -1,6 +1,7 @@
 import { db, publicBookmarkToTag, publicBookmarks, publicTags } from '@/db'
 import { z } from '@/lib/zod'
 import { getPinyin } from '@/utils'
+import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
 import { and, asc, count, desc, eq, ilike, inArray, notInArray, or, sql } from 'drizzle-orm'
 import { findManyBookmarksSchema } from './schemas'
 
@@ -116,7 +117,7 @@ const PublicBookmarkController = {
       return filters.length ? and(...filters) : undefined
     })()
 
-    const [res, [{ total }]] = await Promise.all([
+    const [list, [{ total }]] = await Promise.all([
       await db.query.publicBookmarks.findMany({
         where: filters,
         with: { relatedTagIds: true },
@@ -138,7 +139,8 @@ const PublicBookmarkController = {
 
     return {
       total,
-      list: res.map((item) => ({
+      hasMore: total > page * limit,
+      list: list.map((item) => ({
         ...item,
         relatedTagIds: item.relatedTagIds.map((el) => el.tId),
       })),
@@ -166,14 +168,14 @@ const PublicBookmarkController = {
     const res = await db.select({ count: count() }).from(publicBookmarks)
     return res[0].count
   },
-  /** 获取最近更新的 20 个书签 */
+  /** 获取最近更新的 $DEFAULT_BOOKMARK_PAGESIZE 个书签 */
   async recent() {
     const res = await db.query.publicBookmarks.findMany({
       orderBy(fields, op) {
         return op.desc(fields.updatedAt)
       },
       with: { relatedTagIds: true },
-      limit: 20,
+      limit: DEFAULT_BOOKMARK_PAGESIZE,
     })
     return {
       list: res.map((item) => ({

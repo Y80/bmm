@@ -8,7 +8,7 @@ import ReButton from '@/components/re-export/ReButton'
 import ReInput from '@/components/re-export/ReInput'
 import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
 import http from '@/lib/http'
-import { ApiRoutes, IconNames, PageRoutes } from '@cfg'
+import { ApiRoutes, DEFAULT_BOOKMARK_PAGESIZE, IconNames, PageRoutes } from '@cfg'
 import {
   cn,
   Dropdown,
@@ -33,8 +33,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
 import toast from 'react-hot-toast'
 import EmptyListPlaceholder from '../../components/EmptyListPlaceholder'
-
-const DEFAULT_PAGESIZE = 20
 
 const SORTERS = [
   { name: '创建时间降序', key: '-createTime', iconCls: IconNames.SORT_DESC },
@@ -80,7 +78,10 @@ export default function BookmarkListPage() {
         bookmarks: data.list,
         pager: {
           ...state.pager,
-          total: data.total <= DEFAULT_PAGESIZE ? 1 : Math.round(data.total / DEFAULT_PAGESIZE) + 1,
+          total:
+            data.total <= DEFAULT_BOOKMARK_PAGESIZE
+              ? 1
+              : Math.round(data.total / DEFAULT_BOOKMARK_PAGESIZE) + 1,
         },
       }))
     },
