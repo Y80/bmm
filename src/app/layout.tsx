@@ -2,9 +2,10 @@ import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
 import PublicTagController from '@/controllers/PublicTag.controller'
 import { auth } from '@/lib/auth'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { WEBSITE_NAME } from '@cfg'
+import { WEBSITE_KEYWORDS, WEBSITE_NAME } from '@cfg'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { PropsWithChildren } from 'react'
 import { Toaster } from 'react-hot-toast'
 import './globals.css'
@@ -16,9 +17,23 @@ import Providers from './providers'
 // export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: WEBSITE_NAME,
-  description: '探索优质网站',
+  title: {
+    default: WEBSITE_NAME,
+    template: '%s | ' + WEBSITE_NAME,
+  },
+
+  description:
+    'BMM - 你的智能书签管家！支持 AI 解析网站信息，自动生成标签，跨设备同步书签。高效管理你的收藏夹，探索开发者精选资源，支持明暗双主题与多端适配。',
   icons: '/logo.svg',
+  applicationName: 'BMM 书签管家',
+  authors: { name: '令川', url: 'https://lccl.cc' },
+  keywords: WEBSITE_KEYWORDS,
+  robots: { index: true, follow: true },
+  other: {
+    ...(process.env.BAIDU_SITE_VERIFICATION && {
+      'baidu-site-verification': process.env.BAIDU_SITE_VERIFICATION,
+    }),
+  },
 }
 
 export default async function RootLayout({ children }: PropsWithChildren) {
@@ -35,6 +50,18 @@ export default async function RootLayout({ children }: PropsWithChildren) {
       suppressHydrationWarning
     >
       <body>
+        {process.env.MS_CLARITY && (
+          <Script id="clarity" strategy="lazyOnload">
+            {`
+        (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", ${process.env.MS_CLARITY})
+        `}
+          </Script>
+        )}
+
         {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />
         )}

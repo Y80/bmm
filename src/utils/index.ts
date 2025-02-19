@@ -1,5 +1,4 @@
 import { SelectPublicTag } from '@/db'
-import { WEBSITE_NAME } from '@cfg'
 import { type ClassValue, clsx } from 'clsx'
 import { pinyin } from 'pinyin-pro'
 import { twMerge } from 'tailwind-merge'
@@ -109,10 +108,6 @@ export function testTagNameOrPinyin(
 
 export function getPinyin(word: string) {
   return pinyin(word, { toneType: 'none', nonZh: 'consecutive' })
-}
-
-export function mergeWebsiteTitle(title: string) {
-  return title + ' | ' + WEBSITE_NAME
 }
 
 /**

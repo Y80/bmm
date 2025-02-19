@@ -4,11 +4,13 @@ import PublicTagController from '@/controllers/PublicTag.controller'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { SelectPublicTag } from '@/db'
 import { GenerateMetadata, RSCPageProps } from '@/types'
-import { mergeWebsiteTitle } from '@/utils'
+import { WEBSITE_KEYWORDS } from '@cfg'
 
 export const generateMetadata: GenerateMetadata<{ slug: string }> = (props) => {
+  const tag = decodeURIComponent(props.params.slug)
   return {
-    title: mergeWebsiteTitle(`${decodeURIComponent(props.params.slug)}相关的书签`),
+    title: tag + '相关的书签',
+    keywords: `${tag}相关的网站, ${tag}-网站推荐, ` + WEBSITE_KEYWORDS,
   }
 }
 
