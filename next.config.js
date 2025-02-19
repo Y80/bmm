@@ -31,7 +31,7 @@ export default async function setup() {
     },
 
     experimental: {
-      serverActions: { allowedOrigins: ['localhost:9002', 'localhost:3000'] }
+      serverActions: { allowedOrigins: ['localhost:9002', 'localhost:3000', process.env.AUTH_URL] }
     }
   }
   return nextConfig
