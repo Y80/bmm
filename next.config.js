@@ -30,7 +30,9 @@ export default async function setup() {
       return config
     },
 
-    experimental: { serverActions: { allowedOrigins: ['localhost'] } }
+    experimental: {
+      serverActions: { allowedOrigins: ['localhost:9002', 'localhost:3000'] }
+    }
   }
   return nextConfig
 }
