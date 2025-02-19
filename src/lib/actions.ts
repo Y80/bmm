@@ -8,13 +8,10 @@ import PublicTagController from '@/controllers/PublicTag.controller'
 import { zodSchema } from '@/db/zod'
 import { to } from '@/utils'
 
-const getAllPublicTags = PublicTagController.getAll
-
-const updateTagSortOrders = PublicTagController.updateSortOrders
-
-export { getAllPublicTags, updateTagSortOrders }
-
+export const getAllPublicTags = PublicTagController.getAll
+export const updateTagSortOrders = PublicTagController.updateSortOrders
 export const tryCreateTags = PublicTagController.tryCreateTags
+export const findManyBookmarks = PublicBookmarkController.findMany
 
 export async function insertBookmark(payload: InsertPublicBookmark) {
   const parseRes = zodSchema.publicBookmarks.insert().safeParse(payload)

@@ -12,6 +12,7 @@ import { useCallback, useEffect } from 'react'
 import Banner from './components/Banner'
 import BookmarkCard from './components/BookmarkCard'
 import BookmarkContainer from './components/BookmarkContainer'
+import LoadMore from './components/LoadMore'
 import Nav from './components/Nav'
 import TagPicker, { TAG_PICKER_SCROLL_TOP_KEY, getScrollElement } from './components/TagPicker'
 import { MainPageContext, MainPageProvider } from './ctx'
@@ -26,10 +27,10 @@ export default function MainPage(props: Props) {
   const params = useParams()
 
   const { tags } = useGlobalContext()
-
   const [state, setState] = useSetState({
     bookmarks: props.bookmarks || [],
     selectedTags: [] as SelectPublicTag[],
+    loadingMore: false,
   })
 
   useEffect(() => {
@@ -79,6 +80,7 @@ export default function MainPage(props: Props) {
   )
 
   const isSearchPage = globalThis.location?.pathname === PageRoutes.Public.SEARCH
+  const isHomePage = globalThis.location?.pathname === '/'
 
   return (
     <MainPageProvider
@@ -108,14 +110,20 @@ export default function MainPage(props: Props) {
             {state.bookmarks.map((bookmark) => (
               <BookmarkCard {...bookmark} key={bookmark.id} />
             ))}
-            {!!state.bookmarks.length && (
-              <div className="mt-4 gap-6 flex-center xs:hidden">
-                <Divider orientation="vertical" />
-                <span className="text-xs text-foreground-500">END</span>
-                <Divider orientation="vertical" />
-              </div>
-            )}
           </BookmarkContainer>
+          {!!state.bookmarks.length && !state.loadingMore && (
+            <div className="mt-12 flex-center">
+              <Divider orientation="vertical" />
+              <span className="mx-4 text-xs text-foreground-400 xs:mx-8">END</span>
+              <Divider orientation="vertical" />
+            </div>
+          )}
+          {isHomePage && (
+            <LoadMore
+              onChange={(bookmarks) => setState({ bookmarks: state.bookmarks.concat(bookmarks) })}
+              onLoading={(val) => setState({ loadingMore: val })}
+            />
+          )}
         </div>
       </div>
     </MainPageProvider>

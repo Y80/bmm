@@ -1,4 +1,5 @@
 import { z } from '@/lib/zod'
+import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
 
 export const findManyBookmarksSchema = z.object({
   keyword: z.string().optional(),
@@ -16,7 +17,7 @@ export const findManyBookmarksSchema = z.object({
     .number()
     .or(z.string())
     .optional()
-    .transform((v) => Number(v) || 20),
+    .transform((v) => Number(v) || DEFAULT_BOOKMARK_PAGESIZE),
   page: z
     .number()
     .or(z.string())
