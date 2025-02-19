@@ -51,6 +51,7 @@ export const PageRoutes = {
     bookmarkSlug: (slug: 'new' | number) => '/admin/bookmark/' + slug,
   },
   Public: {
+    RANDOM: '/random',
     SEARCH: '/search',
     search: (ky: string) => '/search?keyword=' + ky,
   },
@@ -75,6 +76,7 @@ export const IconNames = {
   SORT_ASC: 'icon-[tabler--sort-ascending]',
   SORT_DESC: 'icon-[tabler--sort-descending]',
   STARS: 'icon-[mdi--stars]',
+  SIEVE: 'icon-[tabler--dice-3]', // 筛子
   SUN: 'icon-[tabler--sun]',
   TAG: 'icon-[tabler--tag]',
   TRASH: 'icon-[tabler--trash]',

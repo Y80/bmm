@@ -147,16 +147,12 @@ const PublicBookmarkController = {
     }
   },
   async random() {
-    // db.select().from(publicBookmarks).orderBy(sql`RANDOM()`).limit(1)
-    const listTask = db.query.publicBookmarks.findMany({
+    const list = await db.query.publicBookmarks.findMany({
       with: { relatedTagIds: true },
       orderBy: sql`RANDOM()`,
-      limit: 24,
+      limit: DEFAULT_BOOKMARK_PAGESIZE,
     })
-    const countTask = db.select({ count: count() }).from(publicBookmarks)
-    const [list, total] = await Promise.all([listTask, countTask])
     return {
-      total: total[0].count,
       list: list.map((item) => ({
         ...item,
         relatedTagIds: item.relatedTagIds.map((el) => el.tId),

@@ -132,13 +132,13 @@ export default function Nav() {
           <ThemeToggle />
           <ReButton
             {...NavIconOnlyButtonProps}
-            href="/recent"
+            href={PageRoutes.Public.RANDOM}
             tooltip={{
               placement: 'bottom-end',
-              content: '最近更新',
+              content: '随便看看',
             }}
           >
-            <span className="icon-[tabler--clock-plus]" />
+            <span className={IconNames.SIEVE} />
           </ReButton>
           <ReButton
             {...NavIconOnlyButtonProps}

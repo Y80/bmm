@@ -1,8 +1,7 @@
 import { useGlobalContext } from '@/app/ctx'
 import GradientText from '@/components/GradientText'
-import { WEBSITE_NAME } from '@cfg'
+import { PageRoutes, WEBSITE_NAME } from '@cfg'
 import { Chip } from '@heroui/react'
-import dayjs from 'dayjs'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { PropsWithChildren } from 'react'
 import { useMainPageContext } from '../ctx'
@@ -91,14 +90,12 @@ export default function Banner() {
     )
   }
 
-  if (pathname.startsWith('/recent')) {
+  if (pathname === PageRoutes.Public.RANDOM) {
     const lastUpdateTime = bookmarks[0].updatedAt
     return (
       <Wrapper>
-        <h1 className={H1_CLS}>最近更新</h1>
-        <div className="text-sm text-zinc-400">
-          {dayjs(lastUpdateTime).format('YYYY-MM-DD HH:mm:ss')}
-        </div>
+        <h1 className={H1_CLS}>随便看看</h1>
+        <div className="text-sm text-zinc-400 flex-center">探索随机网站，发现精彩内容</div>
       </Wrapper>
     )
   }

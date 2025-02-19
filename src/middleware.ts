@@ -1,6 +1,7 @@
 // https://nextjs.org/docs/app/building-your-application/routing/middleware
 // https://authjs.dev/getting-started/session-management/protecting#nextjs-middleware
 
+import { PageRoutes } from '@cfg'
 import NextAuth from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authConfig } from './lib/auth/config'
@@ -13,12 +14,21 @@ export default auth((req) => {
   if (pathname === '/favicon.ico') {
     return NextResponse.rewrite(req.nextUrl.origin + '/logo.svg')
   }
-  // 默认为 true，仅对于少数请求免除验证
+  // 是否检查管理员权限；默认为 true，仅对于少数请求免除验证
   let checkAdmin = true
   const whitelist = {
-    prefixes: ['/_next', '__next', '/api/auth', '/tag'],
+    prefixes: ['/_next', '/__next', '/api/auth', '/tag'],
     affixes: ['.svg', '.png'],
-    pathnames: ['/', '/recent', '/search', '/login', '/forbidden', '/404', '/500', '/_error'],
+    pathnames: [
+      '/',
+      PageRoutes.Public.RANDOM,
+      PageRoutes.Public.SEARCH,
+      PageRoutes.LOGIN,
+      PageRoutes.FORBIDDEN,
+      '/404',
+      '/500',
+      '/_error',
+    ],
   }
   if (
     whitelist.affixes.some((p) => pathname.endsWith(p)) ||
