@@ -33,7 +33,7 @@ export default async function setup() {
     },
 
     experimental: {
-      serverActions: { allowedOrigins: ['localhost:9002', 'localhost:3000', domainHost] }
+      serverActions: { allowedOrigins: [domainHost] }
     }
   }
   return nextConfig
