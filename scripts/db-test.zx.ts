@@ -1,12 +1,13 @@
 #!/usr/bin/env zx
 
 import 'zx/globals'
-import { exitWithDbEnd, loadEnv, testDbConnect } from './utils'
+import { exitWithDbClose, loadEnv, testDbConnect } from './utils'
 
 async function main() {
   await loadEnv()
 
   echo(chalk.cyan('当前环境：'), process.env.NODE_ENV)
+  echo(chalk.cyan('数据库驱动：'), process.env.DB_DRIVER)
   echo(chalk.cyan('数据库链接：'), process.env.DB_CONNECTION_URL)
 
   await spinner('数据库连接中', async () => {
@@ -15,7 +16,7 @@ async function main() {
     } else {
       echo(chalk.red('❌ 数据库连接失败，请检查'))
     }
-    exitWithDbEnd()
+    exitWithDbClose()
   })
 }
 
