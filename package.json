@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.1",
-    "@auth/drizzle-adapter": "1.7.4",
+    "@auth/drizzle-adapter": "1.7.2",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -60,7 +60,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.441.0",
     "next": "14.2.17",
-    "next-auth": "5.0.0-beta.20",
+    "next-auth": "5.0.0-beta.25",
     "next-themes": "0.3.0",
     "pinyin-pro": "^3.24.2",
     "postcss": "^8.4.41",
