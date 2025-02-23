@@ -7,6 +7,7 @@ export function mockTag() {
     icon: 'tabler:search',
     color: faker.color.rgb(),
     isMain: Boolean(faker.number.int({ max: 1 })),
+    pinyin: 'pinyin',
   }
   return tag
 }

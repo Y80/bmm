@@ -12,13 +12,13 @@
 // import { db } from './mysql/drivers/mysql2'
 // import * as schema from './mysql/schemas'
 
-// import {db} from './sqlite/drivers/better-sqlite3'
+// import { db } from './sqlite/drivers/libsql'
 // import * as schema from './sqlite/schemas'
 
-import { db, pgSql } from './postgres/drivers/postgres'
+import { db } from './postgres/drivers/postgres'
 import * as schema from './postgres/schemas'
 
-export { db, pgSql, schema }
+export { db, schema }
 
 export const { publicBookmarks, publicTags, publicBookmarkToTag, publicTagToTag } = schema
 

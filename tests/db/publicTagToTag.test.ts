@@ -27,7 +27,7 @@ describe('publicTagToTag CRUD', () => {
       if (tag.id === id1) continue
       values.push({ a: id1, b: tag.id })
     }
-    const res = await db.insert(publicTagToTag).values(values)
+    const res = await db.insert(publicTagToTag).values(values).returning()
     console.log({ res })
     expect(res.length).toBe(tags.length - 1)
   })

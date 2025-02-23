@@ -63,6 +63,7 @@ export const publicBookmarks = sqliteTable('publicBookmarks', {
   icon: text('icon'),
   pinyin: text('pinyin'),
   description: text('description'),
+  isPinned: integer('isPinned', { mode: 'boolean' }),
   createdAt: integer('createdAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
   updatedAt: integer('updatedAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 })
