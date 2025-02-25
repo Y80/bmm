@@ -6,7 +6,7 @@ import { insertBookmark, tryCreateTags } from '@/lib/actions'
 import { to } from '@/utils'
 import { concurrenceWithLimit } from '@/utils/concurrence-with-limit'
 import { PageRoutes } from '@cfg'
-import { cn, Divider, Link, ScrollShadow } from "@heroui/react"
+import { cn, Divider, Link, ScrollShadow } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import { pick } from 'lodash'
 import { useEffect, useState } from 'react'
@@ -30,7 +30,7 @@ enum UploadState {
 }
 
 function getDefaultFavicon(url: string) {
-  return `https://api.iowen.cn/favicon/${new URL(url).host}.png`
+  return `https://favicon.yandex.net/favicon/${new URL(url).host}`
 }
 
 export default function UploadList(props: Props) {
@@ -117,7 +117,13 @@ export default function UploadList(props: Props) {
               return (
                 <div className="flex w-full items-center justify-between gap-4">
                   <span>任务已完成</span>
-                  <Link href={PageRoutes.Admin.BOOKMARK_LIST} showAnchorIcon isExternal size="sm">
+                  <Link
+                    href={PageRoutes.Admin.BOOKMARK_LIST}
+                    onPress={() => window.open('/')}
+                    showAnchorIcon
+                    isExternal
+                    size="sm"
+                  >
                     去查看
                   </Link>
                 </div>
