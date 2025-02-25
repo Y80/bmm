@@ -18,7 +18,6 @@ async function main() {
 
   // 数据库是否已经初始化（通过检测表 publicBookmarks 是否存在）
   async function testDBInitialed() {
-    const { db } = await import('@/db')
     let sql = ''
     if (process.env.DB_DRIVER === 'postgresql') {
       sql = `

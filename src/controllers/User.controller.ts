@@ -1,7 +1,7 @@
 import { db, schema } from '@/db'
 import { count as sqlCount } from 'drizzle-orm'
 
-module UserController {
+namespace UserController {
   export async function count() {
     const res = await db.select({ count: sqlCount() }).from(schema.users)
     return res[0].count

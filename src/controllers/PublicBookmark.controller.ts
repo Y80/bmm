@@ -91,7 +91,10 @@ const PublicBookmarkController = {
     return res.pop()
   },
   async delete(bookmark: Pick<SelectBookmark, 'id'>) {
-    const res = await db.delete(publicBookmarks).where(eq(publicBookmarks.id, bookmark.id))
+    const res = await db
+      .delete(publicBookmarks)
+      .where(eq(publicBookmarks.id, bookmark.id))
+      .returning()
     return res
   },
   /**
