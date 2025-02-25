@@ -5,15 +5,14 @@ export type InsertPublicTag = typeof publicTags.$inferInsert
 
 export type SelectPublicTag = typeof publicTags.$inferSelect
 
-// export type EntityTag = SelectPublicTag & { relatedTagIds: SelectPublicTag['id'][] }
-
 export const publicTags = sqliteTable('publicTags', {
   id: integer('id').notNull().primaryKey({ autoIncrement: true }),
   name: text('name').notNull().unique(),
   icon: text('icon'),
   color: text('color'),
   isMain: integer('isMain', { mode: 'boolean' }),
-  pinyin: text('pinyin').notNull(),
+  pinyin: text('pinyin').notNull().default(''),
+  sortOrder: integer('sortOrder').default(0),
   createdAt: integer('createdAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
   updatedAt: integer('updatedAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 })
@@ -36,9 +35,7 @@ export const publicTagToTag = sqliteTable(
       .notNull()
       .references(() => publicTags.id, { onDelete: 'cascade' }),
   },
-  (table) => {
-    return { pk: primaryKey({ columns: [table.a, table.b] }) }
-  }
+  (table) => [primaryKey({ columns: [table.a, table.b] })]
 )
 
 export const publicTagToTagRelations = relations(publicTagToTag, (ctx) => {
@@ -84,9 +81,7 @@ export const publicBookmarkToTag = sqliteTable(
       .notNull()
       .references(() => publicTags.id, { onDelete: 'cascade' }),
   },
-  (table) => {
-    return { pk: primaryKey({ columns: [table.bId, table.tId] }) }
-  }
+  (table) => [primaryKey({ columns: [table.bId, table.tId] })]
 )
 
 export const publicBookmarkToTagRelations = relations(publicBookmarkToTag, (ctx) => {

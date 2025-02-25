@@ -11,7 +11,7 @@ if (!process.env.DB_CONNECTION_URL) {
 export default defineConfig(
   (() => {
     // 根据你的配置使用相应的断言
-    const dbDriver = process.env.DB_DRIVER as 'postgresql'
+    const dbDriver = process.env.DB_DRIVER as 'sqlite'
     // const dbDriver = process.env.DB_DRIVER as 'sqlite'
 
     const folderAlias: Record<typeof process.env.DB_DRIVER, string> = {

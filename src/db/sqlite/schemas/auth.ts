@@ -9,6 +9,7 @@ export const users = sqliteTable('user', {
   email: text('email').notNull(),
   emailVerified: integer('emailVerified', { mode: 'timestamp_ms' }),
   image: text('image'),
+  role: text({ enum: ['user', 'admin'] }).default('user'),
 })
 
 export const accounts = sqliteTable(
@@ -28,11 +29,11 @@ export const accounts = sqliteTable(
     id_token: text('id_token'),
     session_state: text('session_state'),
   },
-  (account) => ({
-    compoundKey: primaryKey({
+  (account) => [
+    primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-  })
+  ]
 )
 
 export const sessions = sqliteTable('session', {
@@ -50,11 +51,11 @@ export const verificationTokens = sqliteTable(
     token: text('token').notNull(),
     expires: integer('expires', { mode: 'timestamp_ms' }).notNull(),
   },
-  (verificationToken) => ({
-    compositePk: primaryKey({
+  (verificationToken) => [
+    primaryKey({
       columns: [verificationToken.identifier, verificationToken.token],
     }),
-  })
+  ]
 )
 
 export const authenticators = sqliteTable(
@@ -71,9 +72,9 @@ export const authenticators = sqliteTable(
     credentialBackedUp: integer('credentialBackedUp', { mode: 'boolean' }).notNull(),
     transports: text('transports'),
   },
-  (authenticator) => ({
-    compositePK: primaryKey({
+  (authenticator) => [
+    primaryKey({
       columns: [authenticator.userId, authenticator.credentialID],
     }),
-  })
+  ]
 )

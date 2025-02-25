@@ -1,5 +1,5 @@
 import { boolean, integer, pgEnum, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core'
-import { AdapterAccount } from 'next-auth/adapters'
+import { AdapterAccountType } from 'next-auth/adapters'
 
 export const roleEnum = pgEnum('role', ['admin', 'user'])
 
@@ -20,7 +20,7 @@ export const accounts = pgTable(
     userId: text('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    type: text('type').$type<AdapterAccount['type']>().notNull(),
+    type: text('type').$type<AdapterAccountType>().notNull(),
     provider: text('provider').notNull(),
     providerAccountId: text('providerAccountId').notNull(),
     refresh_token: text('refresh_token'),
@@ -31,11 +31,11 @@ export const accounts = pgTable(
     id_token: text('id_token'),
     session_state: text('session_state'),
   },
-  (account) => ({
-    compoundKey: primaryKey({
+  (account) => [
+    primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-  })
+  ]
 )
 
 export const sessions = pgTable('session', {
@@ -53,11 +53,11 @@ export const verificationTokens = pgTable(
     token: text('token').notNull(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
-  (verificationToken) => ({
-    compositePk: primaryKey({
+  (verificationToken) => [
+    primaryKey({
       columns: [verificationToken.identifier, verificationToken.token],
     }),
-  })
+  ]
 )
 
 export const authenticators = pgTable(
@@ -74,9 +74,9 @@ export const authenticators = pgTable(
     credentialBackedUp: boolean('credentialBackedUp').notNull(),
     transports: text('transports'),
   },
-  (authenticator) => ({
-    compositePK: primaryKey({
+  (authenticator) => [
+    primaryKey({
       columns: [authenticator.userId, authenticator.credentialID],
     }),
-  })
+  ]
 )

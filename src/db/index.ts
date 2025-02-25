@@ -12,11 +12,11 @@
 // import { db } from './mysql/drivers/mysql2'
 // import * as schema from './mysql/schemas'
 
-// import { db } from './sqlite/drivers/libsql'
-// import * as schema from './sqlite/schemas'
+import { db } from './sqlite/drivers/libsql'
+import * as schema from './sqlite/schemas'
 
-import { db } from './postgres/drivers/postgres'
-import * as schema from './postgres/schemas'
+// import { db } from './postgres/drivers/postgres'
+// import * as schema from './postgres/schemas'
 
 export { db, schema }
 

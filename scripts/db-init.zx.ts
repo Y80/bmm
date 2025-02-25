@@ -60,7 +60,7 @@ async function main() {
       chalk.yellow(
         '数据库初始化失败，请重试。或前往：\n' +
           'https://github.com/Y80/bmm/issues?q=is%3Aissue%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%20' +
-          '查看类似的问题，或带上报错信息新建 issue，我会尽快处理 :) \n'
+          '\n查看类似的问题，或带上报错信息新建 issue，我会尽快处理 :) \n'
       )
     )
     exitWithDbClose(1)
