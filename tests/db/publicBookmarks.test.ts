@@ -1,7 +1,9 @@
-import { InsertPublicBookmark, db, publicBookmarks } from '@/db'
+import { InsertPublicBookmark, db, schema } from '@/db'
 import { faker } from '@faker-js/faker'
 import { count, eq } from 'drizzle-orm'
 import { describe, expect, test } from 'vitest'
+
+const { publicBookmarks } = schema
 
 describe('publicBookmarks: CRUD', () => {
   const mockBookmark: InsertPublicBookmark = {

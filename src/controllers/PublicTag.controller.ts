@@ -1,6 +1,8 @@
-import { db, publicTagToTag, publicTags } from '@/db'
+import { db, schema } from '@/db'
 import { isServerless } from '@/utils'
 import { and, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
+
+const { publicTagToTag, publicTags } = schema
 
 export type { SelectTag as SelectPublicTag }
 

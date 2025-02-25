@@ -4,10 +4,10 @@ import 'zx/globals'
 import { dbExecute, exitWithDbClose, loadEnv, testDbConnect } from './utils'
 
 async function main() {
+  await loadEnv()
+
   const prefix = chalk.bold.cyan('[INIT-DATABASE]: ')
   echo(prefix + '开始执行数据库初始化脚本')
-
-  await loadEnv()
 
   if (!(await testDbConnect())) {
     echo(chalk.red('❌ 数据库连接失败'))

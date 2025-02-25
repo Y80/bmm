@@ -1,9 +1,11 @@
-import { db, publicBookmarkToTag, publicBookmarks, publicTags } from '@/db'
+import { db, schema } from '@/db'
 import { z } from '@/lib/zod'
 import { getPinyin } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
 import { and, asc, count, desc, eq, ilike, inArray, notInArray, or, sql } from 'drizzle-orm'
 import { findManyBookmarksSchema } from './schemas'
+
+const { publicBookmarkToTag, publicBookmarks, publicTags } = schema
 
 export type { SelectBookmark as SelectPublicBookmark }
 

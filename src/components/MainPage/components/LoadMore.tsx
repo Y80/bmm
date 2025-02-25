@@ -34,7 +34,7 @@ export default function LoadMore(props: Props) {
       observer.observe(rootRef.current)
     }
     return () => observer.disconnect()
-  }, [rootRef.current])
+  }, [setState])
 
   useUpdateEffect(() => {
     state.isIntersecting && state.hasMore && run()

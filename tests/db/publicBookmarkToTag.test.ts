@@ -1,9 +1,11 @@
 import { fullSetBookmarkToTag } from '@/controllers/PublicBookmark.controller'
-import { db, publicBookmarkToTag, publicBookmarks, publicTags } from '@/db'
+import { db, schema } from '@/db'
 import { faker } from '@faker-js/faker'
 import { eq, inArray } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import { batchCreateTags } from './utils'
+
+const { publicBookmarkToTag, publicBookmarks, publicTags } = schema
 
 describe('publicBookmarkToTag CRUD', async () => {
   const [bookmark] = await db

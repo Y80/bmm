@@ -1,6 +1,8 @@
 import { z } from '@/lib/zod'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
-import { publicBookmarks, publicTags } from './'
+import { schema } from './'
+
+const { publicBookmarks, publicTags } = schema
 
 export const zodSchema = {
   publicTags: {
