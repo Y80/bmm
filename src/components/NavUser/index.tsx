@@ -49,7 +49,7 @@ export default function NavUser() {
         </DropdownItem>
         <DropdownItem key="" textValue="settings">
           <Link href="/user" color="foreground" className="w-full">
-            个人中心
+            我的主页
           </Link>
         </DropdownItem>
         <DropdownItem

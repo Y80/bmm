@@ -1,5 +1,7 @@
 // https://nextjs.org/docs/app/building-your-application/routing/middleware
 // https://authjs.dev/getting-started/session-management/protecting#nextjs-middleware
+//
+// 即使对于 Server Action（POST 请求，PATH 为调用 Server Action 的页面路径），也会触发该中间件
 
 import { PageRoutes } from '@cfg'
 import NextAuth from 'next-auth'

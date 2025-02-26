@@ -19,6 +19,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
+import AdminUser from './AdminUser'
 import TagPicker from './TagPicker'
 import User from './User'
 
@@ -128,7 +129,7 @@ export default function Nav() {
         />
 
         <div className="shrink-0 justify-end gap-1 flex-items-center max-xs:ml-auto">
-          <User className="max-xs:hidden" />
+          <AdminUser className="max-xs:hidden" />
           <ThemeToggle />
           <ReButton
             {...NavIconOnlyButtonProps}
@@ -166,6 +167,7 @@ export default function Nav() {
           >
             <span className={IconNames.GITHUB} />
           </ReButton>
+          <User />
         </div>
       </NavbarContent>
 

@@ -74,6 +74,7 @@ export const IconNames = {
   PLUS: 'icon-[tabler--plus]',
   QUESTION_CIRCLE: 'icon-[mdi--question-mark-circle-outline]',
   UPLOAD: 'icon-[tabler--upload]',
+  USER: 'icon-[tabler--user]',
   SEARCH: 'icon-[tabler--search]',
   SORT: 'icon-[tabler--arrows-sort]',
   SORT_ASC: 'icon-[tabler--sort-ascending]',
