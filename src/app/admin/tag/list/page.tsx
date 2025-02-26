@@ -7,7 +7,6 @@ import ReButton from '@/components/re-export/ReButton'
 import { SelectPublicTag } from '@/db/sqlite/schemas'
 import http from '@/lib/http'
 import { ApiRoutes, IconNames, PageRoutes } from '@cfg'
-import { Icon } from '@iconify/react'
 import {
   cn,
   Switch,
@@ -17,7 +16,8 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from "@heroui/react"
+} from '@heroui/react'
+import { Icon } from '@iconify/react'
 import { useSetState } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -94,7 +94,7 @@ export default function Page() {
           <TableColumn>关联标签</TableColumn>
           <TableColumn>操作</TableColumn>
         </TableHeader>
-        <TableBody emptyContent={<EmptyListPlaceholder href={PageRoutes.Admin.tagSlug('new')} />}>
+        <TableBody emptyContent={<EmptyListPlaceholder target="tag" />}>
           {tags.map((tag) => (
             <TableRow key={tag.id}>
               <TableCell className="text-3xl text-foreground-700 max-xs:text-xl">
