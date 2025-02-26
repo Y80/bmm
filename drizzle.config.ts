@@ -10,22 +10,38 @@ if (!process.env.DB_CONNECTION_URL) {
  */
 export default defineConfig(
   (() => {
-    // 根据你的配置使用相应的断言
-    const dbDriver = process.env.DB_DRIVER as 'sqlite'
-    // const dbDriver = process.env.DB_DRIVER as 'sqlite'
-
     const folderAlias: Record<typeof process.env.DB_DRIVER, string> = {
       postgresql: 'postgres',
-      // mysql: 'mysql',
       sqlite: 'sqlite',
+      // mysql: 'mysql',
+    }
+    // 指定 Schema 文件或文件夹路径
+    const schema = `./src/db/${folderAlias[process.env.DB_DRIVER]}/schemas/*`
+    // 执行数据库迁移时，将会在这个目录中生成一些迁移 SQL 和其他记录数据的文件
+    const out = `./src/db/${folderAlias[process.env.DB_DRIVER]}/migrations/${process.env.NODE_ENV}`
+    if (process.env.DB_DRIVER === 'postgresql') {
+      return {
+        schema,
+        out,
+        dialect: 'postgresql',
+        dbCredentials: { url: process.env.DB_CONNECTION_URL },
+      }
+    }
+    if (process.env.DB_CONNECTION_URL.startsWith('libsql://')) {
+      return {
+        schema,
+        out,
+        dialect: 'turso',
+        dbCredentials: {
+          url: process.env.DB_CONNECTION_URL,
+          authToken: process.env.DB_AUTH_TOKEN,
+        },
+      }
     }
     return {
-      // 指定 Schema 文件或文件夹路径
-      schema: `./src/db/${folderAlias[dbDriver]}/schemas/*`,
-      // 执行数据库迁移时，将会在这个目录中生成一些迁移 SQL 和其他记录数据的文件
-      out: `./src/db/${folderAlias[dbDriver]}/migrations/` + process.env.NODE_ENV,
-
-      dialect: dbDriver,
+      schema,
+      out,
+      dialect: 'sqlite',
       dbCredentials: { url: process.env.DB_CONNECTION_URL },
     }
   })()

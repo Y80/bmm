@@ -59,19 +59,21 @@
 
 ## 🍽️ 准备内容
 
-需要准备的内容包括 **数据库连接 URL** 和 **Github OAuth App 密钥对**，下面分别介绍。
+需要准备的内容包括 **数据库** 和 **Github OAuth App 密钥对**，下面分别介绍。
 
-### 数据库连接 URL
+### 数据库
 
-BMM 使用 Drizzle ORM 将数据存在 PostgreSQL 数据库中。因此需要准备一个 PostgreSQL 的数据库连接 URL。
+BMM 使用 Drizzle ORM 持久化存储数据，当前开箱即用的支持 SQLite 和 PostgreSQL 数据库。
 
-如果您已经有的 PostgreSQL 服务，创建一个新的数据库然后准备好连接 URL 即可。
+默认的环境变量配置使用本地的 SQLite 数据库。但是这种方式只适合本地开发调试，不适合线上部署。
 
-如果没有，这里有一些获取免费 PostgreSQL 云服务的方式：[查看](https://juejin.cn/post/7411047482651951119)。
+如果你需要线上数据库，下面提供两种方式：
 
-如果使用 Docker 部署当前项目，将会内部启用一个 PostgreSQL 服务，并自动设置数据库连接 URL。
+1. [BMM 接入 Turso](https://github.com/Y80/bmm/wiki/%E4%BD%BF%E7%94%A8-Turso-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9C%8D%E5%8A%A1)
+2. [一些免费的 PostgreSQL 数据库](https://juejin.cn/post/7411047482651951119)
 
-**数据库连接 URL 需要设置为项目中的环境变量 `DB_CONNECTION_URL`。**
+
+**创建好数据库后，在 `.env` 中配置相关环境变量即可。**
 
 ### Github OAuth App
 
@@ -108,15 +110,13 @@ Github OAuth App 的 Client ID 和 Client Secret 将分别用作环境变量 `AU
 git clone https://github.com/Y80/bmm.git
 ```
 
-2. **.env** 文件中配置 `DB_CONNECTION_URL`
+2. `pnpm install` 安装依赖
 
-3. `pnpm install` 安装依赖
-
-4. `pnpm dev` 启动项目
+3. `pnpm dev` 启动项目
 
 对于开发环境，`AUTH_URL` 可以被自动侦测到，`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET` 也临时提供了一对可用的配置，因此可暂时跳过配置。
 
-通过 `pnpm build` 构建生产产物时，需要明确配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。
+通过 `pnpm build` 构建生产产物时，需要明确配置上面这 3 个变量。
 
 ### 方式二：部署至 Vercel
 
@@ -125,7 +125,7 @@ git clone https://github.com/Y80/bmm.git
 2. 登入 <a href="https://vercel.com" target="_blank">Vercel</a>，新建项目，并关联 fork 的 Github 仓库
 
 3. 在当前项目下的 Environment Variables 页面中配置环境变量：
-`DB_CONNECTION_URL`、`AUTH_URL`、`AUTH_GITHUB_SECRET` 和 `AUTH_GITHUB_ID`。
+`DB_DRIVER`、`DB_CONNECTION_URL`、`AUTH_URL`、`AUTH_GITHUB_SECRET` 和 `AUTH_GITHUB_ID`。
 
 <details>
   <summary>查看截图</summary>

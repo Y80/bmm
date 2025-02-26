@@ -74,7 +74,7 @@ export default function TagSelect(props: Props) {
     <div role="tag-select">
       <div
         className={cn(
-          'relative cursor-not-allowed overflow-hidden rounded-medium bg-default-50 p-4 py-3 text-center text-sm text-warning-300',
+          'relative cursor-not-allowed overflow-hidden rounded-medium bg-default-50 p-4 py-3 text-center text-sm text-warning-400/80',
           tags.length && 'hidden'
         )}
       >

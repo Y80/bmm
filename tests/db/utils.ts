@@ -1,5 +1,7 @@
-import { InsertPublicTag, db, publicTags } from '@/db'
+import { InsertPublicTag, db, schema } from '@/db'
 import { faker } from '@faker-js/faker'
+
+const { publicTags } = schema
 
 export function mockTag() {
   const tag: InsertPublicTag = {

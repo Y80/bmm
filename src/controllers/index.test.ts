@@ -1,10 +1,12 @@
-import { db, publicBookmarkToTag, publicBookmarks, publicTagToTag, publicTags } from '@/db'
+import { db, schema } from '@/db'
 import { to } from '@/utils'
 import { faker } from '@faker-js/faker'
 import { count, eq, inArray } from 'drizzle-orm'
 import { afterAll, assert, beforeAll, describe, test } from 'vitest'
 import PublicBookmarkController from './PublicBookmark.controller'
 import PublicTagController from './PublicTag.controller'
+
+const { publicBookmarks, publicTags, publicBookmarkToTag, publicTagToTag } = schema
 
 describe('G: PublicTagController', () => {
   let id = 0

@@ -220,7 +220,7 @@ export default function BookmarkListPage() {
           items={state.loading ? [] : state.bookmarks}
           isLoading={state.loading}
           loadingContent={<Spinner className="mt-12" label="Loading..." />}
-          emptyContent={<EmptyListPlaceholder href={PageRoutes.Admin.bookmarkSlug('new')} />}
+          emptyContent={<EmptyListPlaceholder target="bookmark" />}
         >
           {(bookmark) => {
             return (

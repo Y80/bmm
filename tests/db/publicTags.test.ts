@@ -1,7 +1,9 @@
-import { InsertPublicTag, db, publicTags } from '@/db'
+import { InsertPublicTag, db, schema } from '@/db'
 import { faker } from '@faker-js/faker'
 import { count, eq } from 'drizzle-orm'
 import { describe, expect, test } from 'vitest'
+
+const { publicTags } = schema
 
 describe('CRUD', async () => {
   const mockTag: InsertPublicTag = {
