@@ -4,7 +4,7 @@ import { useGlobalContext } from '@/app/ctx'
 import ColorPicker from '@/components/ColorPicker'
 import ListPageLayout from '@/components/ListPageLayout'
 import ReButton from '@/components/re-export/ReButton'
-import { SelectPublicTag } from '@/db/sqlite/schemas'
+import { SelectPublicTag } from '@/db'
 import http from '@/lib/http'
 import { ApiRoutes, IconNames, PageRoutes } from '@cfg'
 import {
