@@ -21,7 +21,7 @@ export default async function setup() {
     },
 
     webpack: (config, { webpack, nextRuntime }) => {
-      config.plugins.push(codeInspectorPlugin({ bundler: 'webpack', hideDomPathAttr: false }))
+      config.plugins.push(codeInspectorPlugin({ bundler: 'webpack', hideDomPathAttr: true }))
       // https://github.com/vercel/next.js/discussions/39705
       // fix: edge 环境无法加载环境变量
       if (nextRuntime === 'edge') {

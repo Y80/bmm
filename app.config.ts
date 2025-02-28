@@ -35,15 +35,17 @@ export const ApiRoutes = {
 } as const
 
 export const PageRoutes = {
+  INDEX: '/',
   LOGIN: '/login',
   FORBIDDEN: '/forbidden',
   User: {
     INDEX: '/user',
     SETTINGS: '/user/settings',
-    TAG_INDEX: '/user/tag',
-    BOOKMARK_INDEX: '/user/bookmark',
-    TAG_SLUG: (slug: 'new' | number) => '/user/tag/' + slug,
-    BOOKMARK_SLUG: (slug: 'new' | number) => '/user/bookmark/' + slug,
+    TAG_LIST: '/user/tag/list',
+    BOOKMARK_LIST: '/user/bookmark/list',
+    UPLOAD: '/user/upload',
+    tagSlug: (slug: 'new' | number) => '/user/tag/' + slug,
+    bookmarkSlug: (slug: 'new' | number) => '/user/bookmark/' + slug,
   },
   Admin: {
     INDEX: '/admin',
@@ -58,7 +60,7 @@ export const PageRoutes = {
     SEARCH: '/search',
     search: (ky: string) => '/search?keyword=' + ky,
   },
-}
+} as const
 
 export const IconNames = {
   ARROW_RIGHT: 'icon-[tabler--arrow-right]',
@@ -84,6 +86,15 @@ export const IconNames = {
   SUN: 'icon-[tabler--sun]',
   TAG: 'icon-[tabler--tag]',
   TRASH: 'icon-[tabler--trash]',
+  Huge: {
+    SEARCH: 'icon-[hugeicons--search-01]',
+    HOME: 'icon-[hugeicons--home-04]',
+    IMPORT: 'icon-[hugeicons--file-import]',
+    TAG: 'icon-[hugeicons--tag-01]',
+    BOOKMARK: 'icon-[hugeicons--all-bookmark]',
+    ADD: 'icon-[hugeicons--add-square]',
+    LIST: 'icon-[hugeicons--left-to-right-list-dash]',
+  },
 }
 
 /** 管理后台的导航链接 */
@@ -97,6 +108,7 @@ export const ADMIN_NAV_LINKS = [
 export const Assets = {
   BOX_EMPTY_PNG: '/box-empty.png',
   LOGO_SVG: '/logo.svg',
+  LOGO_NO_BG_SVG: '/logo-no-bg.svg',
 }
 
 export const ExternalLinks = {

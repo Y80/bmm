@@ -46,7 +46,6 @@
     "cheerio": "1.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "code-inspector-plugin": "^0.15.2",
     "color": "^4.2.3",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
@@ -85,6 +84,7 @@
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "@iconify/tailwind": "^1.1.2",
+    "code-inspector-plugin": "^0.20.1",
     "drizzle-kit": "0.30.4",
     "tsx": "4.19.0",
     "vite": "^5.4.11",

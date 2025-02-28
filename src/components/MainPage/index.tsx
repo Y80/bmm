@@ -3,7 +3,7 @@
 import { useGlobalContext } from '@/app/ctx'
 import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
-import { PageRoutes } from '@cfg'
+import { Assets, PageRoutes } from '@cfg'
 import { Divider } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import Image from 'next/image'
@@ -100,7 +100,7 @@ export default function MainPage(props: Props) {
           <Banner />
           {!state.bookmarks.length && (
             <div className="-mt-60 grow flex-col flex-center">
-              <Image width={128} height={128} src="/box-empty.png" alt="empty" />
+              <Image width={128} height={128} src={Assets.BOX_EMPTY_PNG} alt="empty" />
               <p className="mt-4 text-sm text-foreground-500">
                 {isSearchPage ? '要不，换个关键词再试试？' : '暂无相关内容'}
               </p>
