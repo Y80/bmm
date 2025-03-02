@@ -19,7 +19,7 @@
     "db:migrate-p": "tsx scripts/db-migration.zx --production"
   },
   "engines": {
-    "node": ">=18.18.0"
+    "node": ">20.0.0"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.1",

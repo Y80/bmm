@@ -1,3 +1,4 @@
+import { schema } from '@/db'
 import 'next-auth'
 
 declare global {
@@ -14,6 +15,13 @@ declare global {
       Record<RequiredVariables, string> & { DB_DRIVER: 'postgresql' | 'sqlite' } // 暂时只接入 postgresql 和 sqlite
     interface ProcessEnv extends ExtraVariables {}
   }
+
+  /** 用户 ID 类型（UUID） */
+  export type UserId = (typeof schema.users.$inferSelect)['id']
+  /** 标签 ID 类型（userTags 和 publicTags 一致） */
+  export type TagId = (typeof schema.publicTags.$inferSelect)['id']
+  /** 书签 ID 类型（用户书签和公共书签） */
+  export type BookmarkId = (typeof schema.publicBookmarks.$inferSelect)['id']
 }
 
 declare module 'next-auth' {

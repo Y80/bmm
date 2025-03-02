@@ -30,7 +30,7 @@ async function upsertTagToTagRelations(id: SelectTag['id'], tagIds: SelectTag['i
   return
 }
 
-module PublicTagController {
+namespace PublicTagController {
   let cachedAllTags: null | SelectTag[] = null
   export async function getAll() {
     // serverless 环境总是获取最新的数据
