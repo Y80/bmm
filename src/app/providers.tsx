@@ -3,12 +3,12 @@
 import useIsDark from '@/hooks/useIsDark'
 import { getAllPublicTags } from '@/lib/actions'
 import { Background, PageRoutes } from '@cfg'
-import { cn, HeroUIProvider, semanticColors } from "@heroui/react"
+import { cn, HeroUIProvider, semanticColors, ToastProvider } from '@heroui/react'
 import { ConfigProvider as AntdConfigProvider, theme as antdTheme } from 'antd'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
-import { redirect, usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useReportWebVitals } from 'next/web-vitals'
 import { PropsWithChildren, useCallback, useState } from 'react'
 import { GlobalContextProvider, GlobalContextType } from './ctx'
@@ -21,10 +21,10 @@ export default function Providers(props: PropsWithChildren<Props>) {
   const [tags, setTags] = useState(props.tags)
 
   const pathname = usePathname()
-
+  // TODO
   if (!props.tags.length || !props.totalBookmarks) {
     if (pathname !== PageRoutes.LOGIN && !pathname.startsWith(PageRoutes.Admin.INDEX)) {
-      redirect(PageRoutes.LOGIN)
+      // redirect(PageRoutes.LOGIN)
     }
   }
 
@@ -62,6 +62,11 @@ export default function Providers(props: PropsWithChildren<Props>) {
         <div className="absolute bottom-[-200px] right-[-200px] size-[50rem] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.1),rgba(255,255,255,0))]" />
       </div>
       <HeroUIProvider>
+        <ToastProvider
+          placement="top-center"
+          toastOffset={20}
+          toastProps={{ timeout: 2500, radius: 'lg', classNames: { base: '!w-auto p-2' } }}
+        />
         <ThemeProvider attribute="class" defaultTheme="dark">
           <AntdConfigProviderWrapper>
             <SessionProvider session={props.session}>{props.children}</SessionProvider>

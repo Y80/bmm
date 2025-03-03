@@ -7,11 +7,43 @@ import PublicBookmarkController, {
 import PublicTagController from '@/controllers/PublicTag.controller'
 import { zodSchema } from '@/db/zod'
 import { to } from '@/utils'
+import { auth } from './auth'
+
+interface WrapActionOptions {
+  guard?: 'user' | 'admin' | false
+}
+function wrapAction<T extends (...args: any[]) => Promise<any>>(
+  action: T,
+  opts?: WrapActionOptions
+) {
+  opts = {
+    guard: 'user',
+    ...opts,
+  }
+  return async (...args: Parameters<T>) => {
+    let session
+    if (opts.guard) {
+      session = await auth()
+      console.log(session)
+      if (session?.user) {
+        // return redirect('/login')
+      }
+    }
+
+    const [error, res] = await to(action(...args))
+    if (error) {
+      console.error(error)
+      return { errorMsg: error?.message || '未知错误' }
+    }
+    return { data: res }
+  }
+}
 
 export const getAllPublicTags = PublicTagController.getAll
 export const updateTagSortOrders = PublicTagController.updateSortOrders
 export const tryCreateTags = PublicTagController.tryCreateTags
 export const findManyBookmarks = PublicBookmarkController.findMany
+export const updatePublicTag = wrapAction(PublicTagController.update)
 
 export async function insertBookmark(payload: InsertPublicBookmark) {
   const parseRes = zodSchema.publicBookmarks.insert().safeParse(payload)

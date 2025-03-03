@@ -87,7 +87,7 @@ export function testTagNameOrPinyin(
   tag: Partial<Pick<SelectPublicTag, 'name' | 'pinyin'>>
 ) {
   const { name = '' } = tag
-  let { pinyin = '' } = tag
+  let pinyin = tag.pinyin || ''
   if (!pinyin && name) {
     pinyin = getPinyin(name)
   }

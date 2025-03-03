@@ -1,7 +1,7 @@
-import ReButton from '@/components/re-export/ReButton'
+import { ReButton } from '@/components/re-export'
 import http from '@/lib/http'
 import { ApiRoutes, IconNames } from '@cfg'
-import clsx from 'clsx'
+import { cn } from '@heroui/react'
 
 interface Props {
   tagName?: string
@@ -20,11 +20,11 @@ export default function AiAnalyzeButton(props: Props) {
     <ReButton
       isIconOnly
       size="sm"
-      className={clsx('bg-transparent text-xl text-foreground-600', !props.tagName && 'scale-0')}
+      className={cn('bg-transparent text-xl text-foreground-600', !props.tagName && 'scale-0')}
       tooltip="AI 智能解析"
       onClick={onAnalyze}
     >
-      <span className={clsx('bg-gradient-to-r from-pink-500 to-violet-500', IconNames.STARS)} />
+      <span className={cn('bg-gradient-to-r from-pink-500 to-violet-500', IconNames.STARS)} />
     </ReButton>
   )
 }

@@ -1,8 +1,7 @@
 'use client'
 
-import ReButton from '@/components/re-export/ReButton'
-import ReInput from '@/components/re-export/ReInput'
-import ThemeToggle from '@/components/ThemeToggle'
+import { ThemeToggle } from '@/components'
+import { ReButton, ReInput } from '@/components/re-export'
 import { Assets, Background, IconNames, PageRoutes } from '@cfg'
 import {
   Avatar,
@@ -14,6 +13,8 @@ import {
   DropdownTrigger,
   Kbd,
   Link,
+  Listbox,
+  ListboxItem,
   Navbar,
   NavbarContent,
 } from '@heroui/react'
@@ -59,65 +60,67 @@ export default function AdminNav(props: Props) {
           startContent={<span className={IconNames.Huge.SEARCH} />}
           endContent={<Kbd className="px-3">/</Kbd>}
         />
-        <ReButton {...IconButtonProps} href={PageRoutes.User.INDEX} tooltip={{ content: '主页' }}>
+        <ReButton {...IconButtonProps} href={PageRoutes.User.INDEX} tooltip="主页">
           <span className={IconNames.Huge.HOME} />
         </ReButton>
-        <Dropdown classNames={{ content: 'min-w-32' }} placement="bottom-start">
-          <DropdownTrigger>
-            <ReButton {...IconButtonProps} tooltip={{ content: '书签管理' }}>
-              <span className={cn(IconNames.Huge.BOOKMARK)} />
-            </ReButton>
-          </DropdownTrigger>
-          <DropdownMenu>
-            {[
-              {
-                label: '新建书签',
-                href: PageRoutes.User.bookmarkSlug('new'),
-                icon: IconNames.Huge.ADD,
-              },
-              {
-                label: '书签列表',
-                href: PageRoutes.User.BOOKMARK_LIST,
-                icon: IconNames.Huge.LIST,
-              },
-            ].map((el) => (
-              <DropdownItem
-                key={el.label}
-                startContent={<span className={cn(el.icon, 'text-base')} />}
-              >
-                {el.label}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
-        <Dropdown classNames={{ content: 'min-w-32' }} placement="bottom-start">
-          <DropdownTrigger>
-            <ReButton {...IconButtonProps} tooltip={{ content: '标签管理' }}>
-              <span className={IconNames.Huge.TAG} />
-            </ReButton>
-          </DropdownTrigger>
-          <DropdownMenu>
-            {[
-              {
-                label: '新建标签',
-                href: PageRoutes.User.tagSlug('new'),
-                icon: IconNames.Huge.ADD,
-              },
-              {
-                label: '标签列表',
-                href: PageRoutes.User.TAG_LIST,
-                icon: IconNames.Huge.LIST,
-              },
-            ].map((el) => (
-              <DropdownItem
-                key={el.label}
-                startContent={<span className={cn(el.icon, 'text-base')} />}
-              >
-                {el.label}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
+        <ReButton
+          {...IconButtonProps}
+          tooltipContent={
+            <Listbox label="书签操作">
+              {[
+                {
+                  label: '新建书签',
+                  href: PageRoutes.User.bookmarkSlug('new'),
+                  icon: IconNames.Huge.ADD,
+                },
+                {
+                  label: '书签列表',
+                  href: PageRoutes.User.BOOKMARK_LIST,
+                  icon: IconNames.Huge.LIST,
+                },
+              ].map((el) => (
+                <ListboxItem
+                  key={el.label}
+                  href={el.href}
+                  startContent={<span className={cn(el.icon, 'text-base')} />}
+                >
+                  {el.label}
+                </ListboxItem>
+              ))}
+            </Listbox>
+          }
+        >
+          <span className={cn(IconNames.Huge.BOOKMARK)} />
+        </ReButton>
+        <ReButton
+          {...IconButtonProps}
+          tooltipContent={
+            <Listbox label="标签操作">
+              {[
+                {
+                  label: '新建标签',
+                  href: PageRoutes.User.tagSlug('new'),
+                  icon: IconNames.Huge.ADD,
+                },
+                {
+                  label: '标签列表',
+                  href: PageRoutes.User.TAG_LIST,
+                  icon: IconNames.Huge.LIST,
+                },
+              ].map((el) => (
+                <ListboxItem
+                  key={el.label}
+                  href={el.href}
+                  startContent={<span className={cn(el.icon, 'text-base')} />}
+                >
+                  {el.label}
+                </ListboxItem>
+              ))}
+            </Listbox>
+          }
+        >
+          <span className={cn(IconNames.Huge.TAG)} />
+        </ReButton>
         <ThemeToggle />
         <Dropdown classNames={{ content: 'min-w-36' }}>
           <DropdownTrigger>

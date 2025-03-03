@@ -1,7 +1,7 @@
-import { Button, Divider } from "@heroui/react"
+import { Button, Divider } from '@heroui/react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { PropsWithChildren } from 'react'
-import ReButton from './re-export/ReButton'
+import { ReButton } from './re-export'
 
 interface Props {
   isSaving?: boolean
@@ -31,7 +31,7 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
       <Button
         className="mt-20 w-full"
         isLoading={props.isSaving}
-        onClick={router.back}
+        onPress={router.back}
         startContent={<span className="icon-[tabler--arrow-back] text-xl" />}
       >
         返 回

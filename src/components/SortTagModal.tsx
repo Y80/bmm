@@ -19,11 +19,11 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { addToast } from '@heroui/react'
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { useSetState } from 'ahooks'
 import Color from 'color'
 import { cloneElement, ReactElement, useMemo, useState } from 'react'
-import toast from 'react-hot-toast'
 
 interface Props {
   children: ReactElement
@@ -63,7 +63,10 @@ export default function SortTagModal(props: Props) {
       .filter(Boolean) as { id: number; order: number }[]
     await updateTagSortOrders(orders)
     refreshTags()
-    toast.success('更新成功')
+    addToast({
+      title: '更新成功',
+      color: 'success',
+    })
     setState({ open: false })
   }
 

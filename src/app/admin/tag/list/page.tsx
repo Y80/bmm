@@ -1,13 +1,14 @@
 'use client'
 
 import { useGlobalContext } from '@/app/ctx'
-import ColorPicker from '@/components/ColorPicker'
-import ListPageLayout from '@/components/ListPageLayout'
-import ReButton from '@/components/re-export/ReButton'
+import { ColorPicker, EmptyListPlaceholder, ListPageLayout, SortTagModal } from '@/components'
+import { ReButton } from '@/components/re-export'
 import { SelectPublicTag } from '@/db'
+import { updatePublicTag } from '@/lib/actions'
 import http from '@/lib/http'
 import { ApiRoutes, IconNames, PageRoutes } from '@cfg'
 import {
+  addToast,
   cn,
   Switch,
   Table,
@@ -20,9 +21,6 @@ import {
 import { Icon } from '@iconify/react'
 import { useSetState } from 'ahooks'
 import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
-import EmptyListPlaceholder from '../../components/EmptyListPlaceholder'
-import SortTagModal from './SortTagModal'
 
 export default function Page() {
   const [colorPicker, setColorPicker] = useSetState({
@@ -37,7 +35,7 @@ export default function Page() {
   async function remove(tag: SelectPublicTag) {
     const res = await http.delete(ApiRoutes.Public.TAG, { id: tag.id })
     if (res.error) return
-    toast.success('删除成功')
+    addToast({ title: '删除成功', color: 'success' })
     refreshTags()
   }
 
@@ -53,7 +51,8 @@ export default function Page() {
     if (tag.isMain === v) return
     tag.isMain = v
     mutateTags([...tags])
-    http.patch(ApiRoutes.Public.TAG, tag).then(() => refreshTags())
+    updatePublicTag(tag).then(() => refreshTags())
+    // http.patch(ApiRoutes.Public.TAG, tag).then(() => refreshTags())
   }
 
   function handleChangeColor(v: string) {

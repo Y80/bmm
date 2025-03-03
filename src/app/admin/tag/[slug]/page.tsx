@@ -1,28 +1,28 @@
 'use client'
 
 import { useGlobalContext } from '@/app/ctx'
-import ColorPicker from '@/components/ColorPicker'
-import SlugPageLayout from '@/components/SlugPageLayout'
-import TagSelect from '@/components/TagSelect'
-import ReInput from '@/components/re-export/ReInput'
-import ReTooltip from '@/components/re-export/ReTooltip'
+import {
+  AiAnalyzeRelatedTagButton,
+  ColorPicker,
+  IconPicker,
+  SlugPageLayout,
+  TagSelect,
+} from '@/components'
+import { SelectedIcon } from '@/components/IconPicker'
+import { ReInput, ReTooltip } from '@/components/re-export'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import useSlug from '@/hooks/useSlug'
 import http from '@/lib/http'
 import { ApiRoutes, PageRoutes } from '@cfg'
+import { Accordion, AccordionItem, addToast, Switch } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { Accordion, AccordionItem, Switch } from "@heroui/react"
 import { useSetState } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import toast from 'react-hot-toast'
-import AiAnalyzeButton from './components/AiAnalyzeButton'
-import IconPicker, { SelectedIcon } from './components/IconPicker'
 
-type Tag = Pick<SelectPublicTag, 'id' | 'name' | 'color' | 'icon' | 'isMain' | 'relatedTagIds'>
-
+type Tag = Pick<SelectPublicTag, 'name' | 'color' | 'icon' | 'isMain' | 'relatedTagIds'>
 export default function TagSlugPage() {
-  const [tag, setTag] = useSetState<Omit<Tag, 'id'>>({
+  const [tag, setTag] = useSetState<Tag>({
     name: '',
     color: '',
     icon: '',
@@ -33,7 +33,7 @@ export default function TagSlugPage() {
     isOpenIconPicker: false,
     isOpenColorPicker: false,
     selectedIcon: null as null | SelectedIcon,
-    selectedTags: [] as SelectPublicTag['id'][],
+    selectedTags: [] as TagId[],
     isSaving: false,
     analyzing: false,
   })
@@ -62,7 +62,7 @@ export default function TagSlugPage() {
 
   async function onSave() {
     if (!tag.name) {
-      toast.error('请输入「名称」')
+      addToast({ title: '请输入「名称」', color: 'warning' })
       return
     }
     const task = slug.isNew
@@ -70,7 +70,7 @@ export default function TagSlugPage() {
       : http.patch(ApiRoutes.Public.TAG, tag)
     const { error } = await task
     if (error) return
-    toast.success(slug.isNew ? '标签已创建' : '标签已更新')
+    addToast({ color: 'success', title: slug.isNew ? '标签已创建' : '标签已更新' })
     router.push(PageRoutes.Admin.TAG_LIST)
     refreshTags()
   }
@@ -102,10 +102,11 @@ export default function TagSlugPage() {
       )
   }
 
-  function onReceiveRelatedTags({ relatedTags, color }: { relatedTags: string[]; color: string }) {
+  function onReceiveRelatedTags(params: { relatedTags: string[]; color: string }) {
+    const { relatedTags, color } = params
     setTag({
       color: color,
-      relatedTagIds: relatedTags.reduce((acc: typeof tag.relatedTagIds, tagName) => {
+      relatedTagIds: relatedTags.reduce((acc: TagId[], tagName) => {
         const tag = tags.find(({ name }) => name === tagName)
         if (!tag?.id || tag.id === slug.number || acc.includes(tag.id)) return acc
         acc.push(tag.id)
@@ -123,7 +124,9 @@ export default function TagSlugPage() {
         value={tag.name}
         onValueChange={(name) => setTag({ name })}
         endContent={
-          !!tags.length && <AiAnalyzeButton tagName={tag.name} onOk={onReceiveRelatedTags} />
+          !!tags.length && (
+            <AiAnalyzeRelatedTagButton tagName={tag.name} onOk={onReceiveRelatedTags} />
+          )
         }
       />
       <ReInput

@@ -4,19 +4,23 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Tooltip,
+  TooltipProps,
 } from '@heroui/react'
-import { ComponentProps, ReactNode, forwardRef, useState } from 'react'
+import { ReactNode, forwardRef, useState } from 'react'
 import ReTooltip from './ReTooltip'
 
+// 在原本的 Button 组件上，添加 loading 状态、tooltip、popover 等功能
+// tooltip 和 popover 基本一致，只是触发时机不同
+// tooltip 鼠标 hover 上去就会展示，popover 点击后才会展示
 interface ReButtonProps extends ButtonProps {
   onClick?: () => any
-  tooltip?: string | ComponentProps<typeof Tooltip>
+  tooltip?: string | TooltipProps
+  tooltipContent?: ReactNode
   popoverContent?: ReactNode
 }
 
 function ReButton_(props: ReButtonProps, ref: any) {
-  const { onClick, tooltip, popoverContent, ...resetProps } = props
+  const { onClick, tooltip, tooltipContent, popoverContent, ...resetProps } = props
   const [loading, setLoading] = useState(false)
 
   const mergedLoading = props.isLoading || loading
@@ -46,6 +50,9 @@ function ReButton_(props: ReButtonProps, ref: any) {
     </Button>
   )
 
+  if (tooltipContent) {
+    return <ReTooltip content={tooltipContent}>{button}</ReTooltip>
+  }
   if (tooltip) {
     if (typeof tooltip === 'string') {
       return <ReTooltip content={tooltip}>{button}</ReTooltip>

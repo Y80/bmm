@@ -9,9 +9,9 @@ import {
   Select,
   SelectItem,
   Spinner,
-} from "@heroui/react"
+  cn,
+} from '@heroui/react'
 import { useMemoizedFn, useSetState, useThrottleEffect, useUpdateEffect } from 'ahooks'
-import clsx from 'clsx'
 import { useEffect, useMemo } from 'react'
 
 // https://iconify.design/docs/
@@ -199,7 +199,7 @@ export default function IconPicker(props: Props) {
             </Select>
           </div>
           <ScrollShadow
-            className={clsx('-mr-4 h-96 overflow-scroll pr-4', !showPagination && 'h-[416px]')}
+            className={cn('-mr-4 h-96 overflow-scroll pr-4', !showPagination && 'h-[416px]')}
           >
             {!state.icon.names.length && (
               <div className="h-full text-sm text-gray-400 flex-center">暂无内容</div>
@@ -235,7 +235,7 @@ export default function IconPicker(props: Props) {
               ))}
             </div>
           </ScrollShadow>
-          <div className={clsx('flex h-8 justify-center', !showPagination && '!h-0')}>
+          <div className={cn('flex h-8 justify-center', !showPagination && '!h-0')}>
             <Pagination
               size="sm"
               isCompact

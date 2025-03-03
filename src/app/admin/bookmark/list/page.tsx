@@ -1,6 +1,7 @@
 'use client'
 
 import { useGlobalContext } from '@/app/ctx'
+import { EmptyListPlaceholder } from '@/components'
 import ClientIcon from '@/components/ClientIcon'
 import Favicon from '@/components/Favicon'
 import ListPageLayout from '@/components/ListPageLayout'
@@ -32,7 +33,6 @@ import { useDebounceFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
 import toast from 'react-hot-toast'
-import EmptyListPlaceholder from '../../components/EmptyListPlaceholder'
 
 const SORTERS = [
   { name: '创建时间降序', key: '-createTime', iconCls: IconNames.SORT_DESC },
