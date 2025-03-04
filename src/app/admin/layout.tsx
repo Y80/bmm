@@ -16,7 +16,7 @@ export default async function AdminLayout(props: PropsWithChildren) {
     redirect(PageRoutes.LOGIN)
   }
 
-  if (!session.user?.isAdmin) {
+  if (!session.user.isAdmin) {
     redirect(PageRoutes.FORBIDDEN)
   }
 

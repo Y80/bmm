@@ -7,35 +7,48 @@ import PublicBookmarkController, {
 import PublicTagController from '@/controllers/PublicTag.controller'
 import { zodSchema } from '@/db/zod'
 import { to } from '@/utils'
+import { PageRoutes } from '@cfg'
+import { redirect } from 'next/navigation'
 import { auth } from './auth'
 
 interface WrapActionOptions {
+  /**
+   * 接口守卫
+   * - 'user': 需要登录
+   * - 'admin': 需要管理员权限
+   * - false: 不需要登录
+   * @default 'user'
+   */
   guard?: 'user' | 'admin' | false
+  /**
+   * 是否往第一个对象参数中注入 userId
+   */
+  injectUserId?: boolean
 }
-function wrapAction<T extends (...args: any[]) => Promise<any>>(
-  action: T,
-  opts?: WrapActionOptions
-) {
+function wrapAction<T extends (payload: any) => Promise<any>>(action: T, opts?: WrapActionOptions) {
   opts = {
     guard: 'user',
     ...opts,
   }
-  return async (...args: Parameters<T>) => {
+  type Payload = Omit<Parameters<T>[0], 'userId'>
+  return async (payload: Payload) => {
     let session
-    if (opts.guard) {
+    if (opts.guard || opts.injectUserId) {
       session = await auth()
-      console.log(session)
-      if (session?.user) {
-        // return redirect('/login')
+      console.log('auth() 返回的 session:\n', session)
+      if (!session) {
+        return redirect(PageRoutes.LOGIN)
+      }
+      if (opts.injectUserId) {
+        payload = { ...payload, userId: session.user.id }
       }
     }
-
-    const [error, res] = await to(action(...args))
+    const [error, data] = await to(action(payload))
     if (error) {
       console.error(error)
-      return { errorMsg: error?.message || '未知错误' }
+      return { err: error?.message || '未知错误' }
     }
-    return { data: res }
+    return { data }
   }
 }
 
@@ -43,7 +56,7 @@ export const getAllPublicTags = PublicTagController.getAll
 export const updateTagSortOrders = PublicTagController.updateSortOrders
 export const tryCreateTags = PublicTagController.tryCreateTags
 export const findManyBookmarks = PublicBookmarkController.findMany
-export const updatePublicTag = wrapAction(PublicTagController.update)
+export const updatePublicTag = wrapAction(PublicTagController.update, { injectUserId: true })
 
 export async function insertBookmark(payload: InsertPublicBookmark) {
   const parseRes = zodSchema.publicBookmarks.insert().safeParse(payload)

@@ -40,12 +40,13 @@ export default auth((req) => {
     checkAdmin = false
   }
   if (checkAdmin) {
-    if (!req.auth?.user) {
-      return NextResponse.redirect(req.nextUrl.origin + '/login')
+    // 没登录/登录过期，这里是 null
+    if (!req.auth) {
+      return NextResponse.redirect(req.nextUrl.origin + PageRoutes.LOGIN)
       // return NextResponse.json({ msg: '请登录' }, { status: StatusCode.UNAUTHORIZED })
     }
     if (!req.auth.user.isAdmin) {
-      return NextResponse.redirect(req.nextUrl.origin + '/forbidden')
+      return NextResponse.redirect(req.nextUrl.origin + PageRoutes.FORBIDDEN)
     }
   }
   return NextResponse.next()

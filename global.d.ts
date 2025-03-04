@@ -30,4 +30,7 @@ declare module 'next-auth' {
     isAdmin?: boolean
     role?: Role
   }
+  interface Session {
+    user: User
+  }
 }
