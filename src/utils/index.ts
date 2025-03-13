@@ -1,7 +1,7 @@
 import { SelectPublicTag } from '@/db'
-import { type ClassValue, clsx } from 'clsx'
+import { ActionResult } from '@/lib/actions'
+import { addToast } from '@heroui/react'
 import { pinyin } from 'pinyin-pro'
-import { twMerge } from 'tailwind-merge'
 
 export function isValidUrl(url?: string) {
   try {
@@ -117,6 +117,19 @@ export function isServerless() {
   return process.env.SERVERLESS || process.env.VERCEL
 }
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+export async function resolveAction<T>(actionRes: ActionResult<T>) {
+  const res = await actionRes
+  if (res.error) {
+    addToast({
+      color: 'danger',
+      title: '操作失败',
+      description: res.error.msg,
+    })
+    return { ok: false } as const
+  }
+  return { ok: true, data: res.data } as const
+}
+
+export function isAdminDashboard() {
+  location.pathname.startsWith('/admin')
 }

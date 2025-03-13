@@ -1,5 +1,6 @@
 'use client'
 
+import { useGlobalContext } from '@/app/ctx'
 import ThemeToggle from '@/components/ThemeToggle'
 import ReButton from '@/components/re-export/ReButton'
 import ReInput from '@/components/re-export/ReInput'
@@ -34,7 +35,7 @@ export const NavIconOnlyButtonProps: Required<
 export default function Nav() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
+  const { tags } = useGlobalContext()
   const [state, setState] = useSetState({
     input: searchParams.get('keyword') || '',
     focusInput: false,
@@ -173,7 +174,7 @@ export default function Nav() {
 
       <NavbarMenu className={clsx(Background.CLASS, 'dark:bg-opacity-50')}>
         {/* 没展开的时候，不渲染 */}
-        {state.isSelectedMenuToggle && <TagPicker />}
+        {state.isSelectedMenuToggle && <TagPicker tags={tags} />}
       </NavbarMenu>
     </Navbar>
   )

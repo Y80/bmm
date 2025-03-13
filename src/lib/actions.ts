@@ -5,13 +5,15 @@ import PublicBookmarkController, {
   InsertPublicBookmark,
 } from '@/controllers/PublicBookmark.controller'
 import PublicTagController from '@/controllers/PublicTag.controller'
+import UserTagController from '@/controllers/UserTag.controller'
 import { zodSchema } from '@/db/zod'
 import { to } from '@/utils'
 import { PageRoutes } from '@cfg'
 import { redirect } from 'next/navigation'
 import { auth } from './auth'
+import SqlXError from './SqlXError'
 
-interface WrapActionOptions {
+interface MakeActionOptions {
   /**
    * 接口守卫
    * - 'user': 需要登录
@@ -25,38 +27,51 @@ interface WrapActionOptions {
    */
   injectUserId?: boolean
 }
-function wrapAction<T extends (payload: any) => Promise<any>>(action: T, opts?: WrapActionOptions) {
+function makeAction<Data, Payload extends object>(
+  handler: (payload: Payload) => Promise<Data>,
+  opts?: MakeActionOptions
+) {
   opts = {
     guard: 'user',
     ...opts,
   }
-  type Payload = Omit<Parameters<T>[0], 'userId'>
-  return async (payload: Payload) => {
-    let session
+  return async (payload?: Omit<Payload, 'userId'>) => {
     if (opts.guard || opts.injectUserId) {
-      session = await auth()
-      console.log('auth() 返回的 session:\n', session)
+      const session = await auth()
+      // console.log('auth() 返回的 session:\n', session)
       if (!session) {
-        return redirect(PageRoutes.LOGIN)
+        redirect(PageRoutes.LOGIN)
       }
       if (opts.injectUserId) {
-        payload = { ...payload, userId: session.user.id }
+        payload = { ...payload, userId: session.user.id } as Payload
       }
     }
-    const [error, data] = await to(action(payload))
+
+    const [error, data] = await to(handler(payload as Payload))
     if (error) {
-      console.error(error)
-      return { err: error?.message || '未知错误' }
+      process.env.NODE_ENV === 'development' && console.error(error)
+      return { error: { msg: SqlXError.getMessage(error) } } as const
     }
-    return { data }
+    return { data } as const
   }
 }
+export type ActionResult<T> = ReturnType<ReturnType<typeof makeAction<T, object>>>
 
-export const getAllPublicTags = PublicTagController.getAll
-export const updateTagSortOrders = PublicTagController.updateSortOrders
 export const tryCreateTags = PublicTagController.tryCreateTags
-export const findManyBookmarks = PublicBookmarkController.findMany
-export const updatePublicTag = wrapAction(PublicTagController.update, { injectUserId: true })
+
+export const actTotalPublicBookmarks = makeAction(PublicBookmarkController.total, { guard: false })
+export const findPublicBookmarks = makeAction(PublicBookmarkController.findMany, { guard: false })
+export const insertPublicBookmarks = makeAction(PublicBookmarkController.insert, { guard: 'admin' })
+export const deletePublicBookmarks = makeAction(PublicBookmarkController.delete, { guard: 'admin' })
+export const updatePublicBookmarks = makeAction(PublicBookmarkController.update, { guard: 'admin' })
+export const getAllPublicTags = makeAction(PublicTagController.getAll, { guard: false })
+export const insertPublicTag = makeAction(PublicTagController.insert, { guard: 'admin' })
+export const deletePublicTag = makeAction(PublicTagController.remove, { guard: 'admin' })
+export const updatePublicTag = makeAction(PublicTagController.update, { guard: 'admin' })
+export const updateTagSortOrders = makeAction(PublicTagController.sort, { guard: 'admin' })
+
+export const insertUserTag = makeAction(UserTagController.insert, { injectUserId: true })
+export const updateUserTag = makeAction(UserTagController.update, { injectUserId: true })
 
 export async function insertBookmark(payload: InsertPublicBookmark) {
   const parseRes = zodSchema.publicBookmarks.insert().safeParse(payload)

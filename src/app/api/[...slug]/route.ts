@@ -3,7 +3,6 @@ import SqlXError from '@/lib/SqlXError'
 import ResponseX, { Serializable } from '@/utils/response-x'
 import { ApiRoutes } from '@cfg'
 import { NextRequest } from 'next/server'
-import postgres from 'postgres'
 import { ZodError } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 import { handleAnalyzeRelatedTags } from './handlers/ai/analyze-related-tags'
@@ -26,20 +25,13 @@ async function handlerWrapper(req: NextRequest) {
     else if (!res) return ResponseX.noContent()
     else return ResponseX.ok(res as Serializable)
   } catch (error: any) {
-    if (error.name === postgres.PostgresError.name) {
-      const err = new SqlXError(error)
-      return ResponseX.internalServerError({ msg: err.message })
+    if (SqlXError.canParse(error)) {
+      return ResponseX.internalServerError({ msg: SqlXError.getMessage(error) })
     }
     if (error instanceof ZodError) {
       return ResponseX.badRequest({ msg: fromZodError(error).toString() })
     }
-    if (error instanceof SqlXError) {
-      return ResponseX.internalServerError({ msg: error.message })
-    }
-    return ResponseX.internalServerError({
-      // msg: 'Internal server error',
-      msg: (error as Error)?.message || 'Internal server error',
-    })
+    return ResponseX.internalServerError({ msg: (error as Error)?.message || '未知错误' })
   }
 }
 

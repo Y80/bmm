@@ -1,6 +1,6 @@
 import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
-import { findManyBookmarks } from '@/lib/actions'
+import { findPublicBookmarks } from '@/lib/actions'
 import { to } from '@/utils'
 import { Spinner } from '@heroui/react'
 import { useRequest, useSetState, useUpdateEffect } from 'ahooks'
@@ -17,7 +17,7 @@ export default function LoadMore(props: Props) {
   const { run } = useRequest(async () => {
     props.onLoading(true)
     const params = findManyBookmarksSchema.parse({ page: state.page })
-    const [err, res] = await to(findManyBookmarks(params))
+    const [err, res] = await to(findPublicBookmarks(params))
     props.onLoading(false)
     if (res) {
       props.onChange(res.list)

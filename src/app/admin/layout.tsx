@@ -6,7 +6,7 @@ import { PropsWithChildren } from 'react'
 import AdminNav from './components/AdminNav'
 
 export const metadata: Metadata = {
-  title: '后台数据管理 | ' + WEBSITE_NAME + ' CMS',
+  title: { absolute: '后台数据管理 | ' + WEBSITE_NAME + ' CMS' },
 }
 
 export default async function AdminLayout(props: PropsWithChildren) {

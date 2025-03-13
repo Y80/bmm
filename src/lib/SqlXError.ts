@@ -1,10 +1,11 @@
+import { LibsqlError } from '@libsql/client'
 import postgres from 'postgres'
 
 export default class SqlXError extends Error {
   name = 'SqlXError'
   originErrorName: string
-  table?: string
-  column?: string
+  // table?: string
+  // column?: string
 
   originalError?: Error
 
@@ -15,7 +16,6 @@ export default class SqlXError extends Error {
   }
 
   get message() {
-    // if (this.originalError instanceof postgres.PostgresError) {
     if (this.originalError?.name === postgres.PostgresError.name) {
       const error = this.originalError as postgres.PostgresError
       // 违反唯一值限制
@@ -32,6 +32,30 @@ export default class SqlXError extends Error {
       }
     }
 
-    return this.originalError?.message || this.originErrorName
+    if ((this.originalError as any)?.libsqlError) {
+      const error = this.originalError as LibsqlError
+      if (error.rawCode === 2067) {
+        if (error.message.includes('publicTags.name')) {
+          return '已存在相同名称的标签'
+        }
+        if (error.message.includes('publicBookmarks.name')) {
+          return '已存在相同名称的书签'
+        }
+        if (error.message.includes('publicBookmarks.url')) {
+          return '已存在相同网址的书签'
+        }
+      }
+    }
+
+    // 返回未知错误说明有些异常没有考虑到，务必及时补充！
+    return '未知错误'
+  }
+
+  static getMessage(err: any) {
+    return new SqlXError(err).message
+  }
+
+  static canParse(err: any) {
+    return err?.name === postgres.PostgresError.name || err?.libsqlError
   }
 }

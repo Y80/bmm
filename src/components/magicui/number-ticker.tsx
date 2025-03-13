@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/utils'
+import { cn } from '@heroui/react'
 import { useInView, useMotionValue, useSpring } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 

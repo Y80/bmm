@@ -14,3 +14,5 @@ export type GenerateMetadata<Params = object> = (
   props: GenerateMetaDataProps<Params>,
   parent: ResolvingMetadata
 ) => Awaited<Metadata>
+
+

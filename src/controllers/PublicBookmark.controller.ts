@@ -166,8 +166,7 @@ const PublicBookmarkController = {
   },
   /** 获取所有书签数量 */
   async total() {
-    const res = await db.select({ count: count() }).from(publicBookmarks)
-    return res[0].count
+    return await db.$count(publicBookmarks)
   },
   /** 获取最近更新的 $DEFAULT_BOOKMARK_PAGESIZE 个书签 */
   async recent() {

@@ -1,4 +1,4 @@
-import { cn } from '@/utils'
+import { cn } from '@heroui/react'
 
 interface BorderBeamProps {
   className?: string

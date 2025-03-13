@@ -1,4 +1,5 @@
-import { schema } from '@/db'
+import type { SelectPublicBookmark, SelectPublicTag } from '@/controllers'
+import type { schema } from '@/db'
 import 'next-auth'
 
 declare global {
@@ -22,6 +23,10 @@ declare global {
   export type TagId = (typeof schema.publicTags.$inferSelect)['id']
   /** 书签 ID 类型（用户书签和公共书签） */
   export type BookmarkId = (typeof schema.publicBookmarks.$inferSelect)['id']
+  /** publicTag / userTag 的公共类型 */
+  export type SelectTag = SelectPublicTag
+  /** publicBookmark / userBookmark 的公共类型 */
+  export type SelectBookmark = SelectPublicBookmark
 }
 
 declare module 'next-auth' {

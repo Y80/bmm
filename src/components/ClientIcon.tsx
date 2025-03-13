@@ -1,8 +1,8 @@
 'use client'
 
 import useIsDark from '@/hooks/useIsDark'
-import { cn } from '@/utils'
 import { calcForegroundColor } from '@/utils/color'
+import { cn } from '@heroui/react'
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { memo, useMemo } from 'react'
 

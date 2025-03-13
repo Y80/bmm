@@ -3,9 +3,8 @@ import ClientIcon from '@/components/ClientIcon'
 import ReInput from '@/components/re-export/ReInput'
 import { testTagNameOrPinyin } from '@/utils'
 import { IconNames } from '@cfg'
-import { ScrollShadow, Switch } from '@heroui/react'
+import { ScrollShadow, Switch, cn } from '@heroui/react'
 import { useMount, useSetState, useUpdateEffect } from 'ahooks'
-import clsx from 'clsx'
 import { isEqual } from 'lodash'
 import { CSSProperties, useLayoutEffect, useRef } from 'react'
 import { useMainPageContext } from '../ctx'
@@ -20,7 +19,12 @@ export function getScrollElement() {
   return document.querySelector(`div[role="${SCROLL_DIV_ROLE}"]`)
 }
 
-export default function TagPicker(props: { className?: string; style?: CSSProperties }) {
+interface Props {
+  tags: SelectTag[]
+  className?: string
+  style?: CSSProperties
+}
+export default function TagPicker(props: Props) {
   const { tags } = useGlobalContext()
   const { selectedTags, onClickTag } = useMainPageContext()
 
@@ -83,7 +87,7 @@ export default function TagPicker(props: { className?: string; style?: CSSProper
             return (
               <div
                 key={tag.id}
-                className={clsx(
+                className={cn(
                   'mr-4 inline-flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-base',
                   'xs:hover:bg-zinc-600/10 xs:dark:hover:bg-zinc-800/80',
                   isSelected && 'bg-zinc-600/10 dark:bg-zinc-800/80 max-xs:!bg-blue-800/10'
@@ -108,7 +112,7 @@ export default function TagPicker(props: { className?: string; style?: CSSProper
             onValueChange={(v) => setState({ onlyMain: v })}
           />
           <span
-            className={clsx(
+            className={cn(
               'text-sm',
               state.onlyMain ? 'text-foreground-600' : 'text-foreground-400'
             )}

@@ -1,8 +1,8 @@
-import { useGlobalContext } from '@/app/ctx'
 import MyModal from '@/components/MyModal'
 import { SelectPublicTag } from '@/db'
 import useIsDark from '@/hooks/useIsDark'
 import { updateTagSortOrders } from '@/lib/actions'
+import { resolveAction } from '@/utils'
 import {
   closestCenter,
   DndContext,
@@ -26,13 +26,13 @@ import Color from 'color'
 import { cloneElement, ReactElement, useMemo, useState } from 'react'
 
 interface Props {
+  tags: SelectTag[]
+  refreshTags: () => void
   children: ReactElement
 }
 
 export default function SortTagModal(props: Props) {
-  const { tags: originalTags, refreshTags } = useGlobalContext()
-
-  const [tags, setTags] = useState(originalTags)
+  const [tags, setTags] = useState(props.tags)
 
   const [state, setState] = useSetState({
     open: false,
@@ -61,12 +61,15 @@ export default function SortTagModal(props: Props) {
         return { id: tag.id, order: idx }
       })
       .filter(Boolean) as { id: number; order: number }[]
-    await updateTagSortOrders(orders)
-    refreshTags()
+    // TODO
+    const action = updateTagSortOrders(orders)
+    const res = await resolveAction(action)
+    if (!res.ok) return
     addToast({
       title: '更新成功',
       color: 'success',
     })
+    props.refreshTags()
     setState({ open: false })
   }
 
@@ -79,7 +82,6 @@ export default function SortTagModal(props: Props) {
         size="xl"
         onClose={() => setState({ open: false })}
         onOk={onOk}
-        // okButtonProps={{ size: 'sm' }}
       >
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={tags}>

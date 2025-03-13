@@ -1,4 +1,3 @@
-import { useGlobalContext } from '@/app/ctx'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import { testTagNameOrPinyin } from '@/utils'
 import { Chip, cn, ScrollShadow } from '@heroui/react'
@@ -12,6 +11,7 @@ import style from './style.module.css'
 type ValueType = SelectPublicTag['id'][]
 
 interface Props {
+  tags: SelectPublicTag[]
   value?: ValueType
   excludeTagIds?: ValueType
   endContent?: ReactNode
@@ -24,12 +24,12 @@ interface Props {
  * - 这个组件会把已选中的标签在下拉列表中过滤掉
  */
 export default function TagSelect(props: Props) {
+  const { tags } = props
   const [state, setState] = useSetState({
     open: false,
     value: [] as ValueType,
   })
 
-  const { tags } = useGlobalContext()
 
   const mergedValue = props.value || state.value
 

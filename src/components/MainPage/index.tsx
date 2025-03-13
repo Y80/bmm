@@ -94,7 +94,7 @@ export default function MainPage(props: Props) {
       <Nav />
       <div className="flex grow max-xs:!max-h-none" style={{ maxHeight: contentHeight }}>
         <aside className="max-h-full w-56 flex-shrink-0 pl-6 max-xs:hidden">
-          <TagPicker />
+          <TagPicker tags={tags} />
         </aside>
         <div className="flex max-h-full grow flex-col overflow-auto px-6 pb-14">
           <Banner />
