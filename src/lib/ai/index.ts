@@ -1,4 +1,3 @@
-import PublicTagController from '@/controllers/PublicTag.controller'
 import fetchHtml from '@/utils/fetch-html'
 import { get as objGet } from 'lodash'
 import { getServer } from './servers'
@@ -7,10 +6,10 @@ import { chatResultAdapter, chatResultAdapter2, createPayload } from './utils'
 /**
  * 分析网站，自动打标签、获取标题、描述、图标地址
  */
-export async function analyzeWebsite(inputUrl: string) {
+export async function analyzeWebsite(inputUrl: string, tags: string[]) {
   const { sendRequest, responseContentPath } = getServer()
   let { html, url } = await fetchHtml(inputUrl)
-  const payload = await createPayload({ html, url })
+  const payload = await createPayload({ html, url, tags })
   const content = `
 你是一个熟悉 Web HTML、拥有丰富的 SEO 优化经验、可以熟练地提炼归纳信息的高级人工智能机器人。
 
@@ -57,7 +56,6 @@ ${JSON.stringify(payload)}
 `
     .replace(/\\/g, '')
     .replace(/\s{2,}/g, '')
-  // `.replace(/\s/g, '')
   process.env.AI_DEBUG && console.log(content)
   const rsp = await sendRequest(content)
   const chatMessageContent = objGet(rsp, responseContentPath)
@@ -71,11 +69,11 @@ ${JSON.stringify(payload)}
 /**
  * 传入一个标签名称，从数据库中读取所有标签名称，根据名字语义分析和传入标签相关的书签
  */
-export async function analyzeRelatedTags(tag: string) {
+export async function analyzeRelatedTags(tag: string, tags: string[]) {
   const { sendRequest, responseContentPath } = getServer()
   const payload = {
     targetTag: tag,
-    tags: (await PublicTagController.getAllNames()).join('/'),
+    tags,
   }
   if (!payload.tags.length) {
     throw new Error('数据库标签数据为空，请先创建标签再调用当前 AI 功能')

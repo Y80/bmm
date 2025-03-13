@@ -1,15 +1,14 @@
 'use client'
 
+import { useGlobalContext } from '@/app/ctx'
 import BookmarkListPage, { BookmarkListPageProps } from '@/components/BookmarkListPage'
-import { useAdminContext } from '@app/admin/ctx'
 
 export default function Page() {
-  const { tags, totalBookmarks } = useAdminContext()
+  const { tags, totalBookmarks } = useGlobalContext()
 
   const props: BookmarkListPageProps = {
     tags,
     totalBookmarks,
-    target: 'public',
   }
 
   return <BookmarkListPage {...props} />

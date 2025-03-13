@@ -1,6 +1,8 @@
+'use client'
+
+import { actGetAllPublicTags, actTotalPublicBookmarks } from '@/actions'
 import useIsDark from '@/hooks/useIsDark'
-import { actTotalPublicBookmarks, getAllPublicTags } from '@/lib/actions'
-import { resolveAction } from '@/utils'
+import { runAction } from '@/utils'
 import { Background, PageRoutes } from '@cfg'
 import { cn, HeroUIProvider, semanticColors, ToastProvider } from '@heroui/react'
 import { useSetState } from 'ahooks'
@@ -17,13 +19,17 @@ export interface GlobalContextType {
   tags: SelectTag[]
   /** publicBookmarks 个数 */
   totalBookmarks: number
-  setValue(value: Pick<GlobalContextType, 'tags' | 'totalBookmarks'>): void
+  // setCtxValue(
+  //   setter: (
+  //     val: Pick<GlobalContextType, 'tags' | 'totalBookmarks'>
+  //   ) => Partial<Pick<GlobalContextType, 'tags' | 'totalBookmarks'>>
+  // ): void
   /** 立即更新标签，用于乐观 UI */
   mutateTags(tags: SelectTag[]): void
   /** 重新获取标签 */
   refreshTags(): Promise<void>
   /** 立即变更并重新获取书签个数 */
-  updateTotalBookmarks(value: GlobalContextType['totalBookmarks']): Promise<void>
+  updateTotalBookmarks(value: number): Promise<void>
 }
 
 const GlobalContext = createContext<GlobalContextType | null>(null)
@@ -85,20 +91,22 @@ export function GlobalProvider(props: PropsWithChildren<Props>) {
     return {
       tags: state.tags,
       totalBookmarks: state.totalBookmarks,
-      setValue: (value) => setState(value),
+      // setCtxValue: setState,
       mutateTags: (tags) => setState({ tags }),
       refreshTags: async () => {
-        const res = await resolveAction(getAllPublicTags())
+        const res = await runAction(actGetAllPublicTags())
         res.ok && setState({ tags: res.data })
       },
-      updateTotalBookmarks: async (value) => {
+      updateTotalBookmarks: async (value: number) => {
         const oldValue = state.totalBookmarks
         setState({ totalBookmarks: value })
-        const res = await resolveAction(actTotalPublicBookmarks())
+        const res = await runAction(actTotalPublicBookmarks())
         setState({ totalBookmarks: res.ok ? res.data : oldValue })
       },
     }
   }, [state, setState])
+
+  console.log(state.totalBookmarks)
 
   return (
     <GlobalContext.Provider value={ctxValue}>

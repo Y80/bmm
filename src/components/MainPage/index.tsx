@@ -82,6 +82,8 @@ export default function MainPage(props: Props) {
   const isSearchPage = globalThis.location?.pathname === PageRoutes.Public.SEARCH
   const isHomePage = globalThis.location?.pathname === '/'
 
+  console.log(props.bookmarks, state.bookmarks)
+
   return (
     <MainPageProvider
       value={{
@@ -107,9 +109,9 @@ export default function MainPage(props: Props) {
             </div>
           )}
           <BookmarkContainer>
-            {state.bookmarks.map((bookmark) => (
-              <BookmarkCard {...bookmark} key={bookmark.id} />
-            ))}
+            {state.bookmarks.map((bookmark) => {
+              return <BookmarkCard {...bookmark} key={bookmark.id} />
+            })}
           </BookmarkContainer>
           {!!state.bookmarks.length && !state.loadingMore && (
             <div className="mt-12 flex-center">

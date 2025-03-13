@@ -3,7 +3,7 @@ import { useSetState } from 'ahooks'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
-export function usePageUtil() {
+export default function usePageUtil() {
   const [state, setState] = useSetState({
     isAdminSpace: false,
     isUserSpace: false,

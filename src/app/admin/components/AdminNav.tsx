@@ -1,5 +1,6 @@
 'use client'
 
+import { useGlobalContext } from '@/app/ctx'
 import { NavIconOnlyButtonProps } from '@/components/MainPage/components/Nav'
 import { ReButton } from '@/components/re-export'
 import ThemeToggle from '@/components/ThemeToggle'
@@ -7,11 +8,10 @@ import { ADMIN_NAV_LINKS, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import { cn, Link, Navbar, NavbarContent } from '@heroui/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useAdminContext } from '../ctx'
 
 export default function AdminNav() {
   const pathname = usePathname()
-  const { tags, totalBookmarks } = useAdminContext()
+  const { tags, totalBookmarks } = useGlobalContext()
 
   function renderLinks() {
     if (pathname === PageRoutes.Admin.INDEX) return null

@@ -1,6 +1,6 @@
+import { actGetAllPublicTags } from '@/actions'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
-import { getAllPublicTags } from '@/lib/actions'
-import { resolveAction } from '@/utils'
+import { runAction } from '@/utils'
 import { useSetState } from 'ahooks'
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 
@@ -35,7 +35,7 @@ export function AdminContextProvider(props: Props) {
         setState({ tags })
       },
       async refreshTags() {
-        const res = await resolveAction(getAllPublicTags())
+        const res = await runAction(actGetAllPublicTags())
         res.ok && setState({ tags: res.data })
       },
     }

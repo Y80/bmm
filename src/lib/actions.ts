@@ -1,6 +1,7 @@
 // 这个文件里导出的所有异步函数，都可以在 Client 组件中直接调用
 'use server'
 
+import { parseWebsite } from '@/app/api/[...slug]/handlers/parse-website'
 import PublicBookmarkController, {
   InsertPublicBookmark,
 } from '@/controllers/PublicBookmark.controller'
@@ -55,16 +56,14 @@ function makeAction<Data, Payload extends object>(
     return { data } as const
   }
 }
-export type ActionResult<T> = ReturnType<ReturnType<typeof makeAction<T, object>>>
 
 export const tryCreateTags = PublicTagController.tryCreateTags
 
 export const actTotalPublicBookmarks = makeAction(PublicBookmarkController.total, { guard: false })
-export const findPublicBookmarks = makeAction(PublicBookmarkController.findMany, { guard: false })
-export const insertPublicBookmarks = makeAction(PublicBookmarkController.insert, { guard: 'admin' })
-export const deletePublicBookmarks = makeAction(PublicBookmarkController.delete, { guard: 'admin' })
-export const updatePublicBookmarks = makeAction(PublicBookmarkController.update, { guard: 'admin' })
-export const getAllPublicTags = makeAction(PublicTagController.getAll, { guard: false })
+
+export const actInsertPublicBookmarks = makeAction(PublicBookmarkController.insert, {
+  guard: 'admin',
+})
 export const insertPublicTag = makeAction(PublicTagController.insert, { guard: 'admin' })
 export const deletePublicTag = makeAction(PublicTagController.remove, { guard: 'admin' })
 export const updatePublicTag = makeAction(PublicTagController.update, { guard: 'admin' })
@@ -83,12 +82,7 @@ export async function insertBookmark(payload: InsertPublicBookmark) {
     return {}
   }
   let errorMsg = ''
-  if (error.message.includes('duplicate key value violates unique constraint')) {
-    if (error.message.includes('publicBookmarks_name_unique')) {
-      errorMsg = '创建失败：已存在相同名称的书签'
-    } else if (error.message.includes('publicBookmarks_url_unique')) {
-      errorMsg = '创建失败：已存在相同 URL 的书签'
-    }
-  }
   return { errorMsg: errorMsg || error?.message || '未知错误' }
 }
+
+export const actParseWebsite = makeAction(parseWebsite)

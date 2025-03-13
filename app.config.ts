@@ -46,14 +46,29 @@ export const PageRoutes = {
     UPLOAD: '/user/upload',
     tagSlug: (slug: 'new' | TagId) => '/user/tag/' + slug,
     bookmarkSlug: (slug: 'new' | BookmarkId) => '/user/bookmark/' + slug,
+    space(urlOrPath?: string | null) {
+      if (!urlOrPath) return false
+      if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
+        urlOrPath = new URL(urlOrPath).pathname
+      }
+      return urlOrPath.startsWith(this.INDEX)
+    },
   },
   Admin: {
+    PREFIX: '/admin',
     INDEX: '/admin',
     TAG_LIST: '/admin/tag/list',
     BOOKMARK_LIST: '/admin/bookmark/list',
     UPLOAD: '/admin/upload',
     tagSlug: (slug: 'new' | TagId) => '/admin/tag/' + slug,
     bookmarkSlug: (slug: 'new' | BookmarkId) => '/admin/bookmark/' + slug,
+    space(urlOrPath?: string | null) {
+      if (!urlOrPath) return false
+      if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
+        urlOrPath = new URL(urlOrPath).pathname
+      }
+      return urlOrPath.startsWith(this.INDEX)
+    },
   },
   Public: {
     RANDOM: '/random',

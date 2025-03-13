@@ -30,3 +30,14 @@ const nextAuthOptions: NextAuthConfig = {
 export const nextAuthLib = NextAuth(nextAuthOptions)
 
 export const auth = nextAuthLib.auth
+
+/**
+ * 获取用户 ID
+ *
+ * ! 仅在已登录的情况下可用，如果未登录则抛出错误
+ */
+export async function getUserId() {
+  const session = await auth()
+  if (!session) throw new Error('getUserId() 调用出错')
+  return session.user.id!
+}

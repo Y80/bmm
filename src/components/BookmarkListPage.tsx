@@ -1,5 +1,6 @@
 'use client'
 
+import { actDeletePublicBookmark, actFindPublicBookmarks, actUpdatePublicBookmark } from '@/actions'
 import { EmptyListPlaceholder } from '@/components'
 import ClientIcon from '@/components/ClientIcon'
 import Favicon from '@/components/Favicon'
@@ -8,8 +9,7 @@ import { ReButton, ReInput } from '@/components/re-export'
 import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
-import { deletePublicBookmarks, findPublicBookmarks, updatePublicBookmarks } from '@/lib/actions'
-import { resolveAction } from '@/utils'
+import { runAction } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE, IconNames, PageRoutes } from '@cfg'
 import {
   addToast,
@@ -34,7 +34,6 @@ import {
 import { useDebounceFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
-import { z } from 'zod'
 
 const SORTERS = [
   { name: '创建时间降序', key: '-createTime', iconCls: IconNames.SORT_DESC },
@@ -44,13 +43,12 @@ const SORTERS = [
 ] as const
 
 export type BookmarkListPageProps = {
-  target: 'public' | 'user'
   tags: SelectPublicTag[]
   totalBookmarks: number
 }
 
 export default function BookmarkListPage(props: BookmarkListPageProps) {
-  const isPublic = props.target === 'public'
+  const isAdminSpace = PageRoutes.Admin.space(globalThis.location?.pathname)
   const searchParams = useSearchParams()
   const router = useRouter()
   const [state, setState] = useSetState({
@@ -71,15 +69,15 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     mutate,
   } = useRequest(
     async () => {
-      const input: z.input<typeof findManyBookmarksSchema> = {
+      const input: typeof findManyBookmarksSchema._input = {
         page: state.pager.page.toString(),
         keyword: state.keyword,
         sorterKey: state.sorterKey,
         ...(state.selectedTag && { tagIds: state.selectedTag }),
       }
       dataRef.current.loadingMutable && setState({ loading: true })
-      const action = findPublicBookmarks
-      const res = await resolveAction(action(findManyBookmarksSchema.parse(input)))
+      const action = actFindPublicBookmarks
+      const res = await runAction(action(findManyBookmarksSchema.parse(input)))
       setState({ loading: false })
       dataRef.current.loadingMutable = true
       if (!res.ok) return []
@@ -123,7 +121,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   )
 
   async function onRemove(item: SelectPublicBookmark) {
-    const res = await resolveAction(deletePublicBookmarks({ id: item.id }))
+    const res = await runAction(actDeletePublicBookmark({ id: item.id }))
     if (!res.ok) return
     refresh()
     addToast({
@@ -141,12 +139,12 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     item.isPinned = isPinned
     mutate([...bookmarks])
     dataRef.current.loadingMutable = false
-    const action = updatePublicBookmarks
-    resolveAction(action(item)).then(() => refresh())
+    const action = actUpdatePublicBookmark
+    runAction(action(item)).then(() => refresh())
   }
 
   function toEditPage(item: SelectPublicBookmark) {
-    router.push((isPublic ? PageRoutes.Admin : PageRoutes.User).bookmarkSlug(item.id))
+    router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).bookmarkSlug(item.id))
   }
 
   return (

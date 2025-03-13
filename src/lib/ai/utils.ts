@@ -1,4 +1,3 @@
-import PublicTagController from '@/controllers/PublicTag.controller'
 import { load } from 'cheerio'
 import { isPlainObject } from 'lodash'
 import { Method } from '../http'
@@ -45,7 +44,8 @@ function getInnerText(html: string, separator = '/') {
     .join(separator)
 }
 
-export async function createPayload({ html, url }: { html: string; url: string }) {
+export async function createPayload(params: { html: string; url: string; tags: string[] }) {
+  const { html, url, tags } = params
   const $ = load(html)
   // 清理数据
   $('script').remove()
@@ -56,7 +56,7 @@ export async function createPayload({ html, url }: { html: string; url: string }
     url,
     head: $('head').html(),
     innerText: getInnerText(html),
-    tags: (await PublicTagController.getAllNames()).join('/'),
+    tags,
   }
   return payload
 }

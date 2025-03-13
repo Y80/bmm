@@ -1,5 +1,5 @@
+import { ActionResult } from '@/actions/make-action'
 import { SelectPublicTag } from '@/db'
-import { ActionResult } from '@/lib/actions'
 import { addToast } from '@heroui/react'
 import { pinyin } from 'pinyin-pro'
 
@@ -117,7 +117,7 @@ export function isServerless() {
   return process.env.SERVERLESS || process.env.VERCEL
 }
 
-export async function resolveAction<T>(actionRes: ActionResult<T>) {
+export async function runAction<T>(actionRes: ActionResult<T>) {
   const res = await actionRes
   if (res.error) {
     addToast({
@@ -128,8 +128,4 @@ export async function resolveAction<T>(actionRes: ActionResult<T>) {
     return { ok: false } as const
   }
   return { ok: true, data: res.data } as const
-}
-
-export function isAdminDashboard() {
-  location.pathname.startsWith('/admin')
 }

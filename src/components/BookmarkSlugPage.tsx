@@ -1,16 +1,14 @@
 'use client'
 
-import Favicon from '@/components/Favicon'
-import SlugPageLayout from '@/components/SlugPageLayout'
-import TagSelect from '@/components/TagSelect'
-import { ReButton, ReInput, ReTextarea } from '@/components/re-export'
-import { InsertPublicBookmark, SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
-import { SelectPublicTag } from '@/controllers/PublicTag.controller'
-import http from '@/lib/http'
+import { actAnalyzeWebsite, actExtractHtmlInfo, actInsertPublicBookmark } from '@/actions'
+import { Favicon, ReButton, ReInput, ReTextarea, SlugPageLayout, TagSelect } from '@/components'
+import { InsertPublicBookmark } from '@/controllers'
+import { usePageUtil, useSlug } from '@/hooks'
 import { z } from '@/lib/zod'
-import { isValidUrl } from '@/utils'
-import { ApiRoutes, IconNames } from '@cfg'
+import { isValidUrl, runAction } from '@/utils'
+import { IconNames, PageRoutes } from '@cfg'
 import {
+  addToast,
   cn,
   Dropdown,
   DropdownItem,
@@ -20,6 +18,8 @@ import {
   Switch,
 } from '@heroui/react'
 import { useSetState, useUpdateEffect } from 'ahooks'
+import { pick } from 'lodash'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { fromZodError } from 'zod-validation-error'
 
@@ -38,12 +38,15 @@ type Bookmark = Pick<
 >
 
 export interface BookmarkSlugPageProps {
-  bookmark?: SelectPublicBookmark | null
-  tags: SelectPublicTag[]
-  save: (bookmark: Bookmark) => Promise<void>
+  bookmark: SelectBookmark | null
+  tags: SelectTag[]
+  afterSave: () => void
 }
 
 export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
+  const slug = useSlug()
+  const pageUtil = usePageUtil()
+  const router = useRouter()
   const [bookmark, setBookmark] = useSetState<Bookmark>({
     url: '',
     name: '',
@@ -82,19 +85,18 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
 
   async function parseWebsite() {
     setState({ loading: true })
-    const res = await http.post(ApiRoutes.PARSE_WEBSITE, { url: bookmark.url })
+    const res = await runAction(actExtractHtmlInfo(bookmark.url))
     setState({ loading: false })
-    if (!res.data) return
+    if (!res.ok) return
     setBookmark({
       name: res.data.title,
-      icon: res.data.icon,
-      description: res.data.description,
+      ...pick(res.data, ['icon', 'description']),
     })
   }
 
   async function aiAnalyzeWebsite() {
     setState({ loading: true })
-    const { data } = await http.post(ApiRoutes.Ai.ANALYZE_WEBSITE, { url: bookmark.url })
+    const { data } = await runAction(actAnalyzeWebsite(bookmark.url))
     setState({ loading: false })
     if (!data) return
     process.env.NODE_ENV === 'development' && console.log('AI 解析结果：', data)
@@ -105,10 +107,18 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       relatedTagIds: props.tags.filter((tag) => data.tags.includes(tag.name)).map((tag) => tag.id),
     })
   }
-
-  async function handleSave() {
+  async function onSave() {
     if (!validateAll()) return
-    await props.save(bookmark)
+    const action = actInsertPublicBookmark
+    const res = await runAction(action(bookmark))
+    if (!res.ok) return
+    addToast({
+      color: 'success',
+      title: '操作成功',
+      description: slug.isNew ? '书签已创建' : '书签已更新',
+    })
+    router.push((pageUtil.isAdminSpace ? PageRoutes.Admin : PageRoutes.User).BOOKMARK_LIST)
+    props.afterSave()
   }
 
   useUpdateEffect(() => {
@@ -202,7 +212,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   const hasValidUrl = bookmark.url && !invalidInfos.url
 
   return (
-    <SlugPageLayout onSave={handleSave}>
+    <SlugPageLayout onSave={onSave}>
       <ReInput
         label="网址"
         type="url"

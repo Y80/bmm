@@ -2,7 +2,7 @@ import MyModal from '@/components/MyModal'
 import { SelectPublicTag } from '@/db'
 import useIsDark from '@/hooks/useIsDark'
 import { updateTagSortOrders } from '@/lib/actions'
-import { resolveAction } from '@/utils'
+import { runAction } from '@/utils'
 import {
   closestCenter,
   DndContext,
@@ -63,7 +63,7 @@ export default function SortTagModal(props: Props) {
       .filter(Boolean) as { id: number; order: number }[]
     // TODO
     const action = updateTagSortOrders(orders)
-    const res = await resolveAction(action)
+    const res = await runAction(action)
     if (!res.ok) return
     addToast({
       title: '更新成功',

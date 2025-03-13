@@ -1,7 +1,11 @@
 import { z } from '@/lib/zod'
 import fetchHtml from '@/utils/fetch-html'
 
-export async function parseWebsite({ inputUrl }: { inputUrl: string }) {
+const schema = z.string().url()
+
+extractHtmlInfo.schema = schema
+
+export async function extractHtmlInfo(inputUrl: z.output<typeof schema>) {
   const { html, url } = await fetchHtml(new URL(inputUrl).origin)
   const rst = parseHtml(html, url)
   if (!rst.icon) {
@@ -48,10 +52,4 @@ function parseHtml(html: string, origin: string) {
   }
 
   return rst
-}
-
-export async function handleParseWebsite(req: Request) {
-  const schema = z.object({ url: z.string().url() })
-  const res = schema.parse(await req.json())
-  return await parseWebsite({ inputUrl: res.url })
 }
