@@ -46,7 +46,10 @@ export const PageRoutes = {
     UPLOAD: '/user/upload',
     tagSlug: (slug: 'new' | TagId) => '/user/tag/' + slug,
     bookmarkSlug: (slug: 'new' | BookmarkId) => '/user/bookmark/' + slug,
-    space(urlOrPath?: string | null) {
+    space(urlOrPath?: 'auto' | (string & {}) | null) {
+      if (urlOrPath === 'auto') {
+        urlOrPath = globalThis.location?.pathname
+      }
       if (!urlOrPath) return false
       if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
         urlOrPath = new URL(urlOrPath).pathname
@@ -62,7 +65,10 @@ export const PageRoutes = {
     UPLOAD: '/admin/upload',
     tagSlug: (slug: 'new' | TagId) => '/admin/tag/' + slug,
     bookmarkSlug: (slug: 'new' | BookmarkId) => '/admin/bookmark/' + slug,
-    space(urlOrPath?: string | null) {
+    space(urlOrPath?: 'auto' | (string & {}) | null) {
+      if (urlOrPath === 'auto') {
+        urlOrPath = globalThis.location?.pathname
+      }
       if (!urlOrPath) return false
       if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
         urlOrPath = new URL(urlOrPath).pathname

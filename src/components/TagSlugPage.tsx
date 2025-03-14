@@ -65,7 +65,7 @@ export default function TagSlugPage(props: TagSlugPageProps) {
       addToast({ title: '请输入「名称」', color: 'warning' })
       return
     }
-    props.save(tag)
+    await props.save(tag)
   }
 
   function onSelectIcon(icon: SelectedIcon) {

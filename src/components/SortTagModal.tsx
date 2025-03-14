@@ -1,7 +1,7 @@
+import { actUpdatePublicTagSortOrders } from '@/actions'
 import MyModal from '@/components/MyModal'
 import { SelectPublicTag } from '@/db'
 import useIsDark from '@/hooks/useIsDark'
-import { updateTagSortOrders } from '@/lib/actions'
 import { runAction } from '@/utils'
 import {
   closestCenter,
@@ -19,7 +19,6 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { addToast } from '@heroui/react'
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { useSetState } from 'ahooks'
 import Color from 'color'
@@ -61,16 +60,14 @@ export default function SortTagModal(props: Props) {
         return { id: tag.id, order: idx }
       })
       .filter(Boolean) as { id: number; order: number }[]
-    // TODO
-    const action = updateTagSortOrders(orders)
-    const res = await runAction(action)
-    if (!res.ok) return
-    addToast({
-      title: '更新成功',
-      color: 'success',
+    const action = actUpdatePublicTagSortOrders
+    await runAction(action(orders), {
+      okMsg: '标签排序已更新',
+      onOk() {
+        props.refreshTags()
+        setState({ open: false })
+      },
     })
-    props.refreshTags()
-    setState({ open: false })
   }
 
   return (

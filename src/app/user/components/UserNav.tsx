@@ -1,7 +1,6 @@
 'use client'
 
-import { ThemeToggle } from '@/components'
-import { ReButton, ReInput } from '@/components/re-export'
+import { ReButton, ReInput, ThemeToggle } from '@/components'
 import { Assets, Background, IconNames, PageRoutes } from '@cfg'
 import {
   Avatar,
@@ -40,7 +39,7 @@ const IconButtonProps = {
   className: 'text-2xl text-foreground-700',
 } satisfies ButtonProps
 
-export default function AdminNav(props: Props) {
+export default function UserNav(props: Props) {
   const pathname = usePathname()
 
   return (

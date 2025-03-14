@@ -1,9 +1,8 @@
 import { z } from '@/lib/zod'
 import fetchHtml from '@/utils/fetch-html'
+import { makeActionInput } from '../make-action'
 
 const schema = z.string().url()
-
-extractHtmlInfo.schema = schema
 
 export async function extractHtmlInfo(inputUrl: z.output<typeof schema>) {
   const { html, url } = await fetchHtml(new URL(inputUrl).origin)
@@ -18,12 +17,18 @@ export async function extractHtmlInfo(inputUrl: z.output<typeof schema>) {
   return rst
 }
 
+export const extractHtmlInfoInput = makeActionInput({
+  handler: extractHtmlInfo,
+  schema,
+  guard: 'decide-by-referer',
+})
+
 /**
  * 解析 HTML，获取 title、icon、description
  * 不支持非 UTF8 字符集如 GB2312
  */
 function parseHtml(html: string, origin: string) {
-  const rst = { title: '', description: '', icon: '' }
+  const rst = { name: '', description: '', icon: '' }
   const metaTagsMatcher = html.match(/<meta[\s\S]+?>/gi)
   if (metaTagsMatcher) {
     for (const meta of metaTagsMatcher) {
@@ -35,7 +40,7 @@ function parseHtml(html: string, origin: string) {
   }
   const titleMatcher = /(?<=<title.*?>)[\s\S]+?(?=<\/title>)/gi.exec(html)
   if (titleMatcher) {
-    rst.title = titleMatcher[0].trim()
+    rst.name = titleMatcher[0].trim()
   }
   const linkTagMatcher = html.match(/<link[\s\S]+?>/g)
   if (linkTagMatcher) {

@@ -1,11 +1,15 @@
 'use server'
 
-import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
-import PublicTagController from '@/controllers/PublicTag.controller'
-import UserTagController from '@/controllers/UserTag.controller'
-import { analyzeWebsite, extractHtmlInfo, handleAnalyzeRelatedTags } from './handlers'
+import {
+  PublicBookmarkController,
+  PublicTagController,
+  UserBookmarkController,
+  UserTagController,
+} from '@/controllers'
+import { aiAnalyzeRelatedTagsInput, aiAnalyzeWebsiteInput, extractHtmlInfoInput } from './items'
 import { makeAction as make } from './make-action'
 
+/// PublicBookmark
 export const actTotalPublicBookmarks = make(PublicBookmarkController.total, {
   guard: false,
 })
@@ -18,21 +22,25 @@ export const actInsertPublicBookmark = make(PublicBookmarkController.insert, {
 export const actQueryPublicBookmark = make(PublicBookmarkController.query)
 export const actDeletePublicBookmark = make(PublicBookmarkController.delete, { guard: 'admin' })
 export const actUpdatePublicBookmark = make(PublicBookmarkController.update, { guard: 'admin' })
+
+/// PublicTag
 export const actGetAllPublicTags = make(PublicTagController.getAll, { guard: false })
 export const actInsertPublicTag = make(PublicTagController.insert, { guard: 'admin' })
 export const actDeletePublicTag = make(PublicTagController.remove, { guard: 'admin' })
 export const actUpdatePublicTag = make(PublicTagController.update, { guard: 'admin' })
-export const actUpdateTagSortOrders = make(PublicTagController.sort, { guard: 'admin' })
+export const actUpdatePublicTagSortOrders = make(PublicTagController.sort, { guard: 'admin' })
+export const actTryCreatePublicTags = make(PublicTagController.tryCreateTags, { guard: 'admin' })
 
+/// UserTag
+export const actGetAllUserTags = make(UserTagController.getAll, { guard: false })
 export const actInsertUserTag = make(UserTagController.insert)
 export const actUpdateUserTag = make(UserTagController.update)
+export const actDeleteUserTag = make(UserTagController.remove)
 
-export const actExtractHtmlInfo = make(extractHtmlInfo, { schema: extractHtmlInfo.schema })
-export const actAnalyzeWebsite = make(analyzeWebsite, {
-  guard: 'decide-by-referer',
-  schema: analyzeWebsite.schema,
-})
-export const actAnalyzeRelatedTags = make(handleAnalyzeRelatedTags, {
-  guard: 'decide-by-referer',
-  schema: handleAnalyzeRelatedTags.schema,
-})
+/// UserBookmark
+export const actTotalUserBookmarks = make(UserBookmarkController.total)
+
+/// 解析网站、标签
+export const actExtractHtmlInfo = make(extractHtmlInfoInput)
+export const actAnalyzeWebsite = make(aiAnalyzeWebsiteInput)
+export const actAnalyzeRelatedTags = make(aiAnalyzeRelatedTagsInput)

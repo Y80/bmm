@@ -7,6 +7,8 @@ interface Props {
 
 export default function EmptyListPlaceholder(props: Props) {
   const isTag = props.target === 'tag'
+  const isAdminSpace = PageRoutes.Admin.space('auto')
+  const space = isAdminSpace ? PageRoutes.Admin : PageRoutes.User
   return (
     <div className="my-24 flex-col flex-center">
       <Image isBlurred src={Assets.BOX_EMPTY_PNG} width={120} height={120} alt="empty" />
@@ -15,12 +17,12 @@ export default function EmptyListPlaceholder(props: Props) {
         <Link
           size="sm"
           className="group cursor-pointer"
-          href={isTag ? PageRoutes.Admin.tagSlug('new') : PageRoutes.Admin.bookmarkSlug('new')}
+          href={isTag ? space.tagSlug('new') : space.bookmarkSlug('new')}
         >
           &nbsp;新建{isTag ? '标签' : '书签'}
         </Link>
         &nbsp;或&nbsp;
-        <Link size="sm" className="group cursor-pointer" href={PageRoutes.Admin.UPLOAD}>
+        <Link size="sm" className="group cursor-pointer" href={space.UPLOAD}>
           导入浏览器书签
         </Link>
       </div>

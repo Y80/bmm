@@ -8,7 +8,6 @@ import { z } from '@/lib/zod'
 import { isValidUrl, runAction } from '@/utils'
 import { IconNames, PageRoutes } from '@cfg'
 import {
-  addToast,
   cn,
   Dropdown,
   DropdownItem,
@@ -18,7 +17,6 @@ import {
   Switch,
 } from '@heroui/react'
 import { useSetState, useUpdateEffect } from 'ahooks'
-import { pick } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { fromZodError } from 'zod-validation-error'
@@ -88,10 +86,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     const res = await runAction(actExtractHtmlInfo(bookmark.url))
     setState({ loading: false })
     if (!res.ok) return
-    setBookmark({
-      name: res.data.title,
-      ...pick(res.data, ['icon', 'description']),
-    })
+    setBookmark(res.data)
   }
 
   async function aiAnalyzeWebsite() {
@@ -110,15 +105,13 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   async function onSave() {
     if (!validateAll()) return
     const action = actInsertPublicBookmark
-    const res = await runAction(action(bookmark))
-    if (!res.ok) return
-    addToast({
-      color: 'success',
-      title: '操作成功',
-      description: slug.isNew ? '书签已创建' : '书签已更新',
+    await runAction(action(bookmark), {
+      okMsg: slug.isNew ? '书签已创建' : '书签已更新',
+      onOk() {
+        router.push((pageUtil.isAdminSpace ? PageRoutes.Admin : PageRoutes.User).BOOKMARK_LIST)
+        props.afterSave()
+      },
     })
-    router.push((pageUtil.isAdminSpace ? PageRoutes.Admin : PageRoutes.User).BOOKMARK_LIST)
-    props.afterSave()
   }
 
   useUpdateEffect(() => {

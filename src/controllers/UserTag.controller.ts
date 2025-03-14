@@ -1,5 +1,6 @@
 import { db, schema } from '@/db'
-import { isServerless } from '@/utils'
+import { getAuthedUserId } from '@/lib/auth'
+import { initGlobalData } from '@/utils/global-data'
 import { and, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
 
 const { userTagToTag, userTags } = schema
@@ -9,7 +10,13 @@ export type SelectUserTag = typeof userTags.$inferSelect & {
   relatedTagIds: TagId[]
 }
 
-const cachedTags: Record<string, SelectUserTag[] | null> = {}
+const cachedTags = initGlobalData({
+  key: 'userTags',
+  initialData() {
+    const cachedTags: Record<UserId, SelectUserTag[] | null> = {}
+    return cachedTags
+  },
+})
 
 function resetCachedTags(userId: UserId) {
   cachedTags[userId] = null
@@ -49,9 +56,9 @@ function modifyUserTagLimiter(userId: UserId, tagId: TagId) {
 }
 
 namespace UserTagController {
-  export async function getAll(userId: string) {
-    // serverless 环境总是获取最新的数据
-    if (isServerless() || !cachedTags[userId]) {
+  export async function getAll(userId?: string) {
+    userId ||= await getAuthedUserId()
+    if (!cachedTags[userId]) {
       const tags = await db.query.userTags.findMany({
         with: { relatedTagIds: { columns: { b: true } } },
         orderBy: [desc(userTags.sortOrder), desc(userTags.createdAt)],
@@ -61,22 +68,27 @@ namespace UserTagController {
         relatedTagIds: tag.relatedTagIds.map((el) => el.b),
       }))
     }
-    return cachedTags[userId]
+    return cachedTags[userId]!
   }
 
-  type InsertUserTag = Partial<SelectUserTag> & Pick<SelectUserTag, 'name' | 'userId'>
+  type InsertUserTag = Partial<SelectUserTag> & Pick<SelectUserTag, 'name'>
   export async function insert(tag: InsertUserTag) {
-    resetCachedTags(tag.userId)
+    const userId = await getAuthedUserId()
+    resetCachedTags(userId)
     const { relatedTagIds, ...resetTag } = tag
-    const rows = await db.insert(userTags).values(resetTag).returning()
-    await upsertRelations(tag.userId, rows[0].id, relatedTagIds)
+    const rows = await db
+      .insert(userTags)
+      .values({ ...resetTag, userId })
+      .returning()
+    await upsertRelations(userId, rows[0].id, relatedTagIds)
     return rows[0]
   }
 
-  type UpdateUserTag = Partial<SelectUserTag> & Pick<SelectUserTag, 'id' | 'userId'>
+  type UpdateUserTag = Partial<SelectUserTag> & Pick<SelectUserTag, 'id'>
   export async function update(tag: UpdateUserTag) {
-    resetCachedTags(tag.userId)
-    const { id, userId, relatedTagIds, ...resetTag } = tag
+    const userId = await getAuthedUserId()
+    resetCachedTags(userId)
+    const { id, relatedTagIds, ...resetTag } = tag
     await db
       .update(userTags)
       .set({ ...resetTag, updatedAt: new Date() })
@@ -84,17 +96,17 @@ namespace UserTagController {
     upsertRelations(userId, id, relatedTagIds)
   }
 
-  export async function remove(tag: Pick<SelectUserTag, 'id' | 'userId'>) {
+  export async function remove(tag: Pick<SelectUserTag, 'id'>) {
     const res = await db
       .delete(userTags)
-      .where(modifyUserTagLimiter(tag.userId, tag.id))
+      .where(modifyUserTagLimiter(await getAuthedUserId(), tag.id))
       .returning()
     return res
   }
 
   /** 获取所有标签的名称 */
-  export async function getAllNames(userId: UserId) {
-    return (await getAll(userId)).map(({ name }) => name)
+  export async function getAllNames() {
+    return (await getAll()).map(({ name }) => name)
   }
 
   export async function updateSortOrders(params: {

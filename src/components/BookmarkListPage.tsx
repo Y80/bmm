@@ -12,7 +12,6 @@ import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { runAction } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE, IconNames, PageRoutes } from '@cfg'
 import {
-  addToast,
   cn,
   Dropdown,
   DropdownItem,
@@ -121,13 +120,9 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   )
 
   async function onRemove(item: SelectPublicBookmark) {
-    const res = await runAction(actDeletePublicBookmark({ id: item.id }))
-    if (!res.ok) return
-    refresh()
-    addToast({
-      color: 'success',
-      title: '操作成功',
-      description: '书签已删除',
+    await runAction(actDeletePublicBookmark({ id: item.id }), {
+      okMsg: '书签已删除',
+      onOk: refresh,
     })
   }
 
@@ -140,7 +135,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     mutate([...bookmarks])
     dataRef.current.loadingMutable = false
     const action = actUpdatePublicBookmark
-    runAction(action(item)).then(() => refresh())
+    runAction(action(item)).then(refresh)
   }
 
   function toEditPage(item: SelectPublicBookmark) {

@@ -34,15 +34,14 @@ export default class SqlXError extends Error {
 
     if ((this.originalError as any)?.libsqlError) {
       const error = this.originalError as LibsqlError
+      const { message: msg } = error
       if (error.rawCode === 2067) {
-        if (error.message.includes('publicTags.name')) {
-          return '已存在相同名称的标签'
+        if (msg.includes('publicBookmarks') || msg.includes('userBookmarks')) {
+          if (msg.includes('.name')) return '已存在相同名称的书签'
+          if (msg.includes('.url')) return '已存在相同网址的书签'
         }
-        if (error.message.includes('publicBookmarks.name')) {
-          return '已存在相同名称的书签'
-        }
-        if (error.message.includes('publicBookmarks.url')) {
-          return '已存在相同网址的书签'
+        if (msg.includes('publicTags') || msg.includes('userTags')) {
+          if (msg.includes('.name')) return '已存在相同名称的标签'
         }
       }
     }

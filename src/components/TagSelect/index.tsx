@@ -1,4 +1,3 @@
-import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import { testTagNameOrPinyin } from '@/utils'
 import { Chip, cn, ScrollShadow } from '@heroui/react'
 import { Icon } from '@iconify/react'
@@ -8,10 +7,10 @@ import 'rc-select/assets/index.css'
 import { ReactNode, useEffect, useMemo } from 'react'
 import style from './style.module.css'
 
-type ValueType = SelectPublicTag['id'][]
+type ValueType = TagId[]
 
 interface Props {
-  tags: SelectPublicTag[]
+  tags: SelectTag[]
   value?: ValueType
   excludeTagIds?: ValueType
   endContent?: ReactNode
@@ -29,7 +28,6 @@ export default function TagSelect(props: Props) {
     open: false,
     value: [] as ValueType,
   })
-
 
   const mergedValue = props.value || state.value
 
@@ -74,11 +72,11 @@ export default function TagSelect(props: Props) {
     <div role="tag-select">
       <div
         className={cn(
-          'relative cursor-not-allowed overflow-hidden rounded-medium bg-default-50 p-4 py-3 text-center text-sm text-warning-400/80',
+          'relative cursor-not-allowed overflow-hidden rounded-medium bg-default-50 p-4 py-3 text-center text-xs text-foreground-400',
           tags.length && 'hidden'
         )}
       >
-        暂不可用，请先创建一些标签数据～
+        暂不可用，请先创建一些标签
       </div>
       <div
         className={cn(

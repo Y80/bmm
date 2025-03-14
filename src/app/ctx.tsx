@@ -19,18 +19,13 @@ export interface GlobalContextType {
   tags: SelectTag[]
   /** publicBookmarks 个数 */
   totalBookmarks: number
-  // setCtxValue(
-  //   setter: (
-  //     val: Pick<GlobalContextType, 'tags' | 'totalBookmarks'>
-  //   ) => Partial<Pick<GlobalContextType, 'tags' | 'totalBookmarks'>>
-  // ): void
-  /** 立即更新标签，用于乐观 UI */
-  mutateTags(tags: SelectTag[]): void
-  /** 重新获取标签 */
-  refreshTags(): Promise<void>
+  setCtxValue(fn: (value: ContextValuePart) => ContextValuePart): void
+  /** 立即更新标签，并重新请求获取书签 */
+  updateTags(tags?: SelectTag[]): Promise<void>
   /** 立即变更并重新获取书签个数 */
   updateTotalBookmarks(value: number): Promise<void>
 }
+type ContextValuePart = Pick<GlobalContextType, 'tags' | 'totalBookmarks'>
 
 const GlobalContext = createContext<GlobalContextType | null>(null)
 
@@ -61,9 +56,7 @@ function AntdConfigProviderWrapper({ children }: PropsWithChildren) {
   )
 }
 
-type Props = Pick<GlobalContextType, 'tags' | 'totalBookmarks'> & {
-  session: Session | null
-}
+type Props = ContextValuePart & { session: Session | null }
 export function GlobalProvider(props: PropsWithChildren<Props>) {
   const [state, setState] = useSetState({
     tags: props.tags,
@@ -89,13 +82,18 @@ export function GlobalProvider(props: PropsWithChildren<Props>) {
 
   const ctxValue = useMemo<GlobalContextType>(() => {
     return {
-      tags: state.tags,
-      totalBookmarks: state.totalBookmarks,
-      // setCtxValue: setState,
-      mutateTags: (tags) => setState({ tags }),
-      refreshTags: async () => {
+      ...state,
+      setCtxValue(fn) {
+        setState((state) => fn(state))
+      },
+      async updateTags(tags) {
+        if (tags) {
+          tags = [...tags]
+        }
+        const oldValue = state.tags
+        tags && setState({ tags })
         const res = await runAction(actGetAllPublicTags())
-        res.ok && setState({ tags: res.data })
+        setState({ tags: res.ok ? res.data : oldValue })
       },
       updateTotalBookmarks: async (value: number) => {
         const oldValue = state.totalBookmarks
@@ -105,8 +103,6 @@ export function GlobalProvider(props: PropsWithChildren<Props>) {
       },
     }
   }, [state, setState])
-
-  console.log(state.totalBookmarks)
 
   return (
     <GlobalContext.Provider value={ctxValue}>

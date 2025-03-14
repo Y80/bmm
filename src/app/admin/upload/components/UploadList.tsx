@@ -1,9 +1,8 @@
+import { actInsertPublicBookmark, actTryCreatePublicTags } from '@/actions'
 import Favicon from '@/components/Favicon'
 import ReButton from '@/components/re-export/ReButton'
 import ReTooltip from '@/components/re-export/ReTooltip'
 import { InsertPublicBookmark } from '@/controllers/PublicBookmark.controller'
-import { insertBookmark, tryCreateTags } from '@/lib/actions'
-import { to } from '@/utils'
 import { concurrenceWithLimit } from '@/utils/concurrence-with-limit'
 import { PageRoutes } from '@cfg'
 import { cn, Divider, Link, ScrollShadow } from '@heroui/react'
@@ -71,7 +70,8 @@ export default function UploadList(props: Props) {
   })
 
   async function submit() {
-    const tags = await tryCreateTags(tagNames)
+    const { data: tags } = await actTryCreatePublicTags(tagNames)
+    if (!tags) return
     const otherTagId = tags.find((tag) => tag.name === '其它')?.id
     if (!otherTagId) throw new Error('数据异常')
     const tasks = bookmarks.map((bookmark) => async () => {
@@ -81,15 +81,13 @@ export default function UploadList(props: Props) {
           (name) => tags.find((t) => t.name === name)!.id
         ),
       }
-      const [err, data] = await to(insertBookmark(entity))
-      setState((state) => {
-        return { ...state, finishedNum: (state.finishedNum || 0) + 1 }
-      })
+      const res = await actInsertPublicBookmark(entity)
+      setState((state) => ({ ...state, finishedNum: (state.finishedNum || 0) + 1 }))
       setBookmarks((bookmarks) => {
         const b = bookmarks.find((_bookmark) => _bookmark.id === bookmark.id)!
-        if (err || data.errorMsg) {
+        if (res.error) {
           b.state = UploadState.FAILED
-          b.errorMsg = data?.errorMsg || err?.message || ''
+          b.errorMsg = res.error.msg
         } else {
           b.state = UploadState.SUCCESS
         }

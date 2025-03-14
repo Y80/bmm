@@ -1,21 +1,25 @@
 import { PublicTagController, UserTagController } from '@/controllers'
 import { analyzeRelatedTags } from '@/lib/ai'
-import { auth } from '@/lib/auth'
 import { z } from '@/lib/zod'
 import { PageRoutes } from '@cfg'
 import { headers } from 'next/headers'
+import { makeActionInput } from '../make-action'
 
 const schema = z.string().url()
 
-export async function handleAnalyzeRelatedTags(tag: typeof schema._input) {
-  const userId = (await auth())?.user.id
+async function handleAnalyzeRelatedTags(tag: typeof schema._input) {
   const referer = headers().get('referer')
   const isAdminSpace = PageRoutes.Admin.space(referer)
   const isUserSpace = PageRoutes.User.space(referer)
-  if (!userId && !isAdminSpace && !isUserSpace) throw new Error('内部错误')
+  if (!isAdminSpace && !isUserSpace) throw new Error('内部错误')
   const tags = isAdminSpace
     ? await PublicTagController.getAllNames()
-    : await UserTagController.getAllNames(userId!)
+    : await UserTagController.getAllNames()
   return await analyzeRelatedTags(tag, tags)
 }
-handleAnalyzeRelatedTags.schema = schema
+
+export const aiAnalyzeRelatedTagsInput = makeActionInput({
+  handler: handleAnalyzeRelatedTags,
+  schema,
+  guard: 'decide-by-referer',
+})

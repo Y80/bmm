@@ -1,8 +1,6 @@
 'use client'
 
 import { useGlobalContext } from '@/app/ctx'
-import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
-import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import { Assets, PageRoutes } from '@cfg'
 import { Divider } from '@heroui/react'
 import { useSetState } from 'ahooks'
@@ -19,7 +17,7 @@ import { MainPageContext, MainPageProvider } from './ctx'
 
 // RSC 传进来的数据
 interface Props {
-  bookmarks?: SelectPublicBookmark[]
+  bookmarks?: SelectBookmark[]
 }
 
 export default function MainPage(props: Props) {
@@ -29,7 +27,7 @@ export default function MainPage(props: Props) {
   const { tags } = useGlobalContext()
   const [state, setState] = useSetState({
     bookmarks: props.bookmarks || [],
-    selectedTags: [] as SelectPublicTag[],
+    selectedTags: [] as SelectTag[],
     loadingMore: false,
   })
 
@@ -49,14 +47,14 @@ export default function MainPage(props: Props) {
       .split('+')
       .map((tagName) => tags.find((tag) => tag.name === tagName))
       .filter(Boolean)
-    setState({ selectedTags: selectedTags as SelectPublicTag[] })
+    setState({ selectedTags: selectedTags as SelectTag[] })
   }, [params.slug, tags, setState])
 
   /* 4rem 是 var(--navbar-height) 的高度 */
   const contentHeight = 'calc(100vh - 4rem)'
 
   const setSelectedTags = useCallback(
-    (tags: SelectPublicTag[]) => setState({ selectedTags: tags }),
+    (tags: SelectTag[]) => setState({ selectedTags: tags }),
     [setState]
   )
 

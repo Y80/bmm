@@ -117,7 +117,16 @@ export function isServerless() {
   return process.env.SERVERLESS || process.env.VERCEL
 }
 
-export async function runAction<T>(actionRes: ActionResult<T>) {
+/**
+ * 处理 Action 结果，自动 toast 展示错误信息，返回 ok 和 data?
+ */
+export async function runAction<T>(
+  actionRes: ActionResult<T>,
+  opts: {
+    okMsg?: string
+    onOk?: (data: T) => void | Promise<void>
+  } = {}
+) {
   const res = await actionRes
   if (res.error) {
     addToast({
@@ -127,5 +136,22 @@ export async function runAction<T>(actionRes: ActionResult<T>) {
     })
     return { ok: false } as const
   }
+  if (opts.okMsg) {
+    addToast({
+      color: 'success',
+      title: '操作成功',
+      description: opts.okMsg,
+    })
+  }
+  opts.onOk?.(res.data)
   return { ok: true, data: res.data } as const
 }
+
+// type Auto = 'auto'
+// function isAdminSpace(urlOrPath?: string | null | Auto) {
+//   if (!urlOrPath) return false
+//   if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
+//     urlOrPath = new URL(urlOrPath).pathname
+//   }
+//   return urlOrPath.startsWith(PageRoutes.Admin.INDEX)
+// }

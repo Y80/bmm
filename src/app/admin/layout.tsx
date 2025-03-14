@@ -13,6 +13,7 @@ export default async function AdminLayout(props: PropsWithChildren) {
   const session = await auth()
 
   if (!session) {
+    console.log('AdminLayout: no session')
     redirect(PageRoutes.LOGIN)
   }
 

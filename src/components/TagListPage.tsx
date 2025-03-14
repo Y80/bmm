@@ -2,7 +2,6 @@
 
 import { ColorPicker, EmptyListPlaceholder, ListPageLayout, SortTagModal } from '@/components'
 import { ReButton } from '@/components/re-export'
-import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import { IconNames, PageRoutes } from '@cfg'
 import {
   cn,
@@ -18,19 +17,17 @@ import { Icon } from '@iconify/react'
 import { useSetState } from 'ahooks'
 import { useRouter } from 'next/navigation'
 
-type Tag = SelectPublicTag
-
 // 定义组件的属性
 export type TagListPageProps = {
-  tags: Tag[]
+  tags: SelectTag[]
   refreshTags: () => Promise<void>
-  removeTag: (tag: Tag) => Promise<void>
-  changeTag: (tag: Tag) => Promise<void>
+  removeTag: (tag: SelectTag) => Promise<void>
+  changeTag: (changedTag: SelectTag) => Promise<void>
 }
 
 export default function TagListPage(props: TagListPageProps) {
   const router = useRouter()
-
+  const isAdminSpace = PageRoutes.Admin.space('auto')
   const [colorPicker, setColorPicker] = useSetState({
     isOpen: false,
     defaultValue: '' as string | null,
@@ -45,7 +42,7 @@ export default function TagListPage(props: TagListPageProps) {
       .join('、')
   }
 
-  function handleChangeIsMain(v: boolean, tag: Tag) {
+  function handleChangeIsMain(v: boolean, tag: SelectTag) {
     if (tag.isMain === v) return
     tag.isMain = v
     props.changeTag(tag)
@@ -58,7 +55,7 @@ export default function TagListPage(props: TagListPageProps) {
     props.changeTag(tag)
   }
 
-  function changeColor(tag: Tag) {
+  function changeColor(tag: SelectTag) {
     setColorPicker({
       isOpen: true,
       defaultValue: tag.color,
@@ -69,6 +66,16 @@ export default function TagListPage(props: TagListPageProps) {
   return (
     <ListPageLayout>
       <div className="mb-2 flex justify-end">
+        <ReButton
+          variant="light"
+          className={cn(props.tags.length < 2 && 'hidden')}
+          startContent={<span className={cn(IconNames.Huge.ADD, 'text-lg')} />}
+          onClick={() =>
+            router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug('new'))
+          }
+        >
+          新建标签
+        </ReButton>
         <SortTagModal refreshTags={props.refreshTags} tags={props.tags}>
           <ReButton
             variant="light"
@@ -154,7 +161,9 @@ export default function TagListPage(props: TagListPageProps) {
                   isIconOnly
                   color="warning"
                   startContent={<span className={IconNames.EDIT} />}
-                  onClick={() => router.push(PageRoutes.Admin.tagSlug(tag.id!))}
+                  onClick={() =>
+                    router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug(tag.id))
+                  }
                 />
               </TableCell>
             </TableRow>
