@@ -22,11 +22,6 @@ export const ApiRoutes = {
     BOOKMARK: '/api/public/bookmark',
     BOOKMARK_LIST: '/api/public/bookmark/list',
   },
-  // User: {
-  //   TAG: '/api/user/tag',
-  //   BOOKMARK: '/api/user/bookmark',
-  //   INDEX: '/api/user',
-  // },
   Ai: {
     ANALYZE_WEBSITE: '/api/ai/analyze-website',
     ANALYZE_RELATED_TAGS: '/api/ai/analyze-related-tags',
@@ -46,16 +41,9 @@ export const PageRoutes = {
     UPLOAD: '/user/upload',
     tagSlug: (slug: 'new' | TagId) => '/user/tag/' + slug,
     bookmarkSlug: (slug: 'new' | BookmarkId) => '/user/bookmark/' + slug,
-    space(urlOrPath?: 'auto' | (string & {}) | null) {
-      if (urlOrPath === 'auto') {
-        urlOrPath = globalThis.location?.pathname
-      }
-      if (!urlOrPath) return false
-      if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
-        urlOrPath = new URL(urlOrPath).pathname
-      }
-      return urlOrPath.startsWith(this.INDEX)
-    },
+    RANDOM: '/user/random',
+    SEARCH: '/user/search',
+    search: (ky: string) => '/user/search?keyword=' + ky,
   },
   Admin: {
     PREFIX: '/admin',
@@ -65,16 +53,6 @@ export const PageRoutes = {
     UPLOAD: '/admin/upload',
     tagSlug: (slug: 'new' | TagId) => '/admin/tag/' + slug,
     bookmarkSlug: (slug: 'new' | BookmarkId) => '/admin/bookmark/' + slug,
-    space(urlOrPath?: 'auto' | (string & {}) | null) {
-      if (urlOrPath === 'auto') {
-        urlOrPath = globalThis.location?.pathname
-      }
-      if (!urlOrPath) return false
-      if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
-        urlOrPath = new URL(urlOrPath).pathname
-      }
-      return urlOrPath.startsWith(this.INDEX)
-    },
   },
   Public: {
     RANDOM: '/random',
@@ -113,10 +91,11 @@ export const IconNames = {
     IMPORT: 'icon-[hugeicons--file-import]',
     TAG: 'icon-[hugeicons--tag-01]',
     BOOKMARK: 'icon-[hugeicons--all-bookmark]',
-    ADD: 'icon-[hugeicons--add-square]',
+    ADD_SQUARE: 'icon-[hugeicons--add-square]',
+    ADD: 'icon-[hugeicons--add-01]',
     LIST: 'icon-[hugeicons--left-to-right-list-dash]',
   },
-}
+} as const
 
 /** 管理后台的导航链接 */
 export const ADMIN_NAV_LINKS = [
@@ -133,7 +112,7 @@ export const Assets = {
 }
 
 export const ExternalLinks = {
-  REPO: 'https://github.com/y80/bmm',
+  REPO: 'https://github.com/Y80/bmm',
 } as const
 
 /** 默认情况下每页获取的书签个数；出于栅格布局的考虑这里选用 24 */

@@ -30,5 +30,5 @@ export default async function Page(props: RSCPageProps) {
       ).list
     : []
 
-  return <MainPage bookmarks={bookmarks} />
+  return <MainPage tags={tags} bookmarks={bookmarks} />
 }

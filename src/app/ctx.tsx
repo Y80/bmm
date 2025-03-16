@@ -119,7 +119,7 @@ export function GlobalProvider(props: PropsWithChildren<Props>) {
         <ToastProvider
           placement="top-center"
           toastOffset={20}
-          toastProps={{ timeout: 2500, radius: 'lg' }}
+          toastProps={{ timeout: 3000, radius: 'lg' }}
         />
         <ThemeProvider attribute="class" defaultTheme="dark">
           <AntdConfigProviderWrapper>

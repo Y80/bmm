@@ -2,6 +2,7 @@
 
 import { ColorPicker, EmptyListPlaceholder, ListPageLayout, SortTagModal } from '@/components'
 import { ReButton } from '@/components/re-export'
+import { pageSpace } from '@/utils'
 import { IconNames, PageRoutes } from '@cfg'
 import {
   cn,
@@ -27,7 +28,7 @@ export type TagListPageProps = {
 
 export default function TagListPage(props: TagListPageProps) {
   const router = useRouter()
-  const isAdminSpace = PageRoutes.Admin.space('auto')
+  const isAdminSpace = pageSpace('auto').isAdmin
   const [colorPicker, setColorPicker] = useSetState({
     isOpen: false,
     defaultValue: '' as string | null,
@@ -65,24 +66,25 @@ export default function TagListPage(props: TagListPageProps) {
 
   return (
     <ListPageLayout>
-      <div className="mb-2 flex justify-end">
+      <div className="mb-4 flex gap-4">
         <ReButton
-          variant="light"
-          className={cn(props.tags.length < 2 && 'hidden')}
-          startContent={<span className={cn(IconNames.Huge.ADD, 'text-lg')} />}
+          variant="flat"
+          size="sm"
+          startContent={<span className={cn(IconNames.PLUS, 'text-xl')} />}
           onClick={() =>
             router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug('new'))
           }
         >
-          新建标签
+          新建
         </ReButton>
         <SortTagModal refreshTags={props.refreshTags} tags={props.tags}>
           <ReButton
-            variant="light"
+            variant="flat"
+            size="sm"
             className={cn(props.tags.length < 2 && 'hidden')}
-            startContent={<span className={cn(IconNames.SORT, 'text-lg')} />}
+            startContent={<span className={cn(IconNames.SORT, 'text-xl')} />}
           >
-            标签排序
+            排序
           </ReButton>
         </SortTagModal>
       </div>

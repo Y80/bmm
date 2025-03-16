@@ -1,8 +1,8 @@
-import { actUpdatePublicTagSortOrders } from '@/actions'
+import { actUpdatePublicTagSortOrders, actUpdateUserTagSortOrders } from '@/actions'
 import MyModal from '@/components/MyModal'
 import { SelectPublicTag } from '@/db'
 import useIsDark from '@/hooks/useIsDark'
-import { runAction } from '@/utils'
+import { pageSpace, runAction } from '@/utils'
 import {
   closestCenter,
   DndContext,
@@ -32,10 +32,7 @@ interface Props {
 
 export default function SortTagModal(props: Props) {
   const [tags, setTags] = useState(props.tags)
-
-  const [state, setState] = useSetState({
-    open: false,
-  })
+  const [state, setState] = useSetState({ open: false })
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -59,8 +56,10 @@ export default function SortTagModal(props: Props) {
         if (idx === tag.sortOrder) return null
         return { id: tag.id, order: idx }
       })
-      .filter(Boolean) as { id: number; order: number }[]
-    const action = actUpdatePublicTagSortOrders
+      .filter((el) => el) as { id: TagId; order: number }[]
+    const action = pageSpace('auto').isAdmin
+      ? actUpdatePublicTagSortOrders
+      : actUpdateUserTagSortOrders
     await runAction(action(orders), {
       okMsg: '标签排序已更新',
       onOk() {

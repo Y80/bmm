@@ -1,6 +1,6 @@
 'use client'
 
-import { useGlobalContext } from '@/app/ctx'
+import { pageSpace } from '@/utils'
 import { Assets, PageRoutes } from '@cfg'
 import { Divider } from '@heroui/react'
 import { useSetState } from 'ahooks'
@@ -17,14 +17,16 @@ import { MainPageContext, MainPageProvider } from './ctx'
 
 // RSC 传进来的数据
 interface Props {
+  tags: SelectTag[]
   bookmarks?: SelectBookmark[]
 }
 
 export default function MainPage(props: Props) {
   const router = useRouter()
   const params = useParams()
+  const isUserSpace = pageSpace().isUser
 
-  const { tags } = useGlobalContext()
+  const { tags } = props
   const [state, setState] = useSetState({
     bookmarks: props.bookmarks || [],
     selectedTags: [] as SelectTag[],
@@ -77,8 +79,11 @@ export default function MainPage(props: Props) {
     [state.selectedTags, router]
   )
 
-  const isSearchPage = globalThis.location?.pathname === PageRoutes.Public.SEARCH
-  const isHomePage = globalThis.location?.pathname === '/'
+  const isSearchPage =
+    globalThis.location?.pathname ===
+    (isUserSpace ? PageRoutes.User.SEARCH : PageRoutes.Public.SEARCH)
+  const isHomePage =
+    globalThis.location?.pathname === (isUserSpace ? PageRoutes.User.INDEX : PageRoutes.INDEX)
 
   console.log(props.bookmarks, state.bookmarks)
 
@@ -91,7 +96,7 @@ export default function MainPage(props: Props) {
         onClickTag,
       }}
     >
-      <Nav />
+      {!isUserSpace && <Nav />}
       <div className="flex grow max-xs:!max-h-none" style={{ maxHeight: contentHeight }}>
         <aside className="max-h-full w-56 flex-shrink-0 pl-6 max-xs:hidden">
           <TagPicker tags={tags} />

@@ -1,3 +1,4 @@
+import { pageSpace } from '@/utils'
 import { Assets, PageRoutes } from '@cfg'
 import { Image, Link } from '@heroui/react'
 
@@ -7,7 +8,7 @@ interface Props {
 
 export default function EmptyListPlaceholder(props: Props) {
   const isTag = props.target === 'tag'
-  const isAdminSpace = PageRoutes.Admin.space('auto')
+  const isAdminSpace = pageSpace('auto').isAdmin
   const space = isAdminSpace ? PageRoutes.Admin : PageRoutes.User
   return (
     <div className="my-24 flex-col flex-center">

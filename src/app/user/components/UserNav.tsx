@@ -19,7 +19,6 @@ import {
 } from '@heroui/react'
 import { Session } from 'next-auth'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
 
 const User_NAV_LINKS = [
   { label: '新建书签', href: PageRoutes.User.bookmarkSlug('new') },
@@ -40,8 +39,6 @@ const IconButtonProps = {
 } satisfies ButtonProps
 
 export default function UserNav(props: Props) {
-  const pathname = usePathname()
-
   return (
     <Navbar maxWidth="full" className={Background.CLASS} isBlurred isBordered>
       <NavbarContent className="gap-1 max-sm:!flex-grow-0">
@@ -64,63 +61,70 @@ export default function UserNav(props: Props) {
         </ReButton>
         <ReButton
           {...IconButtonProps}
-          tooltipContent={
-            <Listbox label="书签操作">
-              {[
-                {
-                  label: '新建书签',
-                  href: PageRoutes.User.bookmarkSlug('new'),
-                  icon: IconNames.Huge.ADD,
-                },
-                {
-                  label: '书签列表',
-                  href: PageRoutes.User.BOOKMARK_LIST,
-                  icon: IconNames.Huge.LIST,
-                },
-              ].map((el) => (
-                <ListboxItem
-                  key={el.label}
-                  href={el.href}
-                  startContent={<span className={cn(el.icon, 'text-base')} />}
-                >
-                  {el.label}
-                </ListboxItem>
-              ))}
-            </Listbox>
-          }
+          tooltip={{
+            placement: 'top-start',
+            content: (
+              <Listbox label="书签操作">
+                {[
+                  {
+                    label: '新建书签',
+                    href: PageRoutes.User.bookmarkSlug('new'),
+                    icon: IconNames.Huge.ADD_SQUARE,
+                  },
+                  {
+                    label: '书签列表',
+                    href: PageRoutes.User.BOOKMARK_LIST,
+                    icon: IconNames.Huge.LIST,
+                  },
+                ].map((el) => (
+                  <ListboxItem
+                    key={el.label}
+                    href={el.href}
+                    startContent={<span className={cn(el.icon, 'text-base')} />}
+                  >
+                    {el.label}
+                  </ListboxItem>
+                ))}
+              </Listbox>
+            ),
+          }}
         >
           <span className={cn(IconNames.Huge.BOOKMARK)} />
         </ReButton>
         <ReButton
           {...IconButtonProps}
-          tooltipContent={
-            <Listbox label="标签操作">
-              {[
-                {
-                  label: '新建标签',
-                  href: PageRoutes.User.tagSlug('new'),
-                  icon: IconNames.Huge.ADD,
-                },
-                {
-                  label: '标签列表',
-                  href: PageRoutes.User.TAG_LIST,
-                  icon: IconNames.Huge.LIST,
-                },
-              ].map((el) => (
-                <ListboxItem
-                  key={el.label}
-                  href={el.href}
-                  startContent={<span className={cn(el.icon, 'text-base')} />}
-                >
-                  {el.label}
-                </ListboxItem>
-              ))}
-            </Listbox>
-          }
+          tooltip={{
+            placement: 'top-start',
+            content: (
+              <Listbox label="标签操作">
+                {[
+                  {
+                    label: '新建标签',
+                    href: PageRoutes.User.tagSlug('new'),
+                    icon: IconNames.Huge.ADD_SQUARE,
+                  },
+                  {
+                    label: '标签列表',
+                    href: PageRoutes.User.TAG_LIST,
+                    icon: IconNames.Huge.LIST,
+                  },
+                ].map((el) => (
+                  <ListboxItem
+                    key={el.label}
+                    href={el.href}
+                    startContent={<span className={cn(el.icon, 'text-base')} />}
+                  >
+                    {el.label}
+                  </ListboxItem>
+                ))}
+              </Listbox>
+            ),
+          }}
         >
           <span className={cn(IconNames.Huge.TAG)} />
         </ReButton>
         <ThemeToggle />
+        <div className="w-2" />
         <Dropdown classNames={{ content: 'min-w-36' }}>
           <DropdownTrigger>
             <Avatar size="sm" as="button" src={props.user.image!} />

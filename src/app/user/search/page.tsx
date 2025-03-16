@@ -1,8 +1,7 @@
 'use serve'
 
 import MainPage from '@/components/MainPage'
-import { PublicTagController } from '@/controllers'
-import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
+import { UserBookmarkController, UserTagController } from '@/controllers'
 import { GenerateMetadata, RSCPageProps } from '@/types'
 import { PageRoutes } from '@cfg'
 import { redirect } from 'next/navigation'
@@ -15,12 +14,12 @@ export default async function Page(props: RSCPageProps) {
   const keyword = props.searchParams.keyword || ''
 
   if (!keyword.length || Array.isArray(keyword)) {
-    redirect(PageRoutes.INDEX)
+    redirect(PageRoutes.User.INDEX)
   }
 
   const [res, tags] = await Promise.all([
-    PublicBookmarkController.search(keyword),
-    PublicTagController.getAll(),
+    UserBookmarkController.search(keyword),
+    UserTagController.getAll(),
   ])
 
   return <MainPage bookmarks={res.list} tags={tags} />

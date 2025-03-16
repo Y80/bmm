@@ -1,6 +1,6 @@
 import { auth } from '@/lib/auth'
 import SqlXError from '@/lib/SqlXError'
-import { to } from '@/utils'
+import { pageSpace, to } from '@/utils'
 import { PageRoutes } from '@cfg'
 import { omit } from 'lodash'
 import { headers } from 'next/headers'
@@ -22,6 +22,7 @@ interface MakeActionOptions {
 export interface MakeActionInput<Arg, Data> extends MakeActionOptions {
   handler: (...args: Arg[]) => Promise<Data>
 }
+
 type MakeActionArgs<Arg, Data> =
   | [MakeActionInput<Arg, Data>['handler'], MakeActionOptions?]
   | [MakeActionInput<Arg, Data>]
@@ -63,7 +64,7 @@ export function makeAction<Arg, Data>(...makeArgs: MakeActionArgs<Arg, Data>) {
       if (opts.guard === 'decide-by-referer') {
         const referer = headers().get('referer')
         if (!referer) return { error: { msg: '无效请求' } } as ErrorResult
-        checkIsAdmin = PageRoutes.Admin.space(referer)
+        checkIsAdmin = pageSpace(referer).isAdmin
       } else if (opts.guard === 'admin') {
         checkIsAdmin = true
       }

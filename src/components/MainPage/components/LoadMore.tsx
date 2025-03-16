@@ -1,13 +1,12 @@
-import { actFindPublicBookmarks } from '@/actions'
-import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
+import { actFindPublicBookmarks, actFindUserBookmarks } from '@/actions'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
-import { runAction } from '@/utils'
+import { pageSpace, runAction } from '@/utils'
 import { Spinner } from '@heroui/react'
 import { useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import { useEffect, useRef } from 'react'
 
 interface Props {
-  onChange: (bookmarks: SelectPublicBookmark[]) => void
+  onChange: (bookmarks: SelectBookmark[]) => void
   onLoading: (loading: boolean) => void
 }
 
@@ -17,7 +16,8 @@ export default function LoadMore(props: Props) {
   const { run } = useRequest(async () => {
     props.onLoading(true)
     const params = findManyBookmarksSchema.parse({ page: state.page })
-    const res = await runAction(actFindPublicBookmarks(params))
+    const action = pageSpace('auto').isAdmin ? actFindPublicBookmarks : actFindUserBookmarks
+    const res = await runAction(action(params))
     props.onLoading(false)
     if (!res.ok) return
     props.onChange(res.data.list)

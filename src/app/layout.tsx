@@ -17,7 +17,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: {
     default: WEBSITE_NAME,
-    template: '%s | ' + WEBSITE_NAME,
+    template: '%s - ' + WEBSITE_NAME,
   },
   description:
     'BMM - 你的智能书签管家！支持 AI 解析网站信息，自动生成标签，跨设备同步书签。高效管理你的收藏夹，探索开发者精选资源，支持明暗双主题与多端适配。',

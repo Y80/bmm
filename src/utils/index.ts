@@ -1,5 +1,6 @@
 import { ActionResult } from '@/actions/make-action'
 import { SelectPublicTag } from '@/db'
+import { PageRoutes } from '@cfg'
 import { addToast } from '@heroui/react'
 import { pinyin } from 'pinyin-pro'
 
@@ -147,11 +148,16 @@ export async function runAction<T>(
   return { ok: true, data: res.data } as const
 }
 
-// type Auto = 'auto'
-// function isAdminSpace(urlOrPath?: string | null | Auto) {
-//   if (!urlOrPath) return false
-//   if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
-//     urlOrPath = new URL(urlOrPath).pathname
-//   }
-//   return urlOrPath.startsWith(PageRoutes.Admin.INDEX)
-// }
+export function pageSpace(urlOrPath?: 'auto' | (string & {}) | null) {
+  if (urlOrPath === 'auto') {
+    urlOrPath = globalThis.location?.pathname
+  }
+  urlOrPath ??= ''
+  if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
+    urlOrPath = new URL(urlOrPath).pathname
+  }
+  return {
+    isAdmin: urlOrPath.startsWith(PageRoutes.Admin.INDEX),
+    isUser: urlOrPath.startsWith(PageRoutes.User.INDEX),
+  }
+}

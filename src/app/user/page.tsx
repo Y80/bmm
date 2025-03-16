@@ -1,3 +1,10 @@
+'use client'
+
+import MainPage from '@/components/MainPage'
+import { useUserContext } from './ctx'
+
 export default function Page() {
-  return <div>123</div>
+  const { tags } = useUserContext()
+
+  return <MainPage tags={tags} />
 }

@@ -22,14 +22,11 @@ function resetCachedTags(userId: UserId) {
   cachedTags[userId] = null
 }
 
-async function filterUserTagIds(userId: UserId, ids: TagId[]) {
-  const tags = await UserTagController.getAll(userId)
-  return ids.filter((id) => tags.some((tag) => tag.id === id))
-}
+// 过滤出用户拥有的标签
 
-async function upsertRelations(userId: UserId, id: TagId, ids: TagId[] = []) {
-  ids = await filterUserTagIds(userId, ids)
-  if (ids.length === 0) return
+async function upsertRelations(userId: UserId, id: TagId, ids?: TagId[]) {
+  if (!ids) return
+  ids = await UserTagController.filterUserTagIds(userId, ids)
   const relations = ids
     .map((_id) => [
       { a: id, b: _id },
@@ -37,7 +34,7 @@ async function upsertRelations(userId: UserId, id: TagId, ids: TagId[] = []) {
     ])
     .flat()
   const tasks = [
-    db.insert(userTagToTag).values(relations).onConflictDoNothing(),
+    relations.length && db.insert(userTagToTag).values(relations).onConflictDoNothing(),
     db
       .delete(userTagToTag)
       .where(
@@ -55,11 +52,15 @@ function modifyUserTagLimiter(userId: UserId, tagId: TagId) {
   return and(eq(userTags.id, tagId), eq(userTags.userId, userId))
 }
 
-namespace UserTagController {
-  export async function getAll(userId?: string) {
+type InsertUserTag = Partial<SelectTag> & Pick<SelectTag, 'name'>
+type UpdateUserTag = Partial<SelectTag> & Pick<SelectTag, 'id'>
+
+const UserTagController = {
+  async getAll(userId?: string) {
     userId ||= await getAuthedUserId()
     if (!cachedTags[userId]) {
       const tags = await db.query.userTags.findMany({
+        where: eq(userTags.userId, userId),
         with: { relatedTagIds: { columns: { b: true } } },
         orderBy: [desc(userTags.sortOrder), desc(userTags.createdAt)],
       })
@@ -69,61 +70,57 @@ namespace UserTagController {
       }))
     }
     return cachedTags[userId]!
-  }
+  },
 
-  type InsertUserTag = Partial<SelectUserTag> & Pick<SelectUserTag, 'name'>
-  export async function insert(tag: InsertUserTag) {
+  async insert(tag: InsertUserTag) {
     const userId = await getAuthedUserId()
-    resetCachedTags(userId)
     const { relatedTagIds, ...resetTag } = tag
     const rows = await db
       .insert(userTags)
       .values({ ...resetTag, userId })
       .returning()
-    await upsertRelations(userId, rows[0].id, relatedTagIds)
-    return rows[0]
-  }
-
-  type UpdateUserTag = Partial<SelectUserTag> & Pick<SelectUserTag, 'id'>
-  export async function update(tag: UpdateUserTag) {
-    const userId = await getAuthedUserId()
+    relatedTagIds?.length && (await upsertRelations(userId, rows[0].id, relatedTagIds))
     resetCachedTags(userId)
+    return rows[0]
+  },
+
+  async update(tag: UpdateUserTag) {
+    const userId = await getAuthedUserId()
     const { id, relatedTagIds, ...resetTag } = tag
     await db
       .update(userTags)
       .set({ ...resetTag, updatedAt: new Date() })
       .where(modifyUserTagLimiter(userId, id))
-    upsertRelations(userId, id, relatedTagIds)
-  }
+    await upsertRelations(userId, id, relatedTagIds)
+  },
 
-  export async function remove(tag: Pick<SelectUserTag, 'id'>) {
-    const res = await db
-      .delete(userTags)
-      .where(modifyUserTagLimiter(await getAuthedUserId(), tag.id))
-      .returning()
+  async remove(tag: Pick<SelectUserTag, 'id'>) {
+    const userId = await getAuthedUserId()
+    const res = await db.delete(userTags).where(modifyUserTagLimiter(userId, tag.id)).returning()
+    resetCachedTags(userId)
     return res
-  }
+  },
 
   /** 获取所有标签的名称 */
-  export async function getAllNames() {
-    return (await getAll()).map(({ name }) => name)
-  }
+  async getAllNames() {
+    return (await this.getAll()).map(({ name }) => name)
+  },
 
-  export async function updateSortOrders(params: {
-    userId: UserId
-    orders: { id: number; order: number }[]
-  }) {
-    const tasks = params.orders.map((el) => {
+  async sort(orders: { id: TagId; order: SelectTag['sortOrder'] }[]) {
+    const userId = await getAuthedUserId()
+    const tasks = orders.map((el) => {
       return db
         .update(userTags)
         .set({ sortOrder: el.order })
-        .where(modifyUserTagLimiter(params.userId, el.id))
+        .where(modifyUserTagLimiter(userId, el.id))
     })
     await Promise.all(tasks)
-  }
+    resetCachedTags(userId)
+  },
 
   /** 根据标签名称列表，尝试创建每个标签，并返回每个标签的 id */
-  export async function tryCreateTags(userId: UserId, names: string[]) {
+  async tryCreateTags(names: string[]) {
+    const userId = await getAuthedUserId()
     const res = await db
       .insert(userTags)
       .values(names.map((name) => ({ name, userId })))
@@ -136,7 +133,12 @@ namespace UserTagController {
       where: and(inArray(userTags.name, existsNames), eq(userTags.userId, userId)),
     })
     return res.concat(existsTags)
-  }
+  },
+
+  async filterUserTagIds(userId: UserId, ids: TagId[]) {
+    const tags = await UserTagController.getAll(userId)
+    return ids.filter((id) => tags.some((tag) => tag.id === id))
+  },
 }
 
 export default UserTagController

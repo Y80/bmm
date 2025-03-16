@@ -1,6 +1,5 @@
 import MainPage from '@/components/MainPage'
-import { PublicTagController } from '@/controllers'
-import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
+import { UserBookmarkController, UserTagController } from '@/controllers'
 import { Metadata } from 'next/types'
 
 export const metadata: Metadata = {
@@ -9,8 +8,8 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const [res, tags] = await Promise.all([
-    PublicBookmarkController.random(),
-    PublicTagController.getAll(),
+    UserBookmarkController.random(),
+    UserTagController.getAll(),
   ])
   return <MainPage tags={tags} bookmarks={res.list} />
 }

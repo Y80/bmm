@@ -1,15 +1,24 @@
 'use client'
 
-import { actDeletePublicBookmark, actFindPublicBookmarks, actUpdatePublicBookmark } from '@/actions'
-import { EmptyListPlaceholder } from '@/components'
-import ClientIcon from '@/components/ClientIcon'
-import Favicon from '@/components/Favicon'
-import ListPageLayout from '@/components/ListPageLayout'
-import { ReButton, ReInput } from '@/components/re-export'
-import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
-import { SelectPublicTag } from '@/controllers/PublicTag.controller'
+import {
+  actDeletePublicBookmark,
+  actDeleteUserBookmark,
+  actFindPublicBookmarks,
+  actFindUserBookmarks,
+  actUpdatePublicBookmark,
+  actUpdateUserBookmark,
+} from '@/actions'
+import {
+  ClientIcon,
+  EmptyListPlaceholder,
+  Favicon,
+  ListPageLayout,
+  ReButton,
+  ReInput,
+} from '@/components'
+import { SelectPublicBookmark } from '@/controllers'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
-import { runAction } from '@/utils'
+import { pageSpace, runAction } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE, IconNames, PageRoutes } from '@cfg'
 import {
   cn,
@@ -42,12 +51,12 @@ const SORTERS = [
 ] as const
 
 export type BookmarkListPageProps = {
-  tags: SelectPublicTag[]
+  tags: SelectTag[]
   totalBookmarks: number
 }
 
 export default function BookmarkListPage(props: BookmarkListPageProps) {
-  const isAdminSpace = PageRoutes.Admin.space(globalThis.location?.pathname)
+  const isAdminSpace = pageSpace('auto').isAdmin
   const searchParams = useSearchParams()
   const router = useRouter()
   const [state, setState] = useSetState({
@@ -75,7 +84,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
         ...(state.selectedTag && { tagIds: state.selectedTag }),
       }
       dataRef.current.loadingMutable && setState({ loading: true })
-      const action = actFindPublicBookmarks
+      const action = isAdminSpace ? actFindPublicBookmarks : actFindUserBookmarks
       const res = await runAction(action(findManyBookmarksSchema.parse(input)))
       setState({ loading: false })
       dataRef.current.loadingMutable = true
@@ -120,7 +129,8 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   )
 
   async function onRemove(item: SelectPublicBookmark) {
-    await runAction(actDeletePublicBookmark({ id: item.id }), {
+    const action = isAdminSpace ? actDeletePublicBookmark : actDeleteUserBookmark
+    await runAction(action({ id: item.id }), {
       okMsg: '书签已删除',
       onOk: refresh,
     })
@@ -134,7 +144,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     item.isPinned = isPinned
     mutate([...bookmarks])
     dataRef.current.loadingMutable = false
-    const action = actUpdatePublicBookmark
+    const action = isAdminSpace ? actUpdatePublicBookmark : actUpdateUserBookmark
     runAction(action(item)).then(refresh)
   }
 
@@ -147,6 +157,16 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       <div
         className={cn('grid grid-cols-2 gap-2 sm:grid-cols-5', !props.totalBookmarks && 'hidden')}
       >
+        <ReButton
+          variant="flat"
+          size="sm"
+          startContent={<span className={cn(IconNames.PLUS, 'text-xl')} />}
+          onClick={() =>
+            router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).bookmarkSlug('new'))
+          }
+        >
+          新建
+        </ReButton>
         <div className="inline-grid sm:col-end-4">
           <ReInput
             size="sm"

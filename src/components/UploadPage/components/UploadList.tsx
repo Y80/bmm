@@ -1,17 +1,20 @@
-import { actInsertPublicBookmark, actTryCreatePublicTags } from '@/actions'
-import Favicon from '@/components/Favicon'
-import ReButton from '@/components/re-export/ReButton'
-import ReTooltip from '@/components/re-export/ReTooltip'
-import { InsertPublicBookmark } from '@/controllers/PublicBookmark.controller'
+import {
+  actInsertPublicBookmark,
+  actInsertUserBookmark,
+  actTryCreatePublicTags,
+  actTryCreateUserTags,
+} from '@/actions'
+import { Favicon, ReButton, ReTooltip } from '@/components'
+import { InsertPublicBookmark } from '@/controllers'
+import { pageSpace } from '@/utils'
 import { concurrenceWithLimit } from '@/utils/concurrence-with-limit'
 import { PageRoutes } from '@cfg'
-import { cn, Divider, Link, ScrollShadow } from '@heroui/react'
+import { addToast, cn, Divider, Link, ScrollShadow } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import { pick } from 'lodash'
 import { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
+import { Bookmark } from '..'
 import { LinkTagStrategy } from '../common'
-import { Bookmark } from '../page'
 import Panel from './Panel'
 
 interface Props {
@@ -33,6 +36,7 @@ function getDefaultFavicon(url: string) {
 }
 
 export default function UploadList(props: Props) {
+  const isAdminSpace = pageSpace('auto').isAdmin
   const { linkTagStrategy, tagNames } = props
   const [state, setState] = useSetState({
     finishedNum: null as null | number,
@@ -70,7 +74,8 @@ export default function UploadList(props: Props) {
   })
 
   async function submit() {
-    const { data: tags } = await actTryCreatePublicTags(tagNames)
+    const action = isAdminSpace ? actTryCreatePublicTags : actTryCreateUserTags
+    const { data: tags } = await action(tagNames)
     if (!tags) return
     const otherTagId = tags.find((tag) => tag.name === '其它')?.id
     if (!otherTagId) throw new Error('数据异常')
@@ -81,7 +86,8 @@ export default function UploadList(props: Props) {
           (name) => tags.find((t) => t.name === name)!.id
         ),
       }
-      const res = await actInsertPublicBookmark(entity)
+      const action = isAdminSpace ? actInsertPublicBookmark : actInsertUserBookmark
+      const res = await action(entity)
       setState((state) => ({ ...state, finishedNum: (state.finishedNum || 0) + 1 }))
       setBookmarks((bookmarks) => {
         const b = bookmarks.find((_bookmark) => _bookmark.id === bookmark.id)!
@@ -99,7 +105,10 @@ export default function UploadList(props: Props) {
 
   useEffect(() => {
     if (state.finishedNum === bookmarks.length) {
-      toast.success('任务已完成')
+      addToast({
+        color: 'success',
+        title: '任务已完成',
+      })
     }
   }, [state.finishedNum, bookmarks.length])
 
@@ -116,8 +125,16 @@ export default function UploadList(props: Props) {
                 <div className="flex w-full items-center justify-between gap-4">
                   <span>任务已完成</span>
                   <Link
-                    href={PageRoutes.Admin.BOOKMARK_LIST}
-                    onPress={() => window.open('/')}
+                    className="cursor-pointer"
+                    onPress={() => {
+                      if (isAdminSpace) {
+                        window.open(PageRoutes.Admin.BOOKMARK_LIST)
+                        window.open(PageRoutes.INDEX)
+                      } else {
+                        window.open(PageRoutes.User.BOOKMARK_LIST)
+                        window.open(PageRoutes.User.INDEX)
+                      }
+                    }}
                     showAnchorIcon
                     isExternal
                     size="sm"

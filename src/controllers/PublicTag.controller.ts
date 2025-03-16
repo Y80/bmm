@@ -109,6 +109,7 @@ namespace PublicTagController {
     const tasks = orders.map((el) => {
       return db.update(publicTags).set({ sortOrder: el.order }).where(eq(publicTags.id, el.id))
     })
+    cacheAllTags.reset()
     await Promise.all(tasks)
   }
 

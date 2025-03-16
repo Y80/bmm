@@ -1,6 +1,13 @@
 'use client'
 
-import { actAnalyzeWebsite, actExtractHtmlInfo, actInsertPublicBookmark } from '@/actions'
+import {
+  actAnalyzeWebsite,
+  actExtractHtmlInfo,
+  actInsertPublicBookmark,
+  actInsertUserBookmark,
+  actUpdatePublicBookmark,
+  actUpdateUserBookmark,
+} from '@/actions'
 import { Favicon, ReButton, ReInput, ReTextarea, SlugPageLayout, TagSelect } from '@/components'
 import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil, useSlug } from '@/hooks'
@@ -104,8 +111,14 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   }
   async function onSave() {
     if (!validateAll()) return
-    const action = actInsertPublicBookmark
-    await runAction(action(bookmark), {
+    const action = slug.isNew
+      ? pageUtil.isAdminSpace
+        ? actInsertPublicBookmark(bookmark)
+        : actInsertUserBookmark(bookmark)
+      : pageUtil.isAdminSpace
+        ? actUpdatePublicBookmark({ ...bookmark, id: slug.number! })
+        : actUpdateUserBookmark({ ...bookmark, id: slug.number! })
+    await runAction(action, {
       okMsg: slug.isNew ? '书签已创建' : '书签已更新',
       onOk() {
         router.push((pageUtil.isAdminSpace ? PageRoutes.Admin : PageRoutes.User).BOOKMARK_LIST)
