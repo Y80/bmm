@@ -4,7 +4,7 @@ import { PageRoutes } from '@cfg'
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { PropsWithChildren } from 'react'
-import Nav from './components/UserNav'
+import Nav from './components/Nav'
 import { UserContextProvider } from './ctx'
 
 export const metadata: Metadata = {
@@ -26,7 +26,7 @@ export default async function UserLayout(props: PropsWithChildren) {
 
   return (
     <UserContextProvider tags={tags} totalBookmarks={totalBookmarks}>
-      <Nav user={session.user} />
+      <Nav />
       {props.children}
     </UserContextProvider>
   )

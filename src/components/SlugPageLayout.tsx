@@ -1,3 +1,5 @@
+'use client'
+
 import { Button, Divider } from '@heroui/react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { PropsWithChildren } from 'react'

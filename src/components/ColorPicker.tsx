@@ -1,3 +1,5 @@
+'use client'
+
 import { calcForegroundColor } from '@/utils/color'
 import { Background, IconNames } from '@cfg'
 import {
@@ -10,7 +12,7 @@ import {
   ModalFooter,
   ModalHeader,
   Tooltip,
-} from "@heroui/react"
+} from '@heroui/react'
 import { useSetState } from 'ahooks'
 import Color from 'color'
 import { useLayoutEffect, useMemo } from 'react'

@@ -1,43 +1,40 @@
 'use client'
 
+import { useIsClient } from '@/hooks'
 import { pageSpace } from '@/utils'
 import { Assets, PageRoutes } from '@cfg'
 import { Divider } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
-import { useCallback, useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import Banner from './components/Banner'
 import BookmarkCard from './components/BookmarkCard'
 import BookmarkContainer from './components/BookmarkContainer'
 import LoadMore from './components/LoadMore'
-import Nav from './components/Nav'
 import TagPicker, { TAG_PICKER_SCROLL_TOP_KEY, getScrollElement } from './components/TagPicker'
-import { MainPageContext, MainPageProvider } from './ctx'
+import { HomeBodyContext, HomeBodyProvider } from './ctx'
 
-// RSC 传进来的数据
 interface Props {
   tags: SelectTag[]
-  bookmarks?: SelectBookmark[]
+  bookmarks: SelectBookmark[]
+  totalBookmarks: number
 }
 
-export default function MainPage(props: Props) {
+export default function HomeBody(props: Props) {
   const router = useRouter()
   const params = useParams()
+  const isClient = useIsClient()
   const isUserSpace = pageSpace('auto').isUser
-
   const { tags } = props
-  console.log({ tags })
-
   const [state, setState] = useSetState({
     bookmarks: props.bookmarks || [],
     selectedTags: [] as SelectTag[],
-    loadingMore: false,
+    hasMore: null as boolean | null,
   })
 
   useEffect(() => {
-    const bookmarks = props.bookmarks || []
-    bookmarks.sort((a, b) => {
+    const bookmarks = props.bookmarks.toSorted((a, b) => {
       if (a.isPinned && !b.isPinned) return -1
       if (!a.isPinned && b.isPinned) return 1
       return 0
@@ -45,92 +42,93 @@ export default function MainPage(props: Props) {
     setState({ bookmarks })
   }, [props.bookmarks, setState])
 
+  // 根据 slug 更新 selectedTags
   useEffect(() => {
     const slug = decodeURIComponent(params.slug as string)
     const selectedTags = slug
       .split('+')
       .map((tagName) => tags.find((tag) => tag.name === tagName))
-      .filter(Boolean)
-    setState({ selectedTags: selectedTags as SelectTag[] })
+      .filter(Boolean) as SelectTag[]
+    setState({ selectedTags })
   }, [params.slug, tags, setState])
 
   /* 4rem 是 var(--navbar-height) 的高度 */
   const contentHeight = 'calc(100vh - 4rem)'
 
-  const setSelectedTags = useCallback(
-    (tags: SelectTag[]) => setState({ selectedTags: tags }),
-    [setState]
-  )
-
-  const onClickTag = useCallback<MainPageContext['onClickTag']>(
-    ({ tag, isIntersected, event }) => {
-      const tagNames = state.selectedTags.map((t) => t.name)
-      if (tagNames.includes(tag.name)) return
-      const finalIsIntersected = event?.altKey || isIntersected
-
-      localStorage.setItem(
-        TAG_PICKER_SCROLL_TOP_KEY,
-        (getScrollElement()?.scrollTop || 0).toString()
-      )
-
-      const newPath = finalIsIntersected
-        ? `/tag/${[...tagNames, tag.name].join('+')}`
-        : `/tag/${tag.name}`
-      router.push(newPath)
-    },
-    [state.selectedTags, router]
-  )
-
+  const bookmarks = state.bookmarks
   const isSearchPage =
     globalThis.location?.pathname ===
     (isUserSpace ? PageRoutes.User.SEARCH : PageRoutes.Public.SEARCH)
   const isHomePage =
     globalThis.location?.pathname === (isUserSpace ? PageRoutes.User.INDEX : PageRoutes.INDEX)
 
+  const homeBodyCtx = useMemo<HomeBodyContext>(() => {
+    return {
+      tags: props.tags,
+      bookmarks: state.bookmarks,
+      selectedTags: state.selectedTags,
+      setSelectedTags: (tags) => setState({ selectedTags: tags }),
+      onClickTag: ({ tag, isIntersected, event }) => {
+        const tagNames = state.selectedTags.map((t) => t.name)
+        if (tagNames.includes(tag.name)) return
+        localStorage.setItem(
+          TAG_PICKER_SCROLL_TOP_KEY,
+          (getScrollElement()?.scrollTop || 0).toString()
+        )
+        // 是否执行标签的交叉搜索
+        const finalIsIntersected = event?.altKey || isIntersected
+        const newPath = finalIsIntersected
+          ? `/tag/${[...tagNames, tag.name].join('+')}`
+          : `/tag/${tag.name}`
+        router.push(newPath)
+      },
+    }
+  }, [props.tags, state.bookmarks, state.selectedTags, setState, router])
+
+  console.log({ bookmarks })
+  const showLoadMore = isClient && isHomePage
+
   return (
-    <MainPageProvider
-      value={{
-        bookmarks: state.bookmarks,
-        selectedTags: state.selectedTags,
-        setSelectedTags,
-        onClickTag,
-      }}
-    >
-      {!isUserSpace && <Nav />}
+    <HomeBodyProvider value={homeBodyCtx}>
       <div className="flex grow max-xs:!max-h-none" style={{ maxHeight: contentHeight }}>
         <aside className="max-h-full w-56 flex-shrink-0 pl-6 max-xs:hidden">
-          <TagPicker tags={tags} />
+          <TagPicker />
         </aside>
         <div className="flex max-h-full grow flex-col overflow-auto px-6 pb-14">
-          <Banner />
-          {!state.bookmarks.length && (
+          <Banner tags={tags} totalBookmarks={props.totalBookmarks} />
+          <BookmarkContainer>
+            {bookmarks.map((bookmark) => {
+              return <BookmarkCard {...bookmark} key={bookmark.id} />
+            })}
+          </BookmarkContainer>
+          {!bookmarks.length && isClient && state.hasMore !== true && (
             <div className="-mt-60 grow flex-col flex-center">
-              <Image width={128} height={128} src={Assets.BOX_EMPTY_PNG} alt="empty" />
+              <Image width={128} height={128} src={Assets.BOX_EMPTY_PNG} alt="empty" priority />
               <p className="mt-4 text-sm text-foreground-500">
                 {isSearchPage ? '要不，换个关键词再试试？' : '暂无相关内容'}
               </p>
             </div>
           )}
-          <BookmarkContainer>
-            {state.bookmarks.map((bookmark) => {
-              return <BookmarkCard {...bookmark} key={bookmark.id} />
-            })}
-          </BookmarkContainer>
-          {!!state.bookmarks.length && !state.loadingMore && (
+          {!!bookmarks.length && state.hasMore !== true && (
             <div className="mt-12 flex-center">
               <Divider orientation="vertical" />
               <span className="mx-4 text-xs text-foreground-400 xs:mx-8">END</span>
               <Divider orientation="vertical" />
             </div>
           )}
-          {isHomePage && (
+          {isClient && isHomePage && (
             <LoadMore
-              onChange={(bookmarks) => setState({ bookmarks: state.bookmarks.concat(bookmarks) })}
-              onLoading={(val) => setState({ loadingMore: val })}
+              onChange={(newData, hasMore) => {
+                const ids = bookmarks.map((item) => item.id)
+                setState({
+                  bookmarks: bookmarks.concat(newData.filter((item) => !ids.includes(item.id))),
+                  hasMore,
+                })
+              }}
             />
           )}
         </div>
       </div>
-    </MainPageProvider>
+    </HomeBodyProvider>
   )
 }

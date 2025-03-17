@@ -1,10 +1,8 @@
-'use serve'
-
-import MainPage from '@/components/MainPage'
-import { UserBookmarkController, UserTagController } from '@/controllers'
+import { UserBookmarkController } from '@/controllers'
 import { GenerateMetadata, RSCPageProps } from '@/types'
 import { PageRoutes } from '@cfg'
 import { redirect } from 'next/navigation'
+import UserHomeBody from '../components/UserHomeBody'
 
 export const generateMetadata: GenerateMetadata = (props) => {
   return { title: `${props.searchParams.keyword as string}的搜索结果` }
@@ -17,10 +15,7 @@ export default async function Page(props: RSCPageProps) {
     redirect(PageRoutes.User.INDEX)
   }
 
-  const [res, tags] = await Promise.all([
-    UserBookmarkController.search(keyword),
-    UserTagController.getAll(),
-  ])
+  const res = await UserBookmarkController.search(keyword)
 
-  return <MainPage bookmarks={res.list} tags={tags} />
+  return <UserHomeBody bookmarks={res.list} />
 }

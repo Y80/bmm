@@ -11,7 +11,10 @@ import { makeAction as make } from './make-action'
 
 /// PublicBookmark
 export const actTotalPublicBookmarks = make(PublicBookmarkController.total, { guard: false })
-export const actFindPublicBookmarks = make(PublicBookmarkController.findMany, { guard: false })
+export const actFindPublicBookmarks = make(PublicBookmarkController.findMany, {
+  guard: false,
+  name: 'actFindPublicBookmarks',
+})
 export const actInsertPublicBookmark = make(PublicBookmarkController.insert, { guard: 'admin' })
 export const actQueryPublicBookmark = make(PublicBookmarkController.query)
 export const actDeletePublicBookmark = make(PublicBookmarkController.delete, { guard: 'admin' })

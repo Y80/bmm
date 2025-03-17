@@ -33,17 +33,13 @@ export const PageRoutes = {
   INDEX: '/',
   LOGIN: '/login',
   FORBIDDEN: '/forbidden',
-  User: {
-    INDEX: '/user',
-    SETTINGS: '/user/settings',
-    TAG_LIST: '/user/tag/list',
-    BOOKMARK_LIST: '/user/bookmark/list',
-    UPLOAD: '/user/upload',
-    tagSlug: (slug: 'new' | TagId) => '/user/tag/' + slug,
-    bookmarkSlug: (slug: 'new' | BookmarkId) => '/user/bookmark/' + slug,
-    RANDOM: '/user/random',
-    SEARCH: '/user/search',
-    search: (ky: string) => '/user/search?keyword=' + ky,
+  Public: {
+    INDEX: '/',
+    RANDOM: '/random',
+    SEARCH: '/search',
+    TAG: '/tag',
+    search: (ky: string) => '/search?keyword=' + ky,
+    filterTag: (tagIds: TagId[]) => '/tag/' + tagIds.join('+'),
   },
   Admin: {
     PREFIX: '/admin',
@@ -54,10 +50,19 @@ export const PageRoutes = {
     tagSlug: (slug: 'new' | TagId) => '/admin/tag/' + slug,
     bookmarkSlug: (slug: 'new' | BookmarkId) => '/admin/bookmark/' + slug,
   },
-  Public: {
-    RANDOM: '/random',
-    SEARCH: '/search',
-    search: (ky: string) => '/search?keyword=' + ky,
+  User: {
+    INDEX: '/user',
+    SETTINGS: '/user/settings',
+    TAG: '/tag',
+    TAG_LIST: '/user/tag/list',
+    BOOKMARK_LIST: '/user/bookmark/list',
+    UPLOAD: '/user/upload',
+    tagSlug: (slug: 'new' | TagId) => '/user/tag/' + slug,
+    filterTag: (tagIds: TagId[]) => '/user/tag/-/' + tagIds.join('+'),
+    bookmarkSlug: (slug: 'new' | BookmarkId) => '/user/bookmark/' + slug,
+    RANDOM: '/user/random',
+    SEARCH: '/user/search',
+    search: (ky: string) => '/user/search?keyword=' + ky,
   },
 } as const
 
@@ -85,6 +90,11 @@ export const IconNames = {
   SUN: 'icon-[tabler--sun]',
   TAG: 'icon-[tabler--tag]',
   TRASH: 'icon-[tabler--trash]',
+  Tabler: {
+    USER: 'icon-[tabler--user]',
+    DASHBOARD: 'icon-[tabler--layout-dashboard]',
+    LOGOUT: 'icon-[tabler--logout-2]',
+  },
   Huge: {
     SEARCH: 'icon-[hugeicons--search-01]',
     HOME: 'icon-[hugeicons--home-04]',

@@ -1,9 +1,8 @@
 'use client'
 
-import ReButton from '@/components/re-export/ReButton'
+import { ReButton } from '@/components'
 import { PageRoutes, WEBSITE_NAME } from '@cfg'
-import { Spinner } from "@heroui/react"
-import clsx from 'clsx'
+import { cn, Spinner } from '@heroui/react'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -17,7 +16,7 @@ export default function Page() {
   const { tags, totalBookmarks } = useGlobalContext()
 
   async function handleLogin() {
-    await signIn('github', { callbackUrl: PageRoutes.Admin.INDEX })
+    await signIn('github', { redirectTo: PageRoutes.INDEX })
     setIsRedirecting(true)
   }
 
@@ -34,7 +33,7 @@ export default function Page() {
           {isRedirecting ? (
             <div className="flex-center">
               <Spinner color="current" size="lg" className="text-black/65">
-                <p className={clsx('mt-6', tipTextCls)}>正在等待 Github 授权</p>
+                <p className={cn('mt-6', tipTextCls)}>正在等待 Github 授权</p>
               </Spinner>
             </div>
           ) : (
@@ -43,14 +42,14 @@ export default function Page() {
                 className="bg-black text-white hover:bg-black/80"
                 size="lg"
                 fullWidth
-                startContent={<span className={clsx('icon-[mdi--github]', 'text-2xl')} />}
+                startContent={<span className={cn('icon-[mdi--github]', 'text-2xl')} />}
                 onClick={handleLogin}
               >
                 Continue with Github
               </ReButton>
               <div className="mt-6" />
               <li
-                className={clsx(
+                className={cn(
                   'mb-2 font-bold text-red-700',
                   tipTextCls,
                   tags.length && totalBookmarks && 'hidden'
@@ -58,7 +57,7 @@ export default function Page() {
               >
                 请登录后及时创建标签、书签数据
               </li>
-              <li className={clsx('mb-2', tipTextCls)}>仅供管理员登录使用</li>
+              <li className={cn('mb-2', tipTextCls)}>仅供管理员登录使用</li>
               <li className={tipTextCls}>
                 请保证您可访问{' '}
                 <a

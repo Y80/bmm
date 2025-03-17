@@ -56,7 +56,7 @@ export type BookmarkListPageProps = {
 }
 
 export default function BookmarkListPage(props: BookmarkListPageProps) {
-  const isAdminSpace = pageSpace('auto').isAdmin
+  const isUserSpace = pageSpace('auto').isUser
   const searchParams = useSearchParams()
   const router = useRouter()
   const [state, setState] = useSetState({
@@ -84,7 +84,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
         ...(state.selectedTag && { tagIds: state.selectedTag }),
       }
       dataRef.current.loadingMutable && setState({ loading: true })
-      const action = isAdminSpace ? actFindPublicBookmarks : actFindUserBookmarks
+      const action = isUserSpace ? actFindUserBookmarks : actFindPublicBookmarks
       const res = await runAction(action(findManyBookmarksSchema.parse(input)))
       setState({ loading: false })
       dataRef.current.loadingMutable = true
@@ -129,7 +129,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   )
 
   async function onRemove(item: SelectPublicBookmark) {
-    const action = isAdminSpace ? actDeletePublicBookmark : actDeleteUserBookmark
+    const action = isUserSpace ? actDeleteUserBookmark : actDeletePublicBookmark
     await runAction(action({ id: item.id }), {
       okMsg: '书签已删除',
       onOk: refresh,
@@ -144,12 +144,12 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     item.isPinned = isPinned
     mutate([...bookmarks])
     dataRef.current.loadingMutable = false
-    const action = isAdminSpace ? actUpdatePublicBookmark : actUpdateUserBookmark
+    const action = isUserSpace ? actUpdateUserBookmark : actUpdatePublicBookmark
     runAction(action(item)).then(refresh)
   }
 
   function toEditPage(item: SelectPublicBookmark) {
-    router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).bookmarkSlug(item.id))
+    router.push((isUserSpace ? PageRoutes.User : PageRoutes.Admin).bookmarkSlug(item.id))
   }
 
   return (
@@ -162,7 +162,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           size="sm"
           startContent={<span className={cn(IconNames.PLUS, 'text-xl')} />}
           onClick={() =>
-            router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).bookmarkSlug('new'))
+            router.push((isUserSpace ? PageRoutes.User : PageRoutes.Admin).bookmarkSlug('new'))
           }
         >
           新建

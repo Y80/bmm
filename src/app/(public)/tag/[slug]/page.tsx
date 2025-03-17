@@ -1,8 +1,6 @@
 import MainPage from '@/components/MainPage'
-import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
-import PublicTagController from '@/controllers/PublicTag.controller'
+import { PublicBookmarkController, PublicTagController } from '@/controllers'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
-import { SelectPublicTag } from '@/db'
 import { GenerateMetadata, RSCPageProps } from '@/types'
 import { WEBSITE_KEYWORDS } from '@cfg'
 
@@ -17,7 +15,7 @@ export const generateMetadata: GenerateMetadata<{ slug: string }> = (props) => {
 export default async function Page(props: RSCPageProps) {
   const tagNames = decodeURIComponent(props.params.slug).split('+')
   const tags = await PublicTagController.getAll()
-  const tagIds: SelectPublicTag['id'][] = []
+  const tagIds: TagId[] = []
   tagNames.forEach((tagName) => {
     const tag = tags.find((tag) => tag.name === tagName)
     tag && tagIds.push(tag.id)

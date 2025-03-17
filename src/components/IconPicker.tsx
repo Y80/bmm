@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Input,
   Modal,
@@ -192,7 +194,7 @@ export default function IconPicker(props: Props) {
               onChange={(e) => onChangeIconSet(e.target.value)}
             >
               {ICON_SETS.map((item) => (
-                <SelectItem key={item.prefix} value={item.prefix}>
+                <SelectItem key={item.prefix} textValue={item.prefix}>
                   {item.title}
                 </SelectItem>
               ))}

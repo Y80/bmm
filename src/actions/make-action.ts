@@ -18,6 +18,8 @@ interface MakeActionOptions {
    */
   guard?: false | 'user' | 'admin' | 'decide-by-referer'
   schema?: ZodSchema
+  /** 方便 Debug */
+  name?: string
 }
 export interface MakeActionInput<Arg, Data> extends MakeActionOptions {
   handler: (...args: Arg[]) => Promise<Data>
@@ -56,7 +58,7 @@ export function makeAction<Arg, Data>(...makeArgs: MakeActionArgs<Arg, Data>) {
       const session = await auth()
       // console.log('auth() 返回的 session:\n', session)
       if (!session) {
-        console.log('未登录', { opts })
+        console.log('未登录', handler.name, { opts })
         console.log([...headers().entries()])
         redirect(PageRoutes.LOGIN)
       }

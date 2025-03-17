@@ -1,10 +1,10 @@
-import { useGlobalContext } from '@/app/ctx'
 import GradientText from '@/components/GradientText'
+import { pageSpace } from '@/utils'
 import { PageRoutes, WEBSITE_NAME } from '@cfg'
 import { Chip } from '@heroui/react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { PropsWithChildren } from 'react'
-import { useMainPageContext } from '../ctx'
+import { useHomePageContext } from '../ctx'
 
 function Wrapper(props: PropsWithChildren) {
   return <header className="flex-col gap-4 py-8 flex-center xs:pb-16">{props.children}</header>
@@ -12,15 +12,21 @@ function Wrapper(props: PropsWithChildren) {
 
 const H1_CLS = 'text-3xl font-bold flex-center text-foreground-700'
 
-export default function Banner() {
+interface Props {
+  tags: SelectTag[]
+  totalBookmarks: number
+}
+
+export default function Banner(props: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { tags, totalBookmarks } = props
+  const { bookmarks, selectedTags, onClickTag } = useHomePageContext()
 
-  const { tags, totalBookmarks } = useGlobalContext()
-  const { bookmarks, selectedTags, onClickTag } = useMainPageContext()
+  const space = pageSpace('auto').isUser ? PageRoutes.User : PageRoutes.Public
 
-  if (pathname === '/') {
+  if (pathname === space.INDEX) {
     return (
       <Wrapper>
         <GradientText
@@ -38,7 +44,7 @@ export default function Banner() {
     )
   }
 
-  if (pathname.startsWith('/tag/') && selectedTags.length) {
+  if (pathname.startsWith(space.TAG) && selectedTags.length) {
     const isIntersected = selectedTags.length > 1
     const firstTag = selectedTags[0]
     return (
@@ -90,7 +96,7 @@ export default function Banner() {
     )
   }
 
-  if (pathname === PageRoutes.Public.RANDOM) {
+  if (pathname === space.RANDOM) {
     return (
       <Wrapper>
         <h1 className={H1_CLS}>随便看看</h1>
@@ -99,7 +105,7 @@ export default function Banner() {
     )
   }
 
-  if (pathname.startsWith('/search')) {
+  if (pathname.startsWith(space.SEARCH)) {
     const keyword = searchParams.get('keyword')
     return (
       <Wrapper>

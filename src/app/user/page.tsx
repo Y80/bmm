@@ -1,10 +1,10 @@
-'use client'
+import { UserBookmarkController } from '@/controllers'
+import { findManyBookmarksSchema } from '@/controllers/schemas'
+import UserHomeBody from './components/UserHomeBody'
 
-import MainPage from '@/components/MainPage'
-import { useUserContext } from './ctx'
+export default async function Page() {
+  const params = findManyBookmarksSchema.parse({ page: 1 })
+  const res = await UserBookmarkController.findMany(params)
 
-export default function Page() {
-  const { tags } = useUserContext()
-
-  return <MainPage tags={tags} />
+  return <UserHomeBody bookmarks={res.list} />
 }

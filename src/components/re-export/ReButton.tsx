@@ -59,7 +59,6 @@ function ReButton_(props: ReButtonProps, ref: any) {
     }
     return <ReTooltip {...tooltip}>{button}</ReTooltip>
   }
-
   if (popoverContent) {
     return (
       <Popover>

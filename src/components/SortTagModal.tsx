@@ -1,3 +1,5 @@
+'use client'
+
 import { actUpdatePublicTagSortOrders, actUpdateUserTagSortOrders } from '@/actions'
 import MyModal from '@/components/MyModal'
 import { SelectPublicTag } from '@/db'
