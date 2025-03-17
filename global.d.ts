@@ -1,5 +1,6 @@
 import type { SelectPublicBookmark, SelectPublicTag } from '@/controllers'
 import type { schema } from '@/db'
+import type { Metadata, ResolvingMetadata } from 'next'
 import 'next-auth'
 
 declare global {
@@ -15,6 +16,19 @@ declare global {
     type ExtraVariables = Partial<Record<OptionalVariables, string>> &
       Record<RequiredVariables, string> & { DB_DRIVER: 'postgresql' | 'sqlite' } // 暂时只接入 postgresql 和 sqlite
     interface ProcessEnv extends ExtraVariables {}
+  }
+
+  interface GenerateMetaDataProps<Params> {
+    params: Params
+    searchParams: { [key: string]: string | string[] | undefined }
+  }
+  export type GenerateMetadata<Params = object> = (
+    props: GenerateMetaDataProps<Params>,
+    parent: ResolvingMetadata
+  ) => Awaited<Metadata> | Promise<Awaited<Metadata>>
+  export interface RSCPageProps {
+    params: Record<string, string>
+    searchParams: { [key: string]: string | string[] | undefined }
   }
 
   /** 用户 ID 类型（UUID） */

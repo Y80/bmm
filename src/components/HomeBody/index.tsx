@@ -77,16 +77,16 @@ export default function HomeBody(props: Props) {
         )
         // 是否执行标签的交叉搜索
         const finalIsIntersected = event?.altKey || isIntersected
-        const newPath = finalIsIntersected
-          ? `/tag/${[...tagNames, tag.name].join('+')}`
-          : `/tag/${tag.name}`
+        const finalTagNames = finalIsIntersected ? [...tagNames, tag.name] : [tag.name]
+        PageRoutes.Public.TAGS
+        const newPath = (isUserSpace ? PageRoutes.User : PageRoutes.Public).tags(finalTagNames)
         router.push(newPath)
       },
     }
   }, [props.tags, state.bookmarks, state.selectedTags, setState, router])
 
   console.log({ bookmarks })
-  const showLoadMore = isClient && isHomePage
+  const showEnd = !!bookmarks.length && (isHomePage ? state.hasMore === false : true)
 
   return (
     <HomeBodyProvider value={homeBodyCtx}>
@@ -109,7 +109,7 @@ export default function HomeBody(props: Props) {
               </p>
             </div>
           )}
-          {!!bookmarks.length && state.hasMore !== true && (
+          {showEnd && (
             <div className="mt-12 flex-center">
               <Divider orientation="vertical" />
               <span className="mx-4 text-xs text-foreground-400 xs:mx-8">END</span>

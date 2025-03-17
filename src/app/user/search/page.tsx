@@ -1,11 +1,10 @@
 import { UserBookmarkController } from '@/controllers'
-import { GenerateMetadata, RSCPageProps } from '@/types'
 import { PageRoutes } from '@cfg'
 import { redirect } from 'next/navigation'
 import UserHomeBody from '../components/UserHomeBody'
 
-export const generateMetadata: GenerateMetadata = (props) => {
-  return { title: `${props.searchParams.keyword as string}的搜索结果` }
+export const generateMetadata: GenerateMetadata<{ keyword: string }> = (props) => {
+  return { title: `${props.searchParams.keyword}的搜索结果` }
 }
 
 export default async function Page(props: RSCPageProps) {

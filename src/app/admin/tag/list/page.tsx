@@ -1,12 +1,12 @@
 'use client'
 
 import { actDeletePublicTag, actUpdatePublicTag } from '@/actions'
-import { useGlobalContext } from '@/app/ctx'
 import TagListPage, { TagListPageProps } from '@/components/TagListPage'
 import { runAction } from '@/utils'
+import { useAdminContext } from '../../ctx'
 
 export default function Page() {
-  const { tags, setCtxValue, updateTags } = useGlobalContext()
+  const { tags, setCtxValue, updateTags } = useAdminContext()
 
   const props: TagListPageProps = {
     tags,

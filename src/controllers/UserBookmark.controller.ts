@@ -105,7 +105,8 @@ const UserBookmarkController = {
   /**
    * 高级搜索书签列表
    */
-  async findMany(query: z.output<typeof findManyBookmarksSchema>) {
+  async findMany(query?: z.output<typeof findManyBookmarksSchema>) {
+    query ||= findManyBookmarksSchema.parse({})
     const { keyword, tagIds, page, limit, sorterKey } = query
     const userId = await getAuthedUserId()
     const filters = (() => {

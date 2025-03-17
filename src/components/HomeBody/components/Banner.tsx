@@ -44,7 +44,7 @@ export default function Banner(props: Props) {
     )
   }
 
-  if (pathname.startsWith(space.TAG) && selectedTags.length) {
+  if (pathname.startsWith(space.TAGS) && selectedTags.length) {
     const isIntersected = selectedTags.length > 1
     const firstTag = selectedTags[0]
     return (

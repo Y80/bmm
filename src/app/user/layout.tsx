@@ -1,14 +1,19 @@
 import { UserBookmarkController, UserTagController } from '@/controllers'
 import { auth } from '@/lib/auth'
 import { PageRoutes } from '@cfg'
-import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { PropsWithChildren } from 'react'
 import Nav from './components/Nav'
 import { UserContextProvider } from './ctx'
 
-export const metadata: Metadata = {
-  title: '个人空间',
+export const generateMetadata: GenerateMetadata = async () => {
+  const session = await auth()
+  return {
+    title: {
+      default: '个人空间 - ' + session?.user.name,
+      template: '%s - ' + session?.user.name,
+    },
+  }
 }
 
 export default async function UserLayout(props: PropsWithChildren) {

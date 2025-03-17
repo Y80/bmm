@@ -1,11 +1,9 @@
 'use serve'
 
-import MainPage from '@/components/MainPage'
-import { PublicTagController } from '@/controllers'
 import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
-import { GenerateMetadata, RSCPageProps } from '@/types'
 import { PageRoutes } from '@cfg'
 import { redirect } from 'next/navigation'
+import CommonIndexPage from '../components/CommonIndexPage'
 
 export const generateMetadata: GenerateMetadata = (props) => {
   return { title: `${props.searchParams.keyword as string}的搜索结果` }
@@ -18,10 +16,7 @@ export default async function Page(props: RSCPageProps) {
     redirect(PageRoutes.INDEX)
   }
 
-  const [res, tags] = await Promise.all([
-    PublicBookmarkController.search(keyword),
-    PublicTagController.getAll(),
-  ])
+  const res = await PublicBookmarkController.search(keyword)
 
-  return <MainPage bookmarks={res.list} tags={tags} />
+  return <CommonIndexPage bookmarks={res.list} />
 }

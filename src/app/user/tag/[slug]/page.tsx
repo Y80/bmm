@@ -1,29 +1,32 @@
-import MainPage from '@/components/MainPage'
-import { UserBookmarkController, UserTagController } from '@/controllers'
-import { findManyBookmarksSchema } from '@/controllers/schemas'
-import { GenerateMetadata, RSCPageProps } from '@/types'
-import { WEBSITE_KEYWORDS } from '@cfg'
+'use client'
 
-export const generateMetadata: GenerateMetadata<{ slug: string }> = (props) => {
-  const tag = decodeURIComponent(props.params.slug)
-  return {
-    title: tag + '相关的书签',
-    keywords: `${tag}相关的网站, ${tag}-网站推荐, ` + WEBSITE_KEYWORDS,
+import { actInsertUserTag, actUpdateUserTag } from '@/actions'
+import { useUserContext } from '@/app/user/ctx'
+import TagSlugPage, { TagSlugPageProps } from '@/components/TagSlugPage'
+import { useSlug } from '@/hooks'
+import { runAction } from '@/utils'
+import { PageRoutes } from '@cfg'
+import { addToast } from '@heroui/react'
+import { useRouter } from 'next/navigation'
+
+export default function Page() {
+  const router = useRouter()
+  const { tags, updateTags } = useUserContext()
+  const slug = useSlug()
+
+  const props: TagSlugPageProps = {
+    tags,
+    async save(tag) {
+      const task = slug.isNew
+        ? runAction(actInsertUserTag(tag))
+        : runAction(actUpdateUserTag({ ...tag, id: slug.number! }))
+      const { ok } = await task
+      if (!ok) return
+      addToast({ color: 'success', title: slug.isNew ? '标签已创建' : '标签已更新' })
+      router.push(PageRoutes.User.TAG_LIST)
+      await updateTags()
+    },
   }
-}
 
-export default async function Page(props: RSCPageProps) {
-  const tagNames = decodeURIComponent(props.params.slug).split('+')
-  const tags = await UserTagController.getAll()
-  const tagIds: TagId[] = []
-  tagNames.forEach((tagName) => {
-    const tag = tags.find((tag) => tag.name === tagName)
-    tag && tagIds.push(tag.id)
-  })
-  const bookmarks = tagIds.length
-    ? (await UserBookmarkController.findMany(findManyBookmarksSchema.parse({ tagIds, limit: 999 })))
-        .list
-    : []
-
-  return <MainPage tags={tags} bookmarks={bookmarks} />
+  return <TagSlugPage {...props} />
 }

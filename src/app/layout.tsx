@@ -1,13 +1,13 @@
-import { PublicBookmarkController, PublicTagController } from '@/controllers'
+import '@/globals.css'
 import { auth } from '@/lib/auth'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { WEBSITE_KEYWORDS, WEBSITE_NAME } from '@cfg'
+import { Background, WEBSITE_KEYWORDS } from '@cfg'
+import { cn } from '@heroui/react'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import type { Metadata } from 'next'
 import { PropsWithChildren } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { GlobalProvider } from './ctx'
-import './globals.css'
 
 // 禁止动态缓存这个 RSC；还可以通过 ISR 增量更新
 // https://nextjs.org/docs/app/building-your-application/data-fetching/fetching
@@ -15,10 +15,6 @@ import './globals.css'
 // export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: {
-    default: WEBSITE_NAME,
-    template: '%s - ' + WEBSITE_NAME,
-  },
   description:
     'BMM - 你的智能书签管家！支持 AI 解析网站信息，自动生成标签，跨设备同步书签。高效管理你的收藏夹，探索开发者精选资源，支持明暗双主题与多端适配。',
   icons: '/logo.svg',
@@ -34,11 +30,7 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: PropsWithChildren) {
-  const [session, tags, totalBookmarks] = await Promise.all([
-    auth(),
-    PublicTagController.getAll(),
-    PublicBookmarkController.total(),
-  ])
+  const session = await auth()
 
   return (
     <html
@@ -53,8 +45,17 @@ export default async function RootLayout({ children }: PropsWithChildren) {
         {process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID && (
           <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID} />
         )}
+        <div
+          className={cn(
+            'fixed -z-10 h-screen w-screen max-xs:hidden max-xs:dark:block',
+            Background.CLASS
+          )}
+        >
+          <div className="absolute left-[-12rem] top-[5rem] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.1),rgba(255,255,255,0))]" />
+          <div className="absolute bottom-[-200px] right-[-200px] size-[50rem] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.1),rgba(255,255,255,0))]" />
+        </div>
         <Toaster />
-        <GlobalProvider session={session} tags={tags} totalBookmarks={totalBookmarks}>
+        <GlobalProvider session={session}>
           <AntdRegistry>
             <div className="flex min-h-screen flex-col">{children}</div>
           </AntdRegistry>

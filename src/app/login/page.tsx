@@ -8,12 +8,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Velustro } from 'uvcanvas'
-import { useGlobalContext } from '../ctx'
 
 export default function Page() {
   const [isRedirecting, setIsRedirecting] = useState(false)
-
-  const { tags, totalBookmarks } = useGlobalContext()
 
   async function handleLogin() {
     await signIn('github', { redirectTo: PageRoutes.INDEX })
@@ -48,16 +45,6 @@ export default function Page() {
                 Continue with Github
               </ReButton>
               <div className="mt-6" />
-              <li
-                className={cn(
-                  'mb-2 font-bold text-red-700',
-                  tipTextCls,
-                  tags.length && totalBookmarks && 'hidden'
-                )}
-              >
-                请登录后及时创建标签、书签数据
-              </li>
-              <li className={cn('mb-2', tipTextCls)}>仅供管理员登录使用</li>
               <li className={tipTextCls}>
                 请保证您可访问{' '}
                 <a

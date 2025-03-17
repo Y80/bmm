@@ -2,7 +2,7 @@ import { db, schema } from '@/db'
 import { z } from '@/lib/zod'
 import { getPinyin } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
-import { and, asc, count, desc, eq, ilike, inArray, notInArray, or, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, ilike, inArray, like, notInArray, or, sql } from 'drizzle-orm'
 import { findManyBookmarksSchema } from './schemas'
 
 const { publicBookmarkToTag, publicBookmarks } = schema
@@ -32,11 +32,19 @@ export async function fullSetBookmarkToTag(bId: BookmarkId, tagIds: TagId[]) {
 }
 
 function createBookmarkFilterByKeyword(kw: string) {
+  if (process.env.DB_DRIVER === 'postgresql') {
+    return or(
+      ilike(publicBookmarks.name, `%${kw}%`),
+      ilike(publicBookmarks.pinyin, `%${kw}%`),
+      ilike(publicBookmarks.url, `%${kw}%`),
+      ilike(publicBookmarks.description, `%${kw}%`)
+    )
+  }
   return or(
-    ilike(publicBookmarks.name, `%${kw}%`),
-    ilike(publicBookmarks.pinyin, `%${kw}%`),
-    ilike(publicBookmarks.url, `%${kw}%`),
-    ilike(publicBookmarks.description, `%${kw}%`)
+    like(publicBookmarks.name, `%${kw}%`),
+    like(publicBookmarks.pinyin, `%${kw}%`),
+    like(publicBookmarks.url, `%${kw}%`),
+    like(publicBookmarks.description, `%${kw}%`)
   )
 }
 
@@ -95,7 +103,8 @@ const PublicBookmarkController = {
   /**
    * 高级搜索书签列表
    */
-  async findMany(query: z.output<typeof findManyBookmarksSchema>) {
+  async findMany(query?: z.output<typeof findManyBookmarksSchema>) {
+    query ||= findManyBookmarksSchema.parse({})
     const { keyword, tagIds, page, limit, sorterKey } = query
 
     const filters = (() => {

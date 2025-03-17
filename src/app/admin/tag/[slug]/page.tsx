@@ -1,17 +1,17 @@
 'use client'
 
 import { actInsertPublicTag, actUpdatePublicTag } from '@/actions'
-import { useGlobalContext } from '@/app/ctx'
 import TagSlugPage, { TagSlugPageProps } from '@/components/TagSlugPage'
 import useSlug from '@/hooks/useSlug'
 import { runAction } from '@/utils'
 import { PageRoutes } from '@cfg'
 import { addToast } from '@heroui/react'
 import { useRouter } from 'next/navigation'
+import { useAdminContext } from '../../ctx'
 
 export default function Page() {
   const router = useRouter()
-  const { tags, updateTags } = useGlobalContext()
+  const { tags, updateTags } = useAdminContext()
   const slug = useSlug()
 
   const props: TagSlugPageProps = {

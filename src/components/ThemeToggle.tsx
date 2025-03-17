@@ -2,7 +2,7 @@
 
 import useIsClient from '@/hooks/useIsClient'
 import { IconNames } from '@cfg'
-import { cn, Listbox, ListboxItem } from "@heroui/react"
+import { cn, Listbox, ListboxItem } from '@heroui/react'
 import { useTheme } from 'next-themes'
 import { useState } from 'react'
 import { NavIconOnlyButtonProps } from './MainPage/components/Nav'
@@ -16,11 +16,8 @@ const ThemeListItems = [
 
 export default function ThemeToggle() {
   const { setTheme, theme } = useTheme()
-
   const [selectedKeys, setSelectedKeys] = useState([theme!])
-
   const isClient = useIsClient()
-
   const currentThemeIcon = ThemeListItems.find((el) => el.key === selectedKeys[0])?.icon
 
   function finalSetTheme(theme: string) {
@@ -72,7 +69,7 @@ export default function ThemeToggle() {
           ),
         }}
       >
-        <span className={isClient ? currentThemeIcon : ''} />
+        <span className={isClient ? currentThemeIcon : IconNames.DEVICE_DESKTOP} />
       </ReButton>
     </>
   )

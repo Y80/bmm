@@ -1,12 +1,13 @@
 'use client'
 
-import { actGetAllUserTags, actTotalUserBookmarks } from '@/actions'
+import { actGetAllPublicTags, actTotalPublicBookmarks } from '@/actions'
 import { runAction } from '@/utils'
+import { PageRoutes } from '@cfg'
 import { useSetState } from 'ahooks'
+import { usePathname } from 'next/navigation'
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 
-type ContextValuePart = Pick<UserContextType, 'tags' | 'totalBookmarks'>
-interface UserContextType {
+export interface AdminContextType {
   /** 所有的 publicTags  */
   tags: SelectTag[]
   /** publicBookmarks 个数 */
@@ -17,23 +18,30 @@ interface UserContextType {
   /** 立即变更并重新获取书签个数 */
   updateTotalBookmarks(value: number): Promise<void>
 }
+type ContextValuePart = Pick<AdminContextType, 'tags' | 'totalBookmarks'>
 
-const UserContext = createContext<UserContextType | null>(null)
+const AdminContext = createContext<AdminContextType | null>(null)
 
-export function useUserContext() {
-  const ctx = useContext(UserContext)
-  if (!ctx) throw new Error('useUserContext must be used within an UserContextProvider')
+export function useAdminContext() {
+  const ctx = useContext(AdminContext)
+  if (!ctx) throw new Error('usePublicContext() must be used within a GlobalContextProvider')
   return ctx
 }
 
-type Props = PropsWithChildren<Pick<UserContextType, 'tags' | 'totalBookmarks'>>
-export function UserContextProvider(props: Props) {
+export function AdminProvider(props: PropsWithChildren<ContextValuePart>) {
   const [state, setState] = useSetState({
     tags: props.tags,
     totalBookmarks: props.totalBookmarks,
   })
+  const pathname = usePathname()
+  // TODO
+  if (!props.tags.length || !props.totalBookmarks) {
+    if (pathname !== PageRoutes.LOGIN && !pathname.startsWith(PageRoutes.Admin.INDEX)) {
+      // redirect(PageRoutes.LOGIN)
+    }
+  }
 
-  const value = useMemo<UserContextType>(() => {
+  const ctxValue = useMemo<AdminContextType>(() => {
     return {
       ...state,
       setCtxValue(fn) {
@@ -45,17 +53,17 @@ export function UserContextProvider(props: Props) {
         }
         const oldValue = state.tags
         tags && setState({ tags })
-        const res = await runAction(actGetAllUserTags())
+        const res = await runAction(actGetAllPublicTags())
         setState({ tags: res.ok ? res.data : oldValue })
       },
       updateTotalBookmarks: async (value: number) => {
         const oldValue = state.totalBookmarks
         setState({ totalBookmarks: value })
-        const res = await runAction(actTotalUserBookmarks())
+        const res = await runAction(actTotalPublicBookmarks())
         setState({ totalBookmarks: res.ok ? res.data : oldValue })
       },
     }
   }, [state, setState])
 
-  return <UserContext.Provider value={value}>{props.children}</UserContext.Provider>
+  return <AdminContext.Provider value={ctxValue}>{props.children}</AdminContext.Provider>
 }

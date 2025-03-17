@@ -20,6 +20,15 @@ function ClientIcon(props: Props) {
     return calcForegroundColor(props.color, isDark).hex()
   }, [props.color, isDark])
 
+  if (props.icon.startsWith('icon-[')) {
+    return (
+      <span
+        className={cn('size-5 text-xl flex-center', props.className, props.icon)}
+        style={{ color }}
+      />
+    )
+  }
+
   return (
     <span className={cn('size-5 text-xl flex-center', props.className)} style={{ color }}>
       <Icon icon={props.icon} />
