@@ -2,7 +2,8 @@ import { db, schema } from '@/db'
 import { z } from '@/lib/zod'
 import { getPinyin } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
-import { and, asc, count, desc, eq, ilike, inArray, like, notInArray, or, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, inArray, notInArray, sql } from 'drizzle-orm'
+import { createBookmarkFilterByKeyword } from './common'
 import { findManyBookmarksSchema } from './schemas'
 
 const { publicBookmarkToTag, publicBookmarks } = schema
@@ -29,23 +30,6 @@ export async function fullSetBookmarkToTag(bId: BookmarkId, tagIds: TagId[]) {
   ]
   await Promise.all(task)
   return
-}
-
-function createBookmarkFilterByKeyword(kw: string) {
-  if (process.env.DB_DRIVER === 'postgresql') {
-    return or(
-      ilike(publicBookmarks.name, `%${kw}%`),
-      ilike(publicBookmarks.pinyin, `%${kw}%`),
-      ilike(publicBookmarks.url, `%${kw}%`),
-      ilike(publicBookmarks.description, `%${kw}%`)
-    )
-  }
-  return or(
-    like(publicBookmarks.name, `%${kw}%`),
-    like(publicBookmarks.pinyin, `%${kw}%`),
-    like(publicBookmarks.url, `%${kw}%`),
-    like(publicBookmarks.description, `%${kw}%`)
-  )
 }
 
 const PublicBookmarkController = {
@@ -110,7 +94,7 @@ const PublicBookmarkController = {
     const filters = (() => {
       const filters = []
       if (keyword) {
-        filters.push(createBookmarkFilterByKeyword(keyword))
+        filters.push(createBookmarkFilterByKeyword(publicBookmarks, keyword))
       }
       if (tagIds?.length) {
         const findTargetBIds = db
@@ -189,7 +173,7 @@ const PublicBookmarkController = {
   /** 根据关键词搜索书签 */
   async search(keyword: string) {
     const res = await db.query.publicBookmarks.findMany({
-      where: createBookmarkFilterByKeyword(keyword),
+      where: createBookmarkFilterByKeyword(publicBookmarks, keyword),
       with: { relatedTagIds: true },
       limit: 50,
     })

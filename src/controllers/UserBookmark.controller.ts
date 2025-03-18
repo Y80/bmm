@@ -3,7 +3,8 @@ import { getAuthedUserId } from '@/lib/auth'
 import { z } from '@/lib/zod'
 import { getPinyin } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
-import { and, asc, desc, eq, ilike, inArray, notInArray, or, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, inArray, notInArray, sql } from 'drizzle-orm'
+import { createBookmarkFilterByKeyword } from './common'
 import { findManyBookmarksSchema } from './schemas'
 import UserTagController from './UserTag.controller'
 
@@ -33,15 +34,6 @@ async function fullSetBookmarkToTag(bId: BookmarkId, tagIds: TagId[]) {
       .where(and(eq(userBookmarkToTag.bId, bId), notInArray(userBookmarkToTag.tId, tagIds))),
   ]
   await Promise.all(task)
-}
-
-function createBookmarkFilterByKeyword(kw: string) {
-  return or(
-    ilike(userBookmarks.name, `%${kw}%`),
-    ilike(userBookmarks.pinyin, `%${kw}%`),
-    ilike(userBookmarks.url, `%${kw}%`),
-    ilike(userBookmarks.description, `%${kw}%`)
-  )!
 }
 
 function modifyEntityLimiter(userId: UserId, bookmarkId: BookmarkId) {
@@ -112,7 +104,7 @@ const UserBookmarkController = {
     const filters = (() => {
       const filters = [eq(userBookmarks.userId, userId)]
       if (keyword) {
-        filters.push(createBookmarkFilterByKeyword(keyword))
+        filters.push(createBookmarkFilterByKeyword(userBookmarks, keyword))
       }
       if (tagIds?.length) {
         const findTargetBIds = db
@@ -195,7 +187,7 @@ const UserBookmarkController = {
   async search(keyword: string) {
     const res = await db.query.userBookmarks.findMany({
       where: and(
-        createBookmarkFilterByKeyword(keyword),
+        createBookmarkFilterByKeyword(userBookmarks, keyword),
         eq(userBookmarks.userId, await getAuthedUserId())
       ),
       with: { relatedTagIds: true },

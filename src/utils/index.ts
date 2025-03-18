@@ -148,6 +148,11 @@ export async function runAction<T>(
   return { ok: true, data: res.data } as const
 }
 
+/**
+ *
+ * @param urlOrPath
+ * @returns
+ */
 export function pageSpace(urlOrPath?: 'auto' | (string & {}) | null) {
   if (urlOrPath === 'auto') {
     urlOrPath = globalThis.location?.pathname

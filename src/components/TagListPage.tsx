@@ -2,9 +2,10 @@
 
 import { ColorPicker, EmptyListPlaceholder, ListPageLayout, SortTagModal } from '@/components'
 import { ReButton } from '@/components/re-export'
-import { pageSpace } from '@/utils'
+import { usePageUtil } from '@/hooks'
 import { IconNames, PageRoutes } from '@cfg'
 import {
+  ButtonGroup,
   cn,
   Switch,
   Table,
@@ -28,7 +29,7 @@ export type TagListPageProps = {
 
 export default function TagListPage(props: TagListPageProps) {
   const router = useRouter()
-  const isAdminSpace = pageSpace('auto').isAdmin
+  const isAdminSpace = usePageUtil().isAdminSpace
   const [colorPicker, setColorPicker] = useSetState({
     isOpen: false,
     defaultValue: '' as string | null,
@@ -66,28 +67,22 @@ export default function TagListPage(props: TagListPageProps) {
 
   return (
     <ListPageLayout>
-      <div className="mb-4 flex gap-4">
+      <ButtonGroup variant="flat" size="sm" className="mb-4">
         <ReButton
-          variant="flat"
-          size="sm"
-          startContent={<span className={cn(IconNames.PLUS, 'text-xl')} />}
-          onClick={() =>
-            router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug('new'))
-          }
+          startContent={<span className={cn(IconNames.PLUS, 'text-sm')} />}
+          href={(isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug('new')}
         >
           新建
         </ReButton>
         <SortTagModal refreshTags={props.refreshTags} tags={props.tags}>
           <ReButton
-            variant="flat"
-            size="sm"
-            className={cn(props.tags.length < 2 && 'hidden')}
-            startContent={<span className={cn(IconNames.SORT, 'text-xl')} />}
+            isDisabled={props.tags.length < 2}
+            startContent={<span className={cn(IconNames.SORT, 'text-sm')} />}
           >
             排序
           </ReButton>
         </SortTagModal>
-      </div>
+      </ButtonGroup>
       <Table aria-label="tags table">
         <TableHeader>
           <TableColumn>图标</TableColumn>

@@ -8,7 +8,7 @@ interface Props {
   showBorder?: boolean
 }
 
-export default function GradientText({
+export function GradientText({
   children,
   className = '',
   colors = ['#40ffaa', '#4079ff', '#40ffaa', '#4079ff', '#40ffaa'],
@@ -22,7 +22,7 @@ export default function GradientText({
 
   return (
     <div className={`${style['animated-gradient-text']} ${className}`}>
-      {showBorder && <div className={style['gradient-overlay']} style={gradientStyle}></div>}
+      {showBorder && <div className={style['gradient-overlay']} style={gradientStyle} />}
       <div className={style['text-content']} style={gradientStyle}>
         {children}
       </div>

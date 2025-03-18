@@ -21,7 +21,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <PublicProvider tags={tags} totalBookmarks={totalBookmarks}>
       <Nav />
-      {children}
+      <div className="pt-16">{children}</div>
     </PublicProvider>
   )
 }

@@ -2,8 +2,10 @@ import type { SelectPublicBookmark, SelectPublicTag } from '@/controllers'
 import type { schema } from '@/db'
 import type { Metadata, ResolvingMetadata } from 'next'
 import 'next-auth'
+import { ComponentProps } from 'react'
 
 declare global {
+  /// Node.js
   namespace NodeJS {
     // 只把编码时会实际调用的变量写过来即可，不用全写
     type OptionalVariables =
@@ -18,6 +20,10 @@ declare global {
     interface ProcessEnv extends ExtraVariables {}
   }
 
+  /// React
+  type BaseComponentProps = Pick<ComponentProps<'div'>, 'className' | 'style' | 'children'>
+
+  /// Next.js
   interface GenerateMetaDataProps<Params> {
     params: Params
     searchParams: { [key: string]: string | string[] | undefined }
@@ -31,6 +37,7 @@ declare global {
     searchParams: { [key: string]: string | string[] | undefined }
   }
 
+  /// Database
   /** 用户 ID 类型（UUID） */
   export type UserId = (typeof schema.users.$inferSelect)['id']
   /** 标签 ID 类型（userTags 和 publicTags 一致） */

@@ -1,7 +1,7 @@
 import { PublicBookmarkController } from '@/controllers'
-import CommonIndexPage from './components/CommonIndexPage'
+import PublicHomeBody from './components/PublicHomeBody'
 
 export default async function Page() {
   const res = await PublicBookmarkController.findMany()
-  return <CommonIndexPage bookmarks={res.list} />
+  return <PublicHomeBody bookmarks={res.list} />
 }

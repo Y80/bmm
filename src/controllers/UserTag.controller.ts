@@ -121,6 +121,7 @@ const UserTagController = {
   /** 根据标签名称列表，尝试创建每个标签，并返回每个标签的 id */
   async tryCreateTags(names: string[]) {
     const userId = await getAuthedUserId()
+    resetCachedTags(userId)
     const res = await db
       .insert(userTags)
       .values(names.map((name) => ({ name, userId })))

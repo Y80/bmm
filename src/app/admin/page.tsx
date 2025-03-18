@@ -9,7 +9,7 @@ export default function Page() {
   const session = useSession()
 
   return (
-    <div className="-mt-36 flex-1 flex-col flex-center">
+    <div className="-mt-16 h-screen flex-col flex-center">
       <div className="relative">
         <span className="absolute -z-10 -translate-x-1/2 -translate-y-10 bg-gradient-to-b from-foreground-200 bg-clip-text text-5xl text-transparent">
           WELCOME

@@ -41,7 +41,9 @@ export default function AdminNav() {
               className="hidden sm:inline-block"
               alt="logo"
             />
-            <h3 className="font-mono text-2xl font-black">{WEBSITE_NAME} CMS</h3>
+            <h3 className="font-mono text-2xl font-black text-foreground-700">
+              {WEBSITE_NAME} CMS
+            </h3>
           </div>
         </Link>
       </NavbarContent>

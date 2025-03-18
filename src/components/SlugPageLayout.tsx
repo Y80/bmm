@@ -22,7 +22,7 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
         <span className="mr-4 rounded-xl bg-foreground-200 px-4 py-1 text-foreground">
           {slug === 'new' ? '新建' : '编辑'}
         </span>
-        <span>{pathname.includes('tag') ? '标签' : '书签'}</span>
+        <span>{pathname.includes('/tag') ? '标签' : '书签'}</span>
       </h1>
       <Divider className="my-16" />
       {/* 要求：表单项目垂直排列、间距固定为 6 */}

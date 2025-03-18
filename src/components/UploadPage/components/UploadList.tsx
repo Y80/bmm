@@ -6,9 +6,9 @@ import {
 } from '@/actions'
 import { Favicon, ReButton, ReTooltip } from '@/components'
 import { InsertPublicBookmark } from '@/controllers'
-import { pageSpace } from '@/utils'
+import { usePageUtil } from '@/hooks'
 import { concurrenceWithLimit } from '@/utils/concurrence-with-limit'
-import { PageRoutes } from '@cfg'
+import { IconNames, PageRoutes } from '@cfg'
 import { addToast, cn, Divider, Link, ScrollShadow } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import { pick } from 'lodash'
@@ -36,7 +36,7 @@ function getDefaultFavicon(url: string) {
 }
 
 export default function UploadList(props: Props) {
-  const isAdminSpace = pageSpace('auto').isAdmin
+  const isAdminSpace = usePageUtil().isAdminSpace
   const { linkTagStrategy, tagNames } = props
   const [state, setState] = useSetState({
     finishedNum: null as null | number,
@@ -79,6 +79,7 @@ export default function UploadList(props: Props) {
     if (!tags) return
     const otherTagId = tags.find((tag) => tag.name === '其它')?.id
     if (!otherTagId) throw new Error('数据异常')
+    const insertBookmark = isAdminSpace ? actInsertPublicBookmark : actInsertUserBookmark
     const tasks = bookmarks.map((bookmark) => async () => {
       const entity: InsertPublicBookmark = {
         ...pick(bookmark, 'name', 'url', 'icon'),
@@ -86,8 +87,7 @@ export default function UploadList(props: Props) {
           (name) => tags.find((t) => t.name === name)!.id
         ),
       }
-      const action = isAdminSpace ? actInsertPublicBookmark : actInsertUserBookmark
-      const res = await action(entity)
+      const res = await insertBookmark(entity)
       setState((state) => ({ ...state, finishedNum: (state.finishedNum || 0) + 1 }))
       setBookmarks((bookmarks) => {
         const b = bookmarks.find((_bookmark) => _bookmark.id === bookmark.id)!
@@ -118,7 +118,12 @@ export default function UploadList(props: Props) {
         <h2 className="mr-auto w-full text-xl">
           {(() => {
             if (state.finishedNum === null) {
-              return '上传列表'
+              return (
+                <div className="gap-2 flex-items-center">
+                  <span className={cn('text-xl', IconNames.Huge.LIST)} />
+                  <span>上传列表</span>
+                </div>
+              )
             }
             if (state.finishedNum === bookmarks.length) {
               return (
@@ -126,12 +131,13 @@ export default function UploadList(props: Props) {
                   <span>任务已完成</span>
                   <Link
                     className="cursor-pointer"
-                    onPress={() => {
+                    onClick={(evt) => {
+                      evt.preventDefault()
                       if (isAdminSpace) {
-                        window.open(PageRoutes.Admin.BOOKMARK_LIST)
+                        window.open(PageRoutes.Admin.bookmarkSlug('list'))
                         window.open(PageRoutes.INDEX)
                       } else {
-                        window.open(PageRoutes.User.BOOKMARK_LIST)
+                        window.open(PageRoutes.User.bookmarkSlug('list'))
                         window.open(PageRoutes.User.INDEX)
                       }
                     }}

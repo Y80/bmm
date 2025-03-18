@@ -1,12 +1,11 @@
+import { AppBackground } from '@/components/AppBackground'
 import '@/globals.css'
 import { auth } from '@/lib/auth'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { Background, WEBSITE_KEYWORDS } from '@cfg'
-import { cn } from '@heroui/react'
+import { WEBSITE_KEYWORDS } from '@cfg'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import type { Metadata } from 'next'
 import { PropsWithChildren } from 'react'
-import { Toaster } from 'react-hot-toast'
 import { GlobalProvider } from './ctx'
 
 // 禁止动态缓存这个 RSC；还可以通过 ISR 增量更新
@@ -45,20 +44,9 @@ export default async function RootLayout({ children }: PropsWithChildren) {
         {process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID && (
           <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID} />
         )}
-        <div
-          className={cn(
-            'fixed -z-10 h-screen w-screen max-xs:hidden max-xs:dark:block',
-            Background.CLASS
-          )}
-        >
-          <div className="absolute left-[-12rem] top-[5rem] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.1),rgba(255,255,255,0))]" />
-          <div className="absolute bottom-[-200px] right-[-200px] size-[50rem] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.1),rgba(255,255,255,0))]" />
-        </div>
-        <Toaster />
+        <AppBackground />
         <GlobalProvider session={session}>
-          <AntdRegistry>
-            <div className="flex min-h-screen flex-col">{children}</div>
-          </AntdRegistry>
+          <AntdRegistry>{children}</AntdRegistry>
         </GlobalProvider>
       </body>
     </html>

@@ -4,7 +4,7 @@ import { cn } from '@heroui/react'
 import { useInView, useMotionValue, useSpring } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 
-export default function NumberTicker({
+export function NumberTicker({
   value,
   direction = 'up',
   delay = 0,

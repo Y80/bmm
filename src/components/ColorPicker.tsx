@@ -3,6 +3,7 @@
 import { calcForegroundColor } from '@/utils/color'
 import { Background, IconNames } from '@cfg'
 import {
+  addToast,
   Button,
   cn,
   Divider,
@@ -17,7 +18,6 @@ import { useSetState } from 'ahooks'
 import Color from 'color'
 import { useLayoutEffect, useMemo } from 'react'
 import { HexColorPicker } from 'react-colorful'
-import toast from 'react-hot-toast'
 
 interface Props {
   isOpen: boolean
@@ -54,7 +54,10 @@ export default function ColorPicker(props: Props) {
         color: c.hexa(),
       })
     } catch (error) {
-      toast.error('无效的色值')
+      addToast({
+        title: '无效的色值',
+        color: 'warning',
+      })
       setState({ inputColor: '' })
     }
   }

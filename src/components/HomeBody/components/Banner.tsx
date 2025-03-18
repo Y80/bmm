@@ -1,5 +1,5 @@
-import GradientText from '@/components/GradientText'
-import { pageSpace } from '@/utils'
+import { GradientText } from '@/components'
+import { usePageUtil } from '@/hooks'
 import { PageRoutes, WEBSITE_NAME } from '@cfg'
 import { Chip } from '@heroui/react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -20,13 +20,13 @@ interface Props {
 export default function Banner(props: Props) {
   const router = useRouter()
   const pathname = usePathname()
+  const pageUtil = usePageUtil()
   const searchParams = useSearchParams()
   const { tags, totalBookmarks } = props
   const { bookmarks, selectedTags, onClickTag } = useHomePageContext()
+  const routes = pageUtil.isUserSpace ? PageRoutes.User : PageRoutes.Public
 
-  const space = pageSpace('auto').isUser ? PageRoutes.User : PageRoutes.Public
-
-  if (pathname === space.INDEX) {
+  if (pathname === routes.INDEX) {
     return (
       <Wrapper>
         <GradientText
@@ -44,7 +44,7 @@ export default function Banner(props: Props) {
     )
   }
 
-  if (pathname.startsWith(space.TAGS) && selectedTags.length) {
+  if (pathname.startsWith(routes.tags()) && selectedTags.length) {
     const isIntersected = selectedTags.length > 1
     const firstTag = selectedTags[0]
     return (
@@ -62,8 +62,8 @@ export default function Banner(props: Props) {
                 onClose={() => {
                   const tagNames = selectedTags
                     .map((t) => (t.name === tag.name ? null : t.name))
-                    .filter(Boolean)
-                  router.push('/tag/' + tagNames.join('+'))
+                    .filter(Boolean) as SelectTag['name'][]
+                  router.push(routes.tags(tagNames))
                 }}
               >
                 {tag.name}
@@ -96,7 +96,7 @@ export default function Banner(props: Props) {
     )
   }
 
-  if (pathname === space.RANDOM) {
+  if (pathname === routes.RANDOM) {
     return (
       <Wrapper>
         <h1 className={H1_CLS}>随便看看</h1>
@@ -105,7 +105,7 @@ export default function Banner(props: Props) {
     )
   }
 
-  if (pathname.startsWith(space.SEARCH)) {
+  if (pathname.startsWith(routes.SEARCH)) {
     const keyword = searchParams.get('keyword')
     return (
       <Wrapper>

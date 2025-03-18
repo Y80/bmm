@@ -7,7 +7,7 @@ interface Props {
   bookmarks: SelectBookmark[]
 }
 
-export default function CommonIndexPage(props: Props) {
+export default function PublicHomeBody(props: Props) {
   const { tags, totalBookmarks } = usePublicContext()
   return <HomeBody bookmarks={props.bookmarks} tags={tags} totalBookmarks={totalBookmarks} />
 }

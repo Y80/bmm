@@ -39,7 +39,6 @@ export default function TagSlugPage(props: TagSlugPageProps) {
     isSaving: false,
     analyzing: false,
   })
-
   const slug = useSlug()
 
   useEffect(() => {
@@ -157,7 +156,10 @@ export default function TagSlugPage(props: TagSlugPageProps) {
                   </div>
                 </ReTooltip>
               </label>
-              <Switch isSelected={tag.isMain!} onValueChange={(isMain) => setTag({ isMain })} />
+              <Switch
+                isSelected={tag.isMain || false}
+                onValueChange={(isMain) => setTag({ isMain })}
+              />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm">关联标签</label>

@@ -9,7 +9,6 @@ export const generateMetadata: GenerateMetadata<{ keyword: string }> = (props) =
 
 export default async function Page(props: RSCPageProps) {
   const keyword = props.searchParams.keyword || ''
-
   if (!keyword.length || Array.isArray(keyword)) {
     redirect(PageRoutes.User.INDEX)
   }

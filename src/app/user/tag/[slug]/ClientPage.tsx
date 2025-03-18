@@ -1,29 +1,29 @@
 'use client'
 
-import { actInsertPublicTag, actUpdatePublicTag } from '@/actions'
+import { actInsertUserTag, actUpdateUserTag } from '@/actions'
+import { useUserContext } from '@/app/user/ctx'
 import TagSlugPage, { TagSlugPageProps } from '@/components/TagSlugPage'
-import useSlug from '@/hooks/useSlug'
+import { useSlug } from '@/hooks'
 import { runAction } from '@/utils'
 import { PageRoutes } from '@cfg'
 import { addToast } from '@heroui/react'
 import { useRouter } from 'next/navigation'
-import { useAdminContext } from '../../ctx'
 
-export default function Page() {
+export default function ClientPage() {
   const router = useRouter()
-  const { tags, updateTags } = useAdminContext()
+  const { tags, updateTags } = useUserContext()
   const slug = useSlug()
 
   const props: TagSlugPageProps = {
     tags,
     async save(tag) {
       const task = slug.isNew
-        ? runAction(actInsertPublicTag(tag))
-        : runAction(actUpdatePublicTag({ ...tag, id: slug.number! }))
+        ? runAction(actInsertUserTag(tag))
+        : runAction(actUpdateUserTag({ ...tag, id: slug.number! }))
       const { ok } = await task
       if (!ok) return
       addToast({ color: 'success', title: slug.isNew ? '标签已创建' : '标签已更新' })
-      router.push(PageRoutes.Admin.tagSlug('list'))
+      router.push(PageRoutes.User.tagSlug('list'))
       await updateTags()
     },
   }

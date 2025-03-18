@@ -1,10 +1,17 @@
 'use client'
 
-import { ReButton, ReTooltip } from '@/components'
-import { BorderBeam } from '@/components/magicui/border-beam'
-import NumberTicker from '@/components/magicui/number-ticker'
+import { BorderBeam, NumberTicker, ReButton, ReTooltip } from '@/components'
 import { IconNames } from '@cfg'
-import { addToast, Checkbox, CheckboxGroup, cn, Divider, Radio, RadioGroup } from '@heroui/react'
+import {
+  addToast,
+  ButtonGroup,
+  Checkbox,
+  CheckboxGroup,
+  cn,
+  Divider,
+  Radio,
+  RadioGroup,
+} from '@heroui/react'
 import { useSetState } from 'ahooks'
 import { TreeDataNode } from 'antd'
 import { motion } from 'framer-motion'
@@ -71,7 +78,8 @@ export default function UploadPage() {
           id: window.crypto.randomUUID(),
           type: 'category',
           // 目录名称最终会作为标签成为 url 中的一部分，因此不能带 / 字符
-          name: h3.innerText.replaceAll('/', '-'),
+          // 标签交叉搜索时，会用 + 链接多个标签，因此不能带 + 字符
+          name: h3.innerText.replaceAll('/', '-').replaceAll('+', '-'),
           nodes: [],
         }
         const nodes = traverseDl(dl, parentCates.concat(pick(node, 'id', 'name')))
@@ -172,7 +180,7 @@ export default function UploadPage() {
     // 标签名称可能存在重复的。这里去重。
     // 由于接下来在数据库中创建标签、书签关联标签都是对标签名称进行操作，所以这样不会有什么问题
     names = [...new Set(names)]
-    setState({ checkedLinkableTags: names })
+    setState({ checkedLinkableTags: names.filter((e) => e !== '书签栏') })
     return [...names]
   }, [allCategories, setState, state.checkedTreeKeys, state.linkTagStrategy])
 
@@ -257,20 +265,22 @@ export default function UploadPage() {
     return (
       <div>
         <div className="mb-2 space-x-4">
-          <ReButton
-            size="sm"
-            startContent={<span className="icon-[tabler--arrows-move-vertical] text-xl" />}
-            onClick={() => setState({ openedCategoryIds: allCategories.map((e) => e.id) })}
-          >
-            展开全部
-          </ReButton>
-          <ReButton
-            size="sm"
-            startContent={<span className={'icon-[tabler--fold] text-xl'} />}
-            onClick={() => setState({ openedCategoryIds: [] })}
-          >
-            收起全部
-          </ReButton>
+          <ButtonGroup>
+            <ReButton
+              size="sm"
+              startContent={<span className="icon-[tabler--arrows-move-vertical] text-xl" />}
+              onClick={() => setState({ openedCategoryIds: allCategories.map((e) => e.id) })}
+            >
+              展开全部
+            </ReButton>
+            <ReButton
+              size="sm"
+              startContent={<span className={'icon-[tabler--fold] text-xl'} />}
+              onClick={() => setState({ openedCategoryIds: [] })}
+            >
+              收起全部
+            </ReButton>
+          </ButtonGroup>
           <ReButton
             size="sm"
             startContent={<span className={'icon-[tabler--arrow-back-up] text-xl'} />}
@@ -304,15 +314,15 @@ export default function UploadPage() {
   }
 
   return (
-    <main className="mx-auto py-20">
-      <div className={cn(state.file && '!hidden', 'text-center')}>
+    <main className="py-20 flex-center">
+      <div className={cn(state.file && '!hidden', 'w-[30rem] text-center')}>
         <span
           className={cn(IconNames.IMPORT, 'bg-gradient-to-r from-rose-500 to-purple-500 text-6xl')}
         />
         <h1 className="mb-10 mt-8 text-xl">导入浏览器书签</h1>
         <div
           className={cn(
-            'relative h-[280px] w-[500px] cursor-pointer flex-col gap-4 rounded-xl border border-foreground-200 text-foreground-400 flex-center',
+            'relative h-[280px] cursor-pointer flex-col gap-4 rounded-xl border border-foreground-200 text-foreground-400 flex-center',
             'transition hover:text-foreground-600'
           )}
           onClick={() => inputRef.current?.click()}
@@ -406,7 +416,7 @@ export default function UploadPage() {
                 <span className={cn(IconNames.QUESTION_CIRCLE, 'cursor-pointer')} />
               </ReTooltip>
             </label>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
               <CheckboxGroup
                 orientation="horizontal"
                 color="default"

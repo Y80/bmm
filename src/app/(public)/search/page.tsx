@@ -3,7 +3,7 @@
 import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
 import { PageRoutes } from '@cfg'
 import { redirect } from 'next/navigation'
-import CommonIndexPage from '../components/CommonIndexPage'
+import PublicHomeBody from '../components/PublicHomeBody'
 
 export const generateMetadata: GenerateMetadata = (props) => {
   return { title: `${props.searchParams.keyword as string}的搜索结果` }
@@ -18,5 +18,5 @@ export default async function Page(props: RSCPageProps) {
 
   const res = await PublicBookmarkController.search(keyword)
 
-  return <CommonIndexPage bookmarks={res.list} />
+  return <PublicHomeBody bookmarks={res.list} />
 }

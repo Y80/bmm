@@ -1,29 +1,15 @@
 'use client'
 
-import { ReButton, ReInput, ThemeToggle } from '@/components'
-import { useIsClient } from '@/hooks'
+import SearchInput from '@/app/(public)/components/SearchInput'
+import { NavUser, ReButton, ThemeToggle } from '@/components'
 import { Assets, Background, IconNames, PageRoutes } from '@cfg'
-import {
-  Avatar,
-  ButtonProps,
-  cn,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Kbd,
-  Link,
-  Listbox,
-  ListboxItem,
-  Navbar,
-  NavbarContent,
-} from '@heroui/react'
+import { ButtonProps, cn, Link, Listbox, ListboxItem, Navbar, NavbarContent } from '@heroui/react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 
 const IconButtonProps = {
   isIconOnly: true,
-  // variant: 'flat',
   variant: 'light',
   className: 'text-2xl text-foreground-700',
 } satisfies ButtonProps
@@ -40,7 +26,7 @@ const LinkGroups = [
       },
       {
         label: '书签列表',
-        href: PageRoutes.User.BOOKMARK_LIST,
+        href: PageRoutes.User.bookmarkSlug('list'),
         icon: IconNames.Huge.LIST,
       },
     ],
@@ -56,7 +42,7 @@ const LinkGroups = [
       },
       {
         label: '标签列表',
-        href: PageRoutes.User.TAG_LIST,
+        href: PageRoutes.User.tagSlug('list'),
         icon: IconNames.Huge.LIST,
       },
     ],
@@ -65,13 +51,22 @@ const LinkGroups = [
 
 export default function UserNav() {
   const session = useSession()
-  const isClient = useIsClient()
-  const user = session?.data?.user!
+  const pathname = usePathname()
+  const user = session?.data?.user
 
   if (!user) return null
 
+  function showSearchInput() {
+    return (
+      pathname === PageRoutes.User.RANDOM ||
+      pathname === PageRoutes.User.SEARCH ||
+      pathname === PageRoutes.User.INDEX ||
+      pathname.startsWith(PageRoutes.User.tags())
+    )
+  }
+
   return (
-    <Navbar maxWidth="full" className={Background.CLASS} isBlurred isBordered>
+    <Navbar maxWidth="full" className={cn(Background.CLASS, 'fixed')} isBlurred isBordered>
       <NavbarContent className="gap-1 max-sm:!flex-grow-0">
         <Link href={PageRoutes.INDEX} target="_blank">
           <Image src={Assets.LOGO_SVG} width={32} height={32} alt="logo" priority />
@@ -81,16 +76,10 @@ export default function UserNav() {
         </Link>
       </NavbarContent>
       <NavbarContent justify="end" className="gap-0">
-        <ReInput
-          className={'mr-2 w-56'}
-          placeholder="搜索书签"
-          startContent={<span className={IconNames.Huge.SEARCH} />}
-          endContent={<Kbd className="px-3">/</Kbd>}
-        />
-        <ReButton {...IconButtonProps} href={PageRoutes.User.INDEX} tooltip="主页">
+        {showSearchInput() && <SearchInput className="mr-4 w-72" />}
+        <ReButton {...IconButtonProps} href={PageRoutes.User.INDEX}>
           <span className={IconNames.Huge.HOME} />
         </ReButton>
-
         {LinkGroups.map((group) => (
           <ReButton
             key={group.key}
@@ -116,26 +105,7 @@ export default function UserNav() {
           </ReButton>
         ))}
         <ThemeToggle />
-        <div className="w-2" />
-        <Dropdown classNames={{ content: 'min-w-36' }}>
-          <DropdownTrigger>
-            <Avatar size="sm" as="button" src={user.image!} />
-          </DropdownTrigger>
-          <DropdownMenu disabledKeys={['profile']}>
-            <DropdownItem key="profile" className="text-foreground-500">
-              {user.name || user.email}
-            </DropdownItem>
-            <DropdownItem key="settings" href={PageRoutes.User.INDEX}>
-              个人设置
-            </DropdownItem>
-            <DropdownItem key="import" href={PageRoutes.User.UPLOAD}>
-              导入浏览器书签
-            </DropdownItem>
-            <DropdownItem color="danger" key="signout">
-              退出登录
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+        <NavUser />
       </NavbarContent>
     </Navbar>
   )

@@ -1,6 +1,6 @@
 import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
 import { Metadata } from 'next/types'
-import CommonIndexPage from '../components/CommonIndexPage'
+import PublicHomeBody from '../components/PublicHomeBody'
 
 export const metadata: Metadata = {
   title: '随便看看',
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const res = await PublicBookmarkController.random()
-  return <CommonIndexPage bookmarks={res.list} />
+  return <PublicHomeBody bookmarks={res.list} />
 }

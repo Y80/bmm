@@ -8,19 +8,18 @@ import { UserContextProvider } from './ctx'
 
 export const generateMetadata: GenerateMetadata = async () => {
   const session = await auth()
+  const userName = session?.user.name || ''
   return {
     title: {
-      default: '个人空间 - ' + session?.user.name,
-      template: '%s - ' + session?.user.name,
+      default: '个人空间 - ' + userName,
+      template: '%s - ' + userName,
     },
   }
 }
 
 export default async function UserLayout(props: PropsWithChildren) {
   const session = await auth()
-
   if (!session?.user) {
-    console.log('UserLayout: no session')
     redirect(PageRoutes.LOGIN)
   }
 
@@ -32,7 +31,7 @@ export default async function UserLayout(props: PropsWithChildren) {
   return (
     <UserContextProvider tags={tags} totalBookmarks={totalBookmarks}>
       <Nav />
-      {props.children}
+      <div className="pt-16">{props.children}</div>
     </UserContextProvider>
   )
 }

@@ -9,7 +9,8 @@ export const WEBSITE_KEYWORDS =
 export const IS_DEV = process.env.NODE_ENV === 'development'
 
 export const Background = {
-  CLASS: 'light:bg-white dark:bg-slate-950',
+  // CLASS: 'light:bg-white dark:bg-slate-950',
+  CLASS: 'bg-black-50/20',
   LIGHT_HEX: '#fff',
   LIGHT_CLASS: 'bg-white',
   DARK_HEX: '#020617',
@@ -37,29 +38,23 @@ export const PageRoutes = {
     INDEX: '/',
     RANDOM: '/random',
     SEARCH: '/search',
-    TAGS: '/tags',
-    tags: (tagNames: SelectTag['name'][]) => '/tags/' + tagNames.join('+'),
+    tags: (tagNames?: SelectTag['name'][]) => '/tags/' + (tagNames ? tagNames.join('+') : ''),
     search: (ky: string) => '/search?keyword=' + ky,
   },
   Admin: {
     PREFIX: '/admin',
     INDEX: '/admin',
-    TAG_LIST: '/admin/tag/list',
-    BOOKMARK_LIST: '/admin/bookmark/list',
     UPLOAD: '/admin/upload',
-    tagSlug: (slug: 'new' | TagId) => '/admin/tag/' + slug,
-    bookmarkSlug: (slug: 'new' | BookmarkId) => '/admin/bookmark/' + slug,
+    tagSlug: (slug?: 'new' | TagId | 'list') => '/admin/tag/' + (slug || ''),
+    bookmarkSlug: (slug: 'new' | 'list' | BookmarkId) => '/admin/bookmark/' + slug,
   },
   User: {
     INDEX: '/user',
     SETTINGS: '/user/settings',
     UPLOAD: '/user/upload',
-    TAGS: '/user/tags',
-    tags: (tagNames: SelectTag['name'][]) => '/user/tags/' + tagNames.join('+'),
-    TAG_LIST: '/user/tag/list',
-    tagSlug: (slug: 'new' | TagId) => '/user/tag/' + slug,
-    BOOKMARK_LIST: '/user/bookmark/list',
-    bookmarkSlug: (slug: 'new' | BookmarkId) => '/user/bookmark/' + slug,
+    tags: (tagNames?: SelectTag['name'][]) => '/user/tags/' + (tagNames ? tagNames.join('+') : ''),
+    tagSlug: (slug?: 'new' | TagId | 'list') => '/user/tag/' + (slug || ''),
+    bookmarkSlug: (slug?: 'new' | 'list' | BookmarkId) => '/user/bookmark/' + (slug || ''),
     RANDOM: '/user/random',
     SEARCH: '/user/search',
     search: (ky: string) => '/user/search?keyword=' + ky,
@@ -111,8 +106,8 @@ export const IconNames = {
 export const ADMIN_NAV_LINKS = [
   { label: '新建书签', href: PageRoutes.Admin.bookmarkSlug('new') },
   { label: '新建标签', href: PageRoutes.Admin.tagSlug('new') },
-  { label: '书签列表', href: PageRoutes.Admin.BOOKMARK_LIST },
-  { label: '标签列表', href: PageRoutes.Admin.TAG_LIST },
+  { label: '书签列表', href: PageRoutes.Admin.bookmarkSlug('list') },
+  { label: '标签列表', href: PageRoutes.Admin.tagSlug('list') },
 ]
 
 export const Assets = {

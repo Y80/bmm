@@ -25,7 +25,7 @@ interface Props {
   style?: CSSProperties
 }
 export default function TagPicker(props: Props) {
-  const { tags } = useGlobalContext()
+  const { tags } = props
   const { selectedTags, onClickTag } = useMainPageContext()
 
   const scrollDivRef = useRef<null | HTMLDivElement>(null)

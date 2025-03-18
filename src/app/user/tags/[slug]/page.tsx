@@ -4,9 +4,7 @@ import UserHomeBody from '../../components/UserHomeBody'
 
 export const generateMetadata: GenerateMetadata<{ slug: string }> = (props) => {
   const tag = decodeURIComponent(props.params.slug)
-  return {
-    title: tag + '相关的书签',
-  }
+  return { title: tag + '相关的书签' }
 }
 
 export default async function Page(props: RSCPageProps) {

@@ -1,15 +1,9 @@
-'use client'
+import ClientPage from './ClientPage'
 
-import BookmarkListPage, { BookmarkListPageProps } from '@/components/BookmarkListPage'
-import { useUserContext } from '../../ctx'
+export const metadata = {
+  title: '书签列表',
+}
 
 export default function Page() {
-  const { tags, totalBookmarks } = useUserContext()
-
-  const props: BookmarkListPageProps = {
-    tags,
-    totalBookmarks,
-  }
-
-  return <BookmarkListPage {...props} />
+  return <ClientPage />
 }

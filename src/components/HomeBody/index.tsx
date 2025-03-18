@@ -1,12 +1,11 @@
 'use client'
 
-import { useIsClient } from '@/hooks'
-import { pageSpace } from '@/utils'
+import { useIsClient, usePageUtil } from '@/hooks'
 import { Assets, PageRoutes } from '@cfg'
 import { Divider } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import Image from 'next/image'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo } from 'react'
 import Banner from './components/Banner'
 import BookmarkCard from './components/BookmarkCard'
@@ -23,9 +22,10 @@ interface Props {
 
 export default function HomeBody(props: Props) {
   const router = useRouter()
+  const pathname = usePathname()
   const params = useParams()
   const isClient = useIsClient()
-  const isUserSpace = pageSpace('auto').isUser
+  const isUserSpace = usePageUtil().isUserSpace
   const { tags } = props
   const [state, setState] = useSetState({
     bookmarks: props.bookmarks || [],
@@ -52,15 +52,9 @@ export default function HomeBody(props: Props) {
     setState({ selectedTags })
   }, [params.slug, tags, setState])
 
-  /* 4rem 是 var(--navbar-height) 的高度 */
-  const contentHeight = 'calc(100vh - 4rem)'
-
   const bookmarks = state.bookmarks
-  const isSearchPage =
-    globalThis.location?.pathname ===
-    (isUserSpace ? PageRoutes.User.SEARCH : PageRoutes.Public.SEARCH)
-  const isHomePage =
-    globalThis.location?.pathname === (isUserSpace ? PageRoutes.User.INDEX : PageRoutes.INDEX)
+  const isSearchPage = pathname === (isUserSpace ? PageRoutes.User : PageRoutes.Public).SEARCH
+  const isHomePage = pathname === (isUserSpace ? PageRoutes.User : PageRoutes.Public).INDEX
 
   const homeBodyCtx = useMemo<HomeBodyContext>(() => {
     return {
@@ -78,23 +72,21 @@ export default function HomeBody(props: Props) {
         // 是否执行标签的交叉搜索
         const finalIsIntersected = event?.altKey || isIntersected
         const finalTagNames = finalIsIntersected ? [...tagNames, tag.name] : [tag.name]
-        PageRoutes.Public.TAGS
         const newPath = (isUserSpace ? PageRoutes.User : PageRoutes.Public).tags(finalTagNames)
         router.push(newPath)
       },
     }
-  }, [props.tags, state.bookmarks, state.selectedTags, setState, router])
+  }, [props.tags, state.bookmarks, state.selectedTags, setState, isUserSpace, router])
 
-  console.log({ bookmarks })
-  const showEnd = !!bookmarks.length && (isHomePage ? state.hasMore === false : true)
+  const showEnd = isClient && !!bookmarks.length && (isHomePage ? state.hasMore === false : true)
 
   return (
     <HomeBodyProvider value={homeBodyCtx}>
-      <div className="flex grow max-xs:!max-h-none" style={{ maxHeight: contentHeight }}>
-        <aside className="max-h-full w-56 flex-shrink-0 pl-6 max-xs:hidden">
-          <TagPicker />
-        </aside>
-        <div className="flex max-h-full grow flex-col overflow-auto px-6 pb-14">
+      <aside className="fixed top-16 inline-block w-56 pl-6 max-xs:hidden">
+        <TagPicker />
+      </aside>
+      <div className="ml-56">
+        <div className="flex flex-col px-6 pb-14">
           <Banner tags={tags} totalBookmarks={props.totalBookmarks} />
           <BookmarkContainer>
             {bookmarks.map((bookmark) => {
@@ -102,7 +94,7 @@ export default function HomeBody(props: Props) {
             })}
           </BookmarkContainer>
           {!bookmarks.length && isClient && state.hasMore !== true && (
-            <div className="-mt-60 grow flex-col flex-center">
+            <div className="grow flex-col flex-center">
               <Image width={128} height={128} src={Assets.BOX_EMPTY_PNG} alt="empty" priority />
               <p className="mt-4 text-sm text-foreground-500">
                 {isSearchPage ? '要不，换个关键词再试试？' : '暂无相关内容'}

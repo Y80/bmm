@@ -7,7 +7,7 @@ import { useSetState } from 'ahooks'
 import { usePathname } from 'next/navigation'
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 
-export interface AdminContextType {
+interface AdminContextType {
   /** 所有的 publicTags  */
   tags: SelectTag[]
   /** publicBookmarks 个数 */

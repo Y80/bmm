@@ -18,7 +18,8 @@ import {
 } from '@/components'
 import { SelectPublicBookmark } from '@/controllers'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
-import { pageSpace, runAction } from '@/utils'
+import { usePageUtil } from '@/hooks'
+import { runAction } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE, IconNames, PageRoutes } from '@cfg'
 import {
   cn,
@@ -56,7 +57,7 @@ export type BookmarkListPageProps = {
 }
 
 export default function BookmarkListPage(props: BookmarkListPageProps) {
-  const isUserSpace = pageSpace('auto').isUser
+  const isUserSpace = usePageUtil().isUserSpace
   const searchParams = useSearchParams()
   const router = useRouter()
   const [state, setState] = useSetState({
@@ -78,6 +79,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   } = useRequest(
     async () => {
       const input: typeof findManyBookmarksSchema._input = {
+        limit: 20,
         page: state.pager.page.toString(),
         keyword: state.keyword,
         sorterKey: state.sorterKey,
@@ -100,7 +102,16 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       }))
       return res.data.list
     },
-    { refreshDeps: [state.keyword, state.sorterKey, state.pager.page, state.selectedTag] }
+    {
+      ready: isUserSpace !== null,
+      refreshDeps: [
+        state.keyword,
+        state.sorterKey,
+        state.pager.page,
+        state.selectedTag,
+        isUserSpace,
+      ],
+    }
   )
 
   // 将状态同步到 URL 查询参数中
@@ -160,10 +171,9 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
         <ReButton
           variant="flat"
           size="sm"
-          startContent={<span className={cn(IconNames.PLUS, 'text-xl')} />}
-          onClick={() =>
-            router.push((isUserSpace ? PageRoutes.User : PageRoutes.Admin).bookmarkSlug('new'))
-          }
+          className="w-28"
+          startContent={<span className={cn(IconNames.PLUS, 'text-sm')} />}
+          href={(isUserSpace ? PageRoutes.User : PageRoutes.Admin).bookmarkSlug('new')}
         >
           新建
         </ReButton>

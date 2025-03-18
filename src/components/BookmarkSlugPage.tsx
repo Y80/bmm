@@ -121,7 +121,9 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     await runAction(action, {
       okMsg: slug.isNew ? '书签已创建' : '书签已更新',
       onOk() {
-        router.push((pageUtil.isAdminSpace ? PageRoutes.Admin : PageRoutes.User).BOOKMARK_LIST)
+        router.push(
+          (pageUtil.isAdminSpace ? PageRoutes.Admin : PageRoutes.User).bookmarkSlug('list')
+        )
         props.afterSave()
       },
     })
@@ -259,7 +261,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       />
       <ReTextarea
         label="描述"
-        value={bookmark.description!}
+        value={bookmark.description || ''}
         onValueChange={(v) => setBookmark({ description: v })}
       />
       <div className="flex flex-col gap-2">

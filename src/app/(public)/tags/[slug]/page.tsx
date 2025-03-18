@@ -1,7 +1,7 @@
 import { PublicBookmarkController, PublicTagController } from '@/controllers'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { WEBSITE_KEYWORDS } from '@cfg'
-import CommonIndexPage from '../../components/CommonIndexPage'
+import PublicHomeBody from '../../components/PublicHomeBody'
 
 export const generateMetadata: GenerateMetadata<{ slug: string }> = (props) => {
   const tag = decodeURIComponent(props.params.slug)
@@ -19,8 +19,8 @@ export default async function Page(props: RSCPageProps) {
     const tag = tags.find((tag) => tag.name === tagName)
     tag && tagIds.push(tag.id)
   })
-  if (!tagIds.length) return <CommonIndexPage bookmarks={[]} />
+  if (!tagIds.length) return <PublicHomeBody bookmarks={[]} />
   const params: typeof findManyBookmarksSchema._input = { tagIds, limit: 999 }
   const res = await PublicBookmarkController.findMany(findManyBookmarksSchema.parse(params))
-  return <CommonIndexPage bookmarks={res.list} />
+  return <PublicHomeBody bookmarks={res.list} />
 }
