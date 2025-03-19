@@ -9,8 +9,8 @@ export const WEBSITE_KEYWORDS =
 export const IS_DEV = process.env.NODE_ENV === 'development'
 
 export const Background = {
-  // CLASS: 'light:bg-white dark:bg-slate-950',
-  CLASS: 'bg-black-50/20',
+  CLASS: 'light:bg-white dark:bg-slate-950',
+  // CLASS: 'bg-black-50/20',
   LIGHT_HEX: '#fff',
   LIGHT_CLASS: 'bg-white',
   DARK_HEX: '#020617',
@@ -36,6 +36,7 @@ export const PageRoutes = {
   FORBIDDEN: '/forbidden',
   Public: {
     INDEX: '/',
+    WELCOME: '/welcome',
     RANDOM: '/random',
     SEARCH: '/search',
     tags: (tagNames?: SelectTag['name'][]) => '/tags/' + (tagNames ? tagNames.join('+') : ''),
@@ -55,6 +56,7 @@ export const PageRoutes = {
     tags: (tagNames?: SelectTag['name'][]) => '/user/tags/' + (tagNames ? tagNames.join('+') : ''),
     tagSlug: (slug?: 'new' | TagId | 'list') => '/user/tag/' + (slug || ''),
     bookmarkSlug: (slug?: 'new' | 'list' | BookmarkId) => '/user/bookmark/' + (slug || ''),
+    WELCOME: '/user/welcome',
     RANDOM: '/user/random',
     SEARCH: '/user/search',
     search: (ky: string) => '/user/search?keyword=' + ky,

@@ -46,7 +46,8 @@ export async function loadEnv() {
 
 // 当前应用如果作为 git submodule 存在，加载父级目录是的环境配置文件
 export function tryLoadParentGitRepoEnv() {
-  if (!fs.existsSync(path.resolve('..', '.gitmodules'))) return
+  tryLoadParentGitRepoEnv.loaded ??= false
+  if (tryLoadParentGitRepoEnv.loaded || !fs.existsSync(path.resolve('..', '.gitmodules'))) return
   console.log(zx.chalk.cyan('💡 已检测到当前项目作为 git submodule，正在加载主应用环境配置'))
   const envPaths = [path.resolve('..', '.env'), path.resolve('..', '.env.' + process.env.NODE_ENV)]
   for (const envPath of envPaths) {
@@ -55,9 +56,9 @@ export function tryLoadParentGitRepoEnv() {
       path: envPath,
       override: true,
     })
-    console.log('[Loaded] ' + envPath)
+    // console.log('[Loaded] ' + envPath)
   }
-  console.log()
+  tryLoadParentGitRepoEnv.loaded = true
 }
 
 

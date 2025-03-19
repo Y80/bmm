@@ -1,12 +1,13 @@
 'use client'
 
-import SearchInput from '@/app/(public)/components/SearchInput'
 import { NavUser, ReButton, ThemeToggle } from '@/components'
+import SearchInput from '@/components/SearchInput'
 import { Assets, Background, IconNames, PageRoutes } from '@cfg'
 import { ButtonProps, cn, Link, Listbox, ListboxItem, Navbar, NavbarContent } from '@heroui/react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { useUserContext } from '../ctx'
 
 const IconButtonProps = {
   isIconOnly: true,
@@ -50,6 +51,7 @@ const LinkGroups = [
 ]
 
 export default function UserNav() {
+  const { totalBookmarks } = useUserContext()
   const session = useSession()
   const pathname = usePathname()
   const user = session?.data?.user
@@ -57,6 +59,7 @@ export default function UserNav() {
   if (!user) return null
 
   function showSearchInput() {
+    if (!totalBookmarks) return false
     return (
       pathname === PageRoutes.User.RANDOM ||
       pathname === PageRoutes.User.SEARCH ||

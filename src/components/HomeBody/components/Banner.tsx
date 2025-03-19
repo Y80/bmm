@@ -2,6 +2,7 @@ import { GradientText } from '@/components'
 import { usePageUtil } from '@/hooks'
 import { PageRoutes, WEBSITE_NAME } from '@cfg'
 import { Chip } from '@heroui/react'
+import { useSession } from 'next-auth/react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { PropsWithChildren } from 'react'
 import { useHomePageContext } from '../ctx'
@@ -22,6 +23,7 @@ export default function Banner(props: Props) {
   const pathname = usePathname()
   const pageUtil = usePageUtil()
   const searchParams = useSearchParams()
+  const session = useSession()
   const { tags, totalBookmarks } = props
   const { bookmarks, selectedTags, onClickTag } = useHomePageContext()
   const routes = pageUtil.isUserSpace ? PageRoutes.User : PageRoutes.Public
@@ -34,7 +36,7 @@ export default function Banner(props: Props) {
           animationSpeed={5}
           colors={['#f86d60', '#9c57f6', '#19b6f5', '#78DDBC', '#E2C66A']}
         >
-          {WEBSITE_NAME}
+          {pageUtil.isUserSpace ? session.data?.user.name : WEBSITE_NAME}
         </GradientText>
         <div className="text-foreground-800">收纳、分享、探索优质网站</div>
         <div className="text-sm text-foreground-500">

@@ -20,7 +20,7 @@ export default function Page() {
   const tipTextCls = 'text-black/60 text-sm'
 
   return (
-    <>
+    <div className="h-screen flex-center">
       <Link href="/" className="fixed left-6 top-4 rounded-xl bg-white/30 backdrop-blur">
         <Image src="/logo-no-bg.svg" width={42} height={42} alt="logo" />
       </Link>
@@ -62,6 +62,6 @@ export default function Page() {
       <div className="fixed inset-0 -z-10">
         <Velustro />
       </div>
-    </>
+    </div>
   )
 }

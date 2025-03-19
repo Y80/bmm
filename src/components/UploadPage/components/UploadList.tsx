@@ -12,7 +12,7 @@ import { IconNames, PageRoutes } from '@cfg'
 import { addToast, cn, Divider, Link, ScrollShadow } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import { pick } from 'lodash'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Bookmark } from '..'
 import { LinkTagStrategy } from '../common'
 import Panel from './Panel'
@@ -79,6 +79,8 @@ export default function UploadList(props: Props) {
     if (!tags) return
     const otherTagId = tags.find((tag) => tag.name === '其它')?.id
     if (!otherTagId) throw new Error('数据异常')
+    let failedNum = 0
+    let successNum = 0
     const insertBookmark = isAdminSpace ? actInsertPublicBookmark : actInsertUserBookmark
     const tasks = bookmarks.map((bookmark) => async () => {
       const entity: InsertPublicBookmark = {
@@ -94,23 +96,20 @@ export default function UploadList(props: Props) {
         if (res.error) {
           b.state = UploadState.FAILED
           b.errorMsg = res.error.msg
+          failedNum += 1
         } else {
           b.state = UploadState.SUCCESS
+          successNum += 1
         }
         return [...bookmarks]
       })
     })
     await concurrenceWithLimit({ tasks })
+    addToast({
+      color: failedNum ? 'warning' : 'success',
+      title: `任务已完成，成功 ${successNum} 个，失败 ${failedNum} 个`,
+    })
   }
-
-  useEffect(() => {
-    if (state.finishedNum === bookmarks.length) {
-      addToast({
-        color: 'success',
-        title: '任务已完成',
-      })
-    }
-  }, [state.finishedNum, bookmarks.length])
 
   return (
     <Panel>

@@ -71,7 +71,7 @@ async function main() {
       echo(prefix + chalk.green('✅ 已生成本地快照'))
       await $`pnpm drizzle-kit migrate`
       echo(prefix + chalk.green('✅ 数据库初始化成功'))
-      echo(prefix + '💡 建议通过 git 提交生成的快照，以便后续数据库迁移\n')
+      // echo(prefix + '💡 建议通过 git 提交生成的快照，以便后续数据库迁移\n')
     }
     exitWithDbClose()
   } catch (err) {

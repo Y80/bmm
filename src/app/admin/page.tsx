@@ -1,6 +1,6 @@
 'use client'
 
-import ReButton from '@/components/re-export/ReButton'
+import { ReButton } from '@/components'
 import { ADMIN_NAV_LINKS, IconNames, PageRoutes } from '@cfg'
 import { cn } from '@heroui/react'
 import { useSession } from 'next-auth/react'

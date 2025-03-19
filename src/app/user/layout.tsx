@@ -31,7 +31,7 @@ export default async function UserLayout(props: PropsWithChildren) {
   return (
     <UserContextProvider tags={tags} totalBookmarks={totalBookmarks}>
       <Nav />
-      <div className="pt-16">{props.children}</div>
+      <div className="h-screen pt-16">{props.children}</div>
     </UserContextProvider>
   )
 }

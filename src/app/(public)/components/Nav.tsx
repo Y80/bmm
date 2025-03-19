@@ -1,6 +1,7 @@
 'use client'
 
 import { NavUser, ReButton, ThemeToggle } from '@/components'
+import SearchInput from '@/components/SearchInput'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import {
   ButtonProps,
@@ -14,17 +15,16 @@ import {
 import { useSetState } from 'ahooks'
 import Image from 'next/image'
 import Link from 'next/link'
-import SearchInput from './SearchInput'
+import { usePublicContext } from '../ctx'
 
-export const NavIconOnlyButtonProps: Required<
-  Pick<ButtonProps, 'className' | 'isIconOnly' | 'variant'>
-> = {
+export const NavIconOnlyButtonProps = {
   className: 'text-2xl text-foreground-600 xs:hover:text-foreground-800 outline-none',
   isIconOnly: true,
   variant: 'light',
-}
+} satisfies ButtonProps
 
 export default function Nav() {
+  const { totalBookmarks } = usePublicContext()
   const [state, setState] = useSetState({
     isSelectedMenuToggle: false,
   })
@@ -60,12 +60,13 @@ export default function Nav() {
 
       <NavbarContent className="m-0 !justify-between">
         <div className="w-36 max-xs:hidden" />
-        <SearchInput className="w-[32rem] max-xs:hidden" />
+        {!!totalBookmarks && <SearchInput className="w-[32rem] max-xs:hidden" />}
 
         <div className="shrink-0 justify-end gap-1 flex-items-center max-xs:ml-auto">
           <ThemeToggle />
           <ReButton
             {...NavIconOnlyButtonProps}
+            className={cn(NavIconOnlyButtonProps.className, !totalBookmarks && 'hidden')}
             href={PageRoutes.Public.RANDOM}
             tooltip={{
               placement: 'bottom-end',

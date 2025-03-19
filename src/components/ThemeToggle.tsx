@@ -1,11 +1,11 @@
 'use client'
 
+import { NavIconOnlyButtonProps } from '@/app/(public)/components/Nav'
 import useIsClient from '@/hooks/useIsClient'
 import { IconNames } from '@cfg'
 import { cn, Listbox, ListboxItem } from '@heroui/react'
 import { useTheme } from 'next-themes'
 import { useState } from 'react'
-import { NavIconOnlyButtonProps } from './MainPage/components/Nav'
 import ReButton from './re-export/ReButton'
 
 const ThemeListItems = [

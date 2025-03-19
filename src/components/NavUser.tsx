@@ -1,3 +1,4 @@
+import { NavIconOnlyButtonProps } from '@/app/(public)/components/Nav'
 import { ReButton } from '@/components'
 import { IconNames, PageRoutes } from '@cfg'
 import { Avatar, Divider, Listbox, ListboxItem, ListboxSection, addToast, cn } from '@heroui/react'
@@ -9,15 +10,14 @@ export function NavUser() {
   const isAuthenticated = session.status === 'authenticated'
 
   function handleSignOut() {
-    signOut()
+    signOut({ redirectTo: PageRoutes.INDEX })
     addToast({ title: '已退出登录' })
   }
 
   if (!isAuthenticated || !user) {
     return (
       <ReButton
-        variant="light"
-        isIconOnly
+        {...NavIconOnlyButtonProps}
         href={PageRoutes.LOGIN}
         tooltip={{
           placement: 'bottom-end',
@@ -56,14 +56,20 @@ export function NavUser() {
               >
                 个人空间
               </ListboxItem>
-              {user.isAdmin ? (
-                <ListboxItem
-                  href={PageRoutes.Admin.INDEX}
-                  startContent={<span className={cn(IconNames.Tabler.DASHBOARD, 'text-base')} />}
-                >
-                  后台管理
-                </ListboxItem>
-              ) : null}
+              <ListboxItem
+                href={PageRoutes.User.UPLOAD}
+                startContent={<span className={cn(IconNames.Huge.IMPORT, 'text-base')} />}
+              >
+                导入浏览器书签
+              </ListboxItem>
+            </ListboxSection>
+            <ListboxSection showDivider hidden={!user.isAdmin}>
+              <ListboxItem
+                href={PageRoutes.Admin.INDEX}
+                startContent={<span className={cn(IconNames.Tabler.DASHBOARD, 'text-base')} />}
+              >
+                后台管理
+              </ListboxItem>
             </ListboxSection>
             <ListboxItem
               onPress={handleSignOut}
