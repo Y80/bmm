@@ -264,7 +264,7 @@ export default function UploadPage() {
     }
     return (
       <div>
-        <div className="mb-2 space-x-4">
+        <div className="mb-2 flex">
           <ButtonGroup>
             <ReButton
               size="sm"
@@ -283,6 +283,7 @@ export default function UploadPage() {
           </ButtonGroup>
           <ReButton
             size="sm"
+            className="ml-auto"
             startContent={<span className={'icon-[tabler--arrow-back-up] text-xl'} />}
             onClick={() => {
               setState({ file: null })

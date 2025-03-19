@@ -171,7 +171,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
         <ReButton
           variant="flat"
           size="sm"
-          className="w-28"
+          className="w-20"
           startContent={<span className={cn(IconNames.PLUS, 'text-sm')} />}
           href={(isUserSpace ? PageRoutes.User : PageRoutes.Admin).bookmarkSlug('new')}
         >

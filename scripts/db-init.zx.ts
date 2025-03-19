@@ -59,7 +59,7 @@ async function main() {
     process.exit(1)
   }
 
-  echo(chalk.green('✅ 数据库连接成功'))
+  echo(prefix + chalk.green('✅ 数据库连接成功'))
 
   try {
     const dbInitialed = await testDBInitialed()

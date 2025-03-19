@@ -33,7 +33,7 @@ export default async function AdminLayout(props: PropsWithChildren) {
   return (
     <AdminProvider tags={tags} totalBookmarks={total}>
       <AdminNav />
-      {props.children}
+      <div className="h-screen pt-16">{props.children}</div>
     </AdminProvider>
   )
 }

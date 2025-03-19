@@ -103,9 +103,9 @@ export default function HomeBody(props: Props) {
           )}
           {showEnd && (
             <div className="mt-12 flex-center">
-              <Divider orientation="vertical" />
+              <Divider orientation="vertical" className="h-3" />
               <span className="mx-4 text-xs text-foreground-400 xs:mx-8">END</span>
-              <Divider orientation="vertical" />
+              <Divider orientation="vertical" className="h-3" />
             </div>
           )}
           {isClient && isHomePage && (

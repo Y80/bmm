@@ -1,8 +1,9 @@
 'use client'
 
 import { NavUser, ReButton, ThemeToggle } from '@/components'
+import { NavBarProps } from '@/components/common'
 import SearchInput from '@/components/SearchInput'
-import { Assets, Background, IconNames, PageRoutes } from '@cfg'
+import { Assets, IconNames, PageRoutes } from '@cfg'
 import { ButtonProps, cn, Link, Listbox, ListboxItem, Navbar, NavbarContent } from '@heroui/react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -69,7 +70,7 @@ export default function UserNav() {
   }
 
   return (
-    <Navbar maxWidth="full" className={cn(Background.CLASS, 'fixed')} isBlurred isBordered>
+    <Navbar {...NavBarProps}>
       <NavbarContent className="gap-1 max-sm:!flex-grow-0">
         <Link href={PageRoutes.INDEX} target="_blank">
           <Image src={Assets.LOGO_SVG} width={32} height={32} alt="logo" priority />
@@ -107,6 +108,12 @@ export default function UserNav() {
             <span className={group.icon} />
           </ReButton>
         ))}
+        <ReButton
+          {...IconButtonProps}
+          href={PageRoutes.User.RANDOM}
+          tooltip="随便看看"
+          startContent={<span className={IconNames.SIEVE} />}
+        />
         <ThemeToggle />
         <NavUser />
       </NavbarContent>

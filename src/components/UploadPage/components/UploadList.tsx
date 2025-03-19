@@ -12,7 +12,7 @@ import { IconNames, PageRoutes } from '@cfg'
 import { addToast, cn, Divider, Link, ScrollShadow } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import { pick } from 'lodash'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Bookmark } from '..'
 import { LinkTagStrategy } from '../common'
 import Panel from './Panel'
@@ -26,7 +26,6 @@ interface Props {
 
 enum UploadState {
   WAIT,
-  UPLOADING,
   SUCCESS,
   FAILED,
 }
@@ -39,6 +38,7 @@ export default function UploadList(props: Props) {
   const isAdminSpace = usePageUtil().isAdminSpace
   const { linkTagStrategy, tagNames } = props
   const [state, setState] = useSetState({
+    uploading: false,
     finishedNum: null as null | number,
   })
   const [bookmarks, setBookmarks] = useState(() => {
@@ -72,6 +72,7 @@ export default function UploadList(props: Props) {
       return entity
     })
   })
+  const scroller = useRef<HTMLDivElement>(null)
 
   async function submit() {
     const action = isAdminSpace ? actTryCreatePublicTags : actTryCreateUserTags
@@ -90,26 +91,38 @@ export default function UploadList(props: Props) {
         ),
       }
       const res = await insertBookmark(entity)
+      res.error ? failedNum++ : successNum++
       setState((state) => ({ ...state, finishedNum: (state.finishedNum || 0) + 1 }))
       setBookmarks((bookmarks) => {
         const b = bookmarks.find((_bookmark) => _bookmark.id === bookmark.id)!
         if (res.error) {
           b.state = UploadState.FAILED
           b.errorMsg = res.error.msg
-          failedNum += 1
         } else {
           b.state = UploadState.SUCCESS
-          successNum += 1
         }
         return [...bookmarks]
       })
     })
+    setState({ uploading: true })
     await concurrenceWithLimit({ tasks })
+    setState({ uploading: false })
     addToast({
       color: failedNum ? 'warning' : 'success',
       title: `任务已完成，成功 ${successNum} 个，失败 ${failedNum} 个`,
     })
   }
+
+  useEffect(() => {
+    if (state.finishedNum !== bookmarks.length) return
+    setBookmarks((bookmarks) => {
+      setTimeout(() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' }))
+      return bookmarks.toSorted((a, b) => {
+        if (a.state === UploadState.FAILED && b.state === UploadState.SUCCESS) return -1
+        return 0
+      })
+    })
+  }, [state.finishedNum, bookmarks.length])
 
   return (
     <Panel>
@@ -169,7 +182,11 @@ export default function UploadList(props: Props) {
         </ReButton>
       </div>
       <Divider className="my-4" />
-      <ScrollShadow style={{ maxHeight: 'calc(100vh - 360px)' }} className="-mr-6 pr-6">
+      <ScrollShadow
+        style={{ maxHeight: 'calc(100vh - 360px)' }}
+        className="-mr-6 pr-6"
+        ref={scroller}
+      >
         <div className="space-y-4 overflow-auto">
           {bookmarks.map((bookmark) => {
             return (
@@ -190,20 +207,16 @@ export default function UploadList(props: Props) {
                     {tag}
                   </span>
                 ))}
-                <span className="ml-auto cursor-pointer text-base">
-                  {bookmark.state === UploadState.UPLOADING && (
-                    <ReTooltip content="上传中">
-                      <span className="icon-[tabler--loader-2] animate-spin text-foreground-500" />
-                    </ReTooltip>
+                <span className="ml-auto text-base">
+                  {bookmark.state === UploadState.WAIT && state.uploading && (
+                    <span className="icon-[tabler--loader-2] animate-spin cursor-wait text-foreground-500" />
                   )}
                   {bookmark.state === UploadState.SUCCESS && (
-                    <ReTooltip content="上传成功">
-                      <span className="icon-[tabler--check] text-success-500" />
-                    </ReTooltip>
+                    <span className="icon-[tabler--check] text-success-500" />
                   )}
                   {bookmark.state === UploadState.FAILED && (
                     <ReTooltip content={bookmark.errorMsg}>
-                      <span className="icon-[tabler--x] text-danger-400" />
+                      <span className="icon-[tabler--x] cursor-pointer text-danger-400" />
                     </ReTooltip>
                   )}
                 </span>

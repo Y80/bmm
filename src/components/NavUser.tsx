@@ -1,8 +1,8 @@
-import { NavIconOnlyButtonProps } from '@/app/(public)/components/Nav'
 import { ReButton } from '@/components'
 import { IconNames, PageRoutes } from '@cfg'
 import { Avatar, Divider, Listbox, ListboxItem, ListboxSection, addToast, cn } from '@heroui/react'
 import { signOut, useSession } from 'next-auth/react'
+import { IconButtonProps } from './common'
 
 export function NavUser() {
   const session = useSession()
@@ -17,7 +17,7 @@ export function NavUser() {
   if (!isAuthenticated || !user) {
     return (
       <ReButton
-        {...NavIconOnlyButtonProps}
+        {...IconButtonProps}
         href={PageRoutes.LOGIN}
         tooltip={{
           placement: 'bottom-end',
@@ -31,8 +31,7 @@ export function NavUser() {
 
   return (
     <ReButton
-      variant="light"
-      isIconOnly
+      {...IconButtonProps}
       tooltip={{
         placement: 'bottom-end',
         content: (

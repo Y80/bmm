@@ -70,9 +70,7 @@ export function makeAction<Arg, Data>(...makeArgs: MakeActionArgs<Arg, Data>) {
       } else if (opts.guard === 'admin') {
         checkIsAdmin = true
       }
-      console.log({ checkIsAdmin })
       if (checkIsAdmin && !session.user.isAdmin) {
-        console.log('无管理员权限')
         redirect(PageRoutes.LOGIN)
       }
     }

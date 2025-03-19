@@ -1,27 +1,14 @@
 'use client'
 
 import { NavUser, ReButton, ThemeToggle } from '@/components'
+import { IconButtonProps, NavBarProps } from '@/components/common'
 import SearchInput from '@/components/SearchInput'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
-import {
-  ButtonProps,
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarMenu,
-  NavbarMenuToggle,
-  cn,
-} from '@heroui/react'
+import { Navbar, NavbarBrand, NavbarContent, NavbarMenu, NavbarMenuToggle, cn } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePublicContext } from '../ctx'
-
-export const NavIconOnlyButtonProps = {
-  className: 'text-2xl text-foreground-600 xs:hover:text-foreground-800 outline-none',
-  isIconOnly: true,
-  variant: 'light',
-} satisfies ButtonProps
 
 export default function Nav() {
   const { totalBookmarks } = usePublicContext()
@@ -30,13 +17,7 @@ export default function Nav() {
   })
 
   return (
-    // 背景色和 @/app/layout.tsx body > div:fist-child 的颜色一致
-    <Navbar
-      maxWidth="full"
-      className={cn(Background.CLASS, 'fixed max-xs:dark:bg-opacity-60')}
-      isBlurred
-      isBordered
-    >
+    <Navbar {...NavBarProps}>
       <NavbarMenuToggle
         className="xs:hidden"
         // isSelected={state.isSelectedMenuToggle}
@@ -65,8 +46,8 @@ export default function Nav() {
         <div className="shrink-0 justify-end gap-1 flex-items-center max-xs:ml-auto">
           <ThemeToggle />
           <ReButton
-            {...NavIconOnlyButtonProps}
-            className={cn(NavIconOnlyButtonProps.className, !totalBookmarks && 'hidden')}
+            {...IconButtonProps}
+            className={cn(IconButtonProps.className, !totalBookmarks && 'hidden')}
             href={PageRoutes.Public.RANDOM}
             tooltip={{
               placement: 'bottom-end',
@@ -76,7 +57,7 @@ export default function Nav() {
             <span className={IconNames.SIEVE} />
           </ReButton>
           <ReButton
-            {...NavIconOnlyButtonProps}
+            {...IconButtonProps}
             href={ExternalLinks.REPO}
             target="_blank"
             rel="noreferrer"

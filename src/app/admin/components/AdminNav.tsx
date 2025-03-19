@@ -1,9 +1,9 @@
 'use client'
 
-import { NavIconOnlyButtonProps } from '@/components/MainPage/components/Nav'
+import { IconButtonProps, NavBarProps } from '@/components/common'
 import { ReButton } from '@/components/re-export'
 import ThemeToggle from '@/components/ThemeToggle'
-import { ADMIN_NAV_LINKS, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
+import { ADMIN_NAV_LINKS, Assets, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import { cn, Link, Navbar, NavbarContent } from '@heroui/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -30,12 +30,12 @@ export default function AdminNav() {
   }
 
   return (
-    <Navbar maxWidth="full" className="dark:bg-slate-950/80" isBlurred>
+    <Navbar {...NavBarProps}>
       <NavbarContent className="max-sm:!flex-grow-0">
-        <Link href="/admin" color="foreground">
+        <Link href={PageRoutes.Admin.INDEX} color="foreground">
           <div className="flex cursor-pointer items-center gap-4">
             <Image
-              src="/logo-no-bg.svg"
+              src={Assets.LOGO_NO_BG_SVG}
               width={48}
               height={48}
               className="hidden sm:inline-block"
@@ -51,11 +51,8 @@ export default function AdminNav() {
         {renderLinks()}
 
         <ReButton
-          {...NavIconOnlyButtonProps}
-          className={cn(
-            NavIconOnlyButtonProps.className,
-            (!tags.length || !totalBookmarks) && 'hidden'
-          )}
+          {...IconButtonProps}
+          className={cn(IconButtonProps.className, (!tags.length || !totalBookmarks) && 'hidden')}
           href="/"
           tooltip={{
             placement: 'bottom-end',
