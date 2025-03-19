@@ -5,18 +5,11 @@ export function createBookmarkFilterByKeyword(
   table: typeof schema.publicBookmarks | typeof schema.userBookmarks,
   kw: string
 ) {
-  if (process.env.DB_DRIVER === 'postgresql') {
-    return or(
-      ilike(table.name, `%${kw}%`),
-      ilike(table.pinyin, `%${kw}%`),
-      ilike(table.url, `%${kw}%`),
-      ilike(table.description, `%${kw}%`)
-    )!
-  }
+  const sql = process.env.DB_DRIVER === 'postgresql' ? ilike : like
   return or(
-    like(table.name, `%${kw}%`),
-    like(table.pinyin, `%${kw}%`),
-    like(table.url, `%${kw}%`),
-    like(table.description, `%${kw}%`)
+    sql(table.name, `%${kw}%`),
+    sql(table.pinyin, `%${kw}%`),
+    sql(table.url, `%${kw}%`),
+    sql(table.description, `%${kw}%`)
   )!
 }

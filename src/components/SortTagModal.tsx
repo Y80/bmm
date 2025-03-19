@@ -2,7 +2,6 @@
 
 import { actUpdatePublicTagSortOrders, actUpdateUserTagSortOrders } from '@/actions'
 import MyModal from '@/components/MyModal'
-import { SelectPublicTag } from '@/db'
 import { usePageUtil } from '@/hooks'
 import useIsDark from '@/hooks/useIsDark'
 import { runAction } from '@/utils'
@@ -95,7 +94,7 @@ export default function SortTagModal(props: Props) {
   )
 }
 
-function SortableTag(props: { tag: SelectPublicTag }) {
+function SortableTag(props: { tag: SelectTag }) {
   const { tag } = props
 
   const isDark = useIsDark()

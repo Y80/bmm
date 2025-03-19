@@ -10,16 +10,18 @@ if (!process.env.DB_CONNECTION_URL) {
  */
 export default defineConfig(
   (() => {
-    const folderAlias: Record<typeof process.env.DB_DRIVER, string> = {
+    const dbDriver = process.env.DB_DRIVER
+    const folderAlias: Record<typeof dbDriver, string> = {
       postgresql: 'postgres',
       sqlite: 'sqlite',
       // mysql: 'mysql',
     }
+    const folder = folderAlias[dbDriver]
     // 指定 Schema 文件或文件夹路径
-    const schema = `./src/db/${folderAlias[process.env.DB_DRIVER]}/schemas/*`
+    const schema = `./src/db/${folder}/schemas/*`
     // 执行数据库迁移时，将会在这个目录中生成一些迁移 SQL 和其他记录数据的文件
-    const out = `./src/db/${folderAlias[process.env.DB_DRIVER]}/migrations/${process.env.NODE_ENV}`
-    if (process.env.DB_DRIVER === 'postgresql') {
+    const out = `./src/db/${folder}/migrations/${process.env.NODE_ENV}`
+    if (dbDriver === 'postgresql') {
       return {
         schema,
         out,

@@ -1,5 +1,4 @@
 import { ActionResult } from '@/actions/make-action'
-import { SelectPublicTag } from '@/db'
 import { PageRoutes } from '@cfg'
 import { addToast } from '@heroui/react'
 import { pinyin } from 'pinyin-pro'
@@ -85,7 +84,7 @@ export function createQueryObject(url: string) {
 
 export function testTagNameOrPinyin(
   input: string,
-  tag: Partial<Pick<SelectPublicTag, 'name' | 'pinyin'>>
+  tag: Partial<Pick<SelectTag, 'name' | 'pinyin'>>
 ) {
   const { name = '' } = tag
   let pinyin = tag.pinyin || ''

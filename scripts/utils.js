@@ -32,7 +32,6 @@ export async function testDbConnect() {
 export async function loadEnv() {
   // 命令行传入 -P 或 --production 将使用正式环境变量
   const args = zx.minimist(process.argv.slice(2), { alias: { production: 'P' } })
-  // console.log(args)
   const isProduction = args.production === true
   if (!process.env.NODE_ENV) {
     // 不考虑 test 的情况
@@ -41,7 +40,6 @@ export async function loadEnv() {
   const NextEnv = await import('@next/env')
   const loadEnvConfig = NextEnv.loadEnvConfig || NextEnv.default.loadEnvConfig
   loadEnvConfig(process.cwd(), isProduction)
-
   tryLoadParentGitRepoEnv()
 }
 
@@ -84,6 +82,7 @@ export function checkEnvs() {
   }
   if (process.env.DB_DRIVER !== 'postgresql' && process.env.DB_DRIVER !== 'sqlite') {
     zx.echo(zx.chalk.red('DB_DRIVER 只能为 postgresql 或 sqlite'))
+    process.exit(1)
   }
 }
 
