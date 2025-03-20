@@ -96,7 +96,7 @@ export default function TagListPage(props: TagListPageProps) {
           {props.tags.map((tag) => (
             <TableRow key={tag.id}>
               <TableCell className="text-3xl text-foreground-700 max-xs:text-xl">
-                {tag.icon && <Icon icon={tag.icon} />}
+                {tag.icon && <Icon color={tag.color || undefined} icon={tag.icon} />}
               </TableCell>
               <TableCell className="max-xs:text-sm">{tag.name}</TableCell>
               <TableCell className="w-24 pr-8 max-xs:hidden md:w-40">

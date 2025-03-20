@@ -20,7 +20,6 @@ export async function extractHtmlInfo(inputUrl: z.output<typeof schema>) {
 export const extractHtmlInfoInput = makeActionInput({
   handler: extractHtmlInfo,
   schema,
-  guard: 'decide-by-referer',
 })
 
 /**

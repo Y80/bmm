@@ -1,6 +1,7 @@
+import { actAnalyzeRelatedTags } from '@/actions'
 import { ReButton } from '@/components/re-export'
-import http from '@/lib/http'
-import { ApiRoutes, IconNames } from '@cfg'
+import { runAction } from '@/utils'
+import { IconNames } from '@cfg'
 import { cn } from '@heroui/react'
 
 interface Props {
@@ -11,8 +12,8 @@ interface Props {
 export default function AiAnalyzeButton(props: Props) {
   async function onAnalyze() {
     if (!props.tagName) return
-    const res = await http.post(ApiRoutes.Ai.ANALYZE_RELATED_TAGS, { tag: props.tagName })
-    if (res.error) return
+    const res = await runAction(actAnalyzeRelatedTags(props.tagName))
+    if (!res.ok) return
     props.onOk?.(res.data)
   }
 

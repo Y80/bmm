@@ -2,6 +2,7 @@
 
 import { NavUser, ReButton, ThemeToggle } from '@/components'
 import { IconButtonProps, NavBarProps } from '@/components/common'
+import { NavTagPicker } from '@/components/NavTagPicker'
 import SearchInput from '@/components/SearchInput'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import { Navbar, NavbarBrand, NavbarContent, NavbarMenu, NavbarMenuToggle, cn } from '@heroui/react'
@@ -11,25 +12,20 @@ import Link from 'next/link'
 import { usePublicContext } from '../ctx'
 
 export default function Nav() {
-  const { totalBookmarks } = usePublicContext()
+  const { totalBookmarks, tags } = usePublicContext()
   const [state, setState] = useSetState({
     isSelectedMenuToggle: false,
   })
 
   return (
     <Navbar {...NavBarProps}>
-      <NavbarMenuToggle
-        className="xs:hidden"
-        // isSelected={state.isSelectedMenuToggle}
-        onChange={(v) => setState({ isSelectedMenuToggle: v })}
-      />
       <NavbarBrand className="grow-0 max-xs:basis-16 xs:basis-56">
         <Link href={PageRoutes.INDEX} className="gap-4 flex-items-center">
           <Image
             src={Assets.LOGO_NO_BG_SVG}
+            className="rounded-lg dark:bg-gray-50"
             width={32}
             height={32}
-            className="rounded-lg dark:bg-gray-50"
             alt="logo"
             priority
           />
@@ -86,9 +82,14 @@ export default function Nav() {
         </div>
       </NavbarContent>
 
+      <NavbarMenuToggle
+        className="xs:hidden"
+        onChange={(v) => setState({ isSelectedMenuToggle: v })}
+      />
+
       <NavbarMenu className={cn(Background.CLASS, 'dark:bg-opacity-50')}>
         {/* 没展开的时候，不渲染 */}
-        {/* {state.isSelectedMenuToggle && <TagPicker tags={tags} />} */}
+        {state.isSelectedMenuToggle && <NavTagPicker tags={tags} />}
       </NavbarMenu>
     </Navbar>
   )

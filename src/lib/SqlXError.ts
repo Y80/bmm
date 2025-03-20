@@ -3,39 +3,32 @@ import postgres from 'postgres'
 
 export default class SqlXError extends Error {
   name = 'SqlXError'
-  originErrorName: string
-  // table?: string
-  // column?: string
 
-  originalError?: Error
+  originalError: Error
 
   constructor(err: Error) {
     super()
     this.originalError = err
-    this.originErrorName = err.name
   }
 
   get message() {
-    if (this.originalError?.name === postgres.PostgresError.name) {
-      const error = this.originalError as postgres.PostgresError
+    const { message: msg } = this.originalError
+    if (SqlXError.isPgError(this.originalError)) {
+      const err = this.originalError as postgres.PostgresError
       // 违反唯一值限制
-      if (error.code === '23505') {
-        if (/publicTags_name_unique/i.test(error.message)) {
-          return '已存在相同名称的标签'
+      if (err.code === '23505') {
+        if (msg.includes('publicBookmarks') || msg.includes('userBookmarks')) {
+          if (msg.includes('_name_')) return '已存在相同名称的书签'
+          if (msg.includes('_url_')) return '已存在相同网址的书签'
         }
-        if (error.message.includes('publicBookmarks_name_unique')) {
-          return '已存在相同名称的书签'
-        }
-        if (error.message.includes('publicBookmarks_url_unique')) {
-          return '已存在相同网址的书签'
+        if (msg.includes('publicTags') || msg.includes('userTags')) {
+          if (msg.includes('_name_')) return '已存在相同名称的标签'
         }
       }
     }
-
-    if ((this.originalError as any)?.libsqlError) {
-      const error = this.originalError as LibsqlError
-      const { message: msg } = error
-      if (error.rawCode === 2067) {
+    if (SqlXError.isLibsqlError(this.originalError)) {
+      const err = this.originalError as LibsqlError
+      if (err.rawCode === 2067) {
         if (msg.includes('publicBookmarks') || msg.includes('userBookmarks')) {
           if (msg.includes('.name')) return '已存在相同名称的书签'
           if (msg.includes('.url')) return '已存在相同网址的书签'
@@ -45,16 +38,23 @@ export default class SqlXError extends Error {
         }
       }
     }
-
-    // 返回未知错误说明有些异常没有考虑到，务必及时补充！
-    return '未知错误'
+    // ! 返回未知错误说明有些异常没有考虑到，务必及时补充！
+    return '未知的数据库错误'
   }
 
   static getMessage(err: any) {
     return new SqlXError(err).message
   }
 
+  static isPgError(err: any) {
+    return err?.name === postgres.PostgresError.name
+  }
+
+  static isLibsqlError(err: any) {
+    return !!err?.libsqlError
+  }
+
   static canParse(err: any) {
-    return err?.name === postgres.PostgresError.name || err?.libsqlError
+    return SqlXError.isPgError(err) || SqlXError.isLibsqlError(err)
   }
 }

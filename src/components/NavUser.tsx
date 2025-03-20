@@ -2,12 +2,14 @@ import { ReButton } from '@/components'
 import { IconNames, PageRoutes } from '@cfg'
 import { Avatar, Divider, Listbox, ListboxItem, ListboxSection, addToast, cn } from '@heroui/react'
 import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { IconButtonProps } from './common'
 
 export function NavUser() {
   const session = useSession()
   const user = session.data?.user
   const isAuthenticated = session.status === 'authenticated'
+  const router = useRouter()
 
   function handleSignOut() {
     signOut({ redirectTo: PageRoutes.INDEX })
@@ -33,6 +35,7 @@ export function NavUser() {
     <ReButton
       {...IconButtonProps}
       tooltip={{
+        adaptMobile: true,
         placement: 'bottom-end',
         content: (
           <Listbox
@@ -40,7 +43,7 @@ export function NavUser() {
             itemClasses={{ base: 'pr-4' }}
             topContent={
               <div>
-                <div className="gap-2 flex-items-center">
+                <div className="mt-2 gap-2 flex-items-center">
                   <Avatar size="sm" src={user.image!} showFallback />
                   <span className="translate-y-0.5 text-foreground-500">{user.name}</span>
                 </div>
@@ -52,6 +55,7 @@ export function NavUser() {
               <ListboxItem
                 href={PageRoutes.User.INDEX}
                 startContent={<span className={cn(IconNames.Tabler.USER, 'text-base')} />}
+                onPress={() => router.push(PageRoutes.User.INDEX)}
               >
                 个人空间
               </ListboxItem>

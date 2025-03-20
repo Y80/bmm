@@ -70,8 +70,8 @@ export default function HomeBody(props: Props) {
           (getScrollElement()?.scrollTop || 0).toString()
         )
         // 是否执行标签的交叉搜索
-        const finalIsIntersected = event?.altKey || isIntersected
-        const finalTagNames = finalIsIntersected ? [...tagNames, tag.name] : [tag.name]
+        isIntersected ||= event?.altKey
+        const finalTagNames = isIntersected ? [...tagNames, tag.name] : [tag.name]
         const newPath = (isUserSpace ? PageRoutes.User : PageRoutes.Public).tags(finalTagNames)
         router.push(newPath)
       },
@@ -85,7 +85,7 @@ export default function HomeBody(props: Props) {
       <aside className="fixed top-16 inline-block w-56 pl-6 max-xs:hidden">
         <TagPicker />
       </aside>
-      <div className="ml-56">
+      <div className="xs:ml-56">
         <div className="flex flex-col px-6 pb-14">
           <Banner tags={tags} totalBookmarks={props.totalBookmarks} />
           <BookmarkContainer>

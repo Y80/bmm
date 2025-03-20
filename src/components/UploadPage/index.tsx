@@ -367,9 +367,10 @@ export default function UploadPage() {
           <div className="mt-4 text-sm text-foreground-500">
             <div className="text-base">注意事项</div>
             <ul className="ml-5 mt-2 list-disc space-y-1 text-foreground-800">
+              <li>原始的目录将会作为标签存在（仅用标签组织、关联书签）</li>
               <li>已过滤内容为空的目录</li>
               <li>书签至少会被关联「其它」标签</li>
-              <li className="font-semibold text-foreground-900">如无特定需求，使用默认配置即可</li>
+              <li className="font-extrabold">如无特定需求，使用默认配置即可</li>
             </ul>
           </div>
 
@@ -380,16 +381,18 @@ export default function UploadPage() {
             value={state.linkTagStrategy}
             onValueChange={(v) => setState({ linkTagStrategy: v as LinkTagStrategy })}
           >
-            <Radio value={LinkTagStrategy.FOLDER_PATH}>
-              <ReTooltip content="例如：某个书签位于「foo > bar」目录中，那么该书签将关联「foo」、「bar」标签">
-                按照目录层级，分别关联标签
-              </ReTooltip>
-            </Radio>
-            <Radio value={LinkTagStrategy.CLOSED_FOLDER}>
-              <ReTooltip content="例如：某个书签位于「foo > bar」目录中，那么该书签仅关联「bar」标签">
-                仅将最近的目录作为标签进行关联
-              </ReTooltip>
-            </Radio>
+            <ReTooltip
+              offset={0}
+              content="例：某书签在目录「foo > bar」中，则该书签将关联「foo」和「bar」标签"
+            >
+              <Radio value={LinkTagStrategy.FOLDER_PATH}>按照目录层级，分别关联标签</Radio>
+            </ReTooltip>
+            <ReTooltip
+              offset={0}
+              content="例：某书签在目录「foo > bar」中，则该书签仅关联「bar」标签"
+            >
+              <Radio value={LinkTagStrategy.CLOSED_FOLDER}>仅将最近的目录作为标签进行关联</Radio>
+            </ReTooltip>
             <Radio value={LinkTagStrategy.OTHER}>全部书签关联「其它」标签</Radio>
           </RadioGroup>
 
@@ -403,6 +406,7 @@ export default function UploadPage() {
               treeData={categoryTree}
               checkedKeys={state.checkedTreeKeys}
               onCheck={(keys) => setState({ checkedTreeKeys: keys as string[] })}
+              defaultExpandedKeys={[ROOT_ID]}
             />
             <p className="mt-2 text-sm text-foreground-400">
               将导入 <NumberTicker value={waitUploadBookmarkIds.length} /> 个书签 / 共{' '}

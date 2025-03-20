@@ -1,5 +1,6 @@
 'use client'
 
+import { useIsMobile } from '@/hooks'
 import {
   Button,
   ButtonProps,
@@ -8,6 +9,7 @@ import {
   PopoverTrigger,
   TooltipProps,
 } from '@heroui/react'
+import { omit } from 'lodash'
 import { ReactNode, forwardRef, useState } from 'react'
 import ReTooltip from './ReTooltip'
 
@@ -16,13 +18,13 @@ import ReTooltip from './ReTooltip'
 // tooltip 鼠标 hover 上去就会展示，popover 点击后才会展示
 interface ReButtonProps extends ButtonProps {
   onClick?: () => any
-  tooltip?: string | TooltipProps
-  tooltipContent?: ReactNode
+  tooltip?: string | (TooltipProps & { adaptMobile?: boolean })
   popoverContent?: ReactNode
 }
 
 function ReButton_(props: ReButtonProps, ref: any) {
-  const { onClick, tooltip, tooltipContent, popoverContent, ...resetProps } = props
+  const { onClick, tooltip, popoverContent, ...resetProps } = props
+  const isMobile = useIsMobile()
   const [loading, setLoading] = useState(false)
 
   const mergedLoading = props.isLoading || loading
@@ -52,14 +54,20 @@ function ReButton_(props: ReButtonProps, ref: any) {
     </Button>
   )
 
-  if (tooltipContent) {
-    return <ReTooltip content={tooltipContent}>{button}</ReTooltip>
-  }
   if (tooltip) {
-    if (typeof tooltip === 'string') {
-      return <ReTooltip content={tooltip}>{button}</ReTooltip>
+    const tooltipProps = typeof tooltip === 'string' ? { content: tooltip } : tooltip
+
+    // 移动端不支持 Tooltip
+    // https://github.com/heroui-inc/heroui/issues/2036
+    if (isMobile && tooltipProps.adaptMobile) {
+      return (
+        <Popover>
+          <PopoverTrigger>{button}</PopoverTrigger>
+          <PopoverContent>{tooltipProps.content}</PopoverContent>
+        </Popover>
+      )
     }
-    return <ReTooltip {...tooltip}>{button}</ReTooltip>
+    return <ReTooltip {...omit(tooltipProps, 'adaptMobile')}>{button}</ReTooltip>
   }
   if (popoverContent) {
     return (

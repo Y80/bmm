@@ -1,4 +1,5 @@
 export { default as useIsClient } from './useIsClient'
 export { default as useIsDark } from './useIsDark'
+export { useIsMobile } from './useIsMobile'
 export { default as usePageUtil } from './usePageUtil'
 export { default as useSlug } from './useSlug'

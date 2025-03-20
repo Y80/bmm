@@ -10,8 +10,6 @@ export const IS_DEV = process.env.NODE_ENV === 'development'
 
 export const Background = {
   CLASS: 'light:bg-white dark:bg-slate-950',
-  // "dark:bg-slate-950/80"
-  // CLASS: 'bg-black-50/20',
   LIGHT_HEX: '#fff',
   LIGHT_CLASS: 'bg-white',
   DARK_HEX: '#020617',

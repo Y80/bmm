@@ -46,9 +46,7 @@ export async function loadEnv() {
 
 // 当前应用如果作为 git submodule 存在，加载父级目录是的环境配置文件
 export function tryLoadParentGitRepoEnv() {
-  tryLoadParentGitRepoEnv.loaded ??= false
-  if (tryLoadParentGitRepoEnv.loaded || !fs.existsSync(path.resolve('..', '.gitmodules'))) return
-  console.log(zx.chalk.cyan('💡 已检测到当前项目作为 git submodule，正在加载主应用环境配置'))
+  if (!fs.existsSync(path.resolve('..', '.gitmodules'))) return
   const envPaths = [path.resolve('..', '.env'), path.resolve('..', '.env.' + process.env.NODE_ENV)]
   for (const envPath of envPaths) {
     if (!fs.existsSync(envPath)) continue
@@ -56,19 +54,18 @@ export function tryLoadParentGitRepoEnv() {
       path: envPath,
       override: true,
     })
-    // console.log('[Loaded] ' + envPath)
   }
-  tryLoadParentGitRepoEnv.loaded = true
+  console.log(zx.chalk.cyan('💡 当前项目作为 git submodule，已加载主目录环境配置'))
 }
 
 
 export function checkEnvs() {
   const requiredVariables = [
+    'DB_DRIVER',
     'DB_CONNECTION_URL',
     'AUTH_GITHUB_ID',
     'AUTH_GITHUB_SECRET',
     'AUTH_SECRET',
-    'DB_DRIVER'
   ]
   const unsetEnv = requiredVariables.filter((variable) => !process.env[variable])
   if (!process.env.AUTH_URL && process.env.VERCEL_URL) {

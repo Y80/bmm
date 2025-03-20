@@ -22,6 +22,11 @@ interface IHttp {
   delete<T = any>(...args: ArgsWithoutMethod): HTTPReturn<T>
 }
 
+/**
+ * 统一处理 HTTP 请求
+ *
+ * @deprecated 使用 Actions 代替普通的 HTTP 请求
+ */
 const http: IHttp = async (url, payload, options) => {
   if (!url) {
     return { error: { message: '❌ Invalid URL.' }, data: undefined }

@@ -5,7 +5,7 @@ import { pageSpace } from '@/utils'
 import { headers } from 'next/headers'
 import { makeActionInput } from '../make-action'
 
-const schema = z.string().url()
+const schema = z.string()
 
 async function handleAnalyzeRelatedTags(tag: typeof schema._input) {
   const referer = headers().get('referer')
@@ -20,5 +20,4 @@ async function handleAnalyzeRelatedTags(tag: typeof schema._input) {
 export const aiAnalyzeRelatedTagsInput = makeActionInput({
   handler: handleAnalyzeRelatedTags,
   schema,
-  guard: 'decide-by-referer',
 })

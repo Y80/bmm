@@ -21,5 +21,4 @@ async function analyzeWebsite(url: typeof schema._input) {
 export const aiAnalyzeWebsiteInput = makeActionInput({
   handler: analyzeWebsite,
   schema,
-  guard: 'decide-by-referer',
 })

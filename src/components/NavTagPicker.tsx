@@ -1,13 +1,12 @@
-import { useGlobalContext } from '@/app/ctx'
 import ClientIcon from '@/components/ClientIcon'
 import ReInput from '@/components/re-export/ReInput'
+import { useOnClickTag } from '@/hooks/useOnClickTag'
 import { testTagNameOrPinyin } from '@/utils'
 import { IconNames } from '@cfg'
 import { ScrollShadow, Switch, cn } from '@heroui/react'
 import { useMount, useSetState, useUpdateEffect } from 'ahooks'
 import { isEqual } from 'lodash'
 import { CSSProperties, useLayoutEffect, useRef } from 'react'
-import { useMainPageContext } from '../ctx'
 
 const SCROLL_DIV_ROLE = 'tag-picker-scroll-div'
 
@@ -24,9 +23,9 @@ interface Props {
   className?: string
   style?: CSSProperties
 }
-export default function TagPicker(props: Props) {
+export function NavTagPicker(props: Props) {
   const { tags } = props
-  const { selectedTags, onClickTag } = useMainPageContext()
+  const { selectedTags, onClickTag } = useOnClickTag({ tags })
 
   const scrollDivRef = useRef<null | HTMLDivElement>(null)
   const [state, setState] = useSetState({
@@ -103,20 +102,13 @@ export default function TagPicker(props: Props) {
       </div>
 
       {!state.filterTagInput && (
-        <div className="h-16 shrink-0 flex-items-center">
+        <div className="h-16 shrink-0 gap-4 flex-items-center">
           <Switch
-            size="sm"
-            className="scale-[0.75]"
             key={Number(state.onlyMain)}
             isSelected={state.onlyMain}
             onValueChange={(v) => setState({ onlyMain: v })}
           />
-          <span
-            className={cn(
-              'text-sm',
-              state.onlyMain ? 'text-foreground-600' : 'text-foreground-400'
-            )}
-          >
+          <span className={cn(state.onlyMain ? 'text-foreground-600' : 'text-foreground-400')}>
             仅展示主标签
           </span>
         </div>

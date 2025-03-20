@@ -3,8 +3,19 @@
 import { NavUser, ReButton, ThemeToggle } from '@/components'
 import { NavBarProps } from '@/components/common'
 import SearchInput from '@/components/SearchInput'
+import { useIsMobile } from '@/hooks'
 import { Assets, IconNames, PageRoutes } from '@cfg'
-import { ButtonProps, cn, Link, Listbox, ListboxItem, Navbar, NavbarContent } from '@heroui/react'
+import {
+  ButtonProps,
+  cn,
+  Link,
+  Listbox,
+  ListboxItem,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarMenuToggle,
+} from '@heroui/react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -55,12 +66,13 @@ export default function UserNav() {
   const { totalBookmarks } = useUserContext()
   const session = useSession()
   const pathname = usePathname()
+  const isMobile = useIsMobile()
   const user = session?.data?.user
 
   if (!user) return null
 
   function showSearchInput() {
-    if (!totalBookmarks) return false
+    if (!totalBookmarks || isMobile) return false
     return (
       pathname === PageRoutes.User.RANDOM ||
       pathname === PageRoutes.User.SEARCH ||
@@ -71,24 +83,25 @@ export default function UserNav() {
 
   return (
     <Navbar {...NavBarProps}>
-      <NavbarContent className="gap-1 max-sm:!flex-grow-0">
-        <Link href={PageRoutes.INDEX} target="_blank">
+      <NavbarBrand className="shrink-0 grow-0 max-xs:basis-20 xs:basis-56">
+        <Link href={PageRoutes.INDEX} className="gap-4 flex-items-center">
           <Image src={Assets.LOGO_SVG} width={32} height={32} alt="logo" priority />
+          <h3 className="translate-y-0.5 font-mono text-2xl font-light leading-none text-foreground-700">
+            {user.name || 'User'}
+          </h3>
         </Link>
-        <Link isBlock href={PageRoutes.User.INDEX} color="foreground">
-          {user.name || 'User'}
-        </Link>
-      </NavbarContent>
+      </NavbarBrand>
       <NavbarContent justify="end" className="gap-0">
         {showSearchInput() && <SearchInput className="mr-4 w-72" />}
-        <ReButton {...IconButtonProps} href={PageRoutes.User.INDEX}>
+        {/* <ReButton {...IconButtonProps} href={PageRoutes.User.INDEX}>
           <span className={IconNames.Huge.HOME} />
-        </ReButton>
+        </ReButton> */}
         {LinkGroups.map((group) => (
           <ReButton
             key={group.key}
             {...IconButtonProps}
             tooltip={{
+              adaptMobile: true,
               placement: 'top-start',
               content: (
                 <Listbox label={group.key}>
@@ -110,6 +123,11 @@ export default function UserNav() {
         ))}
         <ReButton
           {...IconButtonProps}
+          className={cn(
+            IconButtonProps.className,
+            'text-foreground-600',
+            (!totalBookmarks || isMobile) && 'hidden'
+          )}
           href={PageRoutes.User.RANDOM}
           tooltip="随便看看"
           startContent={<span className={IconNames.SIEVE} />}
@@ -117,6 +135,15 @@ export default function UserNav() {
         <ThemeToggle />
         <NavUser />
       </NavbarContent>
+
+      <NavbarMenuToggle
+        className="xs:hidden"
+        // onChange={(v) => setState({ isSelectedMenuToggle: v })}
+      />
+
+      {/* <NavbarMenu className={cn(Background.CLASS, 'dark:bg-opacity-50')}>
+        {state.isSelectedMenuToggle && <NavTagPicker tags={tags} />}
+      </NavbarMenu> */}
     </Navbar>
   )
 }
