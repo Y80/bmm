@@ -60,13 +60,14 @@ export function NavUser() {
                 个人空间
               </ListboxItem>
               <ListboxItem
+                className="max-xs:hidden"
                 href={PageRoutes.User.UPLOAD}
                 startContent={<span className={cn(IconNames.Huge.IMPORT, 'text-base')} />}
               >
                 导入浏览器书签
               </ListboxItem>
             </ListboxSection>
-            <ListboxSection showDivider hidden={!user.isAdmin}>
+            <ListboxSection showDivider hidden={!user.isAdmin} className="max-xs:hidden">
               <ListboxItem
                 href={PageRoutes.Admin.INDEX}
                 startContent={<span className={cn(IconNames.Tabler.DASHBOARD, 'text-base')} />}

@@ -79,7 +79,7 @@ export default function UploadPage() {
           type: 'category',
           // 目录名称最终会作为标签成为 url 中的一部分，因此不能带 / 字符
           // 标签交叉搜索时，会用 + 链接多个标签，因此不能带 + 字符
-          name: h3.innerText.replaceAll('/', '-').replaceAll('+', '-'),
+          name: h3.innerText.replaceAll(/[/+\s]/g, '-'),
           nodes: [],
         }
         const nodes = traverseDl(dl, parentCates.concat(pick(node, 'id', 'name')))

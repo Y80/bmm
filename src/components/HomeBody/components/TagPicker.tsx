@@ -73,7 +73,7 @@ export default function TagPicker(props: Props) {
 
       <div className="grow-0 overflow-auto">
         <ScrollShadow
-          className="flex h-full flex-col gap-2"
+          className="flex h-full flex-col gap-2 scrollbar-hide"
           ref={scrollDivRef}
           role={SCROLL_DIV_ROLE}
         >

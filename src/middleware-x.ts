@@ -2,6 +2,8 @@
 // https://authjs.dev/getting-started/session-management/protecting#nextjs-middleware
 //
 // 即使对于 Server Action（POST 请求，PATH 为调用 Server Action 的页面路径），也会触发该中间件
+//
+// ! 当前中间件已不再生效，所有身份验证通过 makeAction() 配置
 
 import { PageRoutes } from '@cfg'
 import NextAuth from 'next-auth'
@@ -39,8 +41,6 @@ export default auth((req) => {
   ) {
     checkAdmin = false
   }
-  // TODO
-  checkAdmin = false
   if (checkAdmin) {
     // 没登录/登录过期，这里是 null
     if (!req.auth) {

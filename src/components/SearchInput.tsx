@@ -56,7 +56,7 @@ export default function SearchInput(props: BaseComponentProps) {
   return (
     <ReInput
       value={state.input}
-      placeholder={state.focusInput ? '可根据网站名称、拼音、简介搜索' : '网站搜索'}
+      placeholder={state.focusInput ? '可根据网站名称、拼音、简介搜索' : '搜索网站'}
       fullWidth={false}
       classNames={{
         base: props.className,
