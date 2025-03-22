@@ -5,10 +5,6 @@ type OnClickTag = (arg: { tag: SelectTag; isIntersected?: boolean; event?: Mouse
 export interface HomeBodyContext {
   tags: SelectTag[]
   bookmarks: SelectBookmark[]
-  // 当前选中的标签；如果有多个标签，则为交集模式搜索书签
-  selectedTags: SelectTag[]
-  setSelectedTags(tags: SelectTag[]): void
-  onClickTag: OnClickTag
 }
 
 const HomeBodyContext = createContext<HomeBodyContext | null>(null)

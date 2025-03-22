@@ -2,7 +2,7 @@
 
 import { NavUser, ReButton, ThemeToggle } from '@/components'
 import { IconButtonProps, NavBarProps } from '@/components/common'
-import { NavTagPicker } from '@/components/NavTagPicker'
+import { MobileTagPicker } from '@/components/MobileTagPicker'
 import SearchInput from '@/components/SearchInput'
 import { useIsMobile, usePageUtil } from '@/hooks'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
@@ -145,7 +145,7 @@ export function PublicAndUserNavbar(props: Props) {
 
       <NavbarMenuToggle className="xs:hidden" />
       <NavbarMenu className={cn(Background.CLASS, 'dark:bg-opacity-50')}>
-        <NavTagPicker tags={tags} />
+        <MobileTagPicker tags={tags} />
       </NavbarMenu>
     </Navbar>
   )

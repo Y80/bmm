@@ -2,9 +2,7 @@
 
 import { actGetAllPublicTags, actTotalPublicBookmarks } from '@/actions'
 import { runAction } from '@/utils'
-import { PageRoutes } from '@cfg'
 import { useSetState } from 'ahooks'
-import { usePathname } from 'next/navigation'
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 
 export interface PublicContextType {
@@ -33,13 +31,6 @@ export function PublicProvider(props: PropsWithChildren<ContextValuePart>) {
     tags: props.tags,
     totalBookmarks: props.totalBookmarks,
   })
-  const pathname = usePathname()
-  // TODO
-  if (!props.tags.length || !props.totalBookmarks) {
-    if (pathname !== PageRoutes.LOGIN && !pathname.startsWith(PageRoutes.Admin.INDEX)) {
-      // redirect(PageRoutes.LOGIN)
-    }
-  }
 
   const ctxValue = useMemo<PublicContextType>(() => {
     return {

@@ -28,7 +28,7 @@ declare global {
     params: Params
     searchParams: { [key: string]: string | string[] | undefined }
   }
-  export type GenerateMetadata<Params = object> = (
+  export type GenerateMetadata<Params = any> = (
     props: GenerateMetaDataProps<Params>,
     parent: ResolvingMetadata
   ) => Awaited<Metadata> | Promise<Awaited<Metadata>>

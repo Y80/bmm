@@ -1,4 +1,4 @@
-import { getScrollElement, TAG_PICKER_SCROLL_TOP_KEY } from '@/components/NavTagPicker'
+import { TagPickerBox } from '@/components/common'
 import { PageRoutes } from '@cfg'
 import { useParams, useRouter } from 'next/navigation'
 import { MouseEvent, useCallback, useEffect, useState } from 'react'
@@ -18,7 +18,8 @@ export function useOnClickTag({ tags }: { tags: SelectTag[] }) {
 
   // 根据 slug 更新 selectedTags
   useEffect(() => {
-    const slug = decodeURIComponent(params.slug as string)
+    if (Array.isArray(params.slug)) return
+    const slug = decodeURIComponent(params.slug)
     const selectedTags = slug
       .split('+')
       .map((tagName) => tags.find((tag) => tag.name === tagName))
@@ -27,13 +28,10 @@ export function useOnClickTag({ tags }: { tags: SelectTag[] }) {
   }, [params.slug, tags])
 
   const onClickTag = useCallback<OnClickTag>(
-    function onClickTag({ tag, isIntersected, event }) {
+    ({ tag, isIntersected, event }) => {
       const tagNames = selectedTags.map((t) => t.name)
       if (tagNames.includes(tag.name)) return
-      localStorage.setItem(
-        TAG_PICKER_SCROLL_TOP_KEY,
-        (getScrollElement()?.scrollTop || 0).toString()
-      )
+      TagPickerBox.saveScrollTop()
       // 是否执行标签的交叉搜索
       isIntersected ||= event?.altKey
       const finalTagNames = isIntersected ? [...tagNames, tag.name] : [tag.name]

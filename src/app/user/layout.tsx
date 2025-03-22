@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation'
 import { PropsWithChildren } from 'react'
 import { UserContextProvider } from './ctx'
 
-export const generateMetadata: GenerateMetadata = async () => {
+export const generateMetadata = async () => {
   const session = await auth()
   const userName = session?.user.name || ''
   return {

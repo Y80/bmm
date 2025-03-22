@@ -11,6 +11,7 @@ import { SelectedIcon } from '@/components/IconPicker'
 import { ReInput, ReTooltip } from '@/components/re-export'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import useSlug from '@/hooks/useSlug'
+import { FieldConstraints } from '@cfg'
 import { Accordion, AccordionItem, addToast, Switch } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { useSetState } from 'ahooks'
@@ -112,7 +113,7 @@ export default function TagSlugPage(props: TagSlugPageProps) {
       <ReInput
         label="名称"
         isRequired
-        maxLength={20}
+        maxLength={FieldConstraints.MaxLen.TAG_NAME}
         value={tag.name}
         onValueChange={(name) => setTag({ name })}
         endContent={

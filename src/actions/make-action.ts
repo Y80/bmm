@@ -21,37 +21,42 @@ interface MakeActionOptions {
   /** 方便 Debug */
   name?: string
 }
-export interface MakeActionInput<Arg, Data> extends MakeActionOptions {
-  handler: (...args: Arg[]) => Promise<Data>
+
+interface MakeActionOptionsWithHandler<Args extends any[], Data> extends MakeActionOptions {
+  handler: (...args: Args) => Promise<Data>
 }
 
-type MakeActionArgs<Arg, Data> =
-  | [MakeActionInput<Arg, Data>['handler'], MakeActionOptions?]
-  | [MakeActionInput<Arg, Data>]
-
 /** 这个辅助函数可以避免应用时输入泛型类型 */
-export function makeActionInput<Arg, Data>(input: MakeActionInput<Arg, Data>) {
+export function makeActionInput<Args extends any[], Data>(
+  input: MakeActionOptionsWithHandler<Args, Data>
+) {
   return input
 }
 
-export function makeAction<Arg, Data>(...makeArgs: MakeActionArgs<Arg, Data>) {
+type MakeActionArgs<Args extends any[], Data> =
+  | [MakeActionOptionsWithHandler<Args, Data>['handler'], MakeActionOptions?]
+  | [MakeActionOptionsWithHandler<Args, Data>]
+export function makeAction<Args extends any[], Data>(...makeArgs: MakeActionArgs<Args, Data>) {
   const handler = makeArgs[0] instanceof Function ? makeArgs[0] : makeArgs[0].handler
   const opts = (makeArgs[0] instanceof Function ? makeArgs[1] : omit(makeArgs[0], 'handler')) || {}
   opts.guard ??= 'user'
   // type NewPayload = typeof opts.schema extends ZodSchema ? z.infer<typeof opts.schema> : Payload
-  type NewArgs = typeof opts.schema extends ZodSchema ? [z.infer<typeof opts.schema>] : Arg[]
+  type NewArgs = typeof opts.schema extends ZodSchema
+    ? [z.infer<typeof opts.schema>]
+    : Parameters<typeof handler>
+  type ErrorResult = { readonly error: { msg: string }; data?: undefined }
   return async (...args: NewArgs) => {
-    type ErrorResult = { readonly error: { msg: string }; data?: undefined }
     // type SuccessResult = { readonly error?: undefined; readonly data: Data }
-    let payload = args[0]
+    // let payload = args[0]
     if (opts.schema) {
-      const result = opts.schema.safeParse(payload)
+      const result = opts.schema.safeParse(args[0])
       if (!result.success) {
         return {
           error: { msg: '参数错误：' + result.error.issues.pop()?.message || '未知的参数错误' },
         } as ErrorResult
       }
-      payload = result.data
+      // payload = result.data
+      args[0] = result.data
     }
 
     if (opts.guard) {
@@ -75,7 +80,7 @@ export function makeAction<Arg, Data>(...makeArgs: MakeActionArgs<Arg, Data>) {
       }
     }
 
-    const [error, data] = await to(handler(payload))
+    const [error, data] = await to(handler(...args))
     if (error) {
       process.env.NODE_ENV === 'development' && console.error(error)
       return { error: { msg: getErrorMsg(error) } } as ErrorResult
@@ -83,7 +88,9 @@ export function makeAction<Arg, Data>(...makeArgs: MakeActionArgs<Arg, Data>) {
     return { data, error: undefined } as const
   }
 }
-export type ActionResult<T> = ReturnType<ReturnType<typeof makeAction<unknown, T>>>
+export type ActionResult<Args extends any[], Data> = ReturnType<
+  ReturnType<typeof makeAction<Args, Data>>
+>
 
 function getErrorMsg(error: unknown) {
   if (SqlXError.canParse(error)) {

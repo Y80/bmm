@@ -1,6 +1,7 @@
 import Favicon from '@/components/Favicon'
 import { SelectPublicBookmark } from '@/controllers/PublicBookmark.controller'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
+import { useOnClickTag } from '@/hooks/useOnClickTag'
 import { Chip, cn } from '@heroui/react'
 import { useHomePageContext } from '../ctx'
 
@@ -12,7 +13,8 @@ interface Props extends SelectPublicBookmark {
 }
 
 export default function BookmarkCard(props: Props) {
-  const { onClickTag, tags } = useHomePageContext()
+  const { tags } = useHomePageContext()
+  const { onClickTag } = useOnClickTag({ tags })
 
   return (
     <div

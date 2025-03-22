@@ -1,28 +1,38 @@
 import { FieldConstraints } from '@cfg'
 import { relations } from 'drizzle-orm'
-import { alias, integer, primaryKey, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core'
+import {
+  alias,
+  boolean,
+  integer,
+  pgTable,
+  primaryKey,
+  serial,
+  timestamp,
+  unique,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import { users } from './auth'
 
 /**
  * 用户标签表
  */
-export const userTags = sqliteTable(
+export const userTags = pgTable(
   'userTags',
   {
-    id: integer('id').primaryKey({ autoIncrement: true }),
-    name: text('name', { length: FieldConstraints.MaxLen.TAG_NAME }).notNull().unique(),
-    icon: text('icon'),
-    color: text('color'),
-    isMain: integer('isMain', { mode: 'boolean' }),
-    pinyin: text('pinyin').default(''),
+    id: serial('id').primaryKey(),
+    name: varchar('name', { length: FieldConstraints.MaxLen.TAG_NAME }).notNull(),
+    icon: varchar('icon', { length: 255 }),
+    color: varchar('color', { length: 255 }),
+    isMain: boolean('isMain'),
+    pinyin: varchar('pinyin', { length: 255 }),
     sortOrder: integer('sortOrder').notNull().default(0),
-    createdAt: integer('createdAt', { mode: 'timestamp' })
+    createdAt: timestamp('createdAt', { mode: 'date' })
       .notNull()
       .$defaultFn(() => new Date()),
-    updatedAt: integer('updatedAt', { mode: 'timestamp' })
+    updatedAt: timestamp('updatedAt', { mode: 'date' })
       .notNull()
       .$defaultFn(() => new Date()),
-    userId: text('userId')
+    userId: varchar('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
@@ -33,13 +43,13 @@ export const userTags = sqliteTable(
  * 标签之间的关系表
  * Tag : Tag = M : N
  */
-export const userTagToTag = sqliteTable(
+export const userTagToTag = pgTable(
   'userTagToTag',
   {
-    a: integer('a')
+    a: serial('a')
       .notNull()
       .references(() => userTags.id, { onDelete: 'cascade' }),
-    b: integer('b')
+    b: serial('b')
       .notNull()
       .references(() => userTags.id, { onDelete: 'cascade' }),
   },
@@ -49,34 +59,34 @@ export const userTagToTag = sqliteTable(
 /**
  * 用户书签表
  */
-export const userBookmarks = sqliteTable(
+export const userBookmarks = pgTable(
   'userBookmarks',
   {
-    id: integer('id').primaryKey({ autoIncrement: true }),
-    name: text('name', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).notNull(),
-    url: text('url').notNull(),
-    icon: text('icon'),
-    pinyin: text('pinyin'),
-    description: text('description', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
-    isPinned: integer('isPinned', { mode: 'boolean' }),
-    createdAt: integer('createdAt', { mode: 'timestamp' })
+    id: serial('id').primaryKey(),
+    name: varchar('name', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).notNull(),
+    url: varchar('url').notNull(),
+    icon: varchar('icon'),
+    pinyin: varchar('pinyin'),
+    description: varchar('description'),
+    isPinned: boolean('isPinned'),
+    createdAt: timestamp('createdAt', { mode: 'date' })
       .notNull()
       .$defaultFn(() => new Date()),
-    updatedAt: integer('updatedAt', { mode: 'timestamp' })
+    updatedAt: timestamp('updatedAt', { mode: 'date' })
       .notNull()
       .$defaultFn(() => new Date()),
-    userId: text('userId')
+    userId: varchar('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
-  (table) => [unique().on(table.id, table.userId)]
+  (table) => [unique().on(table.name, table.userId), unique().on(table.userId, table.url)]
 )
 
 /**
  * 书签与标签的关系表
  * Bookmark : Tag = M : N
  */
-export const userBookmarkToTag = sqliteTable(
+export const userBookmarkToTag = pgTable(
   'userBookmarkToTag',
   {
     bId: integer('bId')

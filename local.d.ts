@@ -1,4 +1,4 @@
 declare global {
-  type DB_DRIVER ='sqlite'
+  type DB_DRIVER ='postgresql'
 }
 export {}

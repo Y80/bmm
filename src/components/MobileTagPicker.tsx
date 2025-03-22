@@ -7,23 +7,14 @@ import { ScrollShadow, Switch, cn } from '@heroui/react'
 import { useMount, useSetState, useUpdateEffect } from 'ahooks'
 import { isEqual } from 'lodash'
 import { CSSProperties, useLayoutEffect, useRef } from 'react'
-
-const SCROLL_DIV_ROLE = 'tag-picker-scroll-div'
-
-const ONLY_MAIN_KEY = 'only-main-tags'
-
-export const TAG_PICKER_SCROLL_TOP_KEY = 'tag picker last scrollTop'
-
-export function getScrollElement() {
-  return document.querySelector(`div[role="${SCROLL_DIV_ROLE}"]`)
-}
+import { TagPickerBox } from './common'
 
 interface Props {
   tags: SelectTag[]
   className?: string
   style?: CSSProperties
 }
-export function NavTagPicker(props: Props) {
+export function MobileTagPicker(props: Props) {
   const { tags } = props
   const { selectedTags, onClickTag } = useOnClickTag({ tags })
 
@@ -47,18 +38,18 @@ export function NavTagPicker(props: Props) {
       setState({ showTags })
     }
     // 每次进入不同的 /tag/$slug，元素滚动位置都会丢失，这里手动恢复
-    const lastPosition = parseInt(localStorage.getItem(TAG_PICKER_SCROLL_TOP_KEY) || '')
+    const lastPosition = TagPickerBox.getScrollTop()
     if (lastPosition > 0) {
       scrollDivRef.current?.scrollTo({ top: lastPosition })
     }
   }, [state.filterTagInput, state.onlyMain, tags, state.showTags, setState])
 
   useMount(() => {
-    setState({ onlyMain: localStorage.getItem(ONLY_MAIN_KEY) === 'true' })
+    setState({ onlyMain: TagPickerBox.getOnlyMain() })
   })
 
   useUpdateEffect(() => {
-    localStorage.setItem(ONLY_MAIN_KEY, String(state.onlyMain))
+    TagPickerBox.setOnlyMain(state.onlyMain)
   }, [state.onlyMain])
 
   return (
@@ -78,7 +69,7 @@ export function NavTagPicker(props: Props) {
         <ScrollShadow
           className="flex h-full flex-col gap-2"
           ref={scrollDivRef}
-          role={SCROLL_DIV_ROLE}
+          role={TagPickerBox.SCROLLER_ROLE}
         >
           {state.showTags.map((tag) => {
             // 交互优化：/tag/:slug 仅 slug 变化时，减少重渲染

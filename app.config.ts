@@ -123,3 +123,11 @@ export const ExternalLinks = {
 
 /** 默认情况下每页获取的书签个数；出于栅格布局的考虑这里选用 24 */
 export const DEFAULT_BOOKMARK_PAGESIZE = 24
+
+export const FieldConstraints = {
+  MaxLen: {
+    TAG_NAME: 20,
+    BOOKMARK_NAME: 30,
+    BOOKMARK_DESC: 255,
+  },
+} as const

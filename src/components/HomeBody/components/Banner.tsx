@@ -1,5 +1,6 @@
 import { GradientText } from '@/components'
 import { usePageUtil } from '@/hooks'
+import { useOnClickTag } from '@/hooks/useOnClickTag'
 import { PageRoutes, WEBSITE_NAME } from '@cfg'
 import { Chip } from '@heroui/react'
 import { useSession } from 'next-auth/react'
@@ -25,7 +26,8 @@ export default function Banner(props: Props) {
   const searchParams = useSearchParams()
   const session = useSession()
   const { tags, totalBookmarks } = props
-  const { bookmarks, selectedTags, onClickTag } = useHomePageContext()
+  const { bookmarks } = useHomePageContext()
+  const { selectedTags, onClickTag } = useOnClickTag({ tags })
   const routes = pageUtil.isUserSpace ? PageRoutes.User : PageRoutes.Public
 
   if (pathname === routes.INDEX) {

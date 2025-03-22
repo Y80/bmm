@@ -13,7 +13,7 @@ import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil, useSlug } from '@/hooks'
 import { z } from '@/lib/zod'
 import { isValidUrl, runAction } from '@/utils'
-import { IconNames, PageRoutes } from '@cfg'
+import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import {
   cn,
   Dropdown,
@@ -235,7 +235,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       <ReInput
         label="名称"
         isRequired
-        maxLength={30}
+        maxLength={FieldConstraints.MaxLen.TAG_NAME}
         isInvalid={!!invalidInfos.name}
         errorMessage={invalidInfos.name}
         value={bookmark.name}
@@ -261,6 +261,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       />
       <ReTextarea
         label="描述"
+        maxLength={FieldConstraints.MaxLen.BOOKMARK_DESC}
         value={bookmark.description || ''}
         onValueChange={(v) => setBookmark({ description: v })}
       />

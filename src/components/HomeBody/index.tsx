@@ -5,13 +5,13 @@ import { Assets, PageRoutes } from '@cfg'
 import { Divider } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import Image from 'next/image'
-import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import { useEffect, useMemo } from 'react'
 import Banner from './components/Banner'
 import BookmarkCard from './components/BookmarkCard'
 import BookmarkContainer from './components/BookmarkContainer'
 import LoadMore from './components/LoadMore'
-import TagPicker, { TAG_PICKER_SCROLL_TOP_KEY, getScrollElement } from './components/TagPicker'
+import TagPicker from './components/TagPicker'
 import { HomeBodyContext, HomeBodyProvider } from './ctx'
 
 interface Props {
@@ -21,12 +21,10 @@ interface Props {
 }
 
 export default function HomeBody(props: Props) {
-  const router = useRouter()
   const pathname = usePathname()
   const params = useParams()
   const isClient = useIsClient()
   const isUserSpace = usePageUtil().isUserSpace
-  const { tags } = props
   const [state, setState] = useSetState({
     bookmarks: props.bookmarks || [],
     selectedTags: [] as SelectTag[],
@@ -47,10 +45,10 @@ export default function HomeBody(props: Props) {
     const slug = decodeURIComponent(params.slug as string)
     const selectedTags = slug
       .split('+')
-      .map((tagName) => tags.find((tag) => tag.name === tagName))
+      .map((tagName) => props.tags.find((tag) => tag.name === tagName))
       .filter(Boolean) as SelectTag[]
     setState({ selectedTags })
-  }, [params.slug, tags, setState])
+  }, [params.slug, props.tags, setState])
 
   const bookmarks = state.bookmarks
   const isSearchPage = pathname === (isUserSpace ? PageRoutes.User : PageRoutes.Public).SEARCH
@@ -60,23 +58,8 @@ export default function HomeBody(props: Props) {
     return {
       tags: props.tags,
       bookmarks: state.bookmarks,
-      selectedTags: state.selectedTags,
-      setSelectedTags: (tags) => setState({ selectedTags: tags }),
-      onClickTag: ({ tag, isIntersected, event }) => {
-        const tagNames = state.selectedTags.map((t) => t.name)
-        if (tagNames.includes(tag.name)) return
-        localStorage.setItem(
-          TAG_PICKER_SCROLL_TOP_KEY,
-          (getScrollElement()?.scrollTop || 0).toString()
-        )
-        // 是否执行标签的交叉搜索
-        isIntersected ||= event?.altKey
-        const finalTagNames = isIntersected ? [...tagNames, tag.name] : [tag.name]
-        const newPath = (isUserSpace ? PageRoutes.User : PageRoutes.Public).tags(finalTagNames)
-        router.push(newPath)
-      },
     }
-  }, [props.tags, state.bookmarks, state.selectedTags, setState, isUserSpace, router])
+  }, [props.tags, state.bookmarks])
 
   const showEnd = isClient && !!bookmarks.length && (isHomePage ? state.hasMore === false : true)
 
@@ -87,7 +70,7 @@ export default function HomeBody(props: Props) {
       </aside>
       <div className="xs:ml-56">
         <div className="flex flex-col px-6 pb-14">
-          <Banner tags={tags} totalBookmarks={props.totalBookmarks} />
+          <Banner tags={props.tags} totalBookmarks={props.totalBookmarks} />
           <BookmarkContainer>
             {bookmarks.map((bookmark) => {
               return <BookmarkCard {...bookmark} key={bookmark.id} />

@@ -120,11 +120,11 @@ export function isServerless() {
 /**
  * 处理 Action 结果，自动 toast 展示错误信息，返回 ok 和 data?
  */
-export async function runAction<T>(
-  actionRes: ActionResult<T>,
+export async function runAction<U extends any[], Data>(
+  actionRes: ActionResult<U, Data>,
   opts: {
     okMsg?: string
-    onOk?: (data: T) => void | Promise<void>
+    onOk?: (data: Data) => void | Promise<void>
   } = {}
 ) {
   const res = await actionRes
