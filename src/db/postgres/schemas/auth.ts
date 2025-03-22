@@ -1,4 +1,5 @@
 import { boolean, integer, pgEnum, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core'
+import { nanoid } from 'nanoid'
 import { AdapterAccountType } from 'next-auth/adapters'
 
 export const roleEnum = pgEnum('role', ['admin', 'user'])
@@ -6,7 +7,7 @@ export const roleEnum = pgEnum('role', ['admin', 'user'])
 export const users = pgTable('user', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+    .$defaultFn(() => nanoid()),
   name: text('name'),
   email: text('email').notNull(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),

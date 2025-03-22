@@ -1,10 +1,11 @@
 import { integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { nanoid } from 'nanoid'
 import type { AdapterAccountType } from 'next-auth/adapters'
 
 export const users = sqliteTable('user', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+    .$defaultFn(() => nanoid()),
   name: text('name'),
   email: text('email').notNull(),
   emailVerified: integer('emailVerified', { mode: 'timestamp_ms' }),

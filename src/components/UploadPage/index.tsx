@@ -16,6 +16,7 @@ import { useSetState } from 'ahooks'
 import { TreeDataNode } from 'antd'
 import { motion } from 'framer-motion'
 import { pick } from 'lodash'
+import { nanoid } from 'nanoid'
 import dynamic from 'next/dynamic'
 import { useMemo, useRef } from 'react'
 import { LinkTagStrategy } from './common'
@@ -75,7 +76,7 @@ export default function UploadPage() {
       const a = dt.querySelector<HTMLAnchorElement>('& > a')
       if (h3 && dl) {
         const node: CategoryNode = {
-          id: window.crypto.randomUUID(),
+          id: nanoid(),
           type: 'category',
           // 目录名称最终会作为标签成为 url 中的一部分，因此不能带 / 字符
           // 标签交叉搜索时，会用 + 链接多个标签，因此不能带 + 字符
@@ -90,7 +91,7 @@ export default function UploadPage() {
       }
       if (a) {
         const node: BookmarkNode = {
-          id: window.crypto.randomUUID(),
+          id: nanoid(),
           type: 'bookmark',
           url: a.href,
           name: a.innerText,

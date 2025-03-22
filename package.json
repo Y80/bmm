@@ -19,7 +19,7 @@
     "db:migrate-p": "tsx scripts/db-migration.zx --production"
   },
   "engines": {
-    "node": ">20.0.0"
+    "node": ">18.0.0"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.1",
@@ -58,6 +58,7 @@
     "iconv-lite": "0.6.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.441.0",
+    "nanoid": "^5.1.5",
     "next": "14.2.17",
     "next-auth": "5.0.0-beta.25",
     "next-themes": "0.3.0",
