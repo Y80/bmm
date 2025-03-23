@@ -1,9 +1,9 @@
 <div align="center">
   <img width="120" src="./doc/images/logo.svg">
   <br>
-  <h3 style="font-size: 30px">BMM</h3>
+  <h3 style="font-size: 3rem">BMM</h3>
   <p>收纳、分享、探索优质网站</p>
-  <i>BMM / bookmark master / 你的专属书签管家</i>
+  <i>BMM / bookmark manager / 你的专属书签管家</i>
 </div>
 
 <br>

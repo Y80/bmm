@@ -3,11 +3,11 @@ import { useParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function useSlug() {
+  const { slug } = useParams<{ slug?: string }>()
   const [state, setState] = useSetState({
     isNew: false,
-    number: null as null | number,
+    number: slug ? Number(slug) : 0,
   })
-  const { slug } = useParams<{ slug?: string }>()
 
   useEffect(() => {
     if (slug === 'new') {

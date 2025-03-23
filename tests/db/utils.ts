@@ -1,7 +1,8 @@
-import { InsertPublicTag, db, schema } from '@/db'
+import { db, schema } from '@/db'
 import { faker } from '@faker-js/faker'
 
 const { publicTags } = schema
+type InsertPublicTag = typeof schema.publicTags.$inferInsert
 
 export function mockTag() {
   const tag: InsertPublicTag = {

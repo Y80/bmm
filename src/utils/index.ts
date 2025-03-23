@@ -1,7 +1,7 @@
-import { SelectPublicTag } from '@/db'
-import { type ClassValue, clsx } from 'clsx'
+import { ActionResult } from '@/actions/make-action'
+import { PageRoutes } from '@cfg'
+import { addToast } from '@heroui/react'
 import { pinyin } from 'pinyin-pro'
-import { twMerge } from 'tailwind-merge'
 
 export function isValidUrl(url?: string) {
   try {
@@ -84,10 +84,10 @@ export function createQueryObject(url: string) {
 
 export function testTagNameOrPinyin(
   input: string,
-  tag: Partial<Pick<SelectPublicTag, 'name' | 'pinyin'>>
+  tag: Partial<Pick<SelectTag, 'name' | 'pinyin'>>
 ) {
   const { name = '' } = tag
-  let { pinyin = '' } = tag
+  let pinyin = tag.pinyin || ''
   if (!pinyin && name) {
     pinyin = getPinyin(name)
   }
@@ -117,6 +117,62 @@ export function isServerless() {
   return process.env.SERVERLESS || process.env.VERCEL
 }
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+/**
+ * 处理 Action 结果，自动 toast 展示错误信息，返回 ok 和 data?
+ */
+export async function runAction<U extends any[], Data>(
+  actionRes: ActionResult<U, Data>,
+  opts: {
+    okMsg?: string
+    onOk?: (data: Data) => void | Promise<void>
+  } = {}
+) {
+  const res = await actionRes
+  if (res.error) {
+    addToast({
+      color: 'danger',
+      title: '操作失败',
+      description: res.error.msg,
+    })
+    return { ok: false } as const
+  }
+  if (opts.okMsg) {
+    addToast({
+      color: 'success',
+      title: '操作成功',
+      description: opts.okMsg,
+    })
+  }
+  opts.onOk?.(res.data)
+  return { ok: true, data: res.data } as const
+}
+
+/**
+ *
+ * @param urlOrPath
+ * @returns
+ */
+export function pageSpace(urlOrPath?: 'auto' | (string & {}) | null) {
+  if (urlOrPath === 'auto') {
+    urlOrPath = globalThis.location?.pathname
+  }
+  urlOrPath ??= ''
+  if (urlOrPath.startsWith('http') && URL.canParse(urlOrPath)) {
+    urlOrPath = new URL(urlOrPath).pathname
+  }
+  return {
+    isAdmin: urlOrPath.startsWith(PageRoutes.Admin.INDEX),
+    isUser: urlOrPath.startsWith(PageRoutes.User.INDEX),
+  }
+}
+
+export async function testUrl(url: string, opts?: { timeout?: number }) {
+  const [err] = await to(
+    fetch(url, {
+      method: 'HEAD',
+      mode: 'no-cors',
+      signal: AbortSignal.timeout(opts?.timeout || 5000),
+    })
+  )
+  return !err
 }

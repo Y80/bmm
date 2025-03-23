@@ -1,4 +1,5 @@
 import { isServerless } from '@/utils'
+import { initGlobalData } from '@/utils/global-data'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from '../schemas'
@@ -10,9 +11,6 @@ Tip: 如果手动注入了环境变量，确保手动注入环境变量操作完
 `
   )
 }
-
-// 避免 Next.js 热更新导致的重复创建连接
-const g = global as typeof globalThis & { _pgSql: postgres.Sql }
 
 function createOpts(): postgres.Options<any> {
   if (isServerless()) {
@@ -26,10 +24,11 @@ function createOpts(): postgres.Options<any> {
   return { idle_timeout: 60 * 5 }
 }
 
-if (!g._pgSql) {
-  g._pgSql = postgres(process.env.DB_CONNECTION_URL, createOpts())
-}
+export const pgSql = initGlobalData({
+  key: 'pg-sql',
+  initialData() {
+    return postgres(process.env.DB_CONNECTION_URL, createOpts())
+  },
+})
 
-export const db = drizzle(g._pgSql, { schema })
-
-export const pgSql = g._pgSql
+export const db = drizzle(pgSql, { schema })

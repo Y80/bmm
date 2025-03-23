@@ -1,5 +1,5 @@
 import { db, schema } from '@/db'
-import { isServerless } from '@/utils'
+import { initGlobalData } from '@/utils/global-data'
 import { and, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
 
 const { publicTagToTag, publicTags } = schema
@@ -7,7 +7,7 @@ const { publicTagToTag, publicTags } = schema
 export type { SelectTag as SelectPublicTag }
 
 interface TagIdsExt {
-  relatedTagIds: (typeof publicTags.$inferSelect)['id'][]
+  relatedTagIds: TagId[]
 }
 
 type SelectTag = TagIdsExt & typeof publicTags.$inferSelect
@@ -16,39 +16,36 @@ type InsertTag = Partial<TagOnlyIdRequired> & Pick<SelectTag, 'name'>
 
 type TagOnlyIdRequired = Partial<Omit<SelectTag, 'id'>> & Pick<SelectTag, 'id'>
 
-async function upsertTagToTagRelations(id: SelectTag['id'], tagIds: SelectTag['id'][]) {
-  const tasks = [
-    db
-      .insert(publicTagToTag)
-      .values(tagIds.map((relatedTagId) => ({ a: id, b: relatedTagId })))
-      .onConflictDoNothing(),
-    db
-      .delete(publicTagToTag)
-      .where(and(eq(publicTagToTag.a, id), notInArray(publicTagToTag.b, tagIds))),
-  ]
-  await Promise.all(tasks)
-  return
-}
+const cacheAllTags = initGlobalData({
+  key: 'cache-all-public-tags',
+  initialData() {
+    const data = {
+      value: null as null | SelectTag[],
+      reset() {
+        data.value = null
+      },
+    }
+    return data
+  },
+})
 
-module PublicTagController {
-  let cachedAllTags: null | SelectTag[] = null
+namespace PublicTagController {
   export async function getAll() {
-    // serverless 环境总是获取最新的数据
-    if (isServerless() || !cachedAllTags) {
+    if (!cacheAllTags.value) {
       const tags = await db.query.publicTags.findMany({
         with: { relatedTagIds: { columns: { b: true } } },
         orderBy: [desc(publicTags.sortOrder), desc(publicTags.createdAt)],
       })
-      cachedAllTags = tags.map((tag) => ({
+      cacheAllTags.value = tags.map((tag) => ({
         ...tag,
         relatedTagIds: tag.relatedTagIds.map((el) => el.b),
       }))
     }
-    return cachedAllTags
+    return cacheAllTags.value
   }
 
   export async function insert(tag: InsertTag) {
-    cachedAllTags = null
+    cacheAllTags.reset()
     const { relatedTagIds, ...resetTag } = tag
     const rows = await db.insert(publicTags).values(resetTag).returning()
     if (relatedTagIds?.length) {
@@ -63,7 +60,7 @@ module PublicTagController {
   }
 
   export async function update(tag: TagOnlyIdRequired) {
-    cachedAllTags = null
+    cacheAllTags.reset()
     const { id, relatedTagIds, ...resetTag } = tag
     const tasks = []
     if (Object.keys(resetTag).length) {
@@ -98,7 +95,7 @@ module PublicTagController {
   }
 
   export async function remove(tag: TagOnlyIdRequired) {
-    cachedAllTags = null
+    cacheAllTags.reset()
     const res = await db.delete(publicTags).where(eq(publicTags.id, tag.id)).returning()
     return res
   }
@@ -108,18 +105,20 @@ module PublicTagController {
     return (await getAll()).map(({ name }) => name)
   }
 
-  export async function updateSortOrders(orders: { id: number; order: number }[]) {
+  export async function sort(orders: { id: number; order: number }[]) {
     const tasks = orders.map((el) => {
       return db.update(publicTags).set({ sortOrder: el.order }).where(eq(publicTags.id, el.id))
     })
+    cacheAllTags.reset()
     await Promise.all(tasks)
   }
 
   /** 根据标签名称列表，尝试创建每个标签，并返回每个标签的 id */
   export async function tryCreateTags(names: string[]) {
+    cacheAllTags.reset()
     const res = await db
       .insert(publicTags)
-      .values(names.map((name) => ({ name })))
+      .values(names.map((name) => ({ name, isMain: true })))
       .returning()
       .onConflictDoNothing()
     if (res.length === names.length) return res

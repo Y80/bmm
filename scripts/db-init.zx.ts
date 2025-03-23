@@ -1,29 +1,9 @@
 #!/usr/bin/env zx
 
 import 'zx/globals'
-import { dbExecute, exitWithDbClose, loadEnv, testDbConnect } from './utils'
+import { dbExecute, declareLocalType, exitWithDbClose, loadEnv, testDbConnect } from './utils'
 
 // 根据环境变量 process.env.DB_DRIVER 声明 type DB_DRIVER
-async function declareLocalType() {
-  if (!process.env.DB_DRIVER) throw new Error('环境变量 DB_DRIVER 未定义')
-  const targetPath = path.resolve('local.d.ts')
-  const fileContent = `
-declare global {
-  type DB_DRIVER ='${process.env.DB_DRIVER}'
-}
-export {}
-`.trim()
-  try {
-    // 仅当内容变化时才写入
-    const existingContent = await fs.readFile(targetPath, 'utf8').catch(() => '')
-    if (existingContent.trim() === fileContent) return
-    await fs.writeFile(targetPath, fileContent, { encoding: 'utf-8' })
-    console.log(`Type declaration updated at ${targetPath}`)
-  } catch (error) {
-    console.error('Failed to generate type declaration:', error)
-    process.exit(1)
-  }
-}
 
 // 数据库是否已经初始化（通过检测表 publicBookmarks 是否存在）
 async function testDBInitialed() {
@@ -51,7 +31,7 @@ async function main() {
 
   await declareLocalType()
 
-  const prefix = chalk.bold.cyan('[INIT-DATABASE]: ')
+  const prefix = chalk.bold.cyan('[INIT-DATABASE] ')
   echo(prefix + '开始执行数据库初始化脚本')
 
   if (!(await testDbConnect())) {
@@ -59,7 +39,7 @@ async function main() {
     process.exit(1)
   }
 
-  echo(chalk.green('✅ 数据库连接成功'))
+  echo(prefix + chalk.green('✅ 数据库连接成功'))
 
   try {
     const dbInitialed = await testDBInitialed()
@@ -71,7 +51,6 @@ async function main() {
       echo(prefix + chalk.green('✅ 已生成本地快照'))
       await $`pnpm drizzle-kit migrate`
       echo(prefix + chalk.green('✅ 数据库初始化成功'))
-      echo(prefix + '💡 建议通过 git 提交生成的快照，以便后续数据库迁移\n')
     }
     exitWithDbClose()
   } catch (err) {

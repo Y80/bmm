@@ -42,7 +42,7 @@ export module PublicBookmarkHandler {
   }
 }
 
-export module PublicTagHandler {
+export namespace PublicTagHandler {
   export async function getAll() {
     return await PublicTagController.getAll()
   }

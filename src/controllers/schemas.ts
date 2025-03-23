@@ -3,6 +3,7 @@ import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
 
 export const findManyBookmarksSchema = z.object({
   keyword: z.string().optional(),
+  tagNames: z.string().array().optional(),
   tagIds: z
     .string()
     .or(z.number())

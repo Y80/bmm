@@ -1,7 +1,9 @@
-import { Button, Divider } from "@heroui/react"
+'use client'
+
+import { Button, Divider } from '@heroui/react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { PropsWithChildren } from 'react'
-import ReButton from './re-export/ReButton'
+import { ReButton } from './re-export'
 
 interface Props {
   isSaving?: boolean
@@ -20,7 +22,7 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
         <span className="mr-4 rounded-xl bg-foreground-200 px-4 py-1 text-foreground">
           {slug === 'new' ? '新建' : '编辑'}
         </span>
-        <span>{pathname.includes('tag') ? '标签' : '书签'}</span>
+        <span>{pathname.includes('/tag') ? '标签' : '书签'}</span>
       </h1>
       <Divider className="my-16" />
       {/* 要求：表单项目垂直排列、间距固定为 6 */}
@@ -31,7 +33,7 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
       <Button
         className="mt-20 w-full"
         isLoading={props.isSaving}
-        onClick={router.back}
+        onPress={router.back}
         startContent={<span className="icon-[tabler--arrow-back] text-xl" />}
       >
         返 回

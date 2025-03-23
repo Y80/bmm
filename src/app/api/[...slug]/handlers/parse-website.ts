@@ -1,7 +1,7 @@
 import { z } from '@/lib/zod'
 import fetchHtml from '@/utils/fetch-html'
 
-async function parseWebsite(inputUrl: string) {
+export async function parseWebsite({ inputUrl }: { inputUrl: string }) {
   const { html, url } = await fetchHtml(new URL(inputUrl).origin)
   const rst = parseHtml(html, url)
   if (!rst.icon) {
@@ -11,7 +11,6 @@ async function parseWebsite(inputUrl: string) {
       rst.icon = url + '/favicon.ico'
     }
   }
-
   return rst
 }
 
@@ -54,5 +53,5 @@ function parseHtml(html: string, origin: string) {
 export async function handleParseWebsite(req: Request) {
   const schema = z.object({ url: z.string().url() })
   const res = schema.parse(await req.json())
-  return await parseWebsite(res.url)
+  return await parseWebsite({ inputUrl: res.url })
 }

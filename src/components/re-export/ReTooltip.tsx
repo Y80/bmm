@@ -1,6 +1,5 @@
-import { Tooltip } from '@heroui/react'
-import { ComponentProps } from 'react'
+import { Tooltip, TooltipProps } from '@heroui/react'
 
-export default function ReTooltip(props: ComponentProps<typeof Tooltip>) {
+export default function ReTooltip(props: TooltipProps) {
   return <Tooltip showArrow {...props} />
 }

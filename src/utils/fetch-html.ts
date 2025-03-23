@@ -20,9 +20,8 @@ export default async function fetchHtml(url: string) {
     if (err.name === 'TimeoutError') {
       throw new Error('获取 HTML 超时')
     }
-    throw new Error('未知错误：获取 HTML 失败')
+    throw new Error('获取 HTML 失败')
   }
-  // console.log(res.url)
 
   return {
     html: decodeHtml(Buffer.from(await res.arrayBuffer())),

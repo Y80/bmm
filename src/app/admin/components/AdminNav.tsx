@@ -1,17 +1,17 @@
 'use client'
 
-import { useGlobalContext } from '@/app/ctx'
-import { NavIconOnlyButtonProps } from '@/components/MainPage/components/Nav'
-import ReButton from '@/components/re-export/ReButton'
+import { IconButtonProps, NavBarProps } from '@/components/common'
+import { ReButton } from '@/components/re-export'
 import ThemeToggle from '@/components/ThemeToggle'
-import { ADMIN_NAV_LINKS, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
+import { ADMIN_NAV_LINKS, Assets, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import { cn, Link, Navbar, NavbarContent } from '@heroui/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { useAdminContext } from '../ctx'
 
 export default function AdminNav() {
   const pathname = usePathname()
-  const { tags, totalBookmarks } = useGlobalContext()
+  const { tags, totalBookmarks } = useAdminContext()
 
   function renderLinks() {
     if (pathname === PageRoutes.Admin.INDEX) return null
@@ -30,18 +30,20 @@ export default function AdminNav() {
   }
 
   return (
-    <Navbar maxWidth="full" className="dark:bg-slate-950/80" isBlurred>
+    <Navbar {...NavBarProps}>
       <NavbarContent className="max-sm:!flex-grow-0">
-        <Link href="/admin" color="foreground">
+        <Link href={PageRoutes.Admin.INDEX} color="foreground">
           <div className="flex cursor-pointer items-center gap-4">
             <Image
-              src="/logo-no-bg.svg"
+              src={Assets.LOGO_NO_BG_SVG}
               width={48}
               height={48}
               className="hidden sm:inline-block"
               alt="logo"
             />
-            <h3 className="font-mono text-2xl font-black">{WEBSITE_NAME} CMS</h3>
+            <h3 className="font-mono text-2xl font-black text-foreground-700">
+              {WEBSITE_NAME} CMS
+            </h3>
           </div>
         </Link>
       </NavbarContent>
@@ -49,11 +51,8 @@ export default function AdminNav() {
         {renderLinks()}
 
         <ReButton
-          {...NavIconOnlyButtonProps}
-          className={cn(
-            NavIconOnlyButtonProps.className,
-            (!tags.length || !totalBookmarks) && 'hidden'
-          )}
+          {...IconButtonProps}
+          className={cn(IconButtonProps.className, (!tags.length || !totalBookmarks) && 'hidden')}
           href="/"
           tooltip={{
             placement: 'bottom-end',

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import fs from 'fs'
+import asyncFs from 'fs/promises'
 import path from 'path'
 import * as zx from 'zx'
 
@@ -32,7 +33,6 @@ export async function testDbConnect() {
 export async function loadEnv() {
   // 命令行传入 -P 或 --production 将使用正式环境变量
   const args = zx.minimist(process.argv.slice(2), { alias: { production: 'P' } })
-  // console.log(args)
   const isProduction = args.production === true
   if (!process.env.NODE_ENV) {
     // 不考虑 test 的情况
@@ -41,7 +41,6 @@ export async function loadEnv() {
   const NextEnv = await import('@next/env')
   const loadEnvConfig = NextEnv.loadEnvConfig || NextEnv.default.loadEnvConfig
   loadEnvConfig(process.cwd(), isProduction)
-
   tryLoadParentGitRepoEnv()
 }
 
@@ -49,7 +48,6 @@ export async function loadEnv() {
 // 当前应用如果作为 git submodule 存在，加载父级目录是的环境配置文件
 export function tryLoadParentGitRepoEnv() {
   if (!fs.existsSync(path.resolve('..', '.gitmodules'))) return
-  console.log(zx.chalk.cyan('💡 已检测到当前项目作为 git submodule，正在加载主应用环境配置'))
   const envPaths = [path.resolve('..', '.env'), path.resolve('..', '.env.' + process.env.NODE_ENV)]
   for (const envPath of envPaths) {
     if (!fs.existsSync(envPath)) continue
@@ -57,19 +55,18 @@ export function tryLoadParentGitRepoEnv() {
       path: envPath,
       override: true,
     })
-    console.log('[Loaded] ' + envPath)
   }
-  console.log()
+  console.log(zx.chalk.cyan('💡 当前项目作为 git submodule，已加载主目录环境配置'))
 }
 
 
 export function checkEnvs() {
   const requiredVariables = [
+    'DB_DRIVER',
     'DB_CONNECTION_URL',
     'AUTH_GITHUB_ID',
     'AUTH_GITHUB_SECRET',
     'AUTH_SECRET',
-    'DB_DRIVER'
   ]
   const unsetEnv = requiredVariables.filter((variable) => !process.env[variable])
   if (!process.env.AUTH_URL && process.env.VERCEL_URL) {
@@ -84,6 +81,7 @@ export function checkEnvs() {
   }
   if (process.env.DB_DRIVER !== 'postgresql' && process.env.DB_DRIVER !== 'sqlite') {
     zx.echo(zx.chalk.red('DB_DRIVER 只能为 postgresql 或 sqlite'))
+    process.exit(1)
   }
 }
 
@@ -95,4 +93,26 @@ export async function exitWithDbClose(code = 0) {
     await Promise.resolve(db.$client.close())
   }
   process.exit(code)
+}
+
+
+export async function declareLocalType() {
+  if (!process.env.DB_DRIVER) throw new Error('环境变量 DB_DRIVER 未定义')
+  const targetPath = path.resolve('local.d.ts')
+  const fileContent = `
+declare global {
+  type DB_DRIVER ='${process.env.DB_DRIVER}'
+}
+export {}
+`.trim()
+  try {
+    // 仅当内容变化时才写入
+    const existingContent = await asyncFs.readFile(targetPath, 'utf8').catch(() => '')
+    if (existingContent.trim() === fileContent) return
+    await asyncFs.writeFile(targetPath, fileContent, { encoding: 'utf-8' })
+    console.log(`Type declaration updated at ${targetPath}`)
+  } catch (error) {
+    console.error('Failed to generate type declaration:', error)
+    process.exit(1)
+  }
 }

@@ -22,11 +22,6 @@ export const ApiRoutes = {
     BOOKMARK: '/api/public/bookmark',
     BOOKMARK_LIST: '/api/public/bookmark/list',
   },
-  // User: {
-  //   TAG: '/api/user/tag',
-  //   BOOKMARK: '/api/user/bookmark',
-  //   INDEX: '/api/user',
-  // },
   Ai: {
     ANALYZE_WEBSITE: '/api/ai/analyze-website',
     ANALYZE_RELATED_TAGS: '/api/ai/analyze-related-tags',
@@ -35,30 +30,37 @@ export const ApiRoutes = {
 } as const
 
 export const PageRoutes = {
+  INDEX: '/',
   LOGIN: '/login',
   FORBIDDEN: '/forbidden',
+  Public: {
+    INDEX: '/',
+    WELCOME: '/welcome',
+    RANDOM: '/random',
+    SEARCH: '/search',
+    tags: (tagNames?: SelectTag['name'][]) => '/tags/' + (tagNames ? tagNames.join('+') : ''),
+    search: (ky: string) => '/search?keyword=' + ky,
+  },
+  Admin: {
+    PREFIX: '/admin',
+    INDEX: '/admin',
+    UPLOAD: '/admin/upload',
+    tagSlug: (slug?: 'new' | TagId | 'list') => '/admin/tag/' + (slug || ''),
+    bookmarkSlug: (slug: 'new' | 'list' | BookmarkId) => '/admin/bookmark/' + slug,
+  },
   User: {
     INDEX: '/user',
     SETTINGS: '/user/settings',
-    TAG_INDEX: '/user/tag',
-    BOOKMARK_INDEX: '/user/bookmark',
-    TAG_SLUG: (slug: 'new' | number) => '/user/tag/' + slug,
-    BOOKMARK_SLUG: (slug: 'new' | number) => '/user/bookmark/' + slug,
+    UPLOAD: '/user/upload',
+    tags: (tagNames?: SelectTag['name'][]) => '/user/tags/' + (tagNames ? tagNames.join('+') : ''),
+    tagSlug: (slug?: 'new' | TagId | 'list') => '/user/tag/' + (slug || ''),
+    bookmarkSlug: (slug?: 'new' | 'list' | BookmarkId) => '/user/bookmark/' + (slug || ''),
+    WELCOME: '/user/welcome',
+    RANDOM: '/user/random',
+    SEARCH: '/user/search',
+    search: (ky: string) => '/user/search?keyword=' + ky,
   },
-  Admin: {
-    INDEX: '/admin',
-    TAG_LIST: '/admin/tag/list',
-    BOOKMARK_LIST: '/admin/bookmark/list',
-    UPLOAD: '/admin/upload',
-    tagSlug: (slug: 'new' | number) => '/admin/tag/' + slug,
-    bookmarkSlug: (slug: 'new' | number) => '/admin/bookmark/' + slug,
-  },
-  Public: {
-    RANDOM: '/random',
-    SEARCH: '/search',
-    search: (ky: string) => '/search?keyword=' + ky,
-  },
-}
+} as const
 
 export const IconNames = {
   ARROW_RIGHT: 'icon-[tabler--arrow-right]',
@@ -74,6 +76,7 @@ export const IconNames = {
   PLUS: 'icon-[tabler--plus]',
   QUESTION_CIRCLE: 'icon-[mdi--question-mark-circle-outline]',
   UPLOAD: 'icon-[tabler--upload]',
+  USER: 'icon-[tabler--user]',
   SEARCH: 'icon-[tabler--search]',
   SORT: 'icon-[tabler--arrows-sort]',
   SORT_ASC: 'icon-[tabler--sort-ascending]',
@@ -83,24 +86,48 @@ export const IconNames = {
   SUN: 'icon-[tabler--sun]',
   TAG: 'icon-[tabler--tag]',
   TRASH: 'icon-[tabler--trash]',
-}
+  Tabler: {
+    USER: 'icon-[tabler--user]',
+    DASHBOARD: 'icon-[tabler--layout-dashboard]',
+    LOGOUT: 'icon-[tabler--logout-2]',
+  },
+  Huge: {
+    SEARCH: 'icon-[hugeicons--search-01]',
+    HOME: 'icon-[hugeicons--home-04]',
+    IMPORT: 'icon-[hugeicons--file-import]',
+    TAG: 'icon-[hugeicons--tag-01]',
+    BOOKMARK: 'icon-[hugeicons--all-bookmark]',
+    ADD_SQUARE: 'icon-[hugeicons--add-square]',
+    ADD: 'icon-[hugeicons--add-01]',
+    LIST: 'icon-[hugeicons--left-to-right-list-dash]',
+  },
+} as const
 
 /** 管理后台的导航链接 */
 export const ADMIN_NAV_LINKS = [
   { label: '新建书签', href: PageRoutes.Admin.bookmarkSlug('new') },
   { label: '新建标签', href: PageRoutes.Admin.tagSlug('new') },
-  { label: '书签列表', href: PageRoutes.Admin.BOOKMARK_LIST },
-  { label: '标签列表', href: PageRoutes.Admin.TAG_LIST },
+  { label: '书签列表', href: PageRoutes.Admin.bookmarkSlug('list') },
+  { label: '标签列表', href: PageRoutes.Admin.tagSlug('list') },
 ]
 
 export const Assets = {
   BOX_EMPTY_PNG: '/box-empty.png',
   LOGO_SVG: '/logo.svg',
+  LOGO_NO_BG_SVG: '/logo-no-bg.svg',
 }
 
 export const ExternalLinks = {
-  REPO: 'https://github.com/y80/bmm',
+  REPO: 'https://github.com/Y80/bmm',
 } as const
 
 /** 默认情况下每页获取的书签个数；出于栅格布局的考虑这里选用 24 */
 export const DEFAULT_BOOKMARK_PAGESIZE = 24
+
+export const FieldConstraints = {
+  MaxLen: {
+    TAG_NAME: 20,
+    BOOKMARK_NAME: 30,
+    BOOKMARK_DESC: 255,
+  },
+} as const

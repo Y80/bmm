@@ -1,5 +1,3 @@
-import { useGlobalContext } from '@/app/ctx'
-import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import { testTagNameOrPinyin } from '@/utils'
 import { Chip, cn, ScrollShadow } from '@heroui/react'
 import { Icon } from '@iconify/react'
@@ -9,9 +7,10 @@ import 'rc-select/assets/index.css'
 import { ReactNode, useEffect, useMemo } from 'react'
 import style from './style.module.css'
 
-type ValueType = SelectPublicTag['id'][]
+type ValueType = TagId[]
 
 interface Props {
+  tags: SelectTag[]
   value?: ValueType
   excludeTagIds?: ValueType
   endContent?: ReactNode
@@ -24,12 +23,11 @@ interface Props {
  * - 这个组件会把已选中的标签在下拉列表中过滤掉
  */
 export default function TagSelect(props: Props) {
+  const { tags } = props
   const [state, setState] = useSetState({
     open: false,
     value: [] as ValueType,
   })
-
-  const { tags } = useGlobalContext()
 
   const mergedValue = props.value || state.value
 
@@ -74,11 +72,11 @@ export default function TagSelect(props: Props) {
     <div role="tag-select">
       <div
         className={cn(
-          'relative cursor-not-allowed overflow-hidden rounded-medium bg-default-50 p-4 py-3 text-center text-sm text-warning-400/80',
+          'relative cursor-not-allowed overflow-hidden rounded-medium bg-default-50 p-4 py-3 text-center text-xs text-foreground-400',
           tags.length && 'hidden'
         )}
       >
-        暂不可用，请先创建一些标签数据～
+        暂不可用，请先创建一些标签
       </div>
       <div
         className={cn(

@@ -2,27 +2,24 @@ import { db, schema } from '@/db'
 import { z } from '@/lib/zod'
 import { getPinyin } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
-import { and, asc, count, desc, eq, ilike, inArray, notInArray, or, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, inArray, notInArray, sql } from 'drizzle-orm'
+import { createBookmarkFilterByKeyword } from './common'
+import PublicTagController from './PublicTag.controller'
 import { findManyBookmarksSchema } from './schemas'
 
-const { publicBookmarkToTag, publicBookmarks, publicTags } = schema
-
-export type { SelectBookmark as SelectPublicBookmark }
+const { publicBookmarkToTag, publicBookmarks } = schema
 
 interface TagIdsExt {
-  relatedTagIds: (typeof publicTags.$inferSelect)['id'][]
+  relatedTagIds: TagId[]
 }
-
-type SelectTag = TagIdsExt & typeof publicTags.$inferSelect
-
 export type InsertPublicBookmark = Partial<TagIdsExt> & typeof publicBookmarks.$inferInsert
-
 type SelectBookmark = TagIdsExt & typeof publicBookmarks.$inferSelect
+export type { SelectBookmark as SelectPublicBookmark }
 
 /**
  * 完全更新 PublicBookmarkToTag 表，使与 bId 关联关联的 tId 全是 tagIds 中的 id
  */
-export async function fullSetBookmarkToTag(bId: SelectBookmark['id'], tagIds: SelectTag['id'][]) {
+export async function fullSetBookmarkToTag(bId: BookmarkId, tagIds: TagId[]) {
   const task = [
     db
       .insert(publicBookmarkToTag)
@@ -34,15 +31,6 @@ export async function fullSetBookmarkToTag(bId: SelectBookmark['id'], tagIds: Se
   ]
   await Promise.all(task)
   return
-}
-
-function createBookmarkFilterByKeyword(kw: string) {
-  return or(
-    ilike(publicBookmarks.name, `%${kw}%`),
-    ilike(publicBookmarks.pinyin, `%${kw}%`),
-    ilike(publicBookmarks.url, `%${kw}%`),
-    ilike(publicBookmarks.description, `%${kw}%`)
-  )
 }
 
 const PublicBookmarkController = {
@@ -61,13 +49,11 @@ const PublicBookmarkController = {
       where: eq(publicBookmarks.id, bookmark.id),
       with: { relatedTagIds: true },
     })
-    if (res) {
-      return {
-        ...res,
-        relatedTagIds: res.relatedTagIds.map((el) => el.tId),
-      }
+    if (!res) throw new Error('书签不存在')
+    return {
+      ...res,
+      relatedTagIds: res.relatedTagIds.map((el) => el.tId),
     }
-    return res
   },
   async update(bookmark: Partial<SelectBookmark> & Pick<SelectBookmark, 'id'>) {
     const { relatedTagIds, id, ...resetBookmark } = bookmark
@@ -102,15 +88,22 @@ const PublicBookmarkController = {
   /**
    * 高级搜索书签列表
    */
-  async findMany(query: z.output<typeof findManyBookmarksSchema>) {
-    const { keyword, tagIds, page, limit, sorterKey } = query
-
-    const filters = (() => {
+  async findMany(query?: z.output<typeof findManyBookmarksSchema>) {
+    query ||= findManyBookmarksSchema.parse({})
+    const { keyword, tagIds = [], tagNames, page, limit, sorterKey } = query
+    const getFilters = async () => {
       const filters = []
       if (keyword) {
-        filters.push(createBookmarkFilterByKeyword(keyword))
+        filters.push(createBookmarkFilterByKeyword(publicBookmarks, keyword))
       }
-      if (tagIds?.length) {
+      if (tagNames?.length) {
+        const tags = await PublicTagController.getAll()
+        for (const name of tagNames) {
+          const tag = tags.find((el) => el.name === name)
+          tag && tagIds.push(tag.id)
+        }
+      }
+      if (tagIds.length) {
         const findTargetBIds = db
           .select({ bId: publicBookmarkToTag.bId })
           .from(publicBookmarkToTag)
@@ -120,8 +113,8 @@ const PublicBookmarkController = {
         filters.push(inArray(publicBookmarks.id, findTargetBIds))
       }
       return filters.length ? and(...filters) : undefined
-    })()
-
+    }
+    const filters = await getFilters()
     const [list, [{ total }]] = await Promise.all([
       await db.query.publicBookmarks.findMany({
         where: filters,
@@ -166,8 +159,7 @@ const PublicBookmarkController = {
   },
   /** 获取所有书签数量 */
   async total() {
-    const res = await db.select({ count: count() }).from(publicBookmarks)
-    return res[0].count
+    return await db.$count(publicBookmarks)
   },
   /** 获取最近更新的 $DEFAULT_BOOKMARK_PAGESIZE 个书签 */
   async recent() {
@@ -188,9 +180,9 @@ const PublicBookmarkController = {
   /** 根据关键词搜索书签 */
   async search(keyword: string) {
     const res = await db.query.publicBookmarks.findMany({
-      where: createBookmarkFilterByKeyword(keyword),
+      where: createBookmarkFilterByKeyword(publicBookmarks, keyword),
       with: { relatedTagIds: true },
-      limit: 50,
+      limit: 100,
     })
     return {
       list: res.map((item) => ({

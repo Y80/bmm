@@ -1,4 +1,4 @@
-import { SelectPublicTag, db, schema } from '@/db'
+import { db, schema } from '@/db'
 import { and, eq, inArray, notInArray } from 'drizzle-orm'
 import { afterAll, assert, beforeAll, describe, expect, test } from 'vitest'
 import { batchCreateTags } from './utils'
@@ -6,7 +6,7 @@ import { batchCreateTags } from './utils'
 const { publicTagToTag, publicTags } = schema
 
 describe('publicTagToTag CRUD', () => {
-  let tags: SelectPublicTag[] = []
+  let tags: Omit<SelectTag, 'relatedTagIds'>[] = []
 
   beforeAll(async () => {
     tags = await batchCreateTags()
