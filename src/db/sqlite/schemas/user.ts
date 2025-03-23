@@ -10,7 +10,7 @@ export const userTags = sqliteTable(
   'userTags',
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
-    name: text('name', { length: FieldConstraints.MaxLen.TAG_NAME }).notNull().unique(),
+    name: text('name', { length: FieldConstraints.MaxLen.TAG_NAME }).notNull(),
     icon: text('icon'),
     color: text('color'),
     isMain: integer('isMain', { mode: 'boolean' }),
@@ -69,7 +69,7 @@ export const userBookmarks = sqliteTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
-  (table) => [unique().on(table.id, table.userId)]
+  (table) => [unique().on(table.url, table.userId), unique().on(table.name, table.userId)]
 )
 
 /**

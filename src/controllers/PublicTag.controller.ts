@@ -118,7 +118,7 @@ namespace PublicTagController {
     cacheAllTags.reset()
     const res = await db
       .insert(publicTags)
-      .values(names.map((name) => ({ name })))
+      .values(names.map((name) => ({ name, isMain: true })))
       .returning()
       .onConflictDoNothing()
     if (res.length === names.length) return res

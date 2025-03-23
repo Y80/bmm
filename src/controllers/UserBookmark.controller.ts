@@ -20,7 +20,8 @@ export type { SelectBookmark as SelectPublicBookmark }
 /**
  * 完全更新 PublicBookmarkToTag 表，使与 bId 关联关联的 tId 全是 tagIds 中的 id
  */
-async function fullSetBookmarkToTag(bId: BookmarkId, tagIds: TagId[]) {
+async function fullSetBookmarkToTag(bId: BookmarkId, tagIds?: TagId[]) {
+  if (!tagIds?.length) return
   const userId = await getAuthedUserId()
   tagIds = await UserTagController.filterUserTagIds(userId, tagIds)
   const task = [
@@ -36,7 +37,8 @@ async function fullSetBookmarkToTag(bId: BookmarkId, tagIds: TagId[]) {
   await Promise.all(task)
 }
 
-function modifyEntityLimiter(userId: UserId, bookmarkId: BookmarkId) {
+function userLimiter(userId: UserId, bookmarkId?: BookmarkId) {
+  if (!bookmarkId) return eq(userBookmarks.userId, userId)
   return and(eq(userBookmarks.id, bookmarkId), eq(userBookmarks.userId, userId))
 }
 
@@ -48,14 +50,12 @@ const UserBookmarkController = {
       .insert(userBookmarks)
       .values({ ...resetBookmark, userId: await getAuthedUserId() })
       .returning()
-    if (relatedTagIds?.length) {
-      await fullSetBookmarkToTag(rows[0].id, relatedTagIds)
-    }
+    await fullSetBookmarkToTag(rows[0].id, relatedTagIds)
     return rows[0]
   },
   async query(bookmark: Pick<SelectBookmark, 'id'>) {
     const res = await db.query.userBookmarks.findFirst({
-      where: modifyEntityLimiter(await getAuthedUserId(), bookmark.id),
+      where: userLimiter(await getAuthedUserId(), bookmark.id),
       with: { relatedTagIds: true },
     })
     if (!res) throw new Error('书签不存在')
@@ -67,9 +67,7 @@ const UserBookmarkController = {
   async update(bookmark: Partial<SelectBookmark> & Pick<SelectBookmark, 'id'>) {
     const { relatedTagIds, id, ...resetBookmark } = bookmark
     const tasks = []
-    if (relatedTagIds) {
-      tasks.push(fullSetBookmarkToTag(id, relatedTagIds))
-    }
+    tasks.push(fullSetBookmarkToTag(id, relatedTagIds))
     if (Object.keys(resetBookmark).length) {
       if (resetBookmark.name && !resetBookmark.pinyin) {
         resetBookmark.pinyin = getPinyin(resetBookmark.name)
@@ -81,7 +79,7 @@ const UserBookmarkController = {
             ...resetBookmark,
             updatedAt: new Date(),
           })
-          .where(modifyEntityLimiter(await getAuthedUserId(), id))
+          .where(userLimiter(await getAuthedUserId(), id))
           .returning()
       )
     }
@@ -90,7 +88,7 @@ const UserBookmarkController = {
   async delete(bookmark: Pick<SelectBookmark, 'id'>) {
     const res = await db
       .delete(userBookmarks)
-      .where(modifyEntityLimiter(await getAuthedUserId(), bookmark.id))
+      .where(userLimiter(await getAuthedUserId(), bookmark.id))
       .returning()
     return res
   },
@@ -99,25 +97,33 @@ const UserBookmarkController = {
    */
   async findMany(query?: z.output<typeof findManyBookmarksSchema>) {
     query ||= findManyBookmarksSchema.parse({})
-    const { keyword, tagIds, page, limit, sorterKey } = query
+    const { keyword, tagIds = [], tagNames, page, limit, sorterKey } = query
     const userId = await getAuthedUserId()
-    const filters = (() => {
-      const filters = [eq(userBookmarks.userId, userId)]
+    const getFilters = async () => {
+      const filters = [userLimiter(userId)]
       if (keyword) {
         filters.push(createBookmarkFilterByKeyword(userBookmarks, keyword))
       }
-      if (tagIds?.length) {
+      if (tagNames?.length) {
+        const tags = await UserTagController.getAll(userId)
+        for (const name of tagNames) {
+          const tag = tags.find((el) => el.name === name)
+          tag && tagIds.push(tag.id)
+        }
+      }
+      const newTagIds = await UserTagController.filterUserTagIds(userId, tagIds)
+      if (newTagIds.length) {
         const findTargetBIds = db
           .select({ bId: userBookmarkToTag.bId })
           .from(userBookmarkToTag)
-          .where(inArray(userBookmarkToTag.tId, tagIds))
+          .where(inArray(userBookmarkToTag.tId, newTagIds))
           .groupBy(userBookmarkToTag.bId)
-          .having(sql`COUNT(DISTINCT ${userBookmarkToTag.tId}) = ${tagIds.length}`)
+          .having(sql`COUNT(DISTINCT ${userBookmarkToTag.tId}) = ${newTagIds.length}`)
         filters.push(inArray(userBookmarks.id, findTargetBIds))
       }
       return and(...filters)
-    })()
-
+    }
+    const filters = await getFilters()
     const [total, list] = await Promise.all([
       db.$count(userBookmarks, filters),
       await db.query.userBookmarks.findMany({
@@ -191,7 +197,7 @@ const UserBookmarkController = {
         eq(userBookmarks.userId, await getAuthedUserId())
       ),
       with: { relatedTagIds: true },
-      limit: 50,
+      limit: 100,
     })
     return {
       list: res.map((item) => ({

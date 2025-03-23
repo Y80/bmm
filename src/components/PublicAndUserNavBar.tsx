@@ -4,7 +4,7 @@ import { NavUser, ReButton, ThemeToggle } from '@/components'
 import { IconButtonProps, NavBarProps } from '@/components/common'
 import { MobileTagPicker } from '@/components/MobileTagPicker'
 import SearchInput from '@/components/SearchInput'
-import { useIsMobile, usePageUtil } from '@/hooks'
+import { usePageUtil } from '@/hooks'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import {
   cn,
@@ -20,11 +20,12 @@ import {
 import { useSetState } from 'ahooks'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 
 const UserLinkGroups = [
   {
     key: 'bookmark',
-    icon: IconNames.Huge.BOOKMARK,
+    icon: IconNames.BOOKMARK,
     list: [
       {
         label: '新建书签',
@@ -40,7 +41,7 @@ const UserLinkGroups = [
   },
   {
     key: 'tag',
-    icon: IconNames.Huge.TAG,
+    icon: IconNames.TAG,
     list: [
       {
         label: '新建标签',
@@ -64,13 +65,25 @@ interface Props {
 export function PublicAndUserNavbar(props: Props) {
   const { totalBookmarks, tags } = props
   const session = useSession()
-  const isMobile = useIsMobile()
+  const pathname = usePathname()
   const isUserSpace = usePageUtil().isUserSpace
   const routes = isUserSpace ? PageRoutes.User : PageRoutes.Public
   const user = session?.data?.user
   const [state, setState] = useSetState({
     isSelectedMenuToggle: false,
   })
+
+  function showSearchInput() {
+    if (!totalBookmarks) return false
+    if (!isUserSpace) return true
+    const userRoutes = PageRoutes.User
+    if (
+      [userRoutes.INDEX, userRoutes.RANDOM, userRoutes.SEARCH].includes(pathname as any) ||
+      pathname.startsWith(userRoutes.tags())
+    ) {
+      return true
+    }
+  }
 
   return (
     <Navbar
@@ -87,13 +100,13 @@ export function PublicAndUserNavbar(props: Props) {
         </Link>
       </NavbarBrand>
       <NavbarContent justify="end" className="gap-0">
-        {!!totalBookmarks && <SearchInput className="mr-4 w-72 max-xs:hidden" />}
+        {showSearchInput() && <SearchInput className="mr-4 w-72 max-xs:hidden" />}
         {isUserSpace &&
-          !isMobile &&
           UserLinkGroups.map((group) => (
             <ReButton
               key={group.key}
               {...IconButtonProps}
+              className={cn(IconButtonProps.className, 'max-xs:hidden')}
               tooltip={{
                 placement: 'top-start',
                 content: (

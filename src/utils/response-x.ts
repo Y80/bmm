@@ -19,7 +19,6 @@ function isBodyInitType(body: any) {
 
 export default class ResponseX extends Response {
   constructor(body?: XBodyInit, init?: ResponseInit) {
-    // console.log('Body is :', body, init)
     if (!body || isBodyInitType(body)) {
       // @ts-ignore
       super(body, init)

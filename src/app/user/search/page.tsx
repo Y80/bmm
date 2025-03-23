@@ -1,4 +1,5 @@
 import { UserBookmarkController } from '@/controllers'
+import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { PageRoutes } from '@cfg'
 import { redirect } from 'next/navigation'
 import UserHomeBody from '../components/UserHomeBody'
@@ -8,12 +9,11 @@ export const generateMetadata: GenerateMetadata<{ keyword: string }> = (props) =
 }
 
 export default async function Page(props: RSCPageProps) {
-  const keyword = props.searchParams.keyword || ''
-  if (!keyword.length || Array.isArray(keyword)) {
+  const keyword = props.searchParams.keyword
+  if (!keyword?.length || Array.isArray(keyword)) {
     redirect(PageRoutes.User.INDEX)
   }
-
-  const res = await UserBookmarkController.search(keyword)
-
+  const payload: typeof findManyBookmarksSchema._input = { keyword }
+  const res = await UserBookmarkController.findMany(findManyBookmarksSchema.parse(payload))
   return <UserHomeBody bookmarks={res.list} />
 }

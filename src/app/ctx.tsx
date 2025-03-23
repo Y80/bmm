@@ -2,14 +2,15 @@
 
 import useIsDark from '@/hooks/useIsDark'
 import { HeroUIProvider, semanticColors, ToastProvider } from '@heroui/react'
-import { ConfigProvider as AntdConfigProvider, theme as antdTheme } from 'antd'
+import { ConfigProvider as AntdConfigProvider, theme as antdTheme, ThemeConfig } from 'antd'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import { useReportWebVitals } from 'next/web-vitals'
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 
-export interface GlobalContextType {}
+// 全局上下文（先占个坑）
+interface GlobalContextType {}
 
 const GlobalContext = createContext<GlobalContextType | null>(null)
 
@@ -21,23 +22,22 @@ export function useGlobalContext() {
 
 function AntdConfigProviderWrapper({ children }: PropsWithChildren) {
   const isDark = useIsDark()
-  const colorBorder = isDark
-    ? typeof semanticColors.dark.default === 'string'
-      ? semanticColors.dark.default
-      : semanticColors.dark.default.DEFAULT
-    : typeof semanticColors.light.default === 'string'
-      ? semanticColors.light.default
-      : semanticColors.light.default.DEFAULT
-  return (
-    <AntdConfigProvider
-      theme={{
-        algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
-        components: { Tree: { lineWidth: 2, borderRadius: 8, colorBorder, algorithm: true } },
-      }}
-    >
-      {children}
-    </AntdConfigProvider>
-  )
+
+  const theme = useMemo<ThemeConfig>(() => {
+    const colorBorder = isDark
+      ? typeof semanticColors.dark.default === 'string'
+        ? semanticColors.dark.default
+        : semanticColors.dark.default.DEFAULT
+      : typeof semanticColors.light.default === 'string'
+        ? semanticColors.light.default
+        : semanticColors.light.default.DEFAULT
+    return {
+      algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+      components: { Tree: { lineWidth: 2, borderRadius: 8, colorBorder, algorithm: true } },
+    }
+  }, [isDark])
+
+  return <AntdConfigProvider theme={theme}>{children}</AntdConfigProvider>
 }
 
 interface Props {

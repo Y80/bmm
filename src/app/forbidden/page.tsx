@@ -1,10 +1,10 @@
 import { Assets, ExternalLinks } from '@cfg'
-import { Link } from "@heroui/react"
+import { Link } from '@heroui/react'
 import Image from 'next/image'
 
 export default function Page() {
   return (
-    <div className="grow flex-col gap-4 text-foreground-500 flex-center">
+    <div className="-mt-[10vh] h-screen grow flex-col gap-4 text-foreground-500 flex-center">
       <Image src={Assets.LOGO_SVG} width={64} height={64} alt="logo" />
       <h1 className="mt-6 text-3xl text-foreground-900">对不起，您不具备管理员权限</h1>
       <h3>

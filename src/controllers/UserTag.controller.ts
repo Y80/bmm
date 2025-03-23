@@ -6,7 +6,7 @@ import { and, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
 const { userTagToTag, userTags } = schema
 
 /** 在 SelectTag 基础上扩展了 `{ relatedTagIds: id[] }` */
-export type SelectUserTag = typeof userTags.$inferSelect & {
+type SelectUserTag = typeof userTags.$inferSelect & {
   relatedTagIds: TagId[]
 }
 
@@ -22,8 +22,11 @@ function resetCachedTags(userId: UserId) {
   cachedTags[userId] = null
 }
 
-// 过滤出用户拥有的标签
-
+/**
+ * 忽略当前标签关系，创建、删除标签关系
+ * - ids 为 undefined 时，不执行任何修改
+ * - ids 为 [] 时，删除所有关系
+ */
 async function upsertRelations(userId: UserId, id: TagId, ids?: TagId[]) {
   if (!ids) return
   ids = await UserTagController.filterUserTagIds(userId, ids)
@@ -45,10 +48,10 @@ async function upsertRelations(userId: UserId, id: TagId, ids?: TagId[]) {
       ),
   ]
   await Promise.all(tasks)
-  resetCachedTags(userId)
 }
 
-function modifyUserTagLimiter(userId: UserId, tagId: TagId) {
+function limiter(userId: UserId, tagId?: TagId) {
+  if (!tagId) return eq(userTags.userId, userId)
   return and(eq(userTags.id, tagId), eq(userTags.userId, userId))
 }
 
@@ -60,9 +63,10 @@ const UserTagController = {
     userId ||= await getAuthedUserId()
     if (!cachedTags[userId]) {
       const tags = await db.query.userTags.findMany({
-        where: eq(userTags.userId, userId),
+        where: limiter(userId),
         with: { relatedTagIds: { columns: { b: true } } },
         orderBy: [desc(userTags.sortOrder), desc(userTags.createdAt)],
+        limit: 999,
       })
       cachedTags[userId] = tags.map((tag) => ({
         ...tag,
@@ -79,7 +83,7 @@ const UserTagController = {
       .insert(userTags)
       .values({ ...resetTag, userId })
       .returning()
-    relatedTagIds?.length && (await upsertRelations(userId, rows[0].id, relatedTagIds))
+    await upsertRelations(userId, rows[0].id, relatedTagIds)
     resetCachedTags(userId)
     return rows[0]
   },
@@ -90,13 +94,14 @@ const UserTagController = {
     await db
       .update(userTags)
       .set({ ...resetTag, updatedAt: new Date() })
-      .where(modifyUserTagLimiter(userId, id))
+      .where(limiter(userId, id))
     await upsertRelations(userId, id, relatedTagIds)
+    resetCachedTags(userId)
   },
 
   async remove(tag: Pick<SelectUserTag, 'id'>) {
     const userId = await getAuthedUserId()
-    const res = await db.delete(userTags).where(modifyUserTagLimiter(userId, tag.id)).returning()
+    const res = await db.delete(userTags).where(limiter(userId, tag.id)).returning()
     resetCachedTags(userId)
     return res
   },
@@ -109,10 +114,7 @@ const UserTagController = {
   async sort(orders: { id: TagId; order: SelectTag['sortOrder'] }[]) {
     const userId = await getAuthedUserId()
     const tasks = orders.map((el) => {
-      return db
-        .update(userTags)
-        .set({ sortOrder: el.order })
-        .where(modifyUserTagLimiter(userId, el.id))
+      return db.update(userTags).set({ sortOrder: el.order }).where(limiter(userId, el.id))
     })
     await Promise.all(tasks)
     resetCachedTags(userId)
@@ -124,21 +126,22 @@ const UserTagController = {
     resetCachedTags(userId)
     const res = await db
       .insert(userTags)
-      .values(names.map((name) => ({ name, userId })))
+      .values(names.map((name) => ({ name, userId, isMain: true })))
       .returning()
       .onConflictDoNothing()
     if (res.length === names.length) return res
     // 有些标签已经创建过了，执行查询
     const existsNames = names.filter((name) => !res.some((tag) => tag.name === name))
     const existsTags = await db.query.userTags.findMany({
-      where: and(inArray(userTags.name, existsNames), eq(userTags.userId, userId)),
+      where: and(inArray(userTags.name, existsNames), limiter(userId)),
     })
     return res.concat(existsTags)
   },
 
+  /** 当前过滤函数确保返回的标签 id 列表属于指定用户  */
   async filterUserTagIds(userId: UserId, ids: TagId[]) {
     const tags = await UserTagController.getAll(userId)
-    return ids.filter((id) => tags.some((tag) => tag.id === id))
+    return [...new Set(ids)].filter((id) => tags.some((tag) => tag.id === id))
   },
 }
 

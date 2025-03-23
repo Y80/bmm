@@ -52,7 +52,6 @@ export default function HomeBody(props: Props) {
 
   const bookmarks = state.bookmarks
   const isSearchPage = pathname === (isUserSpace ? PageRoutes.User : PageRoutes.Public).SEARCH
-  const isHomePage = pathname === (isUserSpace ? PageRoutes.User : PageRoutes.Public).INDEX
 
   const homeBodyCtx = useMemo<HomeBodyContext>(() => {
     return {
@@ -61,7 +60,7 @@ export default function HomeBody(props: Props) {
     }
   }, [props.tags, state.bookmarks])
 
-  const showEnd = isClient && !!bookmarks.length && (isHomePage ? state.hasMore === false : true)
+  const showEnd = isClient && !!bookmarks.length && state.hasMore === false
 
   return (
     <HomeBodyProvider value={homeBodyCtx}>
@@ -76,7 +75,7 @@ export default function HomeBody(props: Props) {
               return <BookmarkCard {...bookmark} key={bookmark.id} />
             })}
           </BookmarkContainer>
-          {!bookmarks.length && isClient && state.hasMore !== true && (
+          {!bookmarks.length && isClient && !state.hasMore && (
             <div className="grow flex-col flex-center">
               <Image width={128} height={128} src={Assets.BOX_EMPTY_PNG} alt="empty" priority />
               <p className="mt-4 text-sm text-foreground-500">
@@ -91,17 +90,15 @@ export default function HomeBody(props: Props) {
               <Divider orientation="vertical" className="h-3" />
             </div>
           )}
-          {isClient && isHomePage && (
-            <LoadMore
-              onChange={(newData, hasMore) => {
-                const ids = bookmarks.map((item) => item.id)
-                setState({
-                  bookmarks: bookmarks.concat(newData.filter((item) => !ids.includes(item.id))),
-                  hasMore,
-                })
-              }}
-            />
-          )}
+          <LoadMore
+            onChange={(newData, hasMore) => {
+              const ids = bookmarks.map((item) => item.id)
+              setState({
+                bookmarks: bookmarks.concat(newData.filter((item) => !ids.includes(item.id))),
+                hasMore,
+              })
+            }}
+          />
         </div>
       </div>
     </HomeBodyProvider>

@@ -13,7 +13,7 @@ export default function ClientPage() {
   const [bookmark, setBookmark] = useState<SelectBookmark | null>(null)
 
   useEffect(() => {
-    if (slug.number === null) return
+    if (!slug.number) return
     runAction(actQueryUserBookmark({ id: slug.number }), {
       onOk: (data) => setBookmark(data),
     })

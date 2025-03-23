@@ -4,7 +4,7 @@ import ReInput from '@/components/re-export/ReInput'
 import { useOnClickTag } from '@/hooks/useOnClickTag'
 import { testTagNameOrPinyin } from '@/utils'
 import { IconNames } from '@cfg'
-import { ScrollShadow, Switch, cn } from '@heroui/react'
+import { Kbd, ScrollShadow, Switch, cn } from '@heroui/react'
 import { useMount, useSetState, useUpdateEffect } from 'ahooks'
 import { isEqual } from 'lodash'
 import { CSSProperties, useLayoutEffect, useRef } from 'react'
@@ -36,7 +36,7 @@ export default function TagPicker(props: Props) {
     if (!isEqual(showTags, state.showTags)) {
       setState({ showTags })
     }
-    // 每次进入不同的 /tag/$slug，元素滚动位置都会丢失，这里手动恢复
+    // 每次进入不同的 /tags/$slug，元素滚动位置都会丢失，这里手动恢复
     const lastPosition = TagPickerBox.getScrollTop()
     if (lastPosition > 0) {
       scrollDivRef.current?.scrollTo({ top: lastPosition })
@@ -92,7 +92,7 @@ export default function TagPicker(props: Props) {
       </div>
 
       {!state.filterTagInput && (
-        <div className="h-16 shrink-0 flex-items-center">
+        <div className="my-4 shrink-0 flex-items-center">
           <Switch
             size="sm"
             className="scale-[0.75]"
@@ -110,6 +110,10 @@ export default function TagPicker(props: Props) {
           </span>
         </div>
       )}
+      <div className="pb-4 text-xs text-foreground-300">
+        点击标签时，按住 <Kbd className="scale-80 opacity-80" keys={['alt']} />{' '}
+        可多选，实现交叉筛选书签
+      </div>
     </div>
   )
 }

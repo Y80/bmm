@@ -1,6 +1,4 @@
-import { MouseEvent, createContext, useContext } from 'react'
-
-type OnClickTag = (arg: { tag: SelectTag; isIntersected?: boolean; event?: MouseEvent }) => void
+import { createContext, useContext } from 'react'
 
 export interface HomeBodyContext {
   tags: SelectTag[]

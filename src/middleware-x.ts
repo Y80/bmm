@@ -44,12 +44,10 @@ export default auth((req) => {
   if (checkAdmin) {
     // 没登录/登录过期，这里是 null
     if (!req.auth) {
-      console.log('middleware-A')
       return NextResponse.redirect(req.nextUrl.origin + PageRoutes.LOGIN)
       // return NextResponse.json({ msg: '请登录' }, { status: StatusCode.UNAUTHORIZED })
     }
     if (!req.auth.user.isAdmin) {
-      console.log('middleware-B')
       return NextResponse.redirect(req.nextUrl.origin + PageRoutes.FORBIDDEN)
     }
   }

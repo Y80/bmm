@@ -1,10 +1,12 @@
 #!/usr/bin/env zx
 
 import 'zx/globals'
-import { exitWithDbClose, loadEnv, testDbConnect } from './utils'
+import { declareLocalType, exitWithDbClose, loadEnv, testDbConnect } from './utils'
 
 async function main() {
   await loadEnv()
+
+  await declareLocalType()
 
   await spinner('数据库连接中...', async () => {
     if (!(await testDbConnect())) {
@@ -26,7 +28,6 @@ async function main() {
       echo(chunk)
     }
     echo(chalk.green('✅ 数据库迁移成功'))
-    !process.env.VERCEL && echo('\n💡 建议通过 git 提交生成的快照，以便后续数据库迁移\n')
   }
   exitWithDbClose()
 }

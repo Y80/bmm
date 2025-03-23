@@ -22,7 +22,6 @@ export default async function fetchHtml(url: string) {
     }
     throw new Error('获取 HTML 失败')
   }
-  // console.log(res.url)
 
   return {
     html: decodeHtml(Buffer.from(await res.arrayBuffer())),

@@ -4,6 +4,7 @@ import { getPinyin } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
 import { and, asc, count, desc, eq, inArray, notInArray, sql } from 'drizzle-orm'
 import { createBookmarkFilterByKeyword } from './common'
+import PublicTagController from './PublicTag.controller'
 import { findManyBookmarksSchema } from './schemas'
 
 const { publicBookmarkToTag, publicBookmarks } = schema
@@ -89,14 +90,20 @@ const PublicBookmarkController = {
    */
   async findMany(query?: z.output<typeof findManyBookmarksSchema>) {
     query ||= findManyBookmarksSchema.parse({})
-    const { keyword, tagIds, page, limit, sorterKey } = query
-
-    const filters = (() => {
+    const { keyword, tagIds = [], tagNames, page, limit, sorterKey } = query
+    const getFilters = async () => {
       const filters = []
       if (keyword) {
         filters.push(createBookmarkFilterByKeyword(publicBookmarks, keyword))
       }
-      if (tagIds?.length) {
+      if (tagNames?.length) {
+        const tags = await PublicTagController.getAll()
+        for (const name of tagNames) {
+          const tag = tags.find((el) => el.name === name)
+          tag && tagIds.push(tag.id)
+        }
+      }
+      if (tagIds.length) {
         const findTargetBIds = db
           .select({ bId: publicBookmarkToTag.bId })
           .from(publicBookmarkToTag)
@@ -106,8 +113,8 @@ const PublicBookmarkController = {
         filters.push(inArray(publicBookmarks.id, findTargetBIds))
       }
       return filters.length ? and(...filters) : undefined
-    })()
-
+    }
+    const filters = await getFilters()
     const [list, [{ total }]] = await Promise.all([
       await db.query.publicBookmarks.findMany({
         where: filters,
@@ -175,7 +182,7 @@ const PublicBookmarkController = {
     const res = await db.query.publicBookmarks.findMany({
       where: createBookmarkFilterByKeyword(publicBookmarks, keyword),
       with: { relatedTagIds: true },
-      limit: 50,
+      limit: 100,
     })
     return {
       list: res.map((item) => ({

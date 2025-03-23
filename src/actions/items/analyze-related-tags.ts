@@ -1,13 +1,10 @@
 import { PublicTagController, UserTagController } from '@/controllers'
 import { analyzeRelatedTags } from '@/lib/ai'
-import { z } from '@/lib/zod'
 import { pageSpace } from '@/utils'
 import { headers } from 'next/headers'
 import { makeActionInput } from '../make-action'
 
-const schema = z.string()
-
-async function handleAnalyzeRelatedTags(tag: typeof schema._input) {
+async function handleAnalyzeRelatedTags(tag: string) {
   const referer = headers().get('referer')
   const space = pageSpace(referer)
   if (!space.isAdmin && !space.isUser) throw new Error('内部错误')
@@ -19,5 +16,4 @@ async function handleAnalyzeRelatedTags(tag: typeof schema._input) {
 
 export const aiAnalyzeRelatedTagsInput = makeActionInput({
   handler: handleAnalyzeRelatedTags,
-  schema,
 })

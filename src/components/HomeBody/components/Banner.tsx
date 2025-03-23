@@ -9,7 +9,7 @@ import { PropsWithChildren } from 'react'
 import { useHomePageContext } from '../ctx'
 
 function Wrapper(props: PropsWithChildren) {
-  return <header className="flex-col gap-4 py-8 flex-center xs:pb-16">{props.children}</header>
+  return <header className="flex-col gap-4 py-8 flex-center">{props.children}</header>
 }
 
 const H1_CLS = 'text-3xl font-bold flex-center text-foreground-700'

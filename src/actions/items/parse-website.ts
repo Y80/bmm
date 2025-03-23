@@ -4,7 +4,7 @@ import { makeActionInput } from '../make-action'
 
 const schema = z.string().url()
 
-export async function extractHtmlInfo(inputUrl: z.output<typeof schema>) {
+async function extractHtmlInfo(inputUrl: z.output<typeof schema>) {
   const { html, url } = await fetchHtml(new URL(inputUrl).origin)
   const rst = parseHtml(html, url)
   if (!rst.icon) {

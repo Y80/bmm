@@ -1,6 +1,5 @@
-'use serve'
-
 import PublicBookmarkController from '@/controllers/PublicBookmark.controller'
+import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { PageRoutes } from '@cfg'
 import { redirect } from 'next/navigation'
 import PublicHomeBody from '../components/PublicHomeBody'
@@ -10,13 +9,12 @@ export const generateMetadata: GenerateMetadata = (props) => {
 }
 
 export default async function Page(props: RSCPageProps) {
-  const keyword = props.searchParams.keyword || ''
-
-  if (!keyword.length || Array.isArray(keyword)) {
-    redirect(PageRoutes.INDEX)
+  const keyword = props.searchParams.keyword
+  if (!keyword?.length || Array.isArray(keyword)) {
+    redirect(PageRoutes.Public.INDEX)
   }
-
-  const res = await PublicBookmarkController.search(keyword)
+  const payload: typeof findManyBookmarksSchema._input = { keyword }
+  const res = await PublicBookmarkController.findMany(findManyBookmarksSchema.parse(payload))
 
   return <PublicHomeBody bookmarks={res.list} />
 }

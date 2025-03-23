@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import fs from 'fs'
+import asyncFs from 'fs/promises'
 import path from 'path'
 import * as zx from 'zx'
 
@@ -92,4 +93,26 @@ export async function exitWithDbClose(code = 0) {
     await Promise.resolve(db.$client.close())
   }
   process.exit(code)
+}
+
+
+export async function declareLocalType() {
+  if (!process.env.DB_DRIVER) throw new Error('环境变量 DB_DRIVER 未定义')
+  const targetPath = path.resolve('local.d.ts')
+  const fileContent = `
+declare global {
+  type DB_DRIVER ='${process.env.DB_DRIVER}'
+}
+export {}
+`.trim()
+  try {
+    // 仅当内容变化时才写入
+    const existingContent = await asyncFs.readFile(targetPath, 'utf8').catch(() => '')
+    if (existingContent.trim() === fileContent) return
+    await asyncFs.writeFile(targetPath, fileContent, { encoding: 'utf-8' })
+    console.log(`Type declaration updated at ${targetPath}`)
+  } catch (error) {
+    console.error('Failed to generate type declaration:', error)
+    process.exit(1)
+  }
 }

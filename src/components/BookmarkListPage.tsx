@@ -194,7 +194,6 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           size="sm"
           selectedKeys={state.selectedTag ? [state.selectedTag] : []}
           onSelectionChange={(val) => {
-            console.log(val)
             setState({ selectedTag: val.currentKey || null, pager: { ...state.pager, page: 1 } })
           }}
         >
@@ -263,19 +262,28 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           {(item) => {
             return (
               <TableRow key={item.id}>
-                <TableCell className="flex min-w-[2rem] items-center">
+                <TableCell className="flex min-w-8 items-center">
                   <Favicon src={item.icon} showErrorIconOnFailed canShowSpinner />
                 </TableCell>
                 <TableCell>
-                  <div className="max-w-96 truncate">{item.name}</div>
+                  <div className="max-w-60 truncate">{item.name}</div>
                 </TableCell>
-                <TableCell className="max-w-10rem max-xs:hidden">
-                  <Link href={item.url} color="foreground" isExternal size="sm">
-                    <div className="max-w-60 truncate pr-4">{item.url}</div>
+                <TableCell className="max-xs:hidden">
+                  <Link
+                    href={item.url}
+                    color="foreground"
+                    isExternal
+                    size="sm"
+                    className="block max-w-52 truncate"
+                  >
+                    {item.url}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <div className="truncate text-sm max-xs:max-w-[6rem]">
+                  <div
+                    className="max-w-32 truncate text-sm max-xs:max-w-[6rem]"
+                    title={renderRelatedTags(item.relatedTagIds)}
+                  >
                     {renderRelatedTags(item.relatedTagIds)}
                   </div>
                 </TableCell>

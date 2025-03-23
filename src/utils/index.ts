@@ -165,3 +165,14 @@ export function pageSpace(urlOrPath?: 'auto' | (string & {}) | null) {
     isUser: urlOrPath.startsWith(PageRoutes.User.INDEX),
   }
 }
+
+export async function testUrl(url: string, opts?: { timeout?: number }) {
+  const [err] = await to(
+    fetch(url, {
+      method: 'HEAD',
+      mode: 'no-cors',
+      signal: AbortSignal.timeout(opts?.timeout || 5000),
+    })
+  )
+  return !err
+}
