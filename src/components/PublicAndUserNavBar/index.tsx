@@ -3,7 +3,6 @@
 import { NavUser, ReButton, ThemeToggle } from '@/components'
 import { IconButtonProps, NavBarProps } from '@/components/common'
 import { MobileTagPicker } from '@/components/MobileTagPicker'
-import SearchInput from '@/components/SearchInput'
 import { usePageUtil } from '@/hooks'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import {
@@ -21,6 +20,7 @@ import { useSetState } from 'ahooks'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { SearchInput } from './SearchInput'
 
 const UserLinkGroups = [
   {
@@ -100,7 +100,8 @@ export function PublicAndUserNavbar(props: Props) {
         </Link>
       </NavbarBrand>
       <NavbarContent justify="end" className="gap-0">
-        {showSearchInput() && <SearchInput className="mr-4 w-72 max-xs:hidden" />}
+        {/* pathname 发生变化时，重新渲染 SearchInput */}
+        {showSearchInput() && <SearchInput key={pathname} className="mr-4 w-72 max-xs:hidden" />}
         {isUserSpace &&
           UserLinkGroups.map((group) => (
             <ReButton

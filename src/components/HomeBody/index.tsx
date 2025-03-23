@@ -96,11 +96,12 @@ export default function HomeBody(props: Props) {
             </div>
           )}
           <LoadMore
+            key={globalThis.location?.href}
             onChange={(newData, hasMore) => {
               const ids = bookmarks.map((item) => item.id)
               setState({
-                bookmarks: bookmarks.concat(newData.filter((item) => !ids.includes(item.id))),
                 hasMore,
+                bookmarks: bookmarks.concat(newData.filter((item) => !ids.includes(item.id))),
               })
             }}
           />

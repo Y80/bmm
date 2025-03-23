@@ -8,7 +8,7 @@ import { useDebounceEffect, useEventListener, useMemoizedFn, useMount, useSetSta
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
 
-export default function SearchInput(props: BaseComponentProps) {
+export function SearchInput(props: BaseComponentProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const routes = usePageUtil().isUserSpace ? PageRoutes.User : PageRoutes.Public
