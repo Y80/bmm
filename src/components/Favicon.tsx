@@ -1,6 +1,5 @@
 'use client'
 
-import { Image } from '@heroui/react'
 import { useSetState, useUpdateEffect } from 'ahooks'
 import { PropsWithChildren } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -64,7 +63,7 @@ export default function Favicon(props: Props) {
   const [state, setState] = useSetState({ status: LoadStatus.WAIT })
 
   useUpdateEffect(() => {
-    props.src && setState({ status: LoadStatus.WAIT })
+    props.src && setState({ status: LoadStatus.LOADING })
   }, [props.src])
 
   // 处理没有图片地址的情况
@@ -76,13 +75,12 @@ export default function Favicon(props: Props) {
     return props.showErrorIconOnFailed ? renderError(props) : renderDefault(props)
   }
 
-  const showSpinner = props.showSpinner && state.status !== LoadStatus.LOADED
+  const showSpinner = props.showSpinner && state.status === LoadStatus.LOADING
 
   return (
     <Wrapper size={props.size} className={props.className}>
-      <Image
-        removeWrapper
-        radius="sm"
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         className={showSpinner ? 'size-0' : 'size-full'}
         alt="website-favicon"
         src={props.src}
