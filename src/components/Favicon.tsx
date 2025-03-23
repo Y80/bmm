@@ -1,6 +1,6 @@
 'use client'
 
-import { Image } from "@heroui/react"
+import { Image } from '@heroui/react'
 import { useSetState, useUpdateEffect } from 'ahooks'
 import { PropsWithChildren } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -11,7 +11,7 @@ interface Props {
   /** 图标尺寸，即宽、高大小 */
   size?: number
   /** 是否可以展示加载中动画 */
-  canShowSpinner?: boolean
+  showSpinner?: boolean
   /** 是否展示默认图片 */
   showDefaultIcon?: boolean
   /** 图标加载失败时，是否展示失败图标 */
@@ -76,7 +76,7 @@ export default function Favicon(props: Props) {
     return props.showErrorIconOnFailed ? renderError(props) : renderDefault(props)
   }
 
-  const showSpinner = props.canShowSpinner && state.status !== LoadStatus.LOADED
+  const showSpinner = props.showSpinner && state.status !== LoadStatus.LOADED
 
   return (
     <Wrapper size={props.size} className={props.className}>

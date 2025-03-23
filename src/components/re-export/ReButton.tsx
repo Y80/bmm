@@ -6,6 +6,7 @@ import {
   ButtonProps,
   Popover,
   PopoverContent,
+  PopoverProps,
   PopoverTrigger,
   TooltipProps,
 } from '@heroui/react'
@@ -20,6 +21,7 @@ interface ReButtonProps extends ButtonProps {
   onClick?: () => any
   tooltip?: string | (TooltipProps & { adaptMobile?: boolean })
   popoverContent?: ReactNode
+  popoverProps?: Partial<PopoverProps>
 }
 
 function ReButton_(props: ReButtonProps, ref: any) {
@@ -71,7 +73,7 @@ function ReButton_(props: ReButtonProps, ref: any) {
   }
   if (popoverContent) {
     return (
-      <Popover>
+      <Popover {...props.popoverProps}>
         <PopoverTrigger>{button}</PopoverTrigger>
         <PopoverContent>{popoverContent}</PopoverContent>
       </Popover>

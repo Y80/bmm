@@ -8,13 +8,14 @@ import {
   actUpdatePublicBookmark,
   actUpdateUserBookmark,
 } from '@/actions'
-import { Favicon, ReButton, ReInput, ReTextarea, SlugPageLayout, TagSelect } from '@/components'
+import { Favicon, ReInput, ReTextarea, SlugPageLayout, TagSelect } from '@/components'
 import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil, useSlug } from '@/hooks'
 import { z } from '@/lib/zod'
 import { isValidUrl, runAction } from '@/utils'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import {
+  Button,
   cn,
   Dropdown,
   DropdownItem,
@@ -137,14 +138,14 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     return (
       <Dropdown placement="right-start">
         <DropdownTrigger>
-          <ReButton
+          <Button
             isIconOnly
             size="sm"
             isLoading={state.loading}
             className={cn('bg-transparent text-xl', !hasValidUrl && 'scale-0')}
           >
             <span className={cn('bg-gradient-to-r from-pink-500 to-violet-500', IconNames.STARS)} />
-          </ReButton>
+          </Button>
         </DropdownTrigger>
         <DropdownMenu>
           <DropdownItem key="parse" onClick={parseWebsite}>
@@ -182,13 +183,9 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     return (
       <Dropdown placement="right-start">
         <DropdownTrigger>
-          <ReButton
-            isIconOnly
-            size="sm"
-            className={cn('bg-transparent', !hasValidUrl && 'scale-0')}
-          >
+          <Button isIconOnly size="sm" className={cn('bg-transparent', !hasValidUrl && 'scale-0')}>
             <span className="icon-[tabler--api] text-2xl" />
-          </ReButton>
+          </Button>
         </DropdownTrigger>
         <DropdownMenu>
           <DropdownSection title="第三方 API 获取图标">
@@ -203,7 +200,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
                   <Favicon
                     size={20}
                     src={item.src}
-                    canShowSpinner
+                    showSpinner
                     className="border"
                     disableLazyLoading
                     showErrorIconOnFailed
@@ -252,7 +249,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
         onValueChange={(v) => setBookmark({ icon: v })}
         startContent={
           bookmark.icon ? (
-            <Favicon className="ml-1.5" src={bookmark.icon} canShowSpinner showErrorIconOnFailed />
+            <Favicon className="ml-1.5" src={bookmark.icon} showSpinner showErrorIconOnFailed />
           ) : (
             <span className="w-1.5" />
           )

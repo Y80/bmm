@@ -22,6 +22,7 @@ import { usePageUtil } from '@/hooks'
 import { runAction } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE, IconNames, PageRoutes } from '@cfg'
 import {
+  Button,
   cn,
   Dropdown,
   DropdownItem,
@@ -212,13 +213,13 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
               const target = SORTERS.find((item) => item.key === state.sorterKey)
               if (!target) return null
               return (
-                <ReButton
+                <Button
                   variant="flat"
                   size="sm"
                   startContent={<span className={cn(target.iconCls, 'text-base')} />}
                 >
                   {target.name}
-                </ReButton>
+                </Button>
               )
             })()}
           </DropdownTrigger>
@@ -263,7 +264,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
             return (
               <TableRow key={item.id}>
                 <TableCell className="flex min-w-8 items-center">
-                  <Favicon src={item.icon} showErrorIconOnFailed canShowSpinner />
+                  <Favicon src={item.icon} showErrorIconOnFailed showSpinner />
                 </TableCell>
                 <TableCell>
                   <div className="max-w-60 truncate">{item.name}</div>

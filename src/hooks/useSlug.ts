@@ -6,7 +6,7 @@ export default function useSlug() {
   const { slug } = useParams<{ slug?: string }>()
   const [state, setState] = useSetState({
     isNew: false,
-    number: slug ? Number(slug) : 0,
+    number: null as number | null,
   })
 
   useEffect(() => {
