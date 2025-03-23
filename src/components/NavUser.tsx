@@ -1,15 +1,15 @@
 import { ReButton } from '@/components'
+import { usePageUtil } from '@/hooks'
 import { IconNames, PageRoutes } from '@cfg'
 import { Avatar, Divider, Listbox, ListboxItem, ListboxSection, addToast, cn } from '@heroui/react'
 import { signOut, useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { IconButtonProps } from './common'
 
 export function NavUser() {
   const session = useSession()
   const user = session.data?.user
+  const pageUtil = usePageUtil()
   const isAuthenticated = session.status === 'authenticated'
-  const router = useRouter()
 
   function handleSignOut() {
     signOut({ redirectTo: PageRoutes.INDEX })
@@ -55,7 +55,6 @@ export function NavUser() {
               <ListboxItem
                 href={PageRoutes.User.INDEX}
                 startContent={<span className={cn(IconNames.Tabler.USER, 'text-base')} />}
-                onPress={() => router.push(PageRoutes.User.INDEX)}
               >
                 个人空间
               </ListboxItem>
@@ -73,6 +72,14 @@ export function NavUser() {
                 startContent={<span className={cn(IconNames.Tabler.DASHBOARD, 'text-base')} />}
               >
                 后台管理
+              </ListboxItem>
+            </ListboxSection>
+            <ListboxSection showDivider hidden={!pageUtil.isUserSpace}>
+              <ListboxItem
+                href={PageRoutes.Public.INDEX}
+                startContent={<span className={cn(IconNames.HOME, 'text-base')} />}
+              >
+                BMM 首页
               </ListboxItem>
             </ListboxSection>
             <ListboxItem

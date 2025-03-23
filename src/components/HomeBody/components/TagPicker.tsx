@@ -92,28 +92,30 @@ export default function TagPicker(props: Props) {
       </div>
 
       {!state.filterTagInput && (
-        <div className="my-4 shrink-0 flex-items-center">
-          <Switch
-            size="sm"
-            className="scale-[0.75]"
-            key={Number(state.onlyMain)}
-            isSelected={state.onlyMain}
-            onValueChange={(v) => setState({ onlyMain: v })}
-          />
-          <span
-            className={cn(
-              'text-sm',
-              state.onlyMain ? 'text-foreground-600' : 'text-foreground-400'
-            )}
-          >
-            仅展示主标签
-          </span>
-        </div>
+        <>
+          <div className="my-4 shrink-0 flex-items-center">
+            <Switch
+              size="sm"
+              className="scale-[0.75]"
+              key={Number(state.onlyMain)}
+              isSelected={state.onlyMain}
+              onValueChange={(v) => setState({ onlyMain: v })}
+            />
+            <span
+              className={cn(
+                'text-sm',
+                state.onlyMain ? 'text-foreground-600' : 'text-foreground-400'
+              )}
+            >
+              仅展示主标签
+            </span>
+          </div>
+          <div className="pb-4 text-xs text-foreground-300">
+            点击标签时，按住 <Kbd className="scale-80 opacity-80" keys={['alt']} />{' '}
+            可多选，实现交叉筛选书签
+          </div>
+        </>
       )}
-      <div className="pb-4 text-xs text-foreground-300">
-        点击标签时，按住 <Kbd className="scale-80 opacity-80" keys={['alt']} />{' '}
-        可多选，实现交叉筛选书签
-      </div>
     </div>
   )
 }

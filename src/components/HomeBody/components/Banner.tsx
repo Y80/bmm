@@ -6,7 +6,6 @@ import { Chip } from '@heroui/react'
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { PropsWithChildren } from 'react'
-import { useHomePageContext } from '../ctx'
 
 function Wrapper(props: PropsWithChildren) {
   return <header className="flex-col gap-4 py-8 flex-center">{props.children}</header>
@@ -17,6 +16,7 @@ const H1_CLS = 'text-3xl font-bold flex-center text-foreground-700'
 interface Props {
   tags: SelectTag[]
   totalBookmarks: number
+  searchedTotalBookmarks?: number
 }
 
 export default function Banner(props: Props) {
@@ -26,7 +26,6 @@ export default function Banner(props: Props) {
   const searchParams = useSearchParams()
   const session = useSession()
   const { tags, totalBookmarks } = props
-  const { bookmarks } = useHomePageContext()
   const { selectedTags, onClickTag } = useOnClickTag({ tags })
   const routes = pageUtil.isUserSpace ? PageRoutes.User : PageRoutes.Public
 
@@ -76,7 +75,7 @@ export default function Banner(props: Props) {
           </div>
         )}
         <div className="text-sm text-zinc-500 dark:text-zinc-400">
-          {bookmarks.length} 个相关书签
+          {props.searchedTotalBookmarks} 个相关书签
           {!isIntersected && `，${firstTag.relatedTagIds.length} 个关联标签`}
         </div>
         {!isIntersected && !!firstTag.relatedTagIds.length && (
@@ -121,7 +120,9 @@ export default function Banner(props: Props) {
           </strong>
         </div>
         <div className="text-sm text-zinc-400">
-          {bookmarks.length ? `已获取 ${bookmarks.length} 个相关书签` : '暂无相关书签'}
+          {props.searchedTotalBookmarks
+            ? `已获取 ${props.searchedTotalBookmarks} 个相关书签`
+            : '暂无相关书签'}
         </div>
       </Wrapper>
     )

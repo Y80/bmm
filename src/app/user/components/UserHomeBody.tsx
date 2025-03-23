@@ -5,6 +5,7 @@ import { useUserContext } from '../ctx'
 
 interface Props {
   bookmarks: SelectBookmark[]
+  searchedTotalBookmarks?: number
 }
 
 export default function UserHomeBody(props: Props) {

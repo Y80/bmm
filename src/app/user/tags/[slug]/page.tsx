@@ -11,5 +11,5 @@ export default async function Page(props: RSCPageProps) {
   const tagNames = decodeURIComponent(props.params.slug).split('+')
   const params: typeof findManyBookmarksSchema._input = { tagNames }
   const res = await UserBookmarkController.findMany(findManyBookmarksSchema.parse(params))
-  return <UserHomeBody bookmarks={res.list} />
+  return <UserHomeBody searchedTotalBookmarks={res.total} bookmarks={res.list} />
 }

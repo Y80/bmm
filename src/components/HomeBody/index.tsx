@@ -18,6 +18,7 @@ interface Props {
   tags: SelectTag[]
   bookmarks: SelectBookmark[]
   totalBookmarks: number
+  searchedTotalBookmarks?: number
 }
 
 export default function HomeBody(props: Props) {
@@ -69,7 +70,11 @@ export default function HomeBody(props: Props) {
       </aside>
       <div className="xs:ml-56">
         <div className="flex flex-col px-6 pb-14">
-          <Banner tags={props.tags} totalBookmarks={props.totalBookmarks} />
+          <Banner
+            tags={props.tags}
+            totalBookmarks={props.totalBookmarks}
+            searchedTotalBookmarks={props.searchedTotalBookmarks}
+          />
           <BookmarkContainer>
             {bookmarks.map((bookmark) => {
               return <BookmarkCard {...bookmark} key={bookmark.id} />

@@ -16,5 +16,5 @@ export default async function Page(props: RSCPageProps) {
   const payload: typeof findManyBookmarksSchema._input = { keyword }
   const res = await PublicBookmarkController.findMany(findManyBookmarksSchema.parse(payload))
 
-  return <PublicHomeBody bookmarks={res.list} />
+  return <PublicHomeBody searchedTotalBookmarks={res.total} bookmarks={res.list} />
 }
