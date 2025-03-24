@@ -126,8 +126,10 @@ export const DEFAULT_BOOKMARK_PAGESIZE = 24
 
 export const FieldConstraints = {
   MaxLen: {
+    DEFAULT: 100,
     TAG_NAME: 20,
-    BOOKMARK_NAME: 30,
-    BOOKMARK_DESC: 255,
+    BOOKMARK_NAME: 50,
+    URL: 1000,
+    BOOKMARK_DESC: 200,
   },
 } as const

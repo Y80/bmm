@@ -60,9 +60,8 @@ async function main() {
     console.log('========================================================================')
     echo(
       chalk.yellow(
-        '数据库初始化失败，请重试。\n或前往： ' +
-          'https://github.com/Y80/bmm/issues?q=数据库' +
-          '\n查看类似的问题，或带上报错信息新建 issue，我会尽快处理 :) \n'
+        '\n数据库初始化失败，请重试。\n\n可前往: https://github.com/Y80/bmm/issues?q=数据库 查看相关问题。\n' +
+          '或带上报错信息新建 issue，我会尽快处理 :) \n'
       )
     )
     exitWithDbClose(1)

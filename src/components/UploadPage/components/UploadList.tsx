@@ -8,7 +8,7 @@ import { Favicon, ReButton, ReTooltip } from '@/components'
 import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil } from '@/hooks'
 import { concurrenceWithLimit } from '@/utils/concurrence-with-limit'
-import { IconNames, PageRoutes } from '@cfg'
+import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import { addToast, cn, Divider, Link, ScrollShadow } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import { pick } from 'lodash'
@@ -25,6 +25,7 @@ interface Props {
 }
 
 enum UploadState {
+  INVALID,
   WAIT,
   SUCCESS,
   FAILED,
@@ -42,35 +43,50 @@ export default function UploadList(props: Props) {
     finishedNum: null as null | number,
   })
   const [bookmarks, setBookmarks] = useState(() => {
-    return props.bookmarks.map((bookmark) => {
-      const entity = {
-        id: bookmark.name,
-        icon: getDefaultFavicon(bookmark.url),
-        name: bookmark.name,
-        url: bookmark.url,
-        relatedTagNames: [] as string[],
-        state: UploadState.WAIT,
-        errorMsg: '',
-      }
-      if (linkTagStrategy === LinkTagStrategy.FOLDER_PATH) {
-        for (const cate of bookmark.categories) {
-          const tag = tagNames.find((t) => t === cate.name)
-          if (!tag) continue
-          entity.relatedTagNames.push(tag)
+    return props.bookmarks
+      .map((bookmark) => {
+        const entity = {
+          ...pick(bookmark, 'id', 'name', 'url'),
+          icon: getDefaultFavicon(bookmark.url),
+          relatedTagNames: [] as string[],
+          state: UploadState.WAIT,
+          errorMsg: '',
         }
-      } else if (linkTagStrategy === LinkTagStrategy.CLOSED_FOLDER) {
-        for (const cate of bookmark.categories.toReversed()) {
-          const tag = tagNames.find((t) => t === cate.name)
-          if (!tag) continue
-          entity.relatedTagNames = [tag]
-          break
+        const isOversizeUrl = entity.url.length > FieldConstraints.MaxLen.URL
+        const isOversizeName = entity.name.length > FieldConstraints.MaxLen.BOOKMARK_NAME
+        if (isOversizeUrl || isOversizeName) {
+          entity.state = UploadState.INVALID
+          const errs = [
+            isOversizeName &&
+              `名称长度不能超过 ${FieldConstraints.MaxLen.BOOKMARK_NAME}，过长的名称难以辨识请考虑简化`,
+            isOversizeUrl && `URL 长度不能超过 ${FieldConstraints.MaxLen.URL}`,
+          ].filter(Boolean) as string[]
+          entity.errorMsg = errs.join('；')
+          return entity
         }
-      }
-      if (!entity.relatedTagNames.length) {
-        entity.relatedTagNames = ['其它']
-      }
-      return entity
-    })
+        if (linkTagStrategy === LinkTagStrategy.FOLDER_PATH) {
+          for (const cate of bookmark.categories) {
+            const tag = tagNames.find((t) => t === cate.name)
+            if (!tag) continue
+            entity.relatedTagNames.push(tag)
+          }
+        } else if (linkTagStrategy === LinkTagStrategy.CLOSED_FOLDER) {
+          for (const cate of bookmark.categories.toReversed()) {
+            const tag = tagNames.find((t) => t === cate.name)
+            if (!tag) continue
+            entity.relatedTagNames = [tag]
+            break
+          }
+        }
+        if (!entity.relatedTagNames.length) {
+          entity.relatedTagNames = ['其它']
+        }
+        return entity
+      })
+      .sort((a, b) => {
+        if (a.state === UploadState.INVALID && b.state !== UploadState.INVALID) return -1
+        return 0
+      })
   })
   const scroller = useRef<HTMLDivElement>(null)
 
@@ -193,7 +209,10 @@ export default function UploadList(props: Props) {
               <section key={bookmark.id} className="gap-4 flex-items-center">
                 <Favicon src={bookmark.icon} size={24} />
                 <a
-                  className="grow-0 truncate text-foreground-500 hover:opacity-70"
+                  className={cn(
+                    'grow-0 truncate text-foreground-500 hover:opacity-70',
+                    bookmark.state === UploadState.INVALID && 'opacity-70'
+                  )}
                   target="_blank"
                   href={bookmark.url}
                 >
@@ -207,7 +226,19 @@ export default function UploadList(props: Props) {
                     {tag}
                   </span>
                 ))}
-                <span className="ml-auto text-base">
+                <span className="ml-auto text-base flex-center">
+                  {bookmark.state === UploadState.INVALID && (
+                    <ReTooltip
+                      content={
+                        <div className="text-xs">
+                          <p>当前书签不会被上传：</p>
+                          <p>{bookmark.errorMsg}</p>
+                        </div>
+                      }
+                    >
+                      <span className="icon-[tabler--alert-circle] cursor-pointer text-warning-500" />
+                    </ReTooltip>
+                  )}
                   {bookmark.state === UploadState.WAIT && state.uploading && (
                     <span className="icon-[tabler--loader-2] animate-spin cursor-wait text-foreground-500" />
                   )}

@@ -21,10 +21,10 @@ export const userTags = pgTable(
   {
     id: serial('id').primaryKey(),
     name: varchar('name', { length: FieldConstraints.MaxLen.TAG_NAME }).notNull(),
-    icon: varchar('icon', { length: 255 }),
-    color: varchar('color', { length: 255 }),
+    icon: varchar('icon', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
+    color: varchar('color', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
+    pinyin: varchar('pinyin', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
     isMain: boolean('isMain'),
-    pinyin: varchar('pinyin', { length: 255 }),
     sortOrder: integer('sortOrder').notNull().default(0),
     createdAt: timestamp('createdAt', { mode: 'date' })
       .notNull()
@@ -64,10 +64,10 @@ export const userBookmarks = pgTable(
   {
     id: serial('id').primaryKey(),
     name: varchar('name', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).notNull(),
-    url: varchar('url').notNull(),
-    icon: varchar('icon'),
-    pinyin: varchar('pinyin'),
-    description: varchar('description'),
+    url: varchar('url', { length: FieldConstraints.MaxLen.URL }).notNull(),
+    icon: varchar('icon', { length: FieldConstraints.MaxLen.DEFAULT }),
+    pinyin: varchar('pinyin', { length: FieldConstraints.MaxLen.DEFAULT }),
+    description: varchar('description', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
     isPinned: boolean('isPinned'),
     createdAt: timestamp('createdAt', { mode: 'date' })
       .notNull()

@@ -1,4 +1,3 @@
-import { FieldConstraints } from '@cfg'
 import { relations } from 'drizzle-orm'
 import { alias, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
@@ -10,8 +9,8 @@ export const publicTags = sqliteTable('publicTags', {
   name: text('name').notNull().unique(),
   icon: text('icon'),
   color: text('color'),
-  isMain: integer('isMain', { mode: 'boolean' }),
   pinyin: text('pinyin'),
+  isMain: integer('isMain', { mode: 'boolean' }),
   sortOrder: integer('sortOrder').notNull().default(0),
   createdAt: integer('createdAt', { mode: 'timestamp' })
     .notNull()
@@ -43,11 +42,11 @@ export const publicTagToTag = sqliteTable(
  */
 export const publicBookmarks = sqliteTable('publicBookmarks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).unique().notNull(),
+  name: text('name').unique().notNull(),
   url: text('url').unique().notNull(),
   icon: text('icon'),
   pinyin: text('pinyin'),
-  description: text('description', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
+  description: text('description'),
   isPinned: integer('isPinned', { mode: 'boolean' }),
   createdAt: integer('createdAt', { mode: 'timestamp' })
     .notNull()
