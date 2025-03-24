@@ -13,11 +13,11 @@ import {
 
 export const publicTags = pgTable('publicTags', {
   id: serial('id').primaryKey(),
-  name: varchar('name', { length: 255 }).notNull().unique(),
-  icon: varchar('icon', { length: 255 }),
-  color: varchar('color', { length: 255 }),
+  name: varchar('name', { length: FieldConstraints.MaxLen.TAG_NAME }).notNull().unique(),
+  icon: varchar('icon', { length: FieldConstraints.MaxLen.DEFAULT }),
+  color: varchar('color', { length: FieldConstraints.MaxLen.DEFAULT }),
+  pinyin: varchar('pinyin', { length: FieldConstraints.MaxLen.DEFAULT }),
   isMain: boolean('isMain'),
-  pinyin: varchar('pinyin', { length: 255 }),
   sortOrder: integer('sortOrder').notNull().default(0),
   createdAt: timestamp('createdAt', { mode: 'date' })
     .notNull()
@@ -67,9 +67,9 @@ export const publicTagToTagRelations = relations(publicTagToTag, (ctx) => {
 export const publicBookmarks = pgTable('publicBookmarks', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).unique().notNull(),
-  url: varchar('url', { length: 255 }).unique().notNull(),
-  icon: varchar('icon', { length: 255 }),
-  pinyin: varchar('pinyin', { length: 255 }),
+  url: varchar('url', { length: FieldConstraints.MaxLen.URL }).unique().notNull(),
+  icon: varchar('icon', { length: FieldConstraints.MaxLen.DEFAULT }),
+  pinyin: varchar('pinyin', { length: FieldConstraints.MaxLen.DEFAULT }),
   description: varchar('description', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
   isPinned: boolean('isPinned'),
   createdAt: timestamp('createdAt', { mode: 'date' })

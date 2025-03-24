@@ -14,9 +14,9 @@
     "db:test": "tsx scripts/db-test.zx",
     "执行数据库初始化/迁移": "⬇️",
     "db:migrate": "tsx scripts/db-migration.zx",
-    "这些加了 -p 的命令功能同上，但会加载生产环境的环境变量": "⬇️",
-    "db:test-p": "tsx scripts/db-test.zx --production",
-    "db:migrate-p": "tsx scripts/db-migration.zx --production"
+    "根据项目中的 schema，更新数据库（忽略 migrations，可能会导致数据丢失）": "⬇️",
+    "db:push": "tsx scripts/db-push.zx",
+    "以上这些命令行均允许加上 -P 或 --production，以加载正式环境变量，如 pnpm db:test -P": ""
   },
   "engines": {
     "node": ">18.0.0"

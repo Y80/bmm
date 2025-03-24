@@ -1,7 +1,7 @@
 'use client'
 
 import { BorderBeam, NumberTicker, ReButton, ReTooltip } from '@/components'
-import { IconNames } from '@cfg'
+import { FieldConstraints, IconNames } from '@cfg'
 import {
   addToast,
   ButtonGroup,
@@ -181,7 +181,11 @@ export default function UploadPage() {
     // 标签名称可能存在重复的。这里去重。
     // 由于接下来在数据库中创建标签、书签关联标签都是对标签名称进行操作，所以这样不会有什么问题
     names = [...new Set(names)]
-    setState({ checkedLinkableTags: names.filter((e) => e !== '书签栏') })
+    setState({
+      checkedLinkableTags: names.filter((e) => {
+        return e !== '书签栏' && e.length <= FieldConstraints.MaxLen.TAG_NAME
+      }),
+    })
     return [...names]
   }, [allCategories, setState, state.checkedTreeKeys, state.linkTagStrategy])
 
@@ -418,7 +422,17 @@ export default function UploadPage() {
           <div className="mt-8">
             <label className="gap-2 text-base text-foreground-500 flex-items-center">
               <span>可关联的标签</span>
-              <ReTooltip content={<p>仅影响书签可关联的标签，不影响导入的书签数量</p>}>
+              <ReTooltip
+                content={
+                  <div>
+                    <p>仅影响书签可关联的标签，不影响导入的书签数量。</p>
+                    <p>
+                      标签应该是简洁明了的，因此无法关联超过 {FieldConstraints.MaxLen.TAG_NAME}{' '}
+                      个字符的标签。
+                    </p>
+                  </div>
+                }
+              >
                 <span className={cn(IconNames.QUESTION_CIRCLE, 'cursor-pointer')} />
               </ReTooltip>
             </label>
@@ -431,7 +445,11 @@ export default function UploadPage() {
                 onChange={(v) => setState({ checkedLinkableTags: v })}
               >
                 {linkableTags.map((tag) => (
-                  <Checkbox key={tag} value={tag} isDisabled={'其它' === tag}>
+                  <Checkbox
+                    key={tag}
+                    value={tag}
+                    isDisabled={'其它' === tag || tag.length > FieldConstraints.MaxLen.TAG_NAME}
+                  >
                     {tag}
                   </Checkbox>
                 ))}

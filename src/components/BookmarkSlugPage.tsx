@@ -222,6 +222,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
         label="网址"
         type="url"
         isRequired
+        maxLength={FieldConstraints.MaxLen.URL}
         isInvalid={!!invalidInfos.url}
         errorMessage={invalidInfos.url}
         endContent={renderParseWebsiteDropdown()}

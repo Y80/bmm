@@ -1,5 +1,6 @@
 import { db, schema } from '@/db'
 import { to } from '@/utils'
+import { FieldConstraints } from '@cfg'
 import { faker } from '@faker-js/faker'
 import { count, eq, inArray } from 'drizzle-orm'
 import { afterAll, assert, beforeAll, describe, test } from 'vitest'
@@ -27,6 +28,14 @@ describe('G: PublicTagController', () => {
   test('Delete a tag', async () => {
     const res = await PublicTagController.remove({ id })
     assert.isTrue(res[0].id === id)
+  })
+
+  test('插入一个标签，但是标签名超出限制', async () => {
+    const [err, res] = await to(
+      PublicTagController.insert({ name: 'a'.repeat(FieldConstraints.MaxLen.TAG_NAME + 10) })
+    )
+    assert.isDefined(err)
+    assert.isUndefined(res)
   })
 })
 
