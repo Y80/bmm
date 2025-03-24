@@ -1,8 +1,8 @@
 'use client'
 
+import { cn } from '@heroui/react'
 import { useSetState, useUpdateEffect } from 'ahooks'
 import { PropsWithChildren } from 'react'
-import { twMerge } from 'tailwind-merge'
 import ReTooltip from './re-export/ReTooltip'
 
 interface Props {
@@ -33,7 +33,7 @@ function Wrapper(props: PropsWithChildren<Pick<Props, 'size' | 'className'>>) {
   const size = props.size || DEFAULT_FAVICON_WRAPPER_SIZE
   return (
     <div
-      className={twMerge('shrink-0 rounded-lg bg-white p-0.5 flex-center', props.className)}
+      className={cn('shrink-0 rounded-lg bg-white p-[3px] flex-center', props.className)}
       style={{ width: size, height: size }}
     >
       {props.children}
@@ -81,7 +81,7 @@ export default function Favicon(props: Props) {
     <Wrapper size={props.size} className={props.className}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        className={showSpinner ? 'size-0' : 'size-full'}
+        className={cn('rounded', showSpinner ? 'size-0' : 'size-full')}
         alt="website-favicon"
         src={props.src}
         loading={props.disableLazyLoading ? 'eager' : 'lazy'}
@@ -89,7 +89,7 @@ export default function Favicon(props: Props) {
         onLoad={() => setState({ status: LoadStatus.LOADED })}
       />
       {showSpinner && (
-        <span className="icon-[tabler--loader] size-full animate-spin text-foreground-500 dark:text-foreground-300" />
+        <span className="icon-[tabler--loader] size-full animate-spin text-gray-700" />
       )}
     </Wrapper>
   )

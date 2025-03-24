@@ -195,7 +195,7 @@ export default function UploadList(props: Props) {
           {bookmarks.map((bookmark) => {
             return (
               <section key={bookmark.id} className="gap-4 flex-items-center">
-                <Favicon src={bookmark.icon} size={24} />
+                <Favicon src={bookmark.icon} size={24} showErrorIconOnFailed showSpinner />
                 <a
                   className={cn(
                     'grow-0 truncate text-foreground-500 hover:opacity-70',

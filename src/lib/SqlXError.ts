@@ -34,7 +34,7 @@ export default class SqlXError extends Error {
     if (SqlXError.isLibsqlError(this.originalError)) {
       // drizzle-orm/sqlite 目前无法对 TEXT 长度进行约束
       const err = this.originalError as LibsqlError
-      if (err.rawCode === 2067) {
+      if (err.rawCode === 2067 || err.code === 'SQLITE_CONSTRAINT') {
         if (msg.includes('publicBookmarks') || msg.includes('userBookmarks')) {
           if (msg.includes('.name')) return '已存在相同名称的书签'
           if (msg.includes('.url')) return '已存在相同网址的书签'
@@ -58,7 +58,7 @@ export default class SqlXError extends Error {
   }
 
   static isLibsqlError(err: any) {
-    return !!err?.libsqlError
+    return !!err?.libsqlError || err instanceof LibsqlError
   }
 
   static canParse(err: any) {
