@@ -11,6 +11,7 @@ export const users = sqliteTable('user', {
   emailVerified: integer('emailVerified', { mode: 'timestamp_ms' }),
   image: text('image'),
   role: text({ enum: ['user', 'admin'] }).default('user'),
+  createdAt: integer('createdAt', { mode: 'timestamp_ms' }).$defaultFn(() => new Date()),
 })
 
 export const accounts = sqliteTable(

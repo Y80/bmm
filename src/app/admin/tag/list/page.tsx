@@ -12,7 +12,9 @@ export default function Page() {
     tags,
     refreshTags: updateTags,
     removeTag: async (tag) => {
-      await runAction(actDeletePublicTag({ id: tag.id }))
+      await runAction(actDeletePublicTag({ id: tag.id }), {
+        onOk: () => updateTags(),
+      })
     },
     changeTag: async (tag) => {
       const idx = tags.findIndex((e) => e.id === tag.id)
