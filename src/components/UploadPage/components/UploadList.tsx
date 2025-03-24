@@ -40,7 +40,6 @@ export default function UploadList(props: Props) {
   const { linkTagStrategy, tagNames } = props
   const [state, setState] = useSetState({
     uploading: false,
-    finishedNum: null as null | number,
   })
   const [bookmarks, setBookmarks] = useState(() => {
     return props.bookmarks
@@ -58,7 +57,7 @@ export default function UploadList(props: Props) {
           entity.state = UploadState.INVALID
           const errs = [
             isOversizeName &&
-              `名称长度不能超过 ${FieldConstraints.MaxLen.BOOKMARK_NAME}，过长的名称难以辨识请考虑简化`,
+              `名称长度超过了 ${FieldConstraints.MaxLen.BOOKMARK_NAME}，过长的名称难以辨识，请考虑简化`,
             isOversizeUrl && `URL 长度不能超过 ${FieldConstraints.MaxLen.URL}`,
           ].filter(Boolean) as string[]
           entity.errorMsg = errs.join('；')
@@ -100,6 +99,7 @@ export default function UploadList(props: Props) {
     let successNum = 0
     const insertBookmark = isAdminSpace ? actInsertPublicBookmark : actInsertUserBookmark
     const tasks = bookmarks.map((bookmark) => async () => {
+      if (bookmark.state === UploadState.INVALID) return
       const entity: InsertPublicBookmark = {
         ...pick(bookmark, 'name', 'url', 'icon'),
         relatedTagIds: bookmark.relatedTagNames.map(
@@ -108,7 +108,6 @@ export default function UploadList(props: Props) {
       }
       const res = await insertBookmark(entity)
       res.error ? failedNum++ : successNum++
-      setState((state) => ({ ...state, finishedNum: (state.finishedNum || 0) + 1 }))
       setBookmarks((bookmarks) => {
         const b = bookmarks.find((_bookmark) => _bookmark.id === bookmark.id)!
         if (res.error) {
@@ -129,8 +128,17 @@ export default function UploadList(props: Props) {
     })
   }
 
+  const totalNum = bookmarks.length
+  const invalidNum = bookmarks.filter((b) => b.state === UploadState.INVALID).length
+  const successNum = bookmarks.filter((b) => b.state === UploadState.SUCCESS).length
+  const failedNum = bookmarks.filter((b) => b.state === UploadState.FAILED).length
+  const waitNum = totalNum - invalidNum - successNum - failedNum
+  // 任务没有开始
+  const pending = !successNum && !failedNum
+  const finished = !waitNum
+
   useEffect(() => {
-    if (state.finishedNum !== bookmarks.length) return
+    if (!finished) return
     setBookmarks((bookmarks) => {
       setTimeout(() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' }))
       return bookmarks.toSorted((a, b) => {
@@ -138,68 +146,48 @@ export default function UploadList(props: Props) {
         return 0
       })
     })
-  }, [state.finishedNum, bookmarks.length])
+  }, [finished])
 
   return (
     <Panel>
       <div className="gap-4 flex-items-center">
-        <h2 className="mr-auto w-full text-xl">
-          {(() => {
-            if (state.finishedNum === null) {
-              return (
-                <div className="gap-2 flex-items-center">
-                  <span className={cn('text-xl', IconNames.Huge.LIST)} />
-                  <span>上传列表</span>
-                </div>
-              )
-            }
-            if (state.finishedNum === bookmarks.length) {
-              return (
-                <div className="flex w-full items-center justify-between gap-4">
-                  <span>任务已完成</span>
-                  <Link
-                    className="cursor-pointer"
-                    onClick={(evt) => {
-                      evt.preventDefault()
-                      if (isAdminSpace) {
-                        window.open(PageRoutes.Admin.bookmarkSlug('list'))
-                        window.open(PageRoutes.INDEX)
-                      } else {
-                        window.open(PageRoutes.User.bookmarkSlug('list'))
-                        window.open(PageRoutes.User.INDEX)
-                      }
-                    }}
-                    showAnchorIcon
-                    isExternal
-                    size="sm"
-                  >
-                    去查看
-                  </Link>
-                </div>
-              )
-            }
-            return `上传进度 ${state.finishedNum} / ${bookmarks.length}`
-          })()}
+        <h2 className="mr-auto gap-2 flex-center">
+          <span className={cn('text-xl', IconNames.Huge.LIST)} />
+          <span>上传列表</span>
         </h2>
-        <ReButton
-          size="sm"
-          onClick={props.onCancel}
-          className={cn(state.finishedNum !== null && 'hidden')}
-        >
+        <ReButton size="sm" onClick={props.onCancel} className={cn(!pending && 'hidden')}>
           返回
         </ReButton>
         <ReButton
           size="sm"
           color="primary"
           onClick={submit}
-          className={cn(state.finishedNum !== null && 'hidden', 'px-6')}
+          className={cn(finished && 'hidden', 'px-6')}
         >
-          🚀 开始上传
+          {pending ? '🚀 开始上传' : '上传中'}
         </ReButton>
+        <Link
+          showAnchorIcon
+          isExternal
+          size="sm"
+          className={cn('shrink-0 cursor-pointer', !finished && 'hidden')}
+          onClick={(evt) => {
+            evt.preventDefault()
+            if (isAdminSpace) {
+              window.open(PageRoutes.Admin.bookmarkSlug('list'))
+              window.open(PageRoutes.INDEX)
+            } else {
+              window.open(PageRoutes.User.bookmarkSlug('list'))
+              window.open(PageRoutes.User.INDEX)
+            }
+          }}
+        >
+          去查看
+        </Link>
       </div>
       <Divider className="my-4" />
       <ScrollShadow
-        style={{ maxHeight: 'calc(100vh - 360px)' }}
+        style={{ maxHeight: 'calc(100vh - 390px)' }}
         className="-mr-6 pr-6"
         ref={scroller}
       >
@@ -256,6 +244,29 @@ export default function UploadList(props: Props) {
           })}
         </div>
       </ScrollShadow>
+      <Divider className="my-4" />
+      <div className="text-sm text-foreground-500">
+        {(() => {
+          return (
+            <>
+              共 {totalNum} 个书签，其中：
+              <span hidden={!invalidNum}>
+                <span className="text-warning-500">{invalidNum} </span>
+                个无效，
+              </span>
+              <span hidden={!waitNum}>
+                <span className="text-primary-500">{waitNum} </span>
+                个待上传
+                {!pending && '，'}
+              </span>
+              <span hidden={pending}>
+                <span className="text-success-500">{successNum} </span>个上传成功，
+                <span className="text-danger-400">{failedNum} </span>个上传失败。
+              </span>
+            </>
+          )
+        })()}
+      </div>
     </Panel>
   )
 }
