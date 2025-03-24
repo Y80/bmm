@@ -29,14 +29,21 @@ export function useOnClickTag({ tags }: { tags: SelectTag[] }) {
 
   const onClickTag = useCallback<OnClickTag>(
     ({ tag, isIntersected, event }) => {
+      function toNewPath(tagNames: string[]) {
+        const newPath = (isUserSpace ? PageRoutes.User : PageRoutes.Public).tags(tagNames)
+        router.push(newPath)
+      }
       const tagNames = selectedTags.map((t) => t.name)
-      if (tagNames.includes(tag.name)) return
+      if (tagNames.includes(tag.name)) {
+        const newTagNames = tagNames.filter((name) => name !== tag.name)
+        toNewPath(newTagNames)
+        return
+      }
       TagPickerBox.saveScrollTop()
       // 是否执行标签的交叉搜索
       isIntersected ||= event?.altKey
       const finalTagNames = isIntersected ? [...tagNames, tag.name] : [tag.name]
-      const newPath = (isUserSpace ? PageRoutes.User : PageRoutes.Public).tags(finalTagNames)
-      router.push(newPath)
+      toNewPath(finalTagNames)
     },
     [isUserSpace, router, selectedTags]
   )
