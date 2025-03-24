@@ -65,7 +65,7 @@ export const userBookmarks = pgTable(
     id: serial('id').primaryKey(),
     name: varchar('name', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).notNull(),
     url: varchar('url', { length: FieldConstraints.MaxLen.URL }).notNull(),
-    icon: varchar('icon', { length: FieldConstraints.MaxLen.DEFAULT }),
+    icon: varchar('icon', { length: FieldConstraints.MaxLen.URL }),
     pinyin: varchar('pinyin', { length: FieldConstraints.MaxLen.DEFAULT }),
     description: varchar('description', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
     isPinned: boolean('isPinned'),
