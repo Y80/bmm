@@ -427,8 +427,8 @@ export default function UploadPage() {
                   <div>
                     <p>仅影响书签可关联的标签，不影响导入的书签数量。</p>
                     <p>
-                      标签应该是简洁明了的，因此无法关联长度超过 {FieldConstraints.MaxLen.TAG_NAME}{' '}
-                      的标签。
+                      标签应该是简洁明了的，因此无法关联超过 {FieldConstraints.MaxLen.TAG_NAME}{' '}
+                      个字符的标签。
                     </p>
                   </div>
                 }

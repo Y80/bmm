@@ -57,7 +57,7 @@ export default function UploadList(props: Props) {
           entity.state = UploadState.INVALID
           const errs = [
             isOversizeName &&
-              `名称长度超过了 ${FieldConstraints.MaxLen.BOOKMARK_NAME}，过长的名称难以辨识，请考虑简化`,
+              `名称超过了 ${FieldConstraints.MaxLen.BOOKMARK_NAME} 个字符，过长的名称难以辨识，请考虑简化`,
             isOversizeUrl && `URL 长度不能超过 ${FieldConstraints.MaxLen.URL}`,
           ].filter(Boolean) as string[]
           entity.errorMsg = errs.join('；')
@@ -261,7 +261,7 @@ export default function UploadList(props: Props) {
               </span>
               <span hidden={pending}>
                 <span className="text-success-500">{successNum} </span>个上传成功，
-                <span className="text-danger-400">{failedNum} </span>个上传失败。
+                <span className="text-danger-400">{failedNum} </span>个上传失败
               </span>
             </>
           )
