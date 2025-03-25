@@ -108,6 +108,7 @@ export function PublicAndUserNavbar(props: Props) {
               key={group.key}
               {...IconButtonProps}
               className={cn(IconButtonProps.className, 'max-xs:hidden')}
+              href={group.list[1].href}
               tooltip={{
                 placement: 'top-start',
                 content: (
