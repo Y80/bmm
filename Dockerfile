@@ -1,24 +1,33 @@
-# 使用 node:18-alpine 作为基础镜像
-FROM node:18-alpine
+FROM node:20-alpine AS base
 
-ARG DB_CONNECTION_URL
-ENV DB_CONNECTION_URL=${DB_CONNECTION_URL}
-
-# zx 依赖 bash 
-RUN apk update && apk add bash
-
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
+COPY package.json pnpm-lock.yaml .npmrc ./
+RUN corepack enable && pnpm install --frozen-lockfile 
 
-RUN npm install -g pnpm
-
+FROM base AS builder
+WORKDIR /app
+ENV DOCKER_BUILD=1
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN corepack enable && pnpm run build
 
-RUN pnpm install
-RUN pnpm run build
 
-# 暴露应用端口
-# EXPOSE 3000
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# 启动 Next.js 应用
-# CMD ["pnpm", "run", "start"]
+USER nextjs
 
+EXPOSE 3000
+
+ENV PORT=3000
+
+ENV HOSTNAME="0.0.0.0"
+CMD ["node", "server.js"]

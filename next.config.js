@@ -1,14 +1,20 @@
-import { codeInspectorPlugin } from 'code-inspector-plugin'
-import { checkEnvs, tryLoadParentGitRepoEnv } from './scripts/utils.js'
+import { codeInspectorPlugin } from 'code-inspector-plugin';
+import nextConst from 'next/constants.js';
+import { tryLoadParentGitRepoEnv } from './scripts/utils.js';
 
-export default async function setup() {
+export default async function setup(phase) {
   tryLoadParentGitRepoEnv()
-  checkEnvs()
+
+  if (phase === nextConst.PHASE_DEVELOPMENT_SERVER || phase === nextConst.PHASE_PRODUCTION_SERVER) {
+    checkEnvs()
+  }
 
   const domainHost = new URL(process.env.AUTH_URL || 'http://localhost').host
 
   /** @type {import('next').NextConfig} */
   const nextConfig = {
+    output: process.env.DOCKER_BUILD ? 'standalone' : undefined,
+
     images: {
       remotePatterns: [
         {
@@ -24,7 +30,7 @@ export default async function setup() {
       config.plugins.push(codeInspectorPlugin({
         bundler: 'webpack',
         hideDomPathAttr: true,
-        editor: 'trae'
+        editor: process.env.CODE_INSPECTOR_EDITOR || undefined
       }))
       // https://github.com/vercel/next.js/discussions/39705
       // fix: edge 环境无法加载环境变量
