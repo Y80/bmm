@@ -92,9 +92,7 @@ export default function UploadList(props: Props) {
   async function submit() {
     const action = isAdminSpace ? actTryCreatePublicTags : actTryCreateUserTags
     const { data: tags } = await action(tagNames)
-    if (!tags) return
-    const otherTagId = tags.find((tag) => tag.name === '其它')?.id
-    if (!otherTagId) throw new Error('数据异常')
+    if (!tags?.length) return
     let failedNum = 0
     let successNum = 0
     const insertBookmark = isAdminSpace ? actInsertPublicBookmark : actInsertUserBookmark
@@ -123,7 +121,7 @@ export default function UploadList(props: Props) {
     await concurrenceWithLimit({ tasks })
     setState({ uploading: false })
     addToast({
-      color: failedNum ? 'warning' : 'success',
+      color: 'success',
       title: `任务已完成，成功 ${successNum} 个，失败 ${failedNum} 个`,
     })
   }

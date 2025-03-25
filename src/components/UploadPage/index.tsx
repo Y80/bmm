@@ -170,48 +170,47 @@ export default function UploadPage() {
     return traverse(state.nodes)
   }, [state.nodes])
 
-  const linkableTags = useMemo<string[]>(() => {
-    let names: string[] = []
-    if (state.linkTagStrategy !== LinkTagStrategy.OTHER) {
-      names = allCategories
-        .filter((cate) => cate.id !== ROOT_ID && state.checkedTreeKeys.includes(cate.id))
-        .map((e) => e.name)
+  /**
+   * 将要导入的所有书签的
+   */
+  const waitUploadBookmarks = useMemo(() => {
+    const bookmarks: Bookmark[] = []
+    function traverse(nodes: CategoryNode['nodes']) {
+      for (const node of nodes) {
+        if (node.type !== 'category') continue
+        if (
+          state.checkedTreeKeys.includes(node.id) ||
+          state.checkedTreeKeys.includes(node.id + '@')
+        ) {
+          node.nodes.forEach((el) => {
+            el.type === 'bookmark' && bookmarks.push(el)
+          })
+        }
+        traverse(node.nodes)
+      }
     }
-    names.unshift('其它')
-    // 标签名称可能存在重复的。这里去重。
-    // 由于接下来在数据库中创建标签、书签关联标签都是对标签名称进行操作，所以这样不会有什么问题
-    names = [...new Set(names)]
+    traverse(state.nodes)
+    return bookmarks
+  }, [state.checkedTreeKeys, state.nodes])
+
+  /** 可关联的标签 */
+  const linkableTags = useMemo<string[]>(() => {
+    const names: Set<string> = new Set(['其它'])
+    if (state.linkTagStrategy !== LinkTagStrategy.OTHER) {
+      const linkNames = waitUploadBookmarks.flatMap((b) => b.categories.map((c) => c.name))
+      if (state.linkTagStrategy === LinkTagStrategy.CLOSED_FOLDER && linkNames.length) {
+        names.add(linkNames.pop()!)
+      } else {
+        linkNames.forEach((val) => names.add(val))
+      }
+    }
     setState({
-      checkedLinkableTags: names.filter((e) => {
+      checkedLinkableTags: [...names].filter((e) => {
         return e !== '书签栏' && e.length <= FieldConstraints.MaxLen.TAG_NAME
       }),
     })
     return [...names]
-  }, [allCategories, setState, state.checkedTreeKeys, state.linkTagStrategy])
-
-  /**
-   * 将要导入的所有书签的 id
-   *
-   * 每次「根据目录筛选书签」树的值发生变化时，都可以重新计算
-   */
-  const waitUploadBookmarkIds = useMemo(() => {
-    const ids: string[] = []
-    function traverse(nodes: CategoryNode['nodes']) {
-      for (const node of nodes) {
-        if (node.type === 'category') {
-          if (
-            state.checkedTreeKeys.includes(node.id) ||
-            state.checkedTreeKeys.includes(node.id + '@')
-          ) {
-            ids.push(...node.nodes.filter((_node) => _node.type === 'bookmark').map((e) => e.id))
-          }
-          traverse(node.nodes)
-        }
-      }
-    }
-    traverse(state.nodes)
-    return ids
-  }, [state.checkedTreeKeys, state.nodes])
+  }, [setState, state.linkTagStrategy, waitUploadBookmarks])
 
   function renderTree() {
     function toggleFolderOpen(id: string) {
@@ -309,7 +308,7 @@ export default function UploadPage() {
   }
 
   async function submitConfig() {
-    if (waitUploadBookmarkIds.length === 0) {
+    if (waitUploadBookmarks.length === 0) {
       addToast({
         color: 'warning',
         description: '没有书签要上传，请检查「导入配置」',
@@ -414,7 +413,7 @@ export default function UploadPage() {
               defaultExpandedKeys={[ROOT_ID]}
             />
             <p className="mt-2 text-sm text-foreground-400">
-              将导入 <NumberTicker value={waitUploadBookmarkIds.length} /> 个书签 / 共{' '}
+              将导入 <NumberTicker value={waitUploadBookmarks.length} /> 个书签 / 共{' '}
               {allBookmarks.length} 个
             </p>
           </div>
@@ -466,7 +465,7 @@ export default function UploadPage() {
       {state.showUploadList && (
         <UploadList
           tagNames={state.checkedLinkableTags}
-          bookmarks={allBookmarks.filter((b) => waitUploadBookmarkIds.includes(b.id))}
+          bookmarks={waitUploadBookmarks}
           linkTagStrategy={state.linkTagStrategy}
           onCancel={() => setState({ showUploadList: false })}
         />
