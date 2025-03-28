@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 
 import 'zx/globals'
-import { declareLocalType, exitWithDbClose, loadEnv, testDbConnect } from './utils'
+import { declareLocalType, exitWithDbClose, loadEnv, testDbConnect } from './utils.mjs'
 
 async function main() {
   await loadEnv()

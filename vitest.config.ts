@@ -2,7 +2,7 @@
 
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
-import { declareLocalType, loadEnv } from './scripts/utils'
+import { declareLocalType, loadEnv } from './scripts/utils.mjs'
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {

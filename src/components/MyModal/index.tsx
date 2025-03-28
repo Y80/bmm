@@ -7,8 +7,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalProps,
+  cn,
 } from '@heroui/react'
-import clsx from 'clsx'
 import open from './open'
 
 export interface MyModalProps extends ModalProps {
@@ -31,7 +31,7 @@ export default function MyModal(props: MyModalProps) {
           return (
             <>
               <ModalHeader>{props.title}</ModalHeader>
-              <ModalBody className={clsx({ 'items-center': props.center })}>
+              <ModalBody className={cn({ 'items-center': props.center })}>
                 {props.children}
               </ModalBody>
               <ModalFooter className="max-xs:px-4">
@@ -40,7 +40,7 @@ export default function MyModal(props: MyModalProps) {
                     fullWidth
                     onClick={onOk}
                     {...okButtonProps}
-                    className={clsx('mx-0 w-[33.3%]', okButtonProps?.className)}
+                    className={cn('mx-0 w-[33.3%]', okButtonProps?.className)}
                   >
                     确 认
                   </Button>

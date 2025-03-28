@@ -31,7 +31,7 @@
     "**/*.mts",
     ".next/types/**/*.ts",
     "next.config.js",
-    "scripts/*.js"
+    "scripts/*.mjs"
   ],
   "exclude": ["node_modules"]
 }

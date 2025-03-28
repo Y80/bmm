@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 
 import 'zx/globals'
-import { exitWithDbClose, loadEnv, testDbConnect } from './utils'
+import { exitWithDbClose, loadEnv, testDbConnect } from './utils.mjs'
 
 async function main() {
   await loadEnv()

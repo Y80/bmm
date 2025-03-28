@@ -16,18 +16,17 @@ services:
       timeout: 3s
       retries: 3
 
-  nextjs:
-    build:
-      context: .
-      args:
-        DB_CONNECTION_URL: postgresql://postgres:666888@postgres:5432/bmm
-    working_dir: /app
-    command: sh -c "pnpm run start"
+  app:
+    image: lcclcc/bmm
+    environment:
+      - DB_DRIVER=postgresql
+      - DB_CONNECTION_URL=postgresql://postgres:666888@postgres:5432/bmm
     ports:
       - 3000:3000
     depends_on:
       postgres:
         condition: service_healthy
+    command: pnpm start
 
 volumes:
   postgres_data:
