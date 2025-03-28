@@ -30,8 +30,8 @@ await loadEnv()
 
 await declareLocalType()
 
-const prefix = chalk.bold.cyan('[INIT-DATABASE] ')
-echo(prefix + 'Start')
+const prefix = chalk.bold.cyan('DATABASE: ')
+// echo(prefix + 'Start')
 
 if (!(await testDbConnect())) {
   echo(chalk.red('❌ 数据库连接失败'))
@@ -43,7 +43,7 @@ echo(prefix + chalk.green('✅ 数据库连接成功'))
 try {
   const dbInitialed = await testDBInitialed()
   if (dbInitialed) {
-    echo(prefix + '已经初始化，跳过本次任务\n')
+    // echo(prefix + '已经初始化，跳过本次任务\n')
   } else {
     echo(prefix + '开始数据库初始化')
     await $`pnpm drizzle-kit generate`

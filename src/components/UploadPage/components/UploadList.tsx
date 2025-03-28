@@ -7,6 +7,7 @@ import {
 import { Favicon, ReButton, ReTooltip } from '@/components'
 import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil } from '@/hooks'
+import { runAction } from '@/utils'
 import { concurrenceWithLimit } from '@/utils/concurrence-with-limit'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import { addToast, cn, Divider, Link, ScrollShadow } from '@heroui/react'
@@ -89,10 +90,27 @@ export default function UploadList(props: Props) {
   })
   const scroller = useRef<HTMLDivElement>(null)
 
+  const totalNum = bookmarks.length
+  const invalidNum = bookmarks.filter((b) => b.state === UploadState.INVALID).length
+  const successNum = bookmarks.filter((b) => b.state === UploadState.SUCCESS).length
+  const failedNum = bookmarks.filter((b) => b.state === UploadState.FAILED).length
+  const waitNum = totalNum - invalidNum - successNum - failedNum
+  // 任务没有开始
+  const pending = !successNum && !failedNum
+  const finished = !waitNum
+
   async function submit() {
-    const action = isAdminSpace ? actTryCreatePublicTags : actTryCreateUserTags
-    const { data: tags } = await action(tagNames)
-    if (!tags?.length) return
+    if (!waitNum) {
+      addToast({
+        color: 'warning',
+        title: '没有可上传的任务',
+      })
+      return
+    }
+    const actCreateTags = isAdminSpace ? actTryCreatePublicTags : actTryCreateUserTags
+    const res = await runAction(actCreateTags(tagNames))
+    if (!res.ok) return
+    const tags = res.data
     let failedNum = 0
     let successNum = 0
     const insertBookmark = isAdminSpace ? actInsertPublicBookmark : actInsertUserBookmark
@@ -126,15 +144,6 @@ export default function UploadList(props: Props) {
     })
   }
 
-  const totalNum = bookmarks.length
-  const invalidNum = bookmarks.filter((b) => b.state === UploadState.INVALID).length
-  const successNum = bookmarks.filter((b) => b.state === UploadState.SUCCESS).length
-  const failedNum = bookmarks.filter((b) => b.state === UploadState.FAILED).length
-  const waitNum = totalNum - invalidNum - successNum - failedNum
-  // 任务没有开始
-  const pending = !successNum && !failedNum
-  const finished = !waitNum
-
   useEffect(() => {
     if (!finished) return
     setBookmarks((bookmarks) => {
@@ -165,10 +174,17 @@ export default function UploadList(props: Props) {
           {pending ? '🚀 开始上传' : '上传中'}
         </ReButton>
         <Link
+          size="sm"
+          className={cn(!finished && 'hidden')}
+          onPress={() => globalThis.history?.go()}
+        >
+          继续上传
+        </Link>
+        <Link
           showAnchorIcon
           isExternal
           size="sm"
-          className={cn('shrink-0 cursor-pointer', !finished && 'hidden')}
+          className={cn(!finished && 'hidden')}
           onClick={(evt) => {
             evt.preventDefault()
             if (isAdminSpace) {

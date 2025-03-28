@@ -140,23 +140,38 @@ git clone https://github.com/Y80/bmm.git
 
 ### 方式三：使用 Docker 部署
 
-1. git clone 项目
-
 ```sh
-git clone https://github.com/Y80/bmm.git
+# 拉取镜像
+docker pull lcclcc/bmm
+
+# 启动容器（使用本地 SQLite， 通过 docker volume bmm 查看数据库文件地址）
+docker run --rm  \
+-e DB_DRIVER=sqlite \
+-e DB_CONNECTION_URL=file:/app/volume/sqlite.db \
+-v bmm:/app/volume \
+-p 3000:3000 \
+lcclcc/bmm \
+pnpm start
+
+# 启动容器（使用 Turso ）
+docker run --rm  \
+-e DB_DRIVER=sqlite \
+-e DB_CONNECTION_URL=libsql://Turso数据库地址  \
+-e DB_AUTH_TOKEN=<Turso数据库令牌> \
+-p 3000:3000 \
+lcclcc/bmm \
+pnpm start
+
+# 启动容器（使用 PostgreSQL ）
+docker run --rm  \
+-e DB_DRIVER=postgresql \
+-e DB_CONNECTION_URL=postgresql://数据库地址 \
+-p 3000:3000 \
+lcclcc/bmm \
+pnpm start
+
 ```
 
-2. 配置环境变量
-
-**.env** 文件中配置 `AUTH_URL`、`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`。
-
-3. 使用 docker compose 运行服务
-
-```sh
-docker compose up -d
-```
-
-数据库文件已创建 docker volumes，名称为 **bmm_postgres_data**，你可以通过 `pg_dump` 备份数据库。
 
 ## 🤖 接入 AI 服务（可选）
 

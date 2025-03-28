@@ -17,7 +17,6 @@ RUN corepack enable && pnpm install --frozen-lockfile
 
 FROM base AS builder
 WORKDIR /app
-ENV DOCKER_BUILD=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN corepack enable && pnpm run build && pnpm prune --prod
@@ -36,14 +35,11 @@ RUN find node_modules/.pnpm/ -type f -name "*.ts" -delete
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 RUN apk add bash && corepack enable && pnpm -v
 COPY --from=builder /app .
 
 EXPOSE 3000
 
-ENV PORT=3000
-
-ENV HOSTNAME="0.0.0.0"
-
-
-CMD ["pnpm","run","start"]
+CMD ["pnpm", "run", "start"]
