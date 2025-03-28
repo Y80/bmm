@@ -216,9 +216,8 @@ export default function UploadList(props: Props) {
                   {bookmark.state === UploadState.INVALID && (
                     <ReTooltip
                       content={
-                        <div className="text-xs">
-                          <p>当前书签不会被上传：</p>
-                          <p>{bookmark.errorMsg}</p>
+                        <div className="max-w-56 text-xs">
+                          <p>当前书签不会被上传：{bookmark.errorMsg}</p>
                         </div>
                       }
                     >
