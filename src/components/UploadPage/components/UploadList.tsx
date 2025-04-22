@@ -148,7 +148,8 @@ export default function UploadList(props: Props) {
     if (!finished) return
     setBookmarks((bookmarks) => {
       setTimeout(() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' }))
-      return bookmarks.toSorted((a, b) => {
+      // 让失败的排在前面
+      return bookmarks.sort((a, b) => {
         if (a.state === UploadState.FAILED && b.state === UploadState.SUCCESS) return -1
         return 0
       })

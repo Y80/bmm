@@ -33,7 +33,7 @@ export default function HomeBody(props: Props) {
   })
 
   useEffect(() => {
-    const bookmarks = props.bookmarks.toSorted((a, b) => {
+    const bookmarks = [...props.bookmarks].sort((a, b) => {
       if (a.isPinned && !b.isPinned) return -1
       if (!a.isPinned && b.isPinned) return 1
       return 0
