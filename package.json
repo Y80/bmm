@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx scripts/db-init.mjs && next dev",
-    "build": "next build",
+    "build": "tsx scripts/db-init.mjs -P && next build",
     "start": "tsx scripts/db-init.mjs -P && next start",
     "lint": "next lint",
     "test": "vitest",
