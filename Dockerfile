@@ -24,7 +24,6 @@ COPY . .
 RUN pnpm next build && pnpm prune --prod
 # 清理一些体积较大的、运行时不需要的文件
 RUN rm -rf doc .next/cache .next/trace \
-node_modules/.pnpm/@libsql+linux-arm64-gnu@* \
 node_modules/.pnpm/@types+* \
 node_modules/.pnpm/caniuse* \
 node_modules/.pnpm/@ant-design+icons* \
