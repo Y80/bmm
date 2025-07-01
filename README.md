@@ -25,6 +25,8 @@
 
 - [x] 搜索书签、标签
 - [x] 根据标签筛选书签
+- [x] 用户系统
+- [x] 书签置顶
 - [x] 支持移动端/桌面端、明亮主题/暗夜主题
 
 后台管理功能：
@@ -43,9 +45,9 @@
 待实现：
 
 - [ ] 定期检测书签可用性
-- [ ] 书签置顶、仅登录用户可见
 - [ ] 稍后阅读系统
-- [ ] 用户系统
+- [ ] 多功能卡片，支持展示天气、资讯...
+
 
 ## 🗂️ 目录
 
@@ -214,11 +216,13 @@ function coze() {
 
 <details>
   <summary>
-    如何设置环境变量 AUTH_URL 和 Github 中的 Authorization callback URL?
+    如何设置环境变量 <code>AUTH_URL</code> 和 Github 中的 Authorization callback URL?
   </summary>
-
-  首先需要明确， `AUTH_URL` 和 Github OAuth App 中的 Authorization callback URL 是要一致的，用于指定用户在 Github 确认授权后，浏览器需要重定向的服务器地址。
-
+  
+  <br>
+  首先需要明确， <code>AUTH_URL</code> 和 Github OAuth App 中的 Authorization callback URL 是要一致的，用于指定用户在 Github 确认授权后，浏览器需要重定向的服务器地址。
+  
+  <br>
   它们的值如何设定，简单来说，通过什么地址访问 BMM 服务，就把该地址作为它们的值，例如：
 
   - http://localhost:3000 - 本地开发
@@ -234,7 +238,8 @@ function coze() {
     Github 登录失败：redirect_uri 错误
   </summary>
 
-如果在 Github 授权之后出现如下错误提示：
+  <br>
+  如果在 Github 授权之后出现如下错误提示：
 
 ![github-redirect-uri-error](./doc/images/github-redirect-uri-err.png)
 
@@ -246,12 +251,25 @@ function coze() {
 
 </details>
 
+<details>
+  <summary>
+    修改了项目端口后，Github 授权登录回调地址的端口有误
+  </summary>
+
+  <br>
+  如果你修改了项目端口，并通过 http://{IP}:{PORT} 的方式访问 bmm，那你也需要修改环境变量 <code>AUTH_URL</code>。
+
+  <br>
+  再次明确：访问项目的地址、Authorization callback URL、AUTH_URL 这三者应该是一致的。
+</details>
+
 
 <details>
   <summary>
     支持其他数据库吗？
   </summary>
-
-  由于 `drizzle-orm` 除了支持 PostgreSQL，还支持 MySQL 和 SQLite，因此对项目做少许编码改造，即可切换数据库。
+  
+  <br>
+  由于 drizzle-orm 除了支持 PostgreSQL，还支持 MySQL 和 SQLite，因此对项目做少许编码改造，即可切换数据库。
 </details>
 
