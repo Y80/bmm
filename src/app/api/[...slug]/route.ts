@@ -1,3 +1,4 @@
+import { auth } from '@/lib/auth'
 import { Method } from '@/lib/http'
 import SqlXError from '@/lib/SqlXError'
 import ResponseX, { Serializable } from '@/utils/response-x'
@@ -38,16 +39,31 @@ async function handlerWrapper(req: NextRequest) {
 async function handler(req: NextRequest) {
   const { method } = req
   const { pathname } = req.nextUrl
+  const session = await auth()
+  if (!session) {
+    return ResponseX.unauthorized({ msg: '请先登录' })
+  }
+
+  const isAdmin = session?.user.role === 'admin'
+
   if (pathname === ApiRoutes.Public.TAG) {
     if (method === Method.GET) return PublicTagHandler.getAll()
-    if (method === Method.POST) return PublicTagHandler.insert(req)
-    if (method === Method.PATCH) return PublicTagHandler.update(req)
-    if (method === Method.DELETE) return PublicTagHandler.remove(req)
+    if (isAdmin) {
+      if (method === Method.POST) return PublicTagHandler.insert(req)
+      if (method === Method.PATCH) return PublicTagHandler.update(req)
+      if (method === Method.DELETE) return PublicTagHandler.remove(req)
+    } else {
+      return ResponseX.forbidden({ msg: '需要管理员权限' })
+    }
   } else if (pathname === ApiRoutes.Public.BOOKMARK) {
     if (method === Method.GET) return PublicBookmarkHandler.find(req)
-    if (method === Method.POST) return PublicBookmarkHandler.insert(req)
-    if (method === Method.PATCH) return PublicBookmarkHandler.update(req)
-    if (method === Method.DELETE) return PublicBookmarkHandler.remove(req)
+    if (isAdmin) {
+      if (method === Method.POST) return PublicBookmarkHandler.insert(req)
+      if (method === Method.PATCH) return PublicBookmarkHandler.update(req)
+      if (method === Method.DELETE) return PublicBookmarkHandler.remove(req)
+    } else {
+      return ResponseX.forbidden({ msg: '需要管理员权限' })
+    }
   } else if (pathname === ApiRoutes.Public.BOOKMARK_LIST) {
     if (method === Method.GET) return PublicBookmarkHandler.findMany(req)
   } else if (pathname === ApiRoutes.PARSE_WEBSITE) {
