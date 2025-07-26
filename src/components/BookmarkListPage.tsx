@@ -20,7 +20,7 @@ import { SelectPublicBookmark } from '@/controllers'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { usePageUtil } from '@/hooks'
 import { runAction } from '@/utils'
-import { DEFAULT_BOOKMARK_PAGESIZE, IconNames, PageRoutes } from '@cfg'
+import { IconNames, PageRoutes } from '@cfg'
 import {
   Button,
   cn,
@@ -57,6 +57,8 @@ export type BookmarkListPageProps = {
   totalBookmarks: number
 }
 
+const PAGESIZE = 20
+
 export default function BookmarkListPage(props: BookmarkListPageProps) {
   const isUserSpace = usePageUtil().isUserSpace
   const searchParams = useSearchParams()
@@ -68,6 +70,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     selectedTag: searchParams.get('tag'),
     pager: {
       page: Number(searchParams.get('page')) || 1,
+      // 页码总数
       total: 1,
     },
   })
@@ -80,8 +83,8 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   } = useRequest(
     async () => {
       const input: typeof findManyBookmarksSchema._input = {
-        limit: 20,
-        page: state.pager.page.toString(),
+        limit: PAGESIZE,
+        page: state.pager.page,
         keyword: state.keyword,
         sorterKey: state.sorterKey,
         ...(state.selectedTag && { tagIds: state.selectedTag }),
@@ -95,10 +98,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       setState((state) => ({
         pager: {
           ...state.pager,
-          total:
-            res.data.total <= DEFAULT_BOOKMARK_PAGESIZE
-              ? 1
-              : Math.round(res.data.total / DEFAULT_BOOKMARK_PAGESIZE) + 1,
+          total: res.data.total <= PAGESIZE ? 1 : Math.floor(res.data.total / PAGESIZE) + 1,
         },
       }))
       return res.data.list

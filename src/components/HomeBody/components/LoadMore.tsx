@@ -4,7 +4,7 @@ import { actFindPublicBookmarks, actFindUserBookmarks } from '@/actions'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { useIsClient, usePageUtil } from '@/hooks'
 import { runAction } from '@/utils'
-import { PageRoutes } from '@cfg'
+import { DEFAULT_BOOKMARK_PAGESIZE, DEFAULT_PUBLIC_TAG_PAGESIZE, PageRoutes } from '@cfg'
 import { Spinner } from '@heroui/react'
 import { useRequest, useSetState } from 'ahooks'
 import { useParams, usePathname, useSearchParams } from 'next/navigation'
@@ -46,7 +46,14 @@ export default function LoadMore(props: Props) {
         ? decodeURIComponent(params.slug).split('+')
         : undefined
     const keyword = searchParams.get('keyword') || undefined
-    const payload: typeof findManyBookmarksSchema._input = { page: state.page, tagNames, keyword }
+    const payload: typeof findManyBookmarksSchema._input = {
+      page: state.page,
+      tagNames,
+      keyword,
+      limit: pathname.startsWith(PageRoutes.Public.tags())
+        ? DEFAULT_PUBLIC_TAG_PAGESIZE
+        : DEFAULT_BOOKMARK_PAGESIZE,
+    }
     const action = pageUtil.isUserSpace ? actFindUserBookmarks : actFindPublicBookmarks
     const { ok, data } = await runAction(action(findManyBookmarksSchema.parse(payload)))
     if (!ok) return
