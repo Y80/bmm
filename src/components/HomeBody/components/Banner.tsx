@@ -1,6 +1,7 @@
 import { GradientText } from '@/components'
 import { usePageUtil } from '@/hooks'
 import { useOnClickTag } from '@/hooks/useOnClickTag'
+import { getTagLinkAttrs } from '@/utils'
 import { PageRoutes, WEBSITE_NAME } from '@cfg'
 import { Chip } from '@heroui/react'
 import { useSession } from 'next-auth/react'
@@ -87,7 +88,9 @@ export default function Banner(props: Props) {
                   key={id}
                   variant="flat"
                   className="cursor-pointer text-foreground-500 hover:text-foreground-800 active:opacity-50"
-                  onClick={(e) => onClickTag({ tag, event: e })}
+                  as="a"
+                  {...getTagLinkAttrs(tag)}
+                  onClick={(e) => onClickTag({ tag, event: e as any })}
                 >
                   {tag.name}
                 </Chip>

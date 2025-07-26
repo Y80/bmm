@@ -18,6 +18,7 @@ interface Props {
   /** 禁用懒加载（在 Dropdown 中会用到，为了避免奇怪的 BUG） */
   disableLazyLoading?: boolean
   className?: string
+  alt?: string
 }
 
 enum LoadStatus {
@@ -82,7 +83,7 @@ export default function Favicon(props: Props) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className={cn('rounded', showSpinner ? 'size-0' : 'size-full')}
-        alt="website-favicon"
+        alt={props.alt || 'website-favicon'}
         src={props.src}
         loading={props.disableLazyLoading ? 'eager' : 'lazy'}
         onError={() => setState({ status: LoadStatus.ERROR })}

@@ -7,7 +7,7 @@ import usePageUtil from './usePageUtil'
 type OnClickTag = (arg: {
   tag: SelectTag
   isIntersected?: boolean
-  event?: MouseEvent<HTMLDivElement>
+  event?: MouseEvent<HTMLAnchorElement>
 }) => void
 
 export function useOnClickTag({ tags }: { tags: SelectTag[] }) {
@@ -29,6 +29,8 @@ export function useOnClickTag({ tags }: { tags: SelectTag[] }) {
 
   const onClickTag = useCallback<OnClickTag>(
     ({ tag, isIntersected, event }) => {
+      event?.stopPropagation()
+      event?.preventDefault()
       function toNewPath(tagNames: string[]) {
         const newPath = (isUserSpace ? PageRoutes.User : PageRoutes.Public).tags(tagNames)
         router.push(newPath)

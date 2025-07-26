@@ -176,3 +176,10 @@ export async function testUrl(url: string, opts?: { timeout?: number }) {
   )
   return !err
 }
+
+export function getTagLinkAttrs(tag: SelectTag): Pick<HTMLAnchorElement, 'href' | 'title'> {
+  return {
+    href: PageRoutes.Public.tags([tag.name]),
+    title: [tag.name + '相关的网站', tag.name + '资源', tag.name + '网站推荐'].join(', '),
+  }
+}
