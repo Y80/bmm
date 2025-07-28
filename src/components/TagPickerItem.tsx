@@ -8,9 +8,10 @@ import ClientIcon from './ClientIcon'
 interface Props {
   tag: SelectTag
   tags: SelectTag[]
+  onClick?: () => void
 }
 
-export default function TagPickerItem({ tag, tags }: Props) {
+export default function TagPickerItem({ tag, tags, onClick }: Props) {
   const { selectedTags, onClickTag } = useOnClickTag({ tags })
   const isSelected = useMemo(() => {
     return selectedTags.map((t) => t.id).includes(tag.id)
@@ -24,7 +25,10 @@ export default function TagPickerItem({ tag, tags }: Props) {
         'xs:hover:bg-zinc-600/10 xs:dark:hover:bg-zinc-800/80',
         isSelected && 'bg-zinc-600/10 dark:bg-zinc-800/80 max-xs:!bg-blue-800/10'
       )}
-      onClick={(e) => onClickTag({ event: e, tag })}
+      onClick={(e) => {
+        onClick?.()
+        onClickTag({ event: e, tag })
+      }}
     >
       <ClientIcon color={tag.color || undefined} icon={tag.icon || IconNames.TAG} />
       <span className="grow text-foreground-600">{tag.name}</span>

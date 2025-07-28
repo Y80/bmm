@@ -14,11 +14,11 @@ export default async function Page() {
   const session = await auth()
 
   return (
-    <div className="mx-auto -mt-[10vh] h-full w-[32rem] flex-col flex-center">
-      <h1 className="mb-12 text-3xl">
+    <div className="mx-auto -mt-[10vh] h-full flex-col flex-center xs:w-[32rem]">
+      <h1 className="mb-12 text-3xl max-xs:mt-20">
         👋 {session?.user.name}，欢迎使用 {WEBSITE_NAME}
       </h1>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 max-xs:grid-cols-1">
         {LINKS.map((link, idx) => (
           <ReButton
             key={link.label}
@@ -47,7 +47,11 @@ export default async function Page() {
             />
           </ReButton>
         ))}
-        <ReButton href={PageRoutes.User.UPLOAD} size="lg" className="col-span-2 bg-opacity-60 py-7">
+        <ReButton
+          href={PageRoutes.User.UPLOAD}
+          size="lg"
+          className="col-span-2 bg-opacity-60 py-7 max-xs:col-span-1 max-xs:h-24"
+        >
           <span className={cn(IconNames.IMPORT, 'text-xl')} />
           <span>导入浏览器书签</span>
         </ReButton>

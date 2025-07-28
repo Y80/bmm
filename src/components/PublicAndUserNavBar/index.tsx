@@ -4,6 +4,7 @@ import { NavUser, ReButton, ThemeToggle } from '@/components'
 import { IconButtonProps, NavBarProps } from '@/components/common'
 import { MobileTagPicker } from '@/components/MobileTagPicker'
 import { usePageUtil } from '@/hooks'
+import { getTagLinkAttrs } from '@/utils'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import {
   cn,
@@ -157,11 +158,21 @@ export function PublicAndUserNavbar(props: Props) {
         </ReButton>
         <NavUser />
       </NavbarContent>
-
       <NavbarMenuToggle className="xs:hidden" />
       <NavbarMenu className={cn(Background.CLASS, 'dark:bg-opacity-50')}>
-        <MobileTagPicker tags={tags} />
+        <MobileTagPicker
+          tags={tags}
+          onCloseMenu={() => setState({ isSelectedMenuToggle: false })}
+        />
       </NavbarMenu>
+
+      <div className="hidden" role="navigation" aria-hidden="false">
+        {tags.map((tag) => (
+          <a key={tag.id} {...getTagLinkAttrs(tag)}>
+            {tag.name}
+          </a>
+        ))}
+      </div>
     </Navbar>
   )
 }

@@ -11,6 +11,7 @@ interface Props {
   tags: SelectTag[]
   className?: string
   style?: CSSProperties
+  onCloseMenu: () => void
 }
 export function MobileTagPicker(props: Props) {
   const { tags } = props
@@ -50,7 +51,7 @@ export function MobileTagPicker(props: Props) {
   }, [state.onlyMain])
 
   return (
-    <div className="flex h-full flex-col" style={props.style}>
+    <div role="mobile-tag-picker" className="flex h-full flex-col" style={props.style}>
       <div className="my-4 shrink-0 gap-1 pr-4 flex-items-center">
         <ReInput
           size="sm"
@@ -61,7 +62,6 @@ export function MobileTagPicker(props: Props) {
           onValueChange={(v) => setState({ filterTagInput: v })}
         />
       </div>
-
       <div className="grow-0 overflow-auto">
         <ScrollShadow
           className="flex h-full flex-col gap-2 scrollbar-hide"
@@ -69,11 +69,10 @@ export function MobileTagPicker(props: Props) {
           role={TagPickerBox.SCROLLER_ROLE}
         >
           {state.showTags.map((tag) => (
-            <TagPickerItem key={tag.id} tag={tag} tags={tags} />
+            <TagPickerItem key={tag.id} tag={tag} tags={tags} onClick={props.onCloseMenu} />
           ))}
         </ScrollShadow>
       </div>
-
       {!state.filterTagInput && (
         <div className="h-16 shrink-0 gap-4 flex-items-center">
           <Switch

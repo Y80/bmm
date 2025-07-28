@@ -27,26 +27,30 @@ export default function BookmarkCard(props: Props) {
   }
 
   return (
-    <a
+    <div
       className={cn(
         'flex cursor-pointer flex-col gap-3 rounded-2xl p-4 transition',
         'max-xs:pb-3 max-xs:dark:border-0 max-xs:dark:bg-foreground-200/20',
         'border-2 border-foreground-200 dark:border-opacity-60',
         'hover:xs:border-blue-500 hover:xs:shadow-lg hover:xs:shadow-blue-500/50'
       )}
-      href={props.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      title={generateLinkTitle()}
+      onClick={() => window.open(props.url, '_blank')}
     >
-      <div className="gap-2 flex-items-center">
+      <a
+        className="gap-2 flex-items-center"
+        href={props.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={generateLinkTitle()}
+        onClick={(event) => event.stopPropagation()}
+      >
         <Favicon src={props.icon} showDefaultIcon alt={`${props.name}网站图标`} />
         <div className="grow truncate">
           <h3 className="truncate text-foreground-700 xs:text-lg" aria-label={`访问${props.name}`}>
             {props.name}
           </h3>
         </div>
-      </div>
+      </a>
       <p className="line-clamp-3 text-xs text-foreground-500" role="description">
         {props.description}
       </p>
@@ -71,6 +75,6 @@ export default function BookmarkCard(props: Props) {
           )
         })}
       </div>
-    </a>
+    </div>
   )
 }
