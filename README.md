@@ -58,6 +58,16 @@
 
 3. 启动项目 `pnpm dev`
 
+## 环境变量
+
+具体的环境变量配置可以参考 [.env](./.env) 。
+
+若您只是想快速体验项目，本地拉取项目后，无需修改任何环境变量即可启动开发服务器。
+
+若您需要部署到服务器上，请额外关注 `AUTH_URL`。
+
+配置环境变量注意敏感数据泄露。不同的环境可以配置不同的环境变量。
+
 ## 🗄️ 数据库
 
 BMM 使用 Drizzle ORM 持久化存储数据，当前开箱即用的支持 SQLite 和 PostgreSQL 数据库。
@@ -200,9 +210,6 @@ BMM 使用 Github 授权登录，认证管理员身份，因此需要配置 Gith
 </details>
 
 Github OAuth App 的 Client ID 和 Client Secret 将分别用作环境变量 `AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`，填写的 Authorization callback URL 要和环境变量 `AUTH_URL` 保持一致。
-
-
-> 配置环境变量注意敏感数据泄露！不同的环境可以配置不同的环境变量！更多内容可参考 [.env](./.env)
 
 ## 🤔 常见问题
 
