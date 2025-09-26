@@ -1,12 +1,18 @@
 'use server'
 
 import {
+  CredentialsController,
   PublicBookmarkController,
   PublicTagController,
   UserBookmarkController,
   UserTagController,
 } from '@/controllers'
-import { aiAnalyzeRelatedTagsInput, aiAnalyzeWebsiteInput, extractHtmlInfoInput } from './items'
+import {
+  aiAnalyzeRelatedTagsInput,
+  aiAnalyzeWebsiteInput,
+  checkGithubOAuthConfig,
+  extractHtmlInfoInput,
+} from './items'
 import { makeAction as make } from './make-action'
 
 /// PublicBookmark
@@ -45,3 +51,9 @@ export const actUpdateUserBookmark = make(UserBookmarkController.update)
 export const actExtractHtmlInfo = make(extractHtmlInfoInput)
 export const actAnalyzeWebsite = make(aiAnalyzeWebsiteInput)
 export const actAnalyzeRelatedTags = make(aiAnalyzeRelatedTagsInput)
+
+/// 账号认证
+export const actRegisterUser = make(CredentialsController.create, { guard: false })
+export const actVerifyUser = make(CredentialsController.verify, { guard: false })
+
+export const actCheckGithubOAuthConfig = make(checkGithubOAuthConfig, { guard: false })

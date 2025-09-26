@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import { integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { nanoid } from 'nanoid'
 import type { AdapterAccountType } from 'next-auth/adapters'
@@ -80,3 +81,18 @@ export const authenticators = sqliteTable(
     }),
   ]
 )
+
+export const credentials = sqliteTable('credential', {
+  userId: text('userId')
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  password: text('password').notNull(), // 存储密码哈希
+  salt: text('salt').notNull(), // 存储密码盐
+})
+
+export const userCredentialsRelations = relations(users, (ctx) => ({
+  credential: ctx.one(credentials, {
+    fields: [users.id],
+    references: [credentials.userId],
+  }),
+}))

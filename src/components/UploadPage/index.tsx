@@ -456,7 +456,7 @@ export default function UploadPage() {
             </div>
           </div>
 
-          <ReButton fullWidth size="lg" className="mt-10 bg-opacity-50" onClick={submitConfig}>
+          <ReButton fullWidth size="lg" className="mt-10" onClick={submitConfig}>
             确认配置，预览上传列表
           </ReButton>
         </Panel>

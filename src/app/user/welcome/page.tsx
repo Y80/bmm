@@ -50,7 +50,7 @@ export default async function Page() {
         <ReButton
           href={PageRoutes.User.UPLOAD}
           size="lg"
-          className="col-span-2 bg-opacity-60 py-7 max-xs:col-span-1 max-xs:h-24"
+          className="col-span-2 bg-foreground py-7 text-background max-xs:col-span-1 max-xs:h-24"
         >
           <span className={cn(IconNames.IMPORT, 'text-xl')} />
           <span>导入浏览器书签</span>

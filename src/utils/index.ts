@@ -118,22 +118,25 @@ export function isServerless() {
 }
 
 /**
- * 处理 Action 结果，自动 toast 展示错误信息，返回 ok 和 data?
+ * 客户端执行 Action，并处理 Action 结果，自动 toast 展示错误信息，返回 ok 和 data?
  */
 export async function runAction<U extends any[], Data>(
   actionRes: ActionResult<U, Data>,
   opts: {
     okMsg?: string
+    errToast?: { title?: string; hidden?: boolean }
     onOk?: (data: Data) => void | Promise<void>
   } = {}
 ) {
   const res = await actionRes
   if (res.error) {
-    addToast({
-      color: 'danger',
-      title: '操作失败',
-      description: res.error.msg,
-    })
+    if (!opts.errToast?.hidden) {
+      addToast({
+        color: 'danger',
+        title: opts.errToast?.title || '操作失败',
+        description: res.error.msg,
+      })
+    }
     return { ok: false } as const
   }
   if (opts.okMsg) {

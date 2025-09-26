@@ -1,11 +1,13 @@
 'use client'
 
 import useIsDark from '@/hooks/useIsDark'
+import { PageRoutes } from '@cfg'
 import { HeroUIProvider, semanticColors, ToastProvider } from '@heroui/react'
 import { ConfigProvider as AntdConfigProvider, theme as antdTheme, ThemeConfig } from 'antd'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
+import { usePathname } from 'next/navigation'
 import { useReportWebVitals } from 'next/web-vitals'
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 
@@ -44,6 +46,7 @@ interface Props {
   session: Session | null
 }
 export function GlobalProvider(props: PropsWithChildren<Props>) {
+  const pathname = usePathname()
   useReportWebVitals((metric) => {
     if (!process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID) return
     // @ts-ignore
@@ -55,6 +58,7 @@ export function GlobalProvider(props: PropsWithChildren<Props>) {
   })
 
   const ctxValue = useMemo<GlobalContextType>(() => ({}), [])
+  const forceTheme = pathname === PageRoutes.LOGIN ? 'light' : undefined
 
   return (
     <GlobalContext.Provider value={ctxValue}>
@@ -64,7 +68,7 @@ export function GlobalProvider(props: PropsWithChildren<Props>) {
           toastOffset={20}
           toastProps={{ timeout: 3000, radius: 'lg' }}
         />
-        <ThemeProvider attribute="class" defaultTheme="dark">
+        <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme={forceTheme}>
           <AntdConfigProviderWrapper>
             <SessionProvider session={props.session}>{props.children}</SessionProvider>
           </AntdConfigProviderWrapper>

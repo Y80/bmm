@@ -63,6 +63,7 @@ export const PageRoutes = {
 } as const
 
 export const IconNames = {
+  ARROW_LEFT: 'icon-[tabler--arrow-left]',
   ARROW_RIGHT: 'icon-[tabler--arrow-right]',
   BOOKMARK: 'icon-[tabler--bookmark]',
   DEVICE_DESKTOP: 'icon-[tabler--device-desktop]',
@@ -90,6 +91,7 @@ export const IconNames = {
     USER: 'icon-[tabler--user]',
     DASHBOARD: 'icon-[tabler--layout-dashboard]',
     LOGOUT: 'icon-[tabler--logout-2]',
+    EXCLAMATION_CIRCLE: 'icon-[tabler--exclamation-circle]',
   },
   Huge: {
     SEARCH: 'icon-[hugeicons--search-01]',
