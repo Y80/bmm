@@ -11,12 +11,11 @@ const adapter = DrizzleAdapter(db, {
   verificationTokensTable: schema.verificationTokens,
   authenticatorsTable: schema.authenticators,
 })
+
+// ! 首个新用户设为管理员权限
 const originCreateUser = adapter.createUser!
 adapter.createUser = async (data) => {
-  if (
-    (process.env.AUTO_GRANT_ADMIN === '1' && (await UserController.count()) === 0) ||
-    (process.env.AUTO_GRANT_ADMIN === data.name && data.name)
-  ) {
+  if ((await UserController.count()) === 0) {
     data.role = 'admin'
   }
   return originCreateUser(data)

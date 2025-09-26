@@ -16,11 +16,12 @@ export default function Page() {
       {!totalBookmarks && (
         <>
           <Image src={Assets.BOX_EMPTY_PNG} alt="empty" width={128} height={128} />
-          <span className="text-sm text-foreground-500">暂无数据</span>
+          <span className="text-xs text-foreground-500">暂无数据</span>
         </>
       )}
       {session.status === 'authenticated' ? (
         <>
+          <span className="mt-6" />
           <span hidden={!session.data.user.isAdmin}>
             您可前往
             <Link className="mx-1" href={PageRoutes.Admin.INDEX}>
@@ -28,7 +29,7 @@ export default function Page() {
             </Link>
             添加公共书签
           </span>
-          <span className="-my-2 text-foreground-400" hidden={!session.data.user.isAdmin}>
+          <span className="-my-2 text-sm" hidden={!session.data.user.isAdmin}>
             或
           </span>
           <span>

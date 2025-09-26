@@ -64,8 +64,6 @@ export function checkEnvs() {
   const requiredVariables = [
     'DB_DRIVER',
     'DB_CONNECTION_URL',
-    'AUTH_GITHUB_ID',
-    'AUTH_GITHUB_SECRET',
     'AUTH_SECRET',
   ]
   const unsetEnv = requiredVariables.filter((variable) => !process.env[variable])

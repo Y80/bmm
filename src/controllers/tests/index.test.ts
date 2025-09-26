@@ -4,8 +4,8 @@ import { FieldConstraints } from '@cfg'
 import { faker } from '@faker-js/faker'
 import { count, eq, inArray } from 'drizzle-orm'
 import { afterAll, assert, beforeAll, describe, test } from 'vitest'
-import PublicBookmarkController from './PublicBookmark.controller'
-import PublicTagController from './PublicTag.controller'
+import PublicBookmarkController from '../PublicBookmark.controller'
+import PublicTagController from '../PublicTag.controller'
 
 const { publicBookmarks, publicTags, publicBookmarkToTag, publicTagToTag } = schema
 

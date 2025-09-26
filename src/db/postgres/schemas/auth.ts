@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import { boolean, integer, pgEnum, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
 import { AdapterAccountType } from 'next-auth/adapters'
@@ -82,3 +83,18 @@ export const authenticators = pgTable(
     }),
   ]
 )
+
+export const credentials = pgTable('credential', {
+  userId: text('userId')
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  password: text('password').notNull(), // 存储密码哈希
+  salt: text('salt').notNull(),
+})
+
+export const userCredentialsRelations = relations(users, (ctx) => ({
+  credential: ctx.one(credentials, {
+    fields: [users.id],
+    references: [credentials.userId],
+  }),
+}))

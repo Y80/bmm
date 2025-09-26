@@ -93,7 +93,12 @@ export function NavUser() {
         ),
       }}
     >
-      <Avatar size="sm" src={user.image!} showFallback />
+      <Avatar
+        size="sm"
+        src={user.image ?? undefined}
+        name={user.name || user.email!}
+        showFallback
+      />
     </ReButton>
   )
 }
