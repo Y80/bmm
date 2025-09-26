@@ -23,11 +23,13 @@
 
 ## ✨ 功能
 
+基本功能：
+
 - [x] 搜索书签、标签
-- [x] 根据标签筛选书签
-- [x] 用户系统
-- [x] 书签置顶
+- [x] 标签和标签、书签和标签间的相互关联
+- [x] 用户系统（支持 Github 登录、账号密码登录）
 - [x] 支持移动端/桌面端、明亮主题/暗夜主题
+- [x] 书签置顶
 
 后台管理功能：
 
@@ -48,79 +50,55 @@
 - [ ] 稍后阅读系统
 - [ ] 多功能卡片，支持展示天气、资讯...
 - [ ] 浏览器插件
-- [ ] 账号密码登录
 - [ ] 留言板（仅登录用户）
 
 ## 🗂️ 目录
 
-- [🍽️ 准备内容](#%EF%B8%8F-准备内容) 
+- [🗄️ 数据库](#🗄️-数据库) 
 - [🚀 项目部署](#-项目部署)
   - [方式一：Node 项目常规部署](#方式一node-项目常规部署)
   - [方式二：部署至 Vercel](#方式二部署至-vercel)
   - [方式三：使用 Docker 部署](#方式三使用-docker-部署)
 - [🤖 接入 AI 服务（可选）](#-接入-ai-服务可选)
+- [接入 Github 授权登录（可选）](#接入-github-授权登录可选)
 - [🤔 常见问题](#-常见问题)
 
-## 🍽️ 准备内容
+## 本地开发
 
-需要准备的内容包括 **数据库** 和 **Github OAuth App 密钥对**，下面分别介绍。
+1. git 克隆项目至本地 `git clone https://github.com/Y80/bmm.git`
 
-### 数据库
+2. 安装依赖 `pnpm install`
+
+3. 启动项目 `pnpm dev`
+
+## 🗄️ 数据库
 
 BMM 使用 Drizzle ORM 持久化存储数据，当前开箱即用的支持 SQLite 和 PostgreSQL 数据库。
 
-默认的环境变量配置使用本地的 SQLite 数据库。但是这种方式只适合本地开发调试，不适合线上部署。
+默认的配置使用本地的 SQLite 数据库，通过 `pnpm dev` 可在本地自动创建数据库文件，并供本地开发服务器。
 
-如果你需要线上数据库，下面提供两种方式：
+若需部署到线上，需要使用线上数据库，这里提供两篇文档以便您能快速、免费获取线上数据库资源：
 
 1. [BMM 接入 Turso](https://github.com/Y80/bmm/wiki/%E4%BD%BF%E7%94%A8-Turso-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9C%8D%E5%8A%A1)
 2. [一些免费的 PostgreSQL 数据库](https://juejin.cn/post/7411047482651951119)
 
+您也可以使用自己的数据库云服务。
 
-**创建好数据库后，在 `.env` 中配置相关环境变量即可。**
 
-### Github OAuth App
+创建好数据库后，在 `.env` 中配置相关环境变量即可。
 
-BMM 使用 Github 授权登录，认证管理员身份，因此需要配置 Github OAuth。
-
-<details>
-  <summary>
-  查看创建步骤
-  </summary>
-
-1. 登录您的 Github 账户后，访问 https://github.com/settings/applications/new
-
-2. 依次填写表单内容
-
-<img width="480" src="./doc/images/github-oauth-new.png">
-
-其他内容可随意填写，最重要的是 `Authorization callback URL` 这一项，请保证它和你的项目最终部署的 **线上访问地址** 一致！
-
-3. 创建一个 Client secret
-
-<img width="480" src="./doc/images/github-oauth-new-secret.png">
-
-</details>
-
-Github OAuth App 的 Client ID 和 Client Secret 将分别用作环境变量 `AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`，填写的 Authorization callback URL 要和环境变量 `AUTH_URL` 保持一致。
 
 ## 🚀 项目部署
 
 ### 方式一：Node 项目常规部署
 
-1. git clone 项目
+1. 通过 `git clone` 或其他方式将项目复制到服务器上
 
-```sh
-git clone https://github.com/Y80/bmm.git
-```
+2. 安装依赖 `pnpm install`
 
-2. `pnpm install` 安装依赖
+3. 构建项目 `pnpm build`
 
-3. `pnpm dev` 启动项目
-
-对于开发环境，`AUTH_URL` 可以被自动侦测到，`AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET` 也临时提供了一对可用的配置，因此可暂时跳过配置。
-
-通过 `pnpm build` 构建生产产物时，需要明确配置上面这 3 个变量。
+4. 启动生产环境服务器 `pnpm start`；若您使用了 PM2，可通过 `pm2 start "pnpm start"` 启动项目。
 
 ### 方式二：部署至 Vercel
 
@@ -128,8 +106,7 @@ git clone https://github.com/Y80/bmm.git
 
 2. 登入 <a href="https://vercel.com" target="_blank">Vercel</a>，新建项目，并关联 fork 的 Github 仓库
 
-3. 在当前项目下的 Environment Variables 页面中配置环境变量：
-`DB_DRIVER`、`DB_CONNECTION_URL`、`AUTH_URL`、`AUTH_GITHUB_SECRET` 和 `AUTH_GITHUB_ID`。
+3. 在当前项目下的 Environment Variables 页面中配置环境变量
 
 <details>
   <summary>查看截图</summary>
@@ -211,6 +188,32 @@ function coze() {
 ```
 
 `src/lib/ai/servers.ts` 文件提供了使用 **扣子** 和 **OpenAI** 的代码示例可供参考。
+
+## 接入 Github 授权登录（可选）
+
+BMM 使用 Github 授权登录，认证管理员身份，因此需要配置 Github OAuth。
+
+<details>
+  <summary>
+  查看创建步骤
+  </summary>
+
+1. 登录您的 Github 账户后，访问 https://github.com/settings/applications/new
+
+2. 依次填写表单内容
+
+<img width="480" src="./doc/images/github-oauth-new.png">
+
+其他内容可随意填写，最重要的是 `Authorization callback URL` 这一项，请保证它和你的项目最终部署的 **线上访问地址** 一致！
+
+3. 创建一个 Client secret
+
+<img width="480" src="./doc/images/github-oauth-new-secret.png">
+
+</details>
+
+Github OAuth App 的 Client ID 和 Client Secret 将分别用作环境变量 `AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`，填写的 Authorization callback URL 要和环境变量 `AUTH_URL` 保持一致。
+
 
 > 配置环境变量注意敏感数据泄露！不同的环境可以配置不同的环境变量！更多内容可参考 [.env](./.env)
 
