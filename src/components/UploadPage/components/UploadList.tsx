@@ -110,7 +110,7 @@ export default function UploadList(props: Props) {
     const actCreateTags = isAdminSpace ? actTryCreatePublicTags : actTryCreateUserTags
     const res = await runAction(actCreateTags(tagNames))
     if (!res.ok) return
-    const tags = res.data
+    const tags = res.data as SelectTag[]
     let failedNum = 0
     let successNum = 0
     const insertBookmark = isAdminSpace ? actInsertPublicBookmark : actInsertUserBookmark
