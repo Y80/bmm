@@ -254,7 +254,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           <TableColumn>置顶</TableColumn>
           <TableColumn>操作</TableColumn>
         </TableHeader>
-        <TableBody
+        <TableBody<SelectPublicBookmark>
           items={state.loading ? [] : bookmarks}
           isLoading={state.loading}
           loadingContent={<Spinner className="mt-12" label="Loading..." />}
