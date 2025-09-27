@@ -41,7 +41,7 @@ namespace PublicTagController {
         relatedTagIds: tag.relatedTagIds.map((el) => el.b),
       }))
     }
-    return cacheAllTags.value
+    return cacheAllTags.value!
   }
 
   export async function insert(tag: InsertTag) {
