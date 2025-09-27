@@ -16,7 +16,6 @@ import {
   ReButton,
   ReInput,
 } from '@/components'
-import { SelectPublicBookmark } from '@/controllers'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { usePageUtil } from '@/hooks'
 import { runAction } from '@/utils'
@@ -140,7 +139,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     { wait: 500, leading: false, trailing: true }
   )
 
-  async function onRemove(item: SelectPublicBookmark) {
+  async function onRemove(item: SelectBookmark) {
     const action = isUserSpace ? actDeleteUserBookmark : actDeletePublicBookmark
     await runAction(action({ id: item.id }), {
       okMsg: '书签已删除',
@@ -152,7 +151,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     setState({ pager: { ...state.pager, page } })
   }
 
-  function onChangeIsPinned(item: SelectPublicBookmark, isPinned: boolean) {
+  function onChangeIsPinned(item: SelectBookmark, isPinned: boolean) {
     item.isPinned = isPinned
     mutate([...bookmarks])
     dataRef.current.loadingMutable = false
@@ -160,7 +159,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     runAction(action(item)).then(refresh)
   }
 
-  function toEditPage(item: SelectPublicBookmark) {
+  function toEditPage(item: SelectBookmark) {
     router.push((isUserSpace ? PageRoutes.User : PageRoutes.Admin).bookmarkSlug(item.id))
   }
 
@@ -254,7 +253,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           <TableColumn>置顶</TableColumn>
           <TableColumn>操作</TableColumn>
         </TableHeader>
-        <TableBody<SelectPublicBookmark>
+        <TableBody<SelectBookmark>
           items={state.loading ? [] : bookmarks}
           isLoading={state.loading}
           loadingContent={<Spinner className="mt-12" label="Loading..." />}

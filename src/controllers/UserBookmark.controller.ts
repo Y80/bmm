@@ -14,8 +14,7 @@ interface TagIdsExt {
   relatedTagIds: TagId[]
 }
 type InsertBookmark = Partial<TagIdsExt> & Omit<typeof userBookmarks.$inferInsert, 'id' | 'userId'>
-type SelectBookmark = TagIdsExt & typeof userBookmarks.$inferSelect
-export type { SelectBookmark as SelectPublicBookmark }
+type SelectUserBookmark = TagIdsExt & typeof userBookmarks.$inferSelect
 
 /**
  * 完全更新 PublicBookmarkToTag 表，使与 bId 关联关联的 tId 全是 tagIds 中的 id
@@ -53,7 +52,7 @@ const UserBookmarkController = {
     await fullSetBookmarkToTag(rows[0].id, relatedTagIds)
     return rows[0]
   },
-  async query(bookmark: Pick<SelectBookmark, 'id'>) {
+  async query(bookmark: Pick<SelectUserBookmark, 'id'>) {
     const res = await db.query.userBookmarks.findFirst({
       where: userLimiter(await getAuthedUserId(), bookmark.id),
       with: { relatedTagIds: true },
@@ -64,7 +63,7 @@ const UserBookmarkController = {
       relatedTagIds: res.relatedTagIds.map((el) => el.tId),
     }
   },
-  async update(bookmark: Partial<SelectBookmark> & Pick<SelectBookmark, 'id'>) {
+  async update(bookmark: Partial<SelectUserBookmark> & Pick<SelectUserBookmark, 'id'>) {
     const { relatedTagIds, id, ...resetBookmark } = bookmark
     const tasks = []
     tasks.push(fullSetBookmarkToTag(id, relatedTagIds))
@@ -85,7 +84,7 @@ const UserBookmarkController = {
     }
     await Promise.all(tasks)
   },
-  async delete(bookmark: Pick<SelectBookmark, 'id'>) {
+  async delete(bookmark: Pick<SelectUserBookmark, 'id'>) {
     const res = await db
       .delete(userBookmarks)
       .where(userLimiter(await getAuthedUserId(), bookmark.id))
