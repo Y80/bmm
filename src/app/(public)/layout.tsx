@@ -19,8 +19,8 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   ])
 
   return (
-    <PublicProvider tags={tags || []} totalBookmarks={totalBookmarks}>
-      <PublicAndUserNavbar tags={tags} totalBookmarks={totalBookmarks} />
+    <PublicProvider tags={tags!} totalBookmarks={totalBookmarks}>
+      <PublicAndUserNavbar tags={tags!} totalBookmarks={totalBookmarks} />
       <div className="h-screen pt-16">{children}</div>
     </PublicProvider>
   )
