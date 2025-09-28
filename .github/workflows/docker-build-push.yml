@@ -1,6 +1,4 @@
-# 当前脚本存在问题，在 Github Action 执行构建时，TypeScript 是完全静态的
-# 导致一些需要运行时判断的类型检查错误，如 @/db 中根据 env.DB_DRIVER 来判断使用哪个数据库驱动
-# 过段时间再来解决这个问题，目前先本地手动构建 docker 镜像并推送
+# 在 Github Action 中构建并推送 Docker 镜像
 
 name: Build and Push Docker Image
 
@@ -8,8 +6,6 @@ on:
   push:
     branches:
       - main
-  # 仅支持手动触发
-  # workflow_dispatch: {}
 
 jobs:
   build-and-push:

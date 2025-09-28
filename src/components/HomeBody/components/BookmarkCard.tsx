@@ -4,20 +4,7 @@ import { getTagLinkAttrs } from '@/utils'
 import { Chip, cn } from '@heroui/react'
 import { useHomePageContext } from '../ctx'
 
-// interface Props extends SelectBookmark {
-//   editable?: boolean
-//   allTags?: SelectPublicTag[]
-//   onRemove?: () => void
-//   onEdit?: () => void
-// }
-// fix: Github Action 上无法继承动态生成的类型 SelectBookmark
-interface Props {
-  id: number
-  name: string
-  description: string | null
-  icon: string | null
-  url: string
-  relatedTagIds: SelectTag['id'][]
+interface Props extends SelectBookmark {
   editable?: boolean
   allTags?: SelectTag[]
   onRemove?: () => void
