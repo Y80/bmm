@@ -21,7 +21,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN pnpm next build && pnpm prune --prod
+RUN pnpm run build && pnpm prune --prod
 # 清理一些体积较大的、运行时不需要的文件
 RUN rm -rf doc .next/cache .next/trace \
 node_modules/.pnpm/@types+* \
