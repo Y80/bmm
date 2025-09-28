@@ -14,9 +14,9 @@ describe('G: ResponseX', () => {
   describe('W: Body is Date', () => {
     let body = new Date()
     test('T:', async () => {
-      let resX = ResponseX.ok(body)
+      let resX = ResponseX.ok(body as any)
       console.log(resX)
-      expect(await resX.text()).toEqual(await new Response(body).text())
+      expect(await resX.text()).toEqual(await new Response(body as any).text())
     })
   })
 
@@ -29,7 +29,7 @@ describe('G: ResponseX', () => {
     }
     let body = new CustomObject()
     test('T:', async () => {
-      let resX = ResponseX.ok(body)
+      let resX = ResponseX.ok(body as any)
       console.log(resX)
       expect(await resX.json()).toEqual(await Response.json(body).json())
     })
