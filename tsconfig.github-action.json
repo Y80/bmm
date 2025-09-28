@@ -42,5 +42,5 @@
     "next.config.js",
     "scripts/*.mjs"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/*.controller.ts"]
 }
