@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "tsx scripts/db-init.mjs && next dev",
     "build": "tsx scripts/db-init.mjs -P && next build",
-    "build:github-action": "TS_NODE_PROJECT=tsconfig.github-action.json tsx scripts/db-init.mjs -P && next build",
     "start": "tsx scripts/db-init.mjs -P && next start",
     "lint": "next lint",
     "test": "vitest",
