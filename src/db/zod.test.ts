@@ -8,18 +8,18 @@ import { zodSchema } from './zod'
 describe('G: zod schema - publicTags', () => {
   describe('W: insert', () => {
     test('pass', () => {
-      let validateRes = zodSchema.publicTags.insert().safeParse({ name: 'tag1' })
-      expect(validateRes.success).toBe(true)
+      let res = zodSchema.publicTags.insert().safeParse({ name: 'tag1' })
+      expect(res.success).toBe(true)
     })
 
     test('miss name field', () => {
-      let validateRes = zodSchema.publicTags.insert().safeParse({})
-      expect(validateRes.success).toBe(false)
+      let res = zodSchema.publicTags.insert().safeParse({})
+      expect(res.success).toBe(false)
     })
 
     test('name is not string', () => {
-      let validateRes = zodSchema.publicTags.insert().safeParse({ name: 1 })
-      expect(validateRes.success).toBe(false)
+      let res = zodSchema.publicTags.insert().safeParse({ name: 1 })
+      expect(res.success).toBe(false)
     })
   })
 
@@ -30,13 +30,23 @@ describe('G: zod schema - publicTags', () => {
     })
 
     test('miss id field', () => {
-      let validateRes = zodSchema.publicTags.update().safeParse({})
-      expect(validateRes.success).toBe(false)
+      let res = zodSchema.publicTags.update().safeParse({})
+      expect(res.success).toBe(false)
     })
 
     test('id is not number', () => {
-      let validateRes = zodSchema.publicTags.update().safeParse({ id: true })
-      expect(validateRes.success).toBe(false)
+      let res = zodSchema.publicTags.update().safeParse({ id: '1' })
+      expect(res.success).toBe(false)
+    })
+
+    test('createdAt is date', () => {
+      let res = zodSchema.publicTags.update().safeParse({ id: 1, createdAt: new Date() })
+      expect(res.data?.createdAt?.constructor.name).toBe('Date')
+    })
+
+    test('createdAt is not date', () => {
+      let res = zodSchema.publicTags.update().safeParse({ id: 1, createdAt: '2023-01-01' })
+      expect(res.data?.createdAt?.constructor.name).toBe('Date')
     })
   })
 
@@ -47,18 +57,18 @@ describe('G: zod schema - publicTags', () => {
     })
 
     test('miss id field', () => {
-      let validateRes = zodSchema.publicTags.delete().safeParse({})
-      expect(validateRes.success).toBe(false)
+      let res = zodSchema.publicTags.delete().safeParse({})
+      expect(res.success).toBe(false)
     })
 
     test('id is not number', () => {
-      let validateRes = zodSchema.publicTags.delete().safeParse({ id: true })
-      expect(validateRes.success).toBe(false)
+      let res = zodSchema.publicTags.delete().safeParse({ id: true })
+      expect(res.success).toBe(false)
     })
   })
 })
 
-describe.only('G: publicBookmarks', () => {
+describe('G: publicBookmarks', () => {
   describe('W: insert', () => {
     test('pass', () => {
       let res = zodSchema.publicBookmarks.insert().safeParse({

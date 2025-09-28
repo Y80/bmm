@@ -1,49 +1,44 @@
 import { z } from '@/lib/zod'
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
+import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import { schema } from './'
 
 const { publicBookmarks, publicTags } = schema
 
+const PublicTagOnlyId = createSelectSchema(publicTags).pick({ id: true })
+const PublicBookmarkOnlyId = createSelectSchema(publicBookmarks).pick({ id: true })
+
+const RelatedTagIds = z.object({ relatedTagIds: PublicTagOnlyId.shape.id.array().optional() })
+
+// 前后端交互时，日期字段传字符串或时间戳数字，Date 类型数据是无法传输的
+const DateSchema = z.date().or(
+  z
+    .string()
+    .or(z.number())
+    .transform((v) => new Date(v))
+)
+
+/**
+ * @deprecated
+ */
 export const zodSchema = {
   publicTags: {
-    idObjSchema: () => createSelectSchema(publicTags).pick({ id: true }),
-    extraObjSchema: () => z.object({ relatedTagIds: z.number().array().optional() }),
-    // select: () => createSelectSchema(publicTags),
-    insert: () => createInsertSchema(publicTags).merge(zodSchema.publicTags.extraObjSchema()),
-    // partial(): like TS Partial<T>
+    insert: () => createInsertSchema(publicTags).extend(RelatedTagIds.shape),
     update: () =>
-      zodSchema.publicTags
-        .insert()
-        .merge(
-          z.object({
-            createdAt: z.string().transform((v) => new Date(v)),
-            updatedAt: z.string().transform((v) => new Date(v)),
-          })
-        )
-        .partial()
-        .merge(zodSchema.publicTags.idObjSchema()),
-    delete: () => zodSchema.publicTags.idObjSchema(),
-    // update or delete: only id field is required
-    updateOrDelete: () => zodSchema.publicTags.update(),
+      createUpdateSchema(publicTags, {
+        id: PublicTagOnlyId.shape.id,
+        createdAt: DateSchema.optional(),
+        updatedAt: DateSchema.optional(),
+      }),
+    delete: () => PublicTagOnlyId,
   },
   publicBookmarks: {
-    idObjSchema: () => createSelectSchema(publicBookmarks).pick({ id: true }),
-    extraObjSchema: () => z.object({ relatedTagIds: z.number().array().optional() }),
-    // select: () => createSelectSchema(publicBookmarks),
-    insert: () =>
-      createInsertSchema(publicBookmarks).merge(zodSchema.publicBookmarks.extraObjSchema()),
-    // partial(): like TS Partial<T>
+    insert: () => createInsertSchema(publicBookmarks).extend(RelatedTagIds.shape),
     update: () =>
-      zodSchema.publicBookmarks
-        .insert()
-        .merge(
-          z.object({
-            createdAt: z.string().transform((v) => new Date(v)),
-            updatedAt: z.string().transform((v) => new Date(v)),
-          })
-        )
-        .partial()
-        .merge(zodSchema.publicBookmarks.idObjSchema()),
-    delete: () => zodSchema.publicBookmarks.idObjSchema(),
+      createUpdateSchema(publicBookmarks, {
+        id: PublicBookmarkOnlyId.shape.id,
+        createdAt: DateSchema.optional(),
+        updatedAt: DateSchema.optional(),
+      }),
+    delete: () => PublicBookmarkOnlyId,
   },
 }
