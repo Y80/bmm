@@ -5,11 +5,11 @@
 name: Build and Push Docker Image
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   # 仅支持手动触发
-  workflow_dispatch: {}
+  # workflow_dispatch: {}
 
 jobs:
   build-and-push:
