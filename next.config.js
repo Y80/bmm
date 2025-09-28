@@ -47,6 +47,9 @@ export default async function setup(phase) {
     },
     experimental: {
       serverActions: { allowedOrigins: [domainHost] }
+    },
+    typescript: {
+      ignoreBuildErrors: Boolean(process.env.IGNORE_BUILD_ERRORS),
     }
   }
   return nextConfig

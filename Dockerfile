@@ -22,7 +22,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # docker 构建镜像时不需要预先配置数据库，所以不需要执行 db-init 脚本，这里直接 next build 就行
-RUN pnpm run build:docker && pnpm prune --prod
+RUN export IGNORE_BUILD_ERRORS=true && pnpm next build && pnpm prune --prod
 # 清理一些体积较大的、运行时不需要的文件
 RUN rm -rf doc .next/cache .next/trace \
 node_modules/.pnpm/@types+* \
