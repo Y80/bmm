@@ -137,7 +137,7 @@ export async function runAction<U extends any[], Data>(
         description: res.error.msg,
       })
     }
-    return { ok: false } as const
+    return { ok: false, message: res.error.msg } as const
   }
   if (opts.okMsg) {
     addToast({

@@ -64,11 +64,11 @@ const CredentialsController = {
       with: { credential: true },
     })
     if (!user || !user.credential) {
-      throw new Error('邮箱或密码错误，请检查。')
+      throw new Error('邮箱或密码错误，请检查后重试')
     }
     const { password: hash, salt } = user.credential
     if (!verifyPassword(payload.password, hash, salt)) {
-      throw new Error('邮箱或密码错误，请检查。')
+      throw new Error('邮箱或密码错误，请检查后重试')
     }
     return user
   },

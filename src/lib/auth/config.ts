@@ -10,7 +10,7 @@ export const authConfig = {
   providers: [githubProvider, credentialsProvider],
   // session 1 天内有效，超过 1 天会自动更新；超过 30 天内没有任何操作，就会过期，useSession() auth() 返回 null
   session: { strategy: 'jwt', maxAge: 30 * 24 * 3600, updateAge: 24 * 3600 },
-  pages: { signIn: PageRoutes.LOGIN },
+  pages: { signIn: PageRoutes.LOGIN, error: PageRoutes.LOGIN },
   theme: { logo: Assets.LOGO_SVG },
   // debug: true,
   callbacks: {

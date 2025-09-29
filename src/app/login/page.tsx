@@ -4,6 +4,7 @@ import { actCheckGithubOAuthConfig, actRegisterUser, actVerifyUser } from '@/act
 import { ReButton, ReInput } from '@/components'
 import { z, zodSchemas } from '@/lib/zod'
 import { runAction } from '@/utils'
+import type { ErrorPageParam, SignInPageErrorParam } from '@auth/core/types'
 import { Assets, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import { addToast, cn, Form, FormProps, Spinner, Switch } from '@heroui/react'
 import { useMount, useSetState } from 'ahooks'
@@ -37,7 +38,7 @@ export default function Page() {
     showBg: true,
     isRegisterMode: false,
     loginRegisterLoading: false,
-    signInError: '',
+    authError: null as null | { title: string; desc: string },
   })
   const [validationErrors, setValidationErrors] = useState<FormProps['validationErrors']>()
 
@@ -50,15 +51,21 @@ export default function Page() {
   })
 
   useMount(() => {
-    const error = searchParams.get('error')
+    const error = searchParams.get('error') as null | SignInPageErrorParam | ErrorPageParam
     const code = searchParams.get('code')
+    const authError: typeof state.authError = { title: '', desc: '' }
     if (error === 'CredentialsSignin' && code === 'credentials') {
-      setState({ signInError: '账号或密码错误，请检查后重试。' })
+      authError.title = '登录失败'
+      authError.desc = '账号或密码错误，请检查后重试。'
     } else if (error === 'OAuthAccountNotLinked') {
-      setState({
-        signInError: 'Github 账户邮箱已被注册，请直接使用账号密码登录，或更换 Github 账户。',
-      })
+      authError.title = '登录失败'
+      authError.desc = 'Github 账户邮箱已被注册，请直接使用账号密码登录，或更换 Github 账户。'
+    } else if (error === 'Configuration') {
+      authError.title = '登录失败'
+      authError.desc =
+        '若您正在进行 Github 授权，可能是服务端请求 Github 服务器超时，可多次重试。若问题持续存在，请联系管理员查看服务日志或应用配置。'
     }
+    authError.title && setState({ authError })
   })
 
   async function handleGithubAuth() {
@@ -82,7 +89,7 @@ export default function Page() {
 
   function toggleRegisterMode() {
     formRef.current?.reset()
-    setState({ isRegisterMode: !state.isRegisterMode, signInError: '' })
+    setState({ isRegisterMode: !state.isRegisterMode, authError: null })
     setValidationErrors(undefined)
   }
 
@@ -105,16 +112,19 @@ export default function Page() {
 
   async function handleSubmit(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault()
-    setState({ signInError: '' })
+    setState({ authError: null })
     const formData = Object.fromEntries(new FormData(evt.currentTarget))
     const values = validateForm(formData)
     if (!values) return
     setState({ loginRegisterLoading: true })
     // 注册账号
     if (state.isRegisterMode) {
-      const result = await runAction(actRegisterUser(values), { errToast: { title: '注册失败' } })
+      const result = await runAction(actRegisterUser(values), { errToast: { hidden: true } })
       setState({ loginRegisterLoading: false })
-      if (!result.ok) return
+      if (!result.ok) {
+        setState({ authError: { title: '注册失败', desc: result.message } })
+        return
+      }
       addToast({ color: 'success', title: '注册成功，请登录' })
       toggleRegisterMode()
       return
@@ -123,7 +133,7 @@ export default function Page() {
     const result = await runAction(actVerifyUser(values), { errToast: { hidden: true } })
     setState({ loginRegisterLoading: false })
     if (!result.ok) {
-      setState({ signInError: '账号或密码错误，请检查后重试。' })
+      setState({ authError: { title: '登录失败', desc: result.message } })
       return
     }
     addToast({ color: 'success', title: '登录成功' })
@@ -194,17 +204,15 @@ export default function Page() {
                 Github 授权登录（免注册）
               </ReButton>
 
-              <div
-                role="login-failed-message"
-                hidden={!state.signInError}
-                className="mt-8 rounded-xl bg-red-50/70 p-4"
-              >
-                <h3 className="mb-2 gap-1 text-sm text-danger-600 flex-items-center">
-                  <span className={IconNames.Tabler.EXCLAMATION_CIRCLE} />
-                  <span>登录失败</span>
-                </h3>
-                <div className="text-xs text-danger-400">{state.signInError}</div>
-              </div>
+              {state.authError && (
+                <div role="login-failed-message" className="mt-8 rounded-xl bg-red-50/70 p-4">
+                  <h3 className="mb-2 gap-1 text-sm text-danger-600 flex-items-center">
+                    <span className={IconNames.Tabler.EXCLAMATION_CIRCLE} />
+                    <span>{state.authError.title}</span>
+                  </h3>
+                  <div className="text-xs text-danger-400">{state.authError.desc}</div>
+                </div>
+              )}
             </div>
           )}
         </div>
