@@ -63,9 +63,7 @@
 
 若您只是想快速体验项目，本地拉取项目后，无需修改任何环境变量即可启动开发服务器（数据库用的是本地 SQLite）。
 
-若您需要部署到服务器上，请额外关注 `AUTH_URL`。
-
-配置环境变量注意敏感数据泄露。不同的环境可以配置不同的环境变量。
+若您需要部署到服务器上，重点关注 `AUTH_URL` 和数据库相关变量配置。
 
 ## 🗄️ 数据库
 
@@ -79,10 +77,6 @@ BMM 使用 Drizzle ORM 持久化存储数据，当前开箱即用的支持 SQLit
 2. [一些免费的 PostgreSQL 数据库](https://juejin.cn/post/7411047482651951119)
 
 您也可以使用自己的数据库云服务。
-
-
-创建好数据库后，在 `.env` 中配置相关环境变量即可。
-
 
 ## 🚀 项目部署
 
@@ -187,7 +181,7 @@ function coze() {
 
 ## 接入 Github 授权登录（可选）
 
-BMM 使用 Github 授权登录，认证管理员身份，因此需要配置 Github OAuth。
+BMM 支持使用 Github 授权登录，配置 Github OAuth 即可实现。
 
 <details>
   <summary>
@@ -218,7 +212,7 @@ Github OAuth App 的 Client ID 和 Client Secret 将分别用作环境变量 `AU
   </summary>
   
   <br>
-  首先需要明确， <code>AUTH_URL</code> 和 Github OAuth App 中的 Authorization callback URL 是要一致的，用于指定用户在 Github 确认授权后，浏览器需要重定向的服务器地址。
+  首先需要明确， <code>AUTH_URL</code> 和 Github OAuth App 中的 Authorization callback URL 是一致的，用于指定用户在 Github 确认授权后，浏览器需要重定向的服务器地址。
   
   <br>
   它们的值如何设定，简单来说，通过什么地址访问 BMM 服务，就把该地址作为它们的值，例如：
@@ -268,6 +262,6 @@ Github OAuth App 的 Client ID 和 Client Secret 将分别用作环境变量 `AU
   </summary>
   
   <br>
-  由于 drizzle-orm 除了支持 PostgreSQL，还支持 MySQL 和 SQLite，因此对项目做少许编码改造，即可切换数据库。
+  借助 drizzle-orm 的能力，本项目可以快速接入 MySQL 数据库。
 </details>
 
