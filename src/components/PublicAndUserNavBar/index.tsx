@@ -166,7 +166,7 @@ export function PublicAndUserNavbar(props: Props) {
         />
       </NavbarMenu>
 
-      <div role="navigation" className="fixed -right-full">
+      <div role="navigation" className="fixed left-full">
         {tags.map((tag) => (
           <a key={tag.id} {...getTagLinkAttrs(tag)}>
             {tag.name}
