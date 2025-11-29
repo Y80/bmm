@@ -1,6 +1,6 @@
 import { actAnalyzeRelatedTags } from '@/actions'
 import { ReButton } from '@/components/re-export'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { IconNames } from '@cfg'
 import { cn } from '@heroui/react'
 

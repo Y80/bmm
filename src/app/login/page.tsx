@@ -3,7 +3,7 @@
 import { actCheckGithubOAuthConfig, actRegisterUser, actVerifyUser } from '@/actions'
 import { ReButton, ReInput } from '@/components'
 import { z, zodSchemas } from '@/lib/zod'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import type { ErrorPageParam, SignInPageErrorParam } from '@auth/core/types'
 import { Assets, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
 import { addToast, cn, Form, FormProps, Spinner, Switch } from '@heroui/react'

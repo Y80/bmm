@@ -5,7 +5,7 @@ import { headers } from 'next/headers'
 import { makeActionInput } from '../make-action'
 
 async function handleAnalyzeRelatedTags(tag: string) {
-  const referer = headers().get('referer')
+  const referer = (await headers()).get('referer')
   const space = pageSpace(referer)
   if (!space.isAdmin && !space.isUser) throw new Error('内部错误')
   const tags = space.isAdmin

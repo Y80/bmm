@@ -4,7 +4,7 @@ import { actUpdatePublicTagSortOrders, actUpdateUserTagSortOrders } from '@/acti
 import MyModal from '@/components/MyModal'
 import { usePageUtil } from '@/hooks'
 import useIsDark from '@/hooks/useIsDark'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import {
   closestCenter,
   DndContext,

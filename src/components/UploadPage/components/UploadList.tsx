@@ -7,7 +7,7 @@ import {
 import { Favicon, ReButton, ReTooltip } from '@/components'
 import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil } from '@/hooks'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { concurrenceWithLimit } from '@/utils/concurrence-with-limit'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import { addToast, cn, Divider, Link, ScrollShadow } from '@heroui/react'

@@ -13,18 +13,15 @@ import {
   RadioGroup,
 } from '@heroui/react'
 import { useSetState } from 'ahooks'
-import { TreeDataNode } from 'antd'
+import { Tree, TreeDataNode } from 'antd'
 import { motion } from 'framer-motion'
 import { pick } from 'lodash'
 import { nanoid } from 'nanoid'
-import dynamic from 'next/dynamic'
 import { useMemo, useRef } from 'react'
 import { LinkTagStrategy } from './common'
 import ExportBookmarksGuide from './components/ExportBookmarksGuide'
 import Panel from './components/Panel'
 import UploadList from './components/UploadList'
-
-const DynamicTree = dynamic(() => import('antd/es/tree').then((m) => m.default))
 
 interface CategoryNode {
   id: string
@@ -320,7 +317,7 @@ export default function UploadPage() {
 
   return (
     <main className="py-20 flex-center">
-      <div className={cn(state.file && '!hidden', 'w-[30rem] text-center')}>
+      <div className={cn(state.file && '!hidden', 'w-[32rem] text-center')}>
         <span
           className={cn(IconNames.IMPORT, 'bg-gradient-to-r from-rose-500 to-purple-500 text-6xl')}
         />
@@ -402,7 +399,7 @@ export default function UploadPage() {
 
           <div className="mt-8">
             <label className="text-base text-foreground-500">选择书签</label>
-            <DynamicTree
+            <Tree
               key={categoryTree.length}
               rootClassName="!mt-2 !bg-transparent "
               checkable

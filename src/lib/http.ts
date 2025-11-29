@@ -1,4 +1,4 @@
-import { addToast } from '@heroui/react'
+
 
 type HTTPReturn<DataType> = Promise<
   | { error: { message: string; [p: string]: any }; data: undefined }
@@ -90,8 +90,7 @@ const http: IHttp = async (url, payload, options) => {
       request: req,
       response: rsp,
     }
-    // 默认的错误处理
-    addToast({ color: 'danger', title: '请求出错', description: error.message })
+
     return { error, data: undefined }
   }
   return { data, error: undefined }

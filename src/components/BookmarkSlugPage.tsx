@@ -12,7 +12,8 @@ import { Favicon, ReInput, ReTextarea, SlugPageLayout, TagSelect } from '@/compo
 import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil, useSlug } from '@/hooks'
 import { z } from '@/lib/zod'
-import { isValidUrl, runAction } from '@/utils'
+import { isValidUrl } from '@/utils'
+import { runAction } from '@/utils/client'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import {
   Button,

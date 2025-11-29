@@ -1,5 +1,5 @@
+import { heroui } from '@heroui/react'
 import { addDynamicIconSelectors } from '@iconify/tailwind'
-import { heroui } from "@heroui/react"
 import type { Config } from 'tailwindcss'
 import plugin from 'tailwindcss/plugin'
 
@@ -8,7 +8,7 @@ const config: Config = {
     './app.config.ts',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
+    './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     container: {

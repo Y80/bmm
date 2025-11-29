@@ -3,7 +3,7 @@
 import { actDeleteUserTag, actUpdateUserTag } from '@/actions'
 import { useUserContext } from '@/app/user/ctx'
 import TagListPage, { TagListPageProps } from '@/components/TagListPage'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 
 export default function ClientPage() {
   const { tags, setCtxValue, updateTags } = useUserContext()

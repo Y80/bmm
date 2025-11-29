@@ -18,7 +18,7 @@ export function useOnClickTag({ tags }: { tags: SelectTag[] }) {
 
   // 根据 slug 更新 selectedTags
   useEffect(() => {
-    if (Array.isArray(params.slug)) return
+    if (!params.slug || Array.isArray(params.slug)) return
     const slug = decodeURIComponent(params.slug)
     const selectedTags = slug
       .split('+')

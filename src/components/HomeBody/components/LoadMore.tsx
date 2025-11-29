@@ -3,12 +3,13 @@
 import { actFindPublicBookmarks, actFindUserBookmarks } from '@/actions'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { useIsClient, usePageUtil } from '@/hooks'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { DEFAULT_BOOKMARK_PAGESIZE, DEFAULT_PUBLIC_TAG_PAGESIZE, PageRoutes } from '@cfg'
 import { Spinner } from '@heroui/react'
 import { useRequest, useSetState } from 'ahooks'
 import { useParams, usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
+import z from 'zod'
 
 interface Props {
   onChange: (newData: SelectBookmark[], hasMore: boolean) => void
@@ -46,7 +47,7 @@ export default function LoadMore(props: Props) {
         ? decodeURIComponent(params.slug).split('+')
         : undefined
     const keyword = searchParams.get('keyword') || undefined
-    const payload: typeof findManyBookmarksSchema._input = {
+    const payload: z.input<typeof findManyBookmarksSchema> = {
       page: state.page,
       tagNames,
       keyword,
