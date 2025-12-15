@@ -82,7 +82,7 @@ export default function Favicon(props: Props) {
     <Wrapper size={props.size} className={props.className}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        className={cn('rounded', showSpinner ? 'size-0' : 'size-full')}
+        className={cn('rounded-sm', showSpinner ? 'size-0' : 'size-full')}
         alt={props.alt || 'website-favicon'}
         src={props.src}
         loading={props.disableLazyLoading ? 'eager' : 'lazy'}

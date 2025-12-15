@@ -55,17 +55,6 @@ const config: Config = {
     addDynamicIconSelectors(),
     plugin(function ({ addUtilities, addVariant }) {
       addVariant('light', '&:is(.light *)')
-      addUtilities({
-        '.flex-items-center': {
-          display: 'flex',
-          alignItems: 'center',
-        },
-        '.flex-center': {
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-      })
     }),
   ],
 }

@@ -31,7 +31,7 @@ export default function AdminNav() {
 
   return (
     <Navbar {...NavBarProps}>
-      <NavbarContent className="max-sm:!flex-grow-0">
+      <NavbarContent className="max-sm:grow-0!">
         <Link href={PageRoutes.Admin.INDEX} color="foreground">
           <div className="flex cursor-pointer items-center gap-4">
             <Image

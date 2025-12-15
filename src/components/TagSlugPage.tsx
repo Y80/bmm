@@ -76,7 +76,7 @@ export default function TagSlugPage(props: TagSlugPageProps) {
   function renderIcon() {
     if (state.selectedIcon?.body) {
       return (
-        <span className="flex-shrink-0 text-[1.875rem]">
+        <span className="shrink-0 text-[1.875rem]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="1em"
@@ -89,7 +89,7 @@ export default function TagSlugPage(props: TagSlugPageProps) {
     }
     if (tag.icon)
       return (
-        <span className="flex-shrink-0 text-[1.875rem]">
+        <span className="shrink-0 text-[1.875rem]">
           <Icon icon={tag.icon} />
         </span>
       )
@@ -136,7 +136,7 @@ export default function TagSlugPage(props: TagSlugPageProps) {
           tag.color && (
             <div
               style={{ backgroundColor: tag.color }}
-              className="size-7 flex-shrink-0 rounded-full border border-white"
+              className="size-7 shrink-0 rounded-full border border-white"
             />
           )
         }

@@ -23,7 +23,7 @@ function ClientIcon(props: Props) {
   }, [props.color, isDark, isClient])
 
   const rootProps = {
-    className: cn('size-5 text-xl flex-center', props.className),
+    className: cn('size-5 text-xl flex-center shrink-0', props.className),
     style: { color },
   }
 

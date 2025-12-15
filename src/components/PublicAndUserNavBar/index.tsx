@@ -92,17 +92,17 @@ export function PublicAndUserNavbar(props: Props) {
       isMenuOpen={state.isSelectedMenuToggle}
       onMenuOpenChange={(v) => setState({ isSelectedMenuToggle: v })}
     >
-      <NavbarBrand className="shrink-0 grow-0 max-xs:basis-20 xs:basis-56">
-        <Link href={routes.INDEX} className="gap-4 flex-items-center">
+      <NavbarBrand className="max-xs:basis-20 xs:basis-56 shrink-0 grow-0">
+        <Link href={routes.INDEX} className="flex-items-center gap-4">
           <Image src={Assets.LOGO_SVG} width={32} height={32} alt="logo" priority />
-          <h3 className="translate-y-0.5 font-mono text-2xl font-light text-foreground-700">
+          <h3 className="text-foreground-700 translate-y-0.5 font-mono text-2xl font-light">
             {isUserSpace ? user?.name : WEBSITE_NAME}
           </h3>
         </Link>
       </NavbarBrand>
       <NavbarContent justify="end" className="gap-0">
         {/* pathname 发生变化时，重新渲染 SearchInput */}
-        {showSearchInput() && <SearchInput key={pathname} className="mr-4 w-72 max-xs:hidden" />}
+        {showSearchInput() && <SearchInput key={pathname} className="max-xs:hidden mr-4 w-72" />}
         {isUserSpace &&
           UserLinkGroups.map((group) => (
             <ReButton
@@ -147,7 +147,7 @@ export function PublicAndUserNavbar(props: Props) {
           tooltip={{
             placement: 'bottom-end',
             content: (
-              <div className="gap-2 p-2 flex-center">
+              <div className="flex-center gap-2 p-2">
                 <span className="icon-[tabler--star-filled] text-xl text-yellow-400" />
                 <span>欢迎 Star</span>
               </div>
@@ -159,7 +159,7 @@ export function PublicAndUserNavbar(props: Props) {
         <NavUser />
       </NavbarContent>
       <NavbarMenuToggle className="xs:hidden" />
-      <NavbarMenu className={cn(Background.CLASS, 'dark:bg-opacity-50')}>
+      <NavbarMenu className={cn(Background.CLASS)}>
         <MobileTagPicker
           tags={tags}
           onCloseMenu={() => setState({ isSelectedMenuToggle: false })}

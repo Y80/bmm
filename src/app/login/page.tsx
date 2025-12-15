@@ -142,13 +142,13 @@ export default function Page() {
 
   return (
     <div className="flex h-screen flex-col">
-      <div className="justify-between px-6 py-4 flex-items-center">
-        <Link href={PageRoutes.INDEX} className={cn('gap-4 rounded-xl backdrop-blur flex-center')}>
+      <div className="flex-items-center justify-between px-6 py-4">
+        <Link href={PageRoutes.INDEX} className="flex-center gap-4 rounded-xl">
           <Image src={Assets.LOGO_SVG} width={32} height={32} alt="logo" />
           <h3
             className={cn(
-              'translate-y-0.5 font-mono text-2xl font-light leading-none text-foreground-700',
-              state.showBg && '!text-white/90'
+              'text-foreground-700 translate-y-0.5 font-mono text-2xl leading-none font-light',
+              state.showBg && 'text-white/90!'
             )}
           >
             {WEBSITE_NAME}
@@ -156,8 +156,8 @@ export default function Page() {
         </Link>
         <Switch size="sm" isSelected={state.showBg} onValueChange={handleShowBgChange} />
       </div>
-      <div className="-mt-[10vh] grow flex-col flex-center">
-        <div className="w-96 rounded-xl border bg-background/80 p-10 shadow-lg backdrop-blur max-xs:w-[90%]">
+      <div className="flex-center -mt-[10vh] grow flex-col">
+        <div className="bg-background/80 max-xs:w-[90%] w-96 rounded-xl border p-10 shadow-lg backdrop-blur-sm">
           {state.isRedirecting ? (
             <div className="flex-center">
               <Spinner color="current" size="lg">
@@ -175,7 +175,7 @@ export default function Page() {
                 <div className="mt-4 text-xs">
                   <button
                     className={cn(
-                      'space-x-1 text-primary transition-all flex-items-center hover:opacity-80',
+                      'text-primary flex-items-center space-x-1 transition-all hover:opacity-80',
                       state.isRegisterMode && 'text-secondary'
                     )}
                     onClick={toggleRegisterMode}
@@ -196,7 +196,7 @@ export default function Page() {
               </Form>
 
               <ReButton
-                className="mt-8 bg-foreground text-background"
+                className="bg-foreground text-background mt-8"
                 fullWidth
                 startContent={<span className="icon-[mdi--github] text-2xl" />}
                 onClick={handleGithubAuth}
@@ -206,11 +206,11 @@ export default function Page() {
 
               {state.authError && (
                 <div role="login-failed-message" className="mt-8 rounded-xl bg-red-50/70 p-4">
-                  <h3 className="mb-2 gap-1 text-sm text-danger-600 flex-items-center">
+                  <h3 className="text-danger-600 flex-items-center mb-2 gap-1 text-sm">
                     <span className={IconNames.Tabler.EXCLAMATION_CIRCLE} />
                     <span>{state.authError.title}</span>
                   </h3>
-                  <div className="text-xs text-danger-400">{state.authError.desc}</div>
+                  <div className="text-danger-400 text-xs">{state.authError.desc}</div>
                 </div>
               )}
             </div>

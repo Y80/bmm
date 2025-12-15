@@ -14,18 +14,18 @@ export default async function Page() {
   const session = await auth()
 
   return (
-    <div className="mx-auto -mt-[10vh] h-full flex-col flex-center xs:w-[32rem]">
-      <h1 className="mb-12 text-3xl max-xs:mt-20">
+    <div className="flex-center xs:w-lg mx-auto -mt-[10vh] h-full flex-col">
+      <h1 className="max-xs:mt-20 mb-12 text-3xl">
         👋 {session?.user.name}，欢迎使用 {WEBSITE_NAME}
       </h1>
-      <div className="grid grid-cols-2 gap-4 max-xs:grid-cols-1">
+      <div className="max-xs:grid-cols-1 grid grid-cols-2 gap-4">
         {LINKS.map((link, idx) => (
           <ReButton
             key={link.label}
             href={link.href}
             size="lg"
             className={cn(
-              'group relative h-24 w-60 bg-gradient-to-br text-xl text-gray-200 !transition-all hover:saturate-150',
+              'group relative h-24 w-60 bg-linear-to-br text-xl text-gray-200 transition-all! hover:saturate-150',
               idx === 0 && 'from-rose-500 to-rose-700',
               idx === 1 && 'from-blue-500 to-blue-700',
               idx === 2 && 'from-lime-500 to-lime-700',
@@ -41,7 +41,7 @@ export default async function Page() {
             <span>{link.label}</span>
             <span
               className={cn(
-                'absolute right-1 top-1 text-5xl opacity-30 transition group-hover:opacity-80',
+                'absolute top-1 right-1 text-5xl opacity-30 transition group-hover:opacity-80',
                 link.label.includes('新建') ? IconNames.PLUS : IconNames.LIST
               )}
             />
@@ -50,7 +50,7 @@ export default async function Page() {
         <ReButton
           href={PageRoutes.User.UPLOAD}
           size="lg"
-          className="col-span-2 bg-foreground py-7 text-background max-xs:col-span-1 max-xs:h-24"
+          className="bg-foreground text-background max-xs:col-span-1 max-xs:h-24 col-span-2 py-7"
         >
           <span className={cn(IconNames.IMPORT, 'text-xl')} />
           <span>导入浏览器书签</span>

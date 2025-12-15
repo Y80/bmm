@@ -225,7 +225,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           </DropdownTrigger>
           <DropdownMenu
             aria-label="sorter-menu"
-            className="min-w-[12rem]"
+            className="min-w-48"
             selectedKeys={[state.sorterKey]}
             selectionMode="single"
             onAction={(key) =>
@@ -282,7 +282,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                 </TableCell>
                 <TableCell>
                   <div
-                    className="max-w-32 truncate text-sm max-xs:max-w-[6rem]"
+                    className="max-w-32 truncate text-sm max-xs:max-w-24"
                     title={renderRelatedTags(item.relatedTagIds)}
                   >
                     {renderRelatedTags(item.relatedTagIds)}

@@ -23,7 +23,7 @@ export default function TagPickerItem({ tag, tags, onClick }: Props) {
       className={cn(
         'mr-4 inline-flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-base',
         'xs:hover:bg-zinc-600/10 xs:dark:hover:bg-zinc-800/80',
-        isSelected && 'bg-zinc-600/10 dark:bg-zinc-800/80 max-xs:!bg-blue-800/10'
+        isSelected && 'max-xs:bg-blue-800/10! bg-zinc-600/10 dark:bg-zinc-800/80'
       )}
       onClick={(e) => {
         onClick?.()
@@ -31,7 +31,7 @@ export default function TagPickerItem({ tag, tags, onClick }: Props) {
       }}
     >
       <ClientIcon color={tag.color || undefined} icon={tag.icon || IconNames.TAG} />
-      <span className="grow text-foreground-600">{tag.name}</span>
+      <span className="text-foreground-600 grow truncate">{tag.name}</span>
     </a>
   )
 }

@@ -1,7 +1,7 @@
 import { ButtonProps, NavbarProps } from '@heroui/react'
 
 export const IconButtonProps = {
-  className: 'text-2xl text-foreground-600 xs:hover:text-foreground-800 outline-none',
+  className: 'text-2xl text-foreground-600 xs:hover:text-foreground-800 outline-hidden',
   isIconOnly: true,
   variant: 'light',
 } satisfies ButtonProps

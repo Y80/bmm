@@ -47,13 +47,14 @@ type Bookmark = Pick<
 export interface BookmarkSlugPageProps {
   bookmark: SelectBookmark | null
   tags: SelectTag[]
-  afterSave: () => void
+  afterSave: () => Promise<void>
 }
 
 export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   const slug = useSlug()
   const pageUtil = usePageUtil()
   const router = useRouter()
+
   const [bookmark, setBookmark] = useSetState<Bookmark>({
     url: '',
     name: '',
@@ -62,18 +63,19 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     relatedTagIds: [],
     isPinned: false,
   })
-
   const [invalidInfos, setInvalidInfos] = useSetState<z.infer<typeof formSchema>>({
     url: '',
     name: '',
     icon: '',
   })
-
   const [state, setState] = useState({ loading: false })
 
   useUpdateEffect(() => {
     props.bookmark && setBookmark({ ...props.bookmark })
   }, [props.bookmark])
+  useUpdateEffect(() => {
+    !state.loading && validateAll()
+  }, [state.loading])
 
   function validateItem(key: keyof typeof invalidInfos) {
     const res = formSchema.shape[key].safeParse(bookmark[key])
@@ -122,18 +124,17 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
         : actUpdateUserBookmark({ ...bookmark, id: slug.number! })
     await runAction(action, {
       okMsg: slug.isNew ? '书签已创建' : '书签已更新',
-      onOk() {
-        router.push(
-          (pageUtil.isAdminSpace ? PageRoutes.Admin : PageRoutes.User).bookmarkSlug('list')
-        )
-        props.afterSave()
+      async onOk() {
+        await props.afterSave()
+        const route = pageUtil.isAdminSpace
+          ? PageRoutes.Admin.bookmarkSlug('list')
+          : PageRoutes.User.bookmarkSlug('list')
+        router.push(route)
+        console.log({ route })
+        // debugger
       },
     })
   }
-
-  useUpdateEffect(() => {
-    !state.loading && validateAll()
-  }, [state.loading])
 
   function renderParseWebsiteDropdown() {
     return (
@@ -145,7 +146,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
             isLoading={state.loading}
             className={cn('bg-transparent text-xl', !hasValidUrl && 'scale-0')}
           >
-            <span className={cn('bg-gradient-to-r from-pink-500 to-violet-500', IconNames.STARS)} />
+            <span className={cn('bg-linear-to-r from-pink-500 to-violet-500', IconNames.STARS)} />
           </Button>
         </DropdownTrigger>
         <DropdownMenu>
@@ -196,7 +197,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
                 textValue={item.name}
                 onClick={() => setBookmark({ icon: item.src })}
               >
-                <div className="justify-between flex-items-center">
+                <div className="flex-items-center justify-between">
                   <span>{item.name}</span>
                   <Favicon
                     size={20}
@@ -272,7 +273,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
           onChange={(v) => setBookmark({ relatedTagIds: v })}
         />
       </div>
-      <div className="justify-between flex-items-center">
+      <div className="flex-items-center justify-between">
         <label className="text-sm">置顶书签</label>
         <Switch
           isSelected={bookmark.isPinned || false}

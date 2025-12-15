@@ -1,70 +1,62 @@
+@reference "../../globals.css";
+
 .rcSelectWrapper {
-  @apply hover:cursor-text hover:bg-default-200;
-}
+  @apply hover:bg-default-200 hover:cursor-text;
 
-:global(.rcSelectWrapper .rc-select) {
-  @apply w-full text-sm;
-  line-height: 24px;
-}
-
-:global(.rcSelectWrapper .rc-select-selector) {
-  @apply !border-0 px-3 py-2;
-}
-
-:global(.rcSelectWrapper .rc-select-selection-overflow) {
-  @apply items-center gap-1;
-}
-
-:global(.rcSelectWrapper input.rc-select-selection-search-input) {
-  @apply !bg-transparent;
+  :global(.rc-select) {
+    @apply w-full text-sm;
+    line-height: 24px;
+  }
+  :global(.rc-select-selector) {
+    @apply border-0! px-3 py-2;
+  }
+  :global(.rc-select-selection-overflow) {
+    @apply items-center gap-1;
+  }
+  :global(input.rc-select-selection-search-input) {
+    @apply bg-transparent!;
+  }
 }
 
 .rcSelectDropdown {
-  @apply z-20 overflow-hidden rounded-medium border-0 bg-default-100 py-2;
-}
+  @apply rounded-medium bg-default-100 z-20 overflow-hidden border-0 py-2;
 
-:global(.rcSelectDropdown .rc-virtual-list-holder) {
-  max-height: initial !important;
-}
+  :global(.rc-virtual-list-holder) {
+    max-height: initial !important;
+  }
+  :global(.rc-select-item-option-active) {
+    @apply bg-transparent;
+  }
+  :global(.rc-select-item-option) {
+    @apply rounded-medium hover:bg-default-200 mx-2 mr-3 cursor-pointer px-2 py-1 transition;
+  }
+  :global(span.rc-select-item-option-state) {
+    right: 12px;
+  }
 
-:global(.rcSelectDropdown .rc-select-item-option-active) {
-  @apply bg-transparent;
-}
-
-:global(.rcSelectDropdown .rc-select-item-option) {
-  @apply mx-2 mr-3 cursor-pointer rounded-medium px-2 py-1 transition hover:bg-default-200;
-}
-
-:global(.rcSelectDropdown span.rc-select-item-option-state) {
-  right: 12px;
-}
-
-/* 自定义动画 */
-:global(.rcSelectDropdown.rc-select-dropdown-slide-up2) {
-  animation-duration: 250ms;
-  animation-fill-mode: both;
-  transform-origin: 50% 100% 50%;
-  animation-play-state: paused;
-}
-
-:global(.rcSelectDropdown.rc-select-dropdown-slide-up2-enter) {
-  opacity: 0;
-  animation-timing-function: ease-out;
-}
-
-:global(.rcSelectDropdown.rc-select-dropdown-slide-up2-enter-active) {
-  animation-name: enter;
-  animation-play-state: running;
-}
-
-:global(.rcSelectDropdown.rc-select-dropdown-slide-up2-leave) {
-  opacity: 1;
-  animation-timing-function: ease-out;
-}
-
-:global(.rcSelectDropdown.rc-select-dropdown-slide-up2-leave-active) {
-  animation-name: leave;
-  animation-play-state: running;
+  /* 自定义动画 */
+  &:global(.rc-select-dropdown-slide-up2) {
+    animation-duration: 250ms;
+    animation-fill-mode: both;
+    transform-origin: 50% 100% 50%;
+    animation-play-state: paused;
+    &:global(-enter) {
+      opacity: 0;
+      animation-timing-function: ease-out;
+      &:global(-active) {
+        animation-name: enter;
+        animation-play-state: running;
+      }
+    }
+    &:global(-leave) {
+      opacity: 1;
+      animation-timing-function: ease-out;
+      &:global(-active) {
+        animation-name: leave;
+        animation-play-state: running;
+      }
+    }
+  }
 }
 
 @keyframes leave {

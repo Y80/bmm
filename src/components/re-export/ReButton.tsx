@@ -1,5 +1,3 @@
-'use client'
-
 import { useIsMobile } from '@/hooks'
 import {
   Button,

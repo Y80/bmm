@@ -60,12 +60,12 @@ export function SearchInput(props: BaseComponentProps) {
       fullWidth={false}
       classNames={{
         base: props.className,
-        inputWrapper: 'dark:bg-opacity-50',
+        inputWrapper: 'dark:bg-default-100/50',
       }}
       baseRef={inputRef}
       startContent={<span className={cn(IconNames.SEARCH, 'text-xl')} />}
       endContent={
-        !state.focusInput && !state.input && <Kbd className="px-3 dark:opacity-80">/</Kbd>
+        !state.focusInput && !state.input && <Kbd className="b dark:bg-default-100/80 px-3">/</Kbd>
       }
       onClear={state.input ? () => router.push(routes.INDEX) : undefined}
       onValueChange={(v) => setState({ input: v })}

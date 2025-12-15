@@ -72,7 +72,7 @@ export default function TagSelect(props: Props) {
     <div role="tag-select">
       <div
         className={cn(
-          'relative cursor-not-allowed overflow-hidden rounded-medium bg-default-50 p-4 py-3 text-center text-xs text-foreground-400',
+          'rounded-medium bg-default-50 text-foreground-400 relative cursor-not-allowed overflow-hidden p-4 py-3 text-center text-xs',
           tags.length && 'hidden'
         )}
       >
@@ -80,7 +80,7 @@ export default function TagSelect(props: Props) {
       </div>
       <div
         className={cn(
-          'relative overflow-hidden rounded-medium bg-default-100',
+          'rounded-medium bg-default-100 relative overflow-hidden',
           style.rcSelectWrapper,
           !tags.length && 'hidden'
         )}
@@ -103,7 +103,7 @@ export default function TagSelect(props: Props) {
           dropdownRender={(menu) => <ScrollShadow className="h-[300px]">{menu}</ScrollShadow>}
           notFoundContent={<div className="mt-20">暂无内容</div>}
           optionRender={(opt) => (
-            <div className="gap-2 text-foreground-800 flex-items-center">
+            <div className="text-foreground-800 flex-items-center gap-2">
               {opt.data.icon && <Icon icon={opt.data.icon} />}
               <span>{opt.label}</span>
             </div>
@@ -114,7 +114,7 @@ export default function TagSelect(props: Props) {
             </Chip>
           )}
         />
-        <span className="absolute right-2 top-1/2 size-8 -translate-y-1/2 p-1 flex-center">
+        <span className="flex-center absolute top-1/2 right-2 size-8 -translate-y-1/2 p-1">
           {props.endContent}
         </span>
       </div>

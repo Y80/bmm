@@ -17,7 +17,7 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
   const router = useRouter()
 
   return (
-    <div className="mx-auto w-[28rem] flex-col py-16 flex-items-center">
+    <div className="mx-auto w-md flex-col py-16 flex-items-center">
       <h1 className="text-3xl">
         <span className="mr-4 rounded-xl bg-foreground-200 px-4 py-1 text-foreground">
           {slug === 'new' ? '新建' : '编辑'}

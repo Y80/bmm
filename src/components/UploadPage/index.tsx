@@ -223,7 +223,7 @@ export default function UploadPage() {
         <section key={node.id} className="ml-6 flex flex-col py-0.5">
           <div>
             <button
-              className="-mx-2 inline-flex grow-0 items-center gap-2 rounded px-2 py-0.5 text-primary-500 hover:bg-foreground-200"
+              className="-mx-2 inline-flex grow-0 items-center gap-2 rounded-sm px-2 py-0.5 text-primary-500 hover:bg-foreground-200"
               onClick={() => toggleFolderOpen(node.id)}
             >
               <span
@@ -317,9 +317,9 @@ export default function UploadPage() {
 
   return (
     <main className="py-20 flex-center">
-      <div className={cn(state.file && '!hidden', 'w-[32rem] text-center')}>
+      <div className={cn(state.file && 'hidden!', 'w-lg text-center')}>
         <span
-          className={cn(IconNames.IMPORT, 'bg-gradient-to-r from-rose-500 to-purple-500 text-6xl')}
+          className={cn(IconNames.IMPORT, 'bg-linear-to-r from-rose-500 to-purple-500 text-6xl')}
         />
         <h1 className="mb-10 mt-8 text-xl">导入浏览器书签</h1>
         <div
@@ -401,7 +401,7 @@ export default function UploadPage() {
             <label className="text-base text-foreground-500">选择书签</label>
             <Tree
               key={categoryTree.length}
-              rootClassName="!mt-2 !bg-transparent "
+              rootClassName="mt-2! bg-transparent! "
               checkable
               selectable={false}
               treeData={categoryTree}
