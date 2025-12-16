@@ -47,6 +47,8 @@ namespace PublicTagController {
   export async function insert(tag: InsertTag) {
     cacheAllTags.reset()
     const { relatedTagIds, ...resetTag } = tag
+    const count = await db.$count(publicTags, eq(publicTags.name, tag.name))
+    if (count > 0) throw new Error('已存在相同名称的标签')
     const rows = await db.insert(publicTags).values(resetTag).returning()
     if (relatedTagIds?.length) {
       const id = rows[0].id
