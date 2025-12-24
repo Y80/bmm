@@ -72,7 +72,7 @@ export default function SortTagModal(props: Props) {
 
   return (
     <>
-      {cloneElement(props.children, { onClick: () => setState({ open: true }) })}
+      {cloneElement(props.children as any, { onClick: () => setState({ open: true }) })}
       <MyModal
         isOpen={state.open}
         title="标签排序"
@@ -121,14 +121,14 @@ function SortableTag(props: { tag: SelectTag }) {
 
   return (
     <div
-      className="cursor-grab gap-1 rounded-sm border border-foreground-400 px-2 py-1 flex-items-center"
+      className="border-foreground-400 flex-items-center cursor-grab gap-1 rounded-sm border px-2 py-1"
       style={style}
       ref={setNodeRef}
       {...attributes}
       {...listeners}
     >
       <span className="">{tag.icon ? <Icon icon={tag.icon} /> : <span />}</span>
-      <div className="grow select-none truncate text-center text-sm">{tag.name}</div>
+      <div className="grow truncate text-center text-sm select-none">{tag.name}</div>
     </div>
   )
 }
