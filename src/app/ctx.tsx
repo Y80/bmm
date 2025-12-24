@@ -7,7 +7,7 @@ import { ConfigProvider as AntdConfigProvider, theme as antdTheme, ThemeConfig }
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useReportWebVitals } from 'next/web-vitals'
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 
@@ -56,13 +56,14 @@ export function GlobalProvider(props: PropsWithChildren<Props>) {
       non_interaction: true, // avoids affecting bounce rate.
     })
   })
+  const router = useRouter()
 
   const ctxValue = useMemo<GlobalContextType>(() => ({}), [])
   const forceTheme = pathname === PageRoutes.LOGIN ? 'light' : undefined
 
   return (
     <GlobalContext.Provider value={ctxValue}>
-      <HeroUIProvider>
+      <HeroUIProvider navigate={router.push}>
         <ToastProvider
           placement="top-center"
           toastOffset={20}
