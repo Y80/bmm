@@ -18,7 +18,7 @@ import {
 } from '@/components'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { usePageUtil } from '@/hooks'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { IconNames, PageRoutes } from '@cfg'
 import {
   Button,
@@ -43,6 +43,7 @@ import {
 import { useDebounceFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
+import z from 'zod'
 
 const SORTERS = [
   { name: '创建时间降序', key: '-createTime', iconCls: IconNames.SORT_DESC },
@@ -81,7 +82,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     mutate,
   } = useRequest(
     async () => {
-      const input: typeof findManyBookmarksSchema._input = {
+      const input: z.input<typeof findManyBookmarksSchema> = {
         limit: PAGESIZE,
         page: state.pager.page,
         keyword: state.keyword,
@@ -224,7 +225,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           </DropdownTrigger>
           <DropdownMenu
             aria-label="sorter-menu"
-            className="min-w-[12rem]"
+            className="min-w-48"
             selectedKeys={[state.sorterKey]}
             selectionMode="single"
             onAction={(key) =>
@@ -281,7 +282,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                 </TableCell>
                 <TableCell>
                   <div
-                    className="max-w-32 truncate text-sm max-xs:max-w-[6rem]"
+                    className="max-w-32 truncate text-sm max-xs:max-w-24"
                     title={renderRelatedTags(item.relatedTagIds)}
                   >
                     {renderRelatedTags(item.relatedTagIds)}

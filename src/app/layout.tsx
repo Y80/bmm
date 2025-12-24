@@ -33,11 +33,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   const session = await auth()
 
   return (
-    <html
-      lang="en"
-      className="min-w-[350px] bg-background text-foreground"
-      suppressHydrationWarning
-    >
+    <html lang="zh-CN" className="bg-background text-foreground min-w-xs" suppressHydrationWarning>
       <body>
         {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />

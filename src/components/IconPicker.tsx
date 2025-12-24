@@ -237,7 +237,7 @@ export default function IconPicker(props: Props) {
               ))}
             </div>
           </ScrollShadow>
-          <div className={cn('flex h-8 justify-center', !showPagination && '!h-0')}>
+          <div className={cn('flex h-8 justify-center', !showPagination && 'h-0!')}>
             <Pagination
               size="sm"
               isCompact

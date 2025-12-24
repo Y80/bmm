@@ -52,10 +52,10 @@ export function MobileTagPicker(props: Props) {
 
   return (
     <div role="mobile-tag-picker" className="flex h-full flex-col" style={props.style}>
-      <div className="my-4 shrink-0 gap-1 pr-4 flex-items-center">
+      <div className="flex-items-center my-4 shrink-0 gap-1 pr-4">
         <ReInput
           size="sm"
-          classNames={{ inputWrapper: 'dark:bg-opacity-50' }}
+          classNames={{ inputWrapper: 'dark:bg-default-100/50' }}
           placeholder="过滤标签"
           isClearable
           value={state.filterTagInput}
@@ -64,7 +64,7 @@ export function MobileTagPicker(props: Props) {
       </div>
       <div className="grow-0 overflow-auto">
         <ScrollShadow
-          className="flex h-full flex-col gap-2 scrollbar-hide"
+          className="scrollbar-hide flex h-full flex-col gap-2"
           ref={scrollDivRef}
           role={TagPickerBox.SCROLLER_ROLE}
         >
@@ -74,7 +74,7 @@ export function MobileTagPicker(props: Props) {
         </ScrollShadow>
       </div>
       {!state.filterTagInput && (
-        <div className="h-16 shrink-0 gap-4 flex-items-center">
+        <div className="flex-items-center h-16 shrink-0 gap-4">
           <Switch
             key={Number(state.onlyMain)}
             isSelected={state.onlyMain}

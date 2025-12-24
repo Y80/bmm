@@ -1,34 +1,36 @@
-.rcSelectWrapper {
-  @apply hover:cursor-text hover:bg-default-200;
+@reference "../../globals.css";
 
-  :global .rc-select {
+.rcSelectWrapper {
+  @apply hover:bg-default-200 hover:cursor-text;
+
+  :global(.rc-select) {
     @apply w-full text-sm;
     line-height: 24px;
   }
-  :global .rc-select-selector {
-    @apply !border-0 px-3 py-2;
+  :global(.rc-select-selector) {
+    @apply border-0! px-3 py-2;
   }
-  :global .rc-select-selection-overflow {
+  :global(.rc-select-selection-overflow) {
     @apply items-center gap-1;
   }
-  :global input.rc-select-selection-search-input {
-    @apply !bg-transparent;
+  :global(input.rc-select-selection-search-input) {
+    @apply bg-transparent!;
   }
 }
 
 .rcSelectDropdown {
-  @apply z-20 overflow-hidden rounded-medium border-0 bg-default-100 py-2;
+  @apply rounded-medium bg-default-100 z-20 overflow-hidden border-0 py-2;
 
-  :global .rc-virtual-list-holder {
+  :global(.rc-virtual-list-holder) {
     max-height: initial !important;
   }
-  :global .rc-select-item-option-active {
+  :global(.rc-select-item-option-active) {
     @apply bg-transparent;
   }
-  :global .rc-select-item-option {
-    @apply mx-2 mr-3 cursor-pointer rounded-medium px-2 py-1 transition hover:bg-default-200;
+  :global(.rc-select-item-option) {
+    @apply rounded-medium hover:bg-default-200 mx-2 mr-3 cursor-pointer px-2 py-1 transition;
   }
-  :global span.rc-select-item-option-state {
+  :global(span.rc-select-item-option-state) {
     right: 12px;
   }
 

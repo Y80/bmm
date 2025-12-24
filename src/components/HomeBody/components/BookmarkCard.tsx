@@ -1,7 +1,8 @@
 import Favicon from '@/components/Favicon'
+import { useIsMobile } from '@/hooks'
 import { useOnClickTag } from '@/hooks/useOnClickTag'
 import { getTagLinkAttrs } from '@/utils'
-import { Chip, cn } from '@heroui/react'
+import { Chip, cn, Tooltip } from '@heroui/react'
 import { useHomePageContext } from '../ctx'
 
 interface Props extends SelectBookmark {
@@ -14,6 +15,7 @@ interface Props extends SelectBookmark {
 export default function BookmarkCard(props: Props) {
   const { tags } = useHomePageContext()
   const { onClickTag } = useOnClickTag({ tags })
+  const isMobile = useIsMobile()
 
   const generateLinkTitle = () => {
     const baseTitle = `${props.name} - ${props.description}`
@@ -29,13 +31,13 @@ export default function BookmarkCard(props: Props) {
       className={cn(
         'flex cursor-pointer flex-col gap-3 rounded-2xl p-4 transition',
         'max-xs:pb-3 max-xs:dark:border-0 max-xs:dark:bg-foreground-200/20',
-        'border-2 border-foreground-200 dark:border-opacity-60',
-        'hover:xs:border-blue-500 hover:xs:shadow-lg hover:xs:shadow-blue-500/50'
+        'border-foreground-200 dark:border-opacity-60 border-2',
+        'xs:hover:border-blue-500 xs:hover:shadow-lg xs:hover:shadow-blue-500/50'
       )}
       onClick={() => window.open(props.url, '_blank')}
     >
       <a
-        className="gap-2 flex-items-center"
+        className="flex-items-center gap-2"
         href={props.url}
         target="_blank"
         rel="noopener noreferrer"
@@ -44,16 +46,28 @@ export default function BookmarkCard(props: Props) {
       >
         <Favicon src={props.icon} showDefaultIcon alt={`${props.name}网站图标`} />
         <div className="grow truncate">
-          <h3 className="truncate text-foreground-700 xs:text-lg" aria-label={`访问${props.name}`}>
+          <h3 className="text-foreground-700 xs:text-lg truncate" aria-label={`访问${props.name}`}>
             {props.name}
           </h3>
         </div>
       </a>
-      <p className="line-clamp-3 text-xs text-foreground-500" role="description">
-        {props.description}
-      </p>
+      {(() => {
+        const desc = props.description
+        if (!desc) return <div />
+        const node = (
+          <p className="text-foreground-500 line-clamp-3 text-xs break-all" role="description">
+            {desc}
+          </p>
+        )
+        if (isMobile) return node
+        return (
+          <Tooltip delay={300} content={<span className="break-all">{desc}</span>} className="w-80">
+            {node}
+          </Tooltip>
+        )
+      })()}
       <div
-        className="flex max-w-full grow items-end gap-2 overflow-auto scrollbar-hide"
+        className="scrollbar-hide flex max-w-full grow items-end gap-2 overflow-auto"
         aria-label="相关标签"
       >
         {props.relatedTagIds.map((id) => {
@@ -66,7 +80,7 @@ export default function BookmarkCard(props: Props) {
               as="a"
               {...getTagLinkAttrs(tag)}
               onClick={(event) => onClickTag({ tag, event: event as any })}
-              className="h-fit cursor-pointer border-none py-1 text-xs text-foreground-500 transition active:opacity-50 xs:hover:text-foreground-700"
+              className="text-foreground-500 xs:hover:text-foreground-700 h-fit cursor-pointer border-none py-1 text-xs transition active:opacity-50"
             >
               {tag.name}
             </Chip>

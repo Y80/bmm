@@ -1,3 +1,5 @@
+'use client'
+
 import ReButton from './ReButton'
 import ReInput from './ReInput'
 import ReTextarea from './ReTextarea'

@@ -2,7 +2,7 @@
 
 import { actDeletePublicTag, actUpdatePublicTag } from '@/actions'
 import TagListPage, { TagListPageProps } from '@/components/TagListPage'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { useAdminContext } from '../../ctx'
 
 export default function Page() {

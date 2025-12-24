@@ -3,7 +3,7 @@ import { getAuthedUserId } from '@/lib/auth'
 import { z } from '@/lib/zod'
 import { getPinyin } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
-import { and, asc, desc, eq, inArray, notInArray, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, inArray, notInArray, or, sql } from 'drizzle-orm'
 import { createBookmarkFilterByKeyword } from './common'
 import { findManyBookmarksSchema } from './schemas'
 import UserTagController from './UserTag.controller'
@@ -43,13 +43,22 @@ function userLimiter(userId: UserId, bookmarkId?: BookmarkId) {
 
 const UserBookmarkController = {
   async insert(bookmark: InsertBookmark) {
-    const { relatedTagIds, ...resetBookmark } = bookmark
-    resetBookmark.pinyin ||= getPinyin(resetBookmark.name)
+    const userId = await getAuthedUserId()
+    // 插入之前先检查当前用户是否有相同网址或名称的记录
+    const count = await db.$count(
+      userBookmarks,
+      and(
+        eq(userBookmarks.userId, userId),
+        or(eq(userBookmarks.url, bookmark.url), eq(userBookmarks.name, bookmark.name))
+      )
+    )
+    if (count > 0) throw new Error('已存在相同网址或名称的书签')
+    bookmark.pinyin ||= getPinyin(bookmark.name)
     const rows = await db
       .insert(userBookmarks)
-      .values({ ...resetBookmark, userId: await getAuthedUserId() })
+      .values({ ...bookmark, userId })
       .returning()
-    await fullSetBookmarkToTag(rows[0].id, relatedTagIds)
+    await fullSetBookmarkToTag(rows[0].id, bookmark.relatedTagIds)
     return rows[0]
   },
   async query(bookmark: Pick<SelectUserBookmark, 'id'>) {

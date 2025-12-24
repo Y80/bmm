@@ -3,7 +3,7 @@
 import { actQueryUserBookmark } from '@/actions'
 import BookmarkSlugPage, { BookmarkSlugPageProps } from '@/components/BookmarkSlugPage'
 import { useSlug } from '@/hooks'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { useEffect, useState } from 'react'
 import { useUserContext } from '../../ctx'
 

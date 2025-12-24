@@ -1,7 +1,7 @@
 'use client'
 
 import { actGetAllUserTags, actTotalUserBookmarks } from '@/actions'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { useSetState } from 'ahooks'
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 

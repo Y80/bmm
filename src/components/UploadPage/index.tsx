@@ -13,18 +13,15 @@ import {
   RadioGroup,
 } from '@heroui/react'
 import { useSetState } from 'ahooks'
-import { TreeDataNode } from 'antd'
+import { Tree, TreeDataNode } from 'antd'
 import { motion } from 'framer-motion'
 import { pick } from 'lodash'
 import { nanoid } from 'nanoid'
-import dynamic from 'next/dynamic'
 import { useMemo, useRef } from 'react'
 import { LinkTagStrategy } from './common'
 import ExportBookmarksGuide from './components/ExportBookmarksGuide'
 import Panel from './components/Panel'
 import UploadList from './components/UploadList'
-
-const DynamicTree = dynamic(() => import('antd/es/tree').then((m) => m.default))
 
 interface CategoryNode {
   id: string
@@ -226,7 +223,7 @@ export default function UploadPage() {
         <section key={node.id} className="ml-6 flex flex-col py-0.5">
           <div>
             <button
-              className="-mx-2 inline-flex grow-0 items-center gap-2 rounded px-2 py-0.5 text-primary-500 hover:bg-foreground-200"
+              className="text-primary-500 hover:bg-foreground-200 -mx-2 inline-flex grow-0 items-center gap-2 rounded-sm px-2 py-0.5"
               onClick={() => toggleFolderOpen(node.id)}
             >
               <span
@@ -257,7 +254,7 @@ export default function UploadPage() {
         <section key={node.id} className="ml-6 py-1">
           <a
             href={node.url}
-            className="inline-flex max-w-full items-center gap-2 text-foreground-700 hover:opacity-70"
+            className="text-foreground-700 inline-flex max-w-full items-center gap-2 hover:opacity-70"
             target="_blank"
           >
             <span className="icon-[hugeicons--internet]" />
@@ -319,20 +316,20 @@ export default function UploadPage() {
   }
 
   return (
-    <main className="py-20 flex-center">
-      <div className={cn(state.file && '!hidden', 'w-[30rem] text-center')}>
+    <main className="flex-center py-20">
+      <div className={cn(state.file && 'hidden!', 'w-lg text-center')}>
         <span
-          className={cn(IconNames.IMPORT, 'bg-gradient-to-r from-rose-500 to-purple-500 text-6xl')}
+          className={cn(IconNames.IMPORT, 'bg-linear-to-r from-rose-500 to-purple-500 text-6xl')}
         />
-        <h1 className="mb-10 mt-8 text-xl">导入浏览器书签</h1>
+        <h1 className="mt-8 mb-10 text-xl">导入浏览器书签</h1>
         <div
           className={cn(
-            'relative h-[280px] cursor-pointer flex-col gap-4 rounded-xl border border-foreground-200 text-foreground-400 flex-center',
-            'transition hover:text-foreground-600'
+            'border-foreground-200 text-foreground-400 flex-center relative h-[280px] cursor-pointer flex-col gap-4 rounded-xl border',
+            'hover:text-foreground-600 transition'
           )}
           onClick={() => inputRef.current?.click()}
         >
-          <BorderBeam size={140} duration={12} delay={6} />
+          <BorderBeam size={160} duration={10} />
           <span className={cn(IconNames.PLUS, 'text-3xl')} />
           <span>选择文件</span>
           <input
@@ -353,7 +350,7 @@ export default function UploadPage() {
 
       <div className={cn((!state.file || state.showUploadList) && 'hidden')}>
         <Panel className="mb-10">
-          <h2 className="mb-4 gap-2 text-xl flex-items-center">
+          <h2 className="flex-items-center mb-4 gap-2 text-xl">
             <span className="icon-[hugeicons--file-01] text-2xl" />
             <span>{state.file?.name}</span>
           </h2>
@@ -362,15 +359,15 @@ export default function UploadPage() {
         </Panel>
 
         <Panel className='[&_[role="radiogroup"]_label_div]:ml-2'>
-          <h2 className="mb-4 gap-2 text-xl flex-items-center">
+          <h2 className="flex-items-center mb-4 gap-2 text-xl">
             <span className="icon-[hugeicons--settings-05] text-2xl" />
             <span>导入配置</span>
           </h2>
           <Divider />
 
-          <div className="mt-4 text-sm text-foreground-500">
+          <div className="text-foreground-500 mt-4 text-sm">
             <div className="text-base">注意事项</div>
-            <ul className="ml-5 mt-2 list-disc space-y-1 text-foreground-800">
+            <ul className="text-foreground-800 mt-2 ml-5 list-disc space-y-1">
               <li>原始的目录将会作为标签存在（仅用标签组织、关联书签）</li>
               <li>已过滤内容为空的目录</li>
               <li>书签至少会被关联「其它」标签</li>
@@ -401,10 +398,10 @@ export default function UploadPage() {
           </RadioGroup>
 
           <div className="mt-8">
-            <label className="text-base text-foreground-500">选择书签</label>
-            <DynamicTree
+            <label className="text-foreground-500 text-base">选择书签</label>
+            <Tree
               key={categoryTree.length}
-              rootClassName="!mt-2 !bg-transparent "
+              rootClassName="mt-2! bg-transparent! "
               checkable
               selectable={false}
               treeData={categoryTree}
@@ -412,14 +409,14 @@ export default function UploadPage() {
               onCheck={(keys) => setState({ checkedTreeKeys: keys as string[] })}
               defaultExpandedKeys={[ROOT_ID]}
             />
-            <p className="mt-2 text-sm text-foreground-400">
+            <p className="text-foreground-400 mt-2 text-sm">
               将导入 <NumberTicker value={waitUploadBookmarks.length} /> 个书签 / 共{' '}
               {allBookmarks.length} 个
             </p>
           </div>
 
           <div className="mt-8">
-            <label className="gap-2 text-base text-foreground-500 flex-items-center">
+            <label className="text-foreground-500 flex-items-center gap-2 text-base">
               <span>可关联的标签</span>
               <ReTooltip
                 content={

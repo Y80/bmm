@@ -7,7 +7,7 @@ import {
 import { Favicon, ReButton, ReTooltip } from '@/components'
 import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil } from '@/hooks'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { concurrenceWithLimit } from '@/utils/concurrence-with-limit'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import { addToast, cn, Divider, Link, ScrollShadow } from '@heroui/react'
@@ -25,11 +25,12 @@ interface Props {
   onCancel(): void
 }
 
-enum UploadState {
+enum UploadStatus {
   INVALID,
   WAIT,
   SUCCESS,
   FAILED,
+  TRUNCATED,
 }
 
 function getDefaultFavicon(url: string) {
@@ -49,20 +50,18 @@ export default function UploadList(props: Props) {
           ...pick(bookmark, 'id', 'name', 'url'),
           icon: getDefaultFavicon(bookmark.url),
           relatedTagNames: [] as string[],
-          state: UploadState.WAIT,
-          errorMsg: '',
+          status: UploadStatus.WAIT,
+          tip: '',
         }
-        const isOversizeUrl = entity.url.length > FieldConstraints.MaxLen.URL
-        const isOversizeName = entity.name.length > FieldConstraints.MaxLen.BOOKMARK_NAME
-        if (isOversizeUrl || isOversizeName) {
-          entity.state = UploadState.INVALID
-          const errs = [
-            isOversizeName &&
-              `名称超过了 ${FieldConstraints.MaxLen.BOOKMARK_NAME} 个字符，过长的名称难以辨识，请考虑简化`,
-            isOversizeUrl && `URL 长度不能超过 ${FieldConstraints.MaxLen.URL}`,
-          ].filter(Boolean) as string[]
-          entity.errorMsg = errs.join('；')
+        if (entity.url.length > FieldConstraints.MaxLen.URL) {
+          entity.status = UploadStatus.INVALID
+          entity.tip = `URL 长度不能超过 ${FieldConstraints.MaxLen.URL}`
           return entity
+        }
+        if (entity.name.length > FieldConstraints.MaxLen.BOOKMARK_NAME) {
+          entity.name = entity.name.substring(0, FieldConstraints.MaxLen.BOOKMARK_NAME)
+          entity.status = UploadStatus.TRUNCATED
+          entity.tip = `名称超过了 ${FieldConstraints.MaxLen.BOOKMARK_NAME} 个字符，已自动截断`
         }
         if (linkTagStrategy === LinkTagStrategy.FOLDER_PATH) {
           for (const cate of bookmark.categories) {
@@ -84,16 +83,24 @@ export default function UploadList(props: Props) {
         return entity
       })
       .sort((a, b) => {
-        if (a.state === UploadState.INVALID && b.state !== UploadState.INVALID) return -1
+        // 排序：INVALID -> TRUNCATED -> 其他
+        if (a.status === UploadStatus.INVALID && b.status !== UploadStatus.INVALID) return -1
+        if (
+          a.status === UploadStatus.TRUNCATED &&
+          b.status !== UploadStatus.INVALID &&
+          b.status !== UploadStatus.TRUNCATED
+        )
+          return -1
         return 0
       })
   })
   const scroller = useRef<HTMLDivElement>(null)
 
   const totalNum = bookmarks.length
-  const invalidNum = bookmarks.filter((b) => b.state === UploadState.INVALID).length
-  const successNum = bookmarks.filter((b) => b.state === UploadState.SUCCESS).length
-  const failedNum = bookmarks.filter((b) => b.state === UploadState.FAILED).length
+  const invalidNum = bookmarks.filter((b) => b.status === UploadStatus.INVALID).length
+  const truncatedNum = bookmarks.filter((b) => b.status === UploadStatus.TRUNCATED).length
+  const successNum = bookmarks.filter((b) => b.status === UploadStatus.SUCCESS).length
+  const failedNum = bookmarks.filter((b) => b.status === UploadStatus.FAILED).length
   const waitNum = totalNum - invalidNum - successNum - failedNum
   // 任务没有开始
   const pending = !successNum && !failedNum
@@ -107,6 +114,17 @@ export default function UploadList(props: Props) {
       })
       return
     }
+
+    // 先把所有 TRUNCATED 书签置为 WAIT 状态
+    const newBookmarks = bookmarks.map((bookmark) => {
+      if (bookmark.status === UploadStatus.TRUNCATED) {
+        bookmark.status = UploadStatus.WAIT
+      }
+      return bookmark
+    })
+    setBookmarks(newBookmarks)
+
+    // 开始上传书签
     const actCreateTags = isAdminSpace ? actTryCreatePublicTags : actTryCreateUserTags
     const res = await runAction(actCreateTags(tagNames))
     if (!res.ok) return
@@ -114,8 +132,8 @@ export default function UploadList(props: Props) {
     let failedNum = 0
     let successNum = 0
     const insertBookmark = isAdminSpace ? actInsertPublicBookmark : actInsertUserBookmark
-    const tasks = bookmarks.map((bookmark) => async () => {
-      if (bookmark.state === UploadState.INVALID) return
+    const tasks = newBookmarks.map((bookmark) => async () => {
+      if (bookmark.status === UploadStatus.INVALID) return
       const entity: InsertPublicBookmark = {
         ...pick(bookmark, 'name', 'url', 'icon'),
         relatedTagIds: bookmark.relatedTagNames.map(
@@ -127,10 +145,10 @@ export default function UploadList(props: Props) {
       setBookmarks((bookmarks) => {
         const b = bookmarks.find((_bookmark) => _bookmark.id === bookmark.id)!
         if (res.error) {
-          b.state = UploadState.FAILED
-          b.errorMsg = res.error.msg
+          b.status = UploadStatus.FAILED
+          b.tip = res.error.msg
         } else {
-          b.state = UploadState.SUCCESS
+          b.status = UploadStatus.SUCCESS
         }
         return [...bookmarks]
       })
@@ -149,8 +167,8 @@ export default function UploadList(props: Props) {
     setBookmarks((bookmarks) => {
       setTimeout(() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' }))
       // 让失败的排在前面
-      return bookmarks.sort((a, b) => {
-        if (a.state === UploadState.FAILED && b.state === UploadState.SUCCESS) return -1
+      return [...bookmarks].sort((a, b) => {
+        if (a.status === UploadStatus.FAILED && b.status === UploadStatus.SUCCESS) return -1
         return 0
       })
     })
@@ -158,8 +176,8 @@ export default function UploadList(props: Props) {
 
   return (
     <Panel>
-      <div className="gap-4 flex-items-center">
-        <h2 className="mr-auto gap-2 flex-center">
+      <div className="flex-items-center gap-4">
+        <h2 className="flex-center mr-auto gap-2">
           <span className={cn('text-xl', IconNames.Huge.LIST)} />
           <span>上传列表</span>
         </h2>
@@ -209,12 +227,12 @@ export default function UploadList(props: Props) {
         <div className="space-y-4 overflow-auto">
           {bookmarks.map((bookmark) => {
             return (
-              <section key={bookmark.id} className="gap-4 flex-items-center">
+              <section key={bookmark.id} className="flex-items-center gap-4">
                 <Favicon src={bookmark.icon} size={24} showErrorIconOnFailed showSpinner />
                 <a
                   className={cn(
-                    'grow-0 truncate text-foreground-500 hover:opacity-70',
-                    bookmark.state === UploadState.INVALID && 'opacity-70'
+                    'text-foreground-500 grow-0 truncate hover:opacity-70',
+                    bookmark.status === UploadStatus.INVALID && 'opacity-70'
                   )}
                   target="_blank"
                   href={bookmark.url}
@@ -224,32 +242,34 @@ export default function UploadList(props: Props) {
                 {bookmark.relatedTagNames.map((tag) => (
                   <span
                     key={tag}
-                    className="shrink-0 rounded-xl bg-foreground-200/50 px-3 py-1 text-xs text-foreground-500 light:bg-foreground-200"
+                    className="bg-foreground-200/50 text-foreground-500 light:bg-foreground-200 shrink-0 rounded-xl px-3 py-1 text-xs"
                   >
                     {tag}
                   </span>
                 ))}
-                <span className="ml-auto text-base flex-center">
-                  {bookmark.state === UploadState.INVALID && (
+                <span className="flex-center ml-auto text-base">
+                  {bookmark.status === UploadStatus.INVALID && (
                     <ReTooltip
-                      content={
-                        <div className="max-w-56 text-xs">
-                          <p>当前书签不会被上传：{bookmark.errorMsg}</p>
-                        </div>
-                      }
+                      content={`当前书签不会被上传：${bookmark.tip}`}
+                      classNames={{ content: 'max-w-56 text-xs' }}
                     >
-                      <span className="icon-[tabler--alert-circle] cursor-pointer text-warning-500" />
+                      <span className="icon-[tabler--alert-circle] text-warning-500 cursor-pointer" />
                     </ReTooltip>
                   )}
-                  {bookmark.state === UploadState.WAIT && state.uploading && (
-                    <span className="icon-[tabler--loader-2] animate-spin cursor-wait text-foreground-500" />
+                  {bookmark.status === UploadStatus.TRUNCATED && (
+                    <ReTooltip content={bookmark.tip} classNames={{ content: 'max-w-56 text-xs' }}>
+                      <span className="icon-[tabler--alert-triangle] text-warning-500 cursor-pointer" />
+                    </ReTooltip>
                   )}
-                  {bookmark.state === UploadState.SUCCESS && (
+                  {bookmark.status === UploadStatus.WAIT && state.uploading && (
+                    <span className="icon-[tabler--loader-2] text-foreground-500 animate-spin cursor-wait" />
+                  )}
+                  {bookmark.status === UploadStatus.SUCCESS && (
                     <span className="icon-[tabler--check] text-success-500" />
                   )}
-                  {bookmark.state === UploadState.FAILED && (
-                    <ReTooltip content={bookmark.errorMsg}>
-                      <span className="icon-[tabler--x] cursor-pointer text-danger-400" />
+                  {bookmark.status === UploadStatus.FAILED && (
+                    <ReTooltip content={bookmark.tip}>
+                      <span className="icon-[tabler--x] text-danger-400 cursor-pointer" />
                     </ReTooltip>
                   )}
                 </span>
@@ -259,27 +279,25 @@ export default function UploadList(props: Props) {
         </div>
       </ScrollShadow>
       <Divider className="my-4" />
-      <div className="text-sm text-foreground-500">
-        {(() => {
-          return (
-            <>
-              共 {totalNum} 个书签，其中：
-              <span hidden={!invalidNum}>
-                <span className="text-warning-500">{invalidNum} </span>
-                个无效，
-              </span>
-              <span hidden={!waitNum}>
-                <span className="text-primary-500">{waitNum} </span>
-                个待上传
-                {!pending && '，'}
-              </span>
-              <span hidden={pending}>
-                <span className="text-success-500">{successNum} </span>个上传成功，
-                <span className="text-danger-400">{failedNum} </span>个上传失败
-              </span>
-            </>
-          )
-        })()}
+      <div className="text-foreground-500 text-sm">
+        共 {totalNum} 个书签，其中：
+        <span hidden={!invalidNum}>
+          <span className="text-warning-500">{invalidNum} </span>
+          个无效，
+        </span>
+        <span hidden={!truncatedNum || !pending}>
+          <span className="text-warning-500">{truncatedNum} </span>
+          个已截断，
+        </span>
+        <span hidden={!waitNum}>
+          <span className="text-primary-500">{waitNum} </span>
+          个待上传
+          {!pending && '，'}
+        </span>
+        <span hidden={pending}>
+          <span className="text-success-500">{successNum} </span>个上传成功，
+          <span className="text-danger-400">{failedNum} </span>个上传失败
+        </span>
       </div>
     </Panel>
   )

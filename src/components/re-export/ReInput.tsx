@@ -9,9 +9,10 @@ export default function ReInput(props: Props) {
       labelPlacement="outside"
       autoComplete="off"
       {...props}
+      value={props.value === null ? '' : props.value}
       classNames={{
         ...props.classNames,
-        input: cn('outline-none', props.classNames?.input),
+        input: cn('outline-hidden', props.classNames?.input),
       }}
     />
   )

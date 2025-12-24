@@ -83,7 +83,7 @@ export default function ColorPicker(props: Props) {
         <ModalHeader>选取主题色</ModalHeader>
         <ModalBody>
           <HexColorPicker
-            className="[&_.react-colorful__saturation] !h-80 !w-full"
+            className="[&_.react-colorful__saturation] h-80! w-full!"
             color={state.color}
             onChange={handleChangeColor}
           />

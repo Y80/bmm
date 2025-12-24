@@ -1,6 +1,5 @@
 import { db, schema } from '@/db'
 import { getAuthedUserId } from '@/lib/auth'
-import { initGlobalData } from '@/utils/global-data'
 import { and, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
 
 const { userTagToTag, userTags } = schema
@@ -8,18 +7,6 @@ const { userTagToTag, userTags } = schema
 /** 在 SelectTag 基础上扩展了 `{ relatedTagIds: id[] }` */
 type SelectUserTag = typeof userTags.$inferSelect & {
   relatedTagIds: TagId[]
-}
-
-const cachedTags = initGlobalData({
-  key: 'userTags',
-  initialData() {
-    const cachedTags: Record<UserId, SelectUserTag[] | null> = {}
-    return cachedTags
-  },
-})
-
-function resetCachedTags(userId: UserId) {
-  cachedTags[userId] = null
 }
 
 /**
@@ -30,6 +17,7 @@ function resetCachedTags(userId: UserId) {
 async function upsertRelations(userId: UserId, id: TagId, ids?: TagId[]) {
   if (!ids) return
   ids = await UserTagController.filterUserTagIds(userId, ids)
+  ids = ids.filter((_id) => id !== _id)
   const relations = ids
     .map((_id) => [
       { a: id, b: _id },
@@ -50,6 +38,7 @@ async function upsertRelations(userId: UserId, id: TagId, ids?: TagId[]) {
   await Promise.all(tasks)
 }
 
+// 操作用户标签时的限制工具
 function limiter(userId: UserId, tagId?: TagId) {
   if (!tagId) return eq(userTags.userId, userId)
   return and(eq(userTags.id, tagId), eq(userTags.userId, userId))
@@ -61,30 +50,31 @@ type UpdateUserTag = Partial<SelectTag> & Pick<SelectTag, 'id'>
 const UserTagController = {
   async getAll(userId?: string) {
     userId ||= await getAuthedUserId()
-    if (!cachedTags[userId]) {
-      const tags = await db.query.userTags.findMany({
-        where: limiter(userId),
-        with: { relatedTagIds: { columns: { b: true } } },
-        orderBy: [desc(userTags.sortOrder), desc(userTags.createdAt)],
-        limit: 999,
-      })
-      cachedTags[userId] = tags.map((tag) => ({
-        ...tag,
-        relatedTagIds: tag.relatedTagIds.map((el) => el.b),
-      }))
-    }
-    return cachedTags[userId]!
+    const tags = await db.query.userTags.findMany({
+      where: limiter(userId),
+      with: { relatedTagIds: { columns: { b: true } } },
+      orderBy: [desc(userTags.sortOrder), desc(userTags.createdAt)],
+      limit: 999,
+    })
+    return tags.map((tag) => ({
+      ...tag,
+      relatedTagIds: tag.relatedTagIds.map((el) => el.b),
+    }))
   },
 
   async insert(tag: InsertUserTag) {
     const userId = await getAuthedUserId()
+    // 插入之前先检查当前用户是否有相同名称的记录
+    const existingTag = await db.query.userTags.findFirst({
+      where: and(limiter(userId), eq(userTags.name, tag.name)),
+    })
+    if (existingTag) throw new Error('已存在相同名称的标签')
     const { relatedTagIds, ...resetTag } = tag
     const rows = await db
       .insert(userTags)
       .values({ ...resetTag, userId })
       .returning()
     await upsertRelations(userId, rows[0].id, relatedTagIds)
-    resetCachedTags(userId)
     return rows[0]
   },
 
@@ -96,13 +86,11 @@ const UserTagController = {
       .set({ ...resetTag, updatedAt: new Date() })
       .where(limiter(userId, id))
     await upsertRelations(userId, id, relatedTagIds)
-    resetCachedTags(userId)
   },
 
   async remove(tag: Pick<SelectUserTag, 'id'>) {
     const userId = await getAuthedUserId()
     const res = await db.delete(userTags).where(limiter(userId, tag.id)).returning()
-    resetCachedTags(userId)
     return res
   },
 
@@ -117,13 +105,11 @@ const UserTagController = {
       return db.update(userTags).set({ sortOrder: el.order }).where(limiter(userId, el.id))
     })
     await Promise.all(tasks)
-    resetCachedTags(userId)
   },
 
   /** 根据标签名称列表，尝试创建每个标签，并返回每个标签的 id */
   async tryCreateTags(names: string[]) {
     const userId = await getAuthedUserId()
-    resetCachedTags(userId)
     const res = await db
       .insert(userTags)
       .values(names.map((name) => ({ name, userId, isMain: true })))

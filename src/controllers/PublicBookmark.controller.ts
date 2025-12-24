@@ -2,7 +2,7 @@ import { db, schema } from '@/db'
 import { z } from '@/lib/zod'
 import { getPinyin } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
-import { and, asc, count, desc, eq, inArray, notInArray, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, inArray, notInArray, or, sql } from 'drizzle-orm'
 import { createBookmarkFilterByKeyword } from './common'
 import PublicTagController from './PublicTag.controller'
 import { findManyBookmarksSchema } from './schemas'
@@ -36,6 +36,12 @@ export async function fullSetBookmarkToTag(bId: BookmarkId, tagIds: TagId[]) {
 const PublicBookmarkController = {
   async insert(bookmark: InsertPublicBookmark) {
     const { relatedTagIds, ...resetBookmark } = bookmark
+    // 插入之前先检查当前用户是否有相同网址或名称的记录
+    const count = await db.$count(
+      publicBookmarks,
+      or(eq(publicBookmarks.url, resetBookmark.url), eq(publicBookmarks.name, resetBookmark.name))
+    )
+    if (count > 0) throw new Error('书签已存在')
     resetBookmark.pinyin ||= getPinyin(resetBookmark.name)
     const rows = await db.insert(publicBookmarks).values(resetBookmark).returning()
     const id = rows[0].id

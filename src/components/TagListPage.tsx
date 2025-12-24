@@ -127,7 +127,7 @@ export default function TagListPage(props: TagListPageProps) {
                 />
               </TableCell>
               <TableCell>
-                <div className="truncate text-sm max-xs:max-w-[6rem]">
+                <div className="truncate text-sm max-xs:max-w-24">
                   {getRelatedTagsName(tag.relatedTagIds)}
                 </div>
               </TableCell>

@@ -4,7 +4,7 @@ import { actUpdatePublicTagSortOrders, actUpdateUserTagSortOrders } from '@/acti
 import MyModal from '@/components/MyModal'
 import { usePageUtil } from '@/hooks'
 import useIsDark from '@/hooks/useIsDark'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import {
   closestCenter,
   DndContext,
@@ -121,7 +121,7 @@ function SortableTag(props: { tag: SelectTag }) {
 
   return (
     <div
-      className="cursor-grab gap-1 rounded border border-foreground-400 px-2 py-1 flex-items-center"
+      className="cursor-grab gap-1 rounded-sm border border-foreground-400 px-2 py-1 flex-items-center"
       style={style}
       ref={setNodeRef}
       {...attributes}

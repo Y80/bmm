@@ -1,6 +1,6 @@
 import { actAnalyzeRelatedTags } from '@/actions'
 import { ReButton } from '@/components/re-export'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { IconNames } from '@cfg'
 import { cn } from '@heroui/react'
 
@@ -25,7 +25,7 @@ export default function AiAnalyzeButton(props: Props) {
       tooltip="AI 智能解析"
       onClick={onAnalyze}
     >
-      <span className={cn('bg-gradient-to-r from-pink-500 to-violet-500', IconNames.STARS)} />
+      <span className={cn('bg-linear-to-r from-pink-500 to-violet-500', IconNames.STARS)} />
     </ReButton>
   )
 }

@@ -3,7 +3,7 @@
 import { actInsertPublicTag, actUpdatePublicTag } from '@/actions'
 import TagSlugPage, { TagSlugPageProps } from '@/components/TagSlugPage'
 import useSlug from '@/hooks/useSlug'
-import { runAction } from '@/utils'
+import { runAction } from '@/utils/client'
 import { PageRoutes } from '@cfg'
 import { addToast } from '@heroui/react'
 import { useRouter } from 'next/navigation'

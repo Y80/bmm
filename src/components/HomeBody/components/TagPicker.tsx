@@ -50,10 +50,10 @@ export default function TagPicker(props: Props) {
 
   return (
     <div className="flex h-full flex-col" style={props.style}>
-      <div className="my-4 shrink-0 gap-1 pr-4 flex-items-center">
+      <div className="flex-items-center my-4 shrink-0 gap-1 pr-4">
         <ReInput
           size="sm"
-          classNames={{ inputWrapper: 'dark:bg-opacity-50' }}
+          classNames={{ inputWrapper: 'dark:bg-default-100/50' }}
           placeholder="过滤标签"
           isClearable
           value={state.filterTagInput}
@@ -63,7 +63,7 @@ export default function TagPicker(props: Props) {
 
       <div className="grow-0 overflow-auto">
         <ScrollShadow
-          className="flex h-full flex-col gap-2 scrollbar-hide"
+          className="scrollbar-hide flex h-full flex-col gap-2"
           ref={scrollDivRef}
           role={TagPickerBox.SCROLLER_ROLE}
         >
@@ -75,7 +75,7 @@ export default function TagPicker(props: Props) {
 
       {!state.filterTagInput && (
         <>
-          <div className="my-4 shrink-0 flex-items-center">
+          <div className="flex-items-center my-4 shrink-0">
             <Switch
               size="sm"
               className="scale-[0.75]"
@@ -92,7 +92,7 @@ export default function TagPicker(props: Props) {
               仅展示主标签
             </span>
           </div>
-          <div className="pb-4 text-xs text-foreground-300">
+          <div className="text-foreground-300 pb-4 text-xs">
             点击标签时，按住 <Kbd className="scale-80 opacity-80" keys={['alt']} />{' '}
             可多选，实现交叉筛选书签
           </div>

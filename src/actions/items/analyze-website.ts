@@ -6,10 +6,10 @@ import { pageSpace } from '@/utils'
 import { headers } from 'next/headers'
 import { makeActionInput } from '../make-action'
 
-const schema = z.string().url()
+const schema = z.url()
 
-async function analyzeWebsite(url: typeof schema._input) {
-  const referer = headers().get('referer')
+async function analyzeWebsite(url: z.input<typeof schema>) {
+  const referer = (await headers()).get('referer')
   const space = pageSpace(referer)
   if (!space.isAdmin && !space.isUser) throw new Error('内部错误')
   const tags = space.isAdmin
