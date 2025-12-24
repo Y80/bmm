@@ -5,12 +5,12 @@ import { redirect } from 'next/navigation'
 import z from 'zod'
 import PublicHomeBody from '../components/PublicHomeBody'
 
-export const generateMetadata: GenerateMetadata = (props) => {
-  return { title: `${props.searchParams.keyword as string}的搜索结果` }
+export const generateMetadata: GenerateMetadata = async props => {
+  return { title: `${(await props.searchParams).keyword as string}的搜索结果` };
 }
 
 export default async function Page(props: RSCPageProps) {
-  const keyword = props.searchParams.keyword
+  const keyword = (await props.searchParams).keyword
   if (!keyword?.length || Array.isArray(keyword)) {
     redirect(PageRoutes.Public.INDEX)
   }

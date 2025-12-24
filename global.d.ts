@@ -25,17 +25,18 @@ declare global {
   type BaseComponentProps = Pick<ComponentProps<'div'>, 'className' | 'style' | 'children'>
 
   /// Next.js
+  // https://nextjs.org/docs/messages/sync-dynamic-apis
   interface GenerateMetaDataProps<Params> {
-    params: Params
-    searchParams: { [key: string]: string | string[] | undefined }
+    params: Promise<Params>
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
   }
   export type GenerateMetadata<Params = any> = (
     props: GenerateMetaDataProps<Params>,
     parent: ResolvingMetadata
   ) => Awaited<Metadata> | Promise<Awaited<Metadata>>
   export interface RSCPageProps {
-    params: Record<string, string>
-    searchParams: { [key: string]: string | string[] | undefined }
+    params: Promise<Record<string, string>>
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
   }
 
   /// Database

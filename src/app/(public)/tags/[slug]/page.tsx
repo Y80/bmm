@@ -4,8 +4,8 @@ import { DEFAULT_PUBLIC_TAG_PAGESIZE, WEBSITE_KEYWORDS } from '@cfg'
 import z from 'zod'
 import PublicHomeBody from '../../components/PublicHomeBody'
 
-export const generateMetadata: GenerateMetadata<{ slug: string }> = (props) => {
-  const tag = decodeURIComponent(props.params.slug)
+export const generateMetadata: GenerateMetadata<{ slug: string }> = async props => {
+  const tag = decodeURIComponent((await props.params).slug)
   return {
     title: tag + '相关的书签',
     keywords: `${tag}相关的网站, ${tag}网站推荐, ` + WEBSITE_KEYWORDS,
@@ -13,7 +13,7 @@ export const generateMetadata: GenerateMetadata<{ slug: string }> = (props) => {
 }
 
 export default async function Page(props: RSCPageProps) {
-  const tagNames = decodeURIComponent(props.params.slug).split('+')
+  const tagNames = decodeURIComponent((await props.params).slug).split('+')
   const params: z.input<typeof findManyBookmarksSchema> = {
     tagNames,
     limit: DEFAULT_PUBLIC_TAG_PAGESIZE,
