@@ -6,8 +6,12 @@ export default function ExportBookmarksGuide() {
       <Accordion variant="shadow" className="bg-content1/60">
         <AccordionItem
           aria-label="export-bookmarks-guide"
-          title={<span className="text-sm text-foreground-600">教程：如何导出浏览器书签</span>}
-          className="text-left text-foreground-500"
+          title="教程：如何导出浏览器书签"
+          classNames={{
+            title: 'text-foreground-600 text-sm',
+            trigger: 'cursor-pointer',
+            content: 'text-foreground-500 text-left',
+          }}
         >
           <div>以 Chrome 浏览器为例：</div>
           <ol className="my-4 ml-8 list-decimal space-y-2">

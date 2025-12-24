@@ -32,37 +32,6 @@ https://www.heroui.com/docs/guide/tailwind-v4
   --breakpoint-md: 1280px;
   --breakpoint-lg: 1400px;
   --breakpoint-xl: 1920px;
-  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
-  --background-image-gradient-conic: conic-gradient(
-    from 180deg at 50% 50%,
-    var(--tw-gradient-stops)
-  );
-
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
-  --animate-border-beam: border-beam calc(var(--duration) * 1s) infinite linear;
-
-  @keyframes accordion-down {
-    from {
-      height: 0;
-    }
-    to {
-      height: var(--radix-accordion-content-height);
-    }
-  }
-  @keyframes accordion-up {
-    from {
-      height: var(--radix-accordion-content-height);
-    }
-    to {
-      height: 0;
-    }
-  }
-  @keyframes border-beam {
-    to {
-      offset-distance: 100%;
-    }
-  }
 }
 
 /*
