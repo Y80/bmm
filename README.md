@@ -148,7 +148,24 @@ pnpm start
 
 本项目通过 AI 实现了 **分析总结网站、给网站打标签、分析相关联的标签** 的功能，可大大减少维护书签数据的工作量。
 
-由于目前 AI 服务商众多，且不同服务商提供的 API 并不相同，因此这里会有轻微的编码工作。
+目前支持下面两种方式配置 AI 服务：
+
+### 1. 通用 OpenAI 兼容协议（推荐）
+
+本项目已内置 OpenAI 接口标准的支持。无需修改代码，只需在环境变量中配置即可直接接入 **OpenAI** 以及 **DeepSeek、Moonshot (Kimi)、GLM、豆包** 等支持该标准的第三方服务。
+
+在 `.env` 文件中添加：
+
+```bash
+# 示例：接入 DeepSeek
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxx
+OPENAI_BASE_URL=https://api.deepseek.com/chat/completions
+OPENAI_MODEL=deepseek-chat
+```
+
+### 2. 不支持 OpenAI 兼容协议的AI服务
+
+对于 API 格式特殊的厂商，可能需要轻微的编码工作。`src/lib/ai/servers.ts` 文件中提供了相关代码可供参考。
 
 下面是使用 [字节跳动-扣子](https://www.coze.cn/docs/developer_guides/coze_api_overview) AI 能力的示例：
 
@@ -176,8 +193,6 @@ function coze() {
   }
 }
 ```
-
-`src/lib/ai/servers.ts` 文件提供了使用 **扣子** 和 **OpenAI** 的代码示例可供参考。
 
 ## 接入 Github 授权登录（可选）
 
