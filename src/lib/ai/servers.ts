@@ -9,7 +9,7 @@ import { commonFetch } from './utils'
  *
  * 可参考下面 coze() 和 openai() 的示例，自行接入其他 AI 服务
  */
-export const getServer = coze
+export const getServer = openai
 
 /**
  * 扣子 AI
@@ -41,14 +41,20 @@ function openai(): ServerConfig {
   if (!env.OPENAI_API_KEY) {
     throw new Error('请配置环境变量 OPENAI_API_KEY')
   }
+  if (!env.OPENAI_BASE_URL) {
+    throw new Error('请配置环境变量 OPENAI_BASE_URL')
+  }
+  if (!env.OPENAI_MODEL) {
+    throw new Error('请配置环境变量 OPENAI_MODEL')
+  }
   return {
     responseContentPath: 'choices[0].message.content',
     sendRequest(content) {
       return commonFetch({
-        url: 'https://api.openai.com/v1/chat/completions',
+        url: env.OPENAI_BASE_URL!,
         token: env.OPENAI_API_KEY!,
         body: {
-          model: 'gpt-4o-mini',
+          model: env.OPENAI_MODEL!,
           messages: [{ role: 'user', content }],
           temperature: 0.7,
         },
