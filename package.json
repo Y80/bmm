@@ -52,6 +52,7 @@
     "next": "16.0.10",
     "next-auth": "5.0.0-beta.29",
     "next-themes": "0.4.6",
+    "openai": "^6.15.0",
     "pinyin-pro": "^3.24.2",
     "postgres": "3.4.5",
     "rc-select": "^14.16.8",

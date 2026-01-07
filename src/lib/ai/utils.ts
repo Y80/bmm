@@ -13,7 +13,15 @@ export async function commonFetch<T = any>({ url, body, token, headers }: Common
     },
     body: JSON.stringify(body),
   })
-  return res.json() as Promise<T>
+  if (!res.ok) {
+    throw new Error(`请求失败: ${res.status} ${res.statusText}`)
+  }
+  const text = await res.text()
+  try {
+    return JSON.parse(text) as T
+  } catch (error) {
+    console.error('JSON 解析错误: ', error)
+  }
 }
 
 /**

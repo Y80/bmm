@@ -1,16 +1,14 @@
 import fetchHtml from '@/utils/fetch-html'
-import { get as objGet } from 'lodash'
-import { getServer } from './servers'
+import { createOpenAIChatCompletion } from './providers'
 import { chatResultAdapter, chatResultAdapter2, createPayload } from './utils'
 
 /**
  * 分析网站，自动打标签、获取标题、描述、图标地址
  */
 export async function analyzeWebsite(inputUrl: string, tags: string[]) {
-  const { sendRequest, responseContentPath } = getServer()
   let { html, url } = await fetchHtml(inputUrl)
   const payload = await createPayload({ html, url, tags })
-  const content = `
+  const userContent = `
 你是一个熟悉 Web HTML、拥有丰富的 SEO 优化经验、可以熟练地提炼归纳信息的高级人工智能机器人。
 
 我将会给你一份 JSON，它有这些 Key：
@@ -53,24 +51,31 @@ Task4 从传入的 JSON 的 tags 中找到和这个网站主题最为相关若�
 
 以下是你需要分析的 JSON:
 ${JSON.stringify(payload)}
-`
-    .replace(/\\/g, '')
-    .replace(/\s{2,}/g, '')
-  process.env.AI_DEBUG && console.log(content)
-  const rsp = await sendRequest(content)
-  const chatMessageContent = objGet(rsp, responseContentPath)
-  process.env.AI_DEBUG && console.log(rsp, chatMessageContent)
-  if (!chatMessageContent) {
+`.replace(/(\\)|(\s{2,})/g, '')
+  process.env.AI_DEBUG && console.log(userContent)
+
+  const res = await createOpenAIChatCompletion([
+    {
+      role: 'system',
+      content:
+        '你是一个熟悉 Web HTML、拥有丰富的 SEO 优化经验、可以熟练地提炼归纳信息的高级人工智能机器人。',
+    },
+    {
+      role: 'user',
+      content: userContent,
+    },
+  ])
+  const answer = res.choices[0].message.content
+  if (!answer) {
     throw new Error('AI 响应异常')
   }
-  return chatResultAdapter(chatMessageContent)
+  return chatResultAdapter(answer)
 }
 
 /**
  * 传入一个标签名称，从数据库中读取所有标签名称，根据名字语义分析和传入标签相关的书签
  */
 export async function analyzeRelatedTags(tag: string, tags: string[]) {
-  const { sendRequest, responseContentPath } = getServer()
   const payload = {
     targetTag: tag,
     tags,
@@ -101,15 +106,18 @@ Task2 请你根据你对传入的 targetTag 的理解，再根据其对应的常
 
 以下是你需要分析的 JSON:
 ${JSON.stringify(payload)}
-`
-    .replace(/\\/g, '')
-    .replace(/\s{2,}/g, '')
+`.replace(/(\\)|(\s{2,})/g, '')
+
   process.env.AI_DEBUG && console.log(content)
-  const rsp = await sendRequest(content)
-  const chatMessageContent = objGet(rsp, responseContentPath)
-  process.env.AI_DEBUG && console.log(rsp, chatMessageContent)
-  if (!chatMessageContent) {
+  const res = await createOpenAIChatCompletion([
+    {
+      role: 'user',
+      content: content,
+    },
+  ])
+  const answer = res.choices[0].message.content
+  if (!answer) {
     throw new Error('AI 响应异常')
   }
-  return chatResultAdapter2(chatMessageContent)
+  return chatResultAdapter2(answer)
 }
