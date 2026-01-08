@@ -1,3 +1,5 @@
+import { analyzeRelatedTags } from '.'
+
 export interface ServerConfig {
   /**
    * AI 响应结构体中，目标内容的属性路径
@@ -41,3 +43,5 @@ export interface CozeResponse {
   code: number
   msg: string | 'success'
 }
+
+export type AnalyzeRelatedTagsResult = Awaited<ReturnType<typeof analyzeRelatedTags>>

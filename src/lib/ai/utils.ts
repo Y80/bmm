@@ -1,5 +1,4 @@
 import { load } from 'cheerio'
-import { isPlainObject } from 'lodash'
 import { Method } from '../http'
 import { CommonFetchParams } from './types'
 
@@ -67,61 +66,4 @@ export async function createPayload(params: { html: string; url: string; tags: s
     tags,
   }
   return payload
-}
-
-/**
- * 提取 AI 响应中 content 内的 JSON 字符串，并将其反序列化
- *
- * （当前大部分 AI 不具备根据 prompt 要求一定输出 JSON 字符串的能力）
- */
-function extraAiResponseJson(input: string) {
-  try {
-    const str = input.match(/{[\s\S]+?}/)?.[0]
-    const data = JSON.parse(str || '')
-    if (isPlainObject(data)) {
-      process.env.AI_DEBUG && console.log('反序列化 AI 响应结果：\n', data)
-      return data
-    }
-  } catch (error) {}
-  throw new Error('AI 响应解析失败')
-}
-
-export function chatResultAdapter(input: string) {
-  const data = extraAiResponseJson(input)
-  const res = {
-    title: '',
-    description: '',
-    favicon: '',
-    tags: [] as string[],
-  }
-  const { title, description, tags, favicon } = data
-  if (typeof title === 'string') {
-    res.title = title
-  }
-  if (typeof description === 'string') {
-    res.description = description
-  }
-  if (typeof favicon === 'string') {
-    res.favicon = favicon
-  }
-  if (Array.isArray(tags) && tags.every((el) => typeof el === 'string')) {
-    res.tags = tags
-  }
-  return res
-}
-
-export function chatResultAdapter2(input: string) {
-  const data = extraAiResponseJson(input)
-  const res = {
-    relatedTags: [] as string[],
-    color: '',
-  }
-  const { relatedTags, color } = data
-  if (Array.isArray(relatedTags) && relatedTags.every((el) => typeof el === 'string')) {
-    res.relatedTags = relatedTags
-  }
-  if (typeof color === 'string') {
-    res.color = color
-  }
-  return res
 }

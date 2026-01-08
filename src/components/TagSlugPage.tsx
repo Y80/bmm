@@ -11,6 +11,7 @@ import { SelectedIcon } from '@/components/IconPicker'
 import { ReInput, ReTooltip } from '@/components/re-export'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import useSlug from '@/hooks/useSlug'
+import { AnalyzeRelatedTagsResult } from '@/lib/ai/types'
 import { FieldConstraints } from '@cfg'
 import { Accordion, AccordionItem, addToast, Switch } from '@heroui/react'
 import { Icon } from '@iconify/react'
@@ -95,10 +96,10 @@ export default function TagSlugPage(props: TagSlugPageProps) {
       )
   }
 
-  function onReceiveRelatedTags(params: { relatedTags: string[]; color: string }) {
-    const { relatedTags, color } = params
+  function onReceiveRelatedTags(params: AnalyzeRelatedTagsResult) {
+    const { relatedTags, themeColor } = params
     setTag({
-      color: color,
+      color: themeColor,
       relatedTagIds: relatedTags.reduce((acc: number[], tagName) => {
         const foundTag = props.tags.find(({ name }) => name === tagName)
         if (!foundTag?.id || foundTag.id === slug.number || acc.includes(foundTag.id)) return acc
@@ -149,10 +150,10 @@ export default function TagSlugPage(props: TagSlugPageProps) {
         >
           <div className="flex flex-col gap-4">
             <div className="flex justify-between">
-              <label className="gap-2 text-sm flex-items-center">
+              <label className="flex-items-center gap-2 text-sm">
                 <span>主标签</span>
                 <ReTooltip content="首页可设置「仅展示主标签」">
-                  <div className="cursor-pointer rounded-full border border-foreground p-px flex-center">
+                  <div className="border-foreground flex-center cursor-pointer rounded-full border p-px">
                     <span className="icon-[tabler--question-mark] size-3" />
                   </div>
                 </ReTooltip>

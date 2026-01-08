@@ -148,51 +148,19 @@ pnpm start
 
 本项目通过 AI 实现了 **分析总结网站、给网站打标签、分析相关联的标签** 的功能，可大大减少维护书签数据的工作量。
 
-目前支持下面两种方式配置 AI 服务：
-
-### 1. 通用 OpenAI 兼容协议（推荐）
-
-本项目已内置 OpenAI 接口标准的支持。无需修改代码，只需在环境变量中配置即可直接接入 **OpenAI** 以及 **DeepSeek、Moonshot (Kimi)、GLM、豆包** 等支持该标准的第三方服务。
+目前已内置 OpenAI 接口标准的支持。无需修改代码，只需在环境变量中配置即可直接接入 **OpenAI** 以及 **DeepSeek、Moonshot (Kimi)、GLM、豆包** 等支持该标准的第三方服务。
 
 在 `.env` 文件中添加：
 
 ```bash
 # 示例：接入 DeepSeek
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxx
-OPENAI_BASE_URL=https://api.deepseek.com/chat/completions
+OPENAI_BASE_URL=https://api.deepseek.com/v1
 OPENAI_MODEL=deepseek-chat
 ```
 
-### 2. 不支持 OpenAI 兼容协议的AI服务
+对于其它不兼容 OpenAI API 标准的服务，如 Gemini / Anthropic 等，可参考 [AI SDK Providers](https://ai-sdk.dev/providers/ai-sdk-providers) 接入。
 
-对于 API 格式特殊的厂商，可能需要轻微的编码工作。`src/lib/ai/servers.ts` 文件中提供了相关代码可供参考。
-
-下面是使用 [字节跳动-扣子](https://www.coze.cn/docs/developer_guides/coze_api_overview) AI 能力的示例：
-
-```ts
-export const getServer = coze
-
-function coze() {
-  if (!env.COZE_API_KEY || !env.COZE_BOT_ID) {
-    throw new Error('请配置环境变量 COZE_API_KEY、COZE_BOT_ID')
-  }
-  return {
-    responseContentPath: 'messages[0].content',
-    sendRequest(query: string) {
-      return commonFetch({
-        url: 'https://api.coze.cn/open_api/v2/chat',
-        token: process.env.COZE_API_KEY!,
-        body: {
-          bot_id: process.env.COZE_BOT_ID,
-          user: 'user',
-          query,
-          stream: false,
-        },
-      })
-    },
-  }
-}
-```
 
 ## 接入 Github 授权登录（可选）
 
