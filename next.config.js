@@ -13,6 +13,7 @@ export default async function setup(phase) {
 
   /** @type {import('next').NextConfig} */
   const nextConfig = {
+    output: 'standalone',
     images: {
       remotePatterns: [
         {
@@ -41,7 +42,20 @@ export default async function setup(phase) {
       return config
     },
     experimental: {
-      serverActions: { allowedOrigins: [domainHost] }
+      serverActions: { allowedOrigins: [domainHost] },
+    },
+    // 确保 standalone 输出包含 scripts 目录和 tsx 依赖
+    outputFileTracingIncludes: {
+      '.*': [
+        // './scripts/**/*',
+        // './node_modules/.pnpm/esbuild*/**/*',
+        // './node_modules/esbuild*/**/*',
+        // './node_modules/.pnpm/tsx*/**/*',
+        // './node_modules/tsx*/**/*',
+        './node_modules/zx/**/*',
+        './node_modules/dotenv/**/*',
+        // './node_modules/.bin/*',
+      ],
     },
     typescript: {
       ignoreBuildErrors: Boolean(process.env.IGNORE_BUILD_ERRORS),

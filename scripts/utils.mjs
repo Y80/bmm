@@ -45,7 +45,7 @@ export async function loadEnv() {
 }
 
 
-// 当前应用如果作为 git submodule 存在，加载父级目录是的环境配置文件
+// 当前应用如果作为 git submodule 存在，加载父级目录中的环境配置文件
 export function tryLoadParentGitRepoEnv() {
   if (!fs.existsSync(path.resolve('..', '.gitmodules'))) return
   const envPaths = [path.resolve('..', '.env'), path.resolve('..', '.env.' + process.env.NODE_ENV)]
