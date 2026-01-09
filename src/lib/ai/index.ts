@@ -1,37 +1,36 @@
 import fetchHtml from '@/utils/fetch-html'
-import { get as objGet } from 'lodash'
-import { getServer } from './servers'
-import { chatResultAdapter, chatResultAdapter2, createPayload } from './utils'
+import { generateText, Output } from 'ai'
+import z from 'zod'
+import { getOpenAICompatibleModel } from './providers'
+import { createPayload } from './utils'
 
 /**
  * 分析网站，自动打标签、获取标题、描述、图标地址
  */
-export async function analyzeWebsite(inputUrl: string, tags: string[]) {
-  const { sendRequest, responseContentPath } = getServer()
+export async function analyzeWebsite(inputUrl: string, tags: string[] = []) {
   let { html, url } = await fetchHtml(inputUrl)
   const payload = await createPayload({ html, url, tags })
-  const content = `
-你是一个熟悉 Web HTML、拥有丰富的 SEO 优化经验、可以熟练地提炼归纳信息的高级人工智能机器人。
-
+  const prompt = `
 我将会给你一份 JSON，它有这些 Key：
 - url: 待分析网站的链接地址
 - head: 待分析网站的 HTML 文档的 <head> 的内容。
 - innerText: 待分析网站的 HTML 文档的 <body> 的 innerText，不同元素下的文本会用 / 分隔。
 - tags: 一组标签，使用 / 分隔。
 
-请你根据提供的 head 和 innerText 推断这个网站的主题、内容、目标群体。并且以此执行下面 4 个任务：
+请你根据提供的 url、head 和 innerText 推断这个网站的主题、内容、目标群体。并且以此执行下面 4 个任务：
 
 Task1 为网站取一个简短、直观、明了的标题，结果存储在 {{title}} 中，同时要注意：
 - 参考 <head> 中的 <title> 标签内容。
 - 减少商业营销性质的文字。
 - 如果你有更好的网站标题候选，就用你的，否则可以直接用 <title> 的内容。
-- 文本长度控制在 20 字之内。
+- 文本长度控制在 30 字之内。
 
-Task2 给网站一段简短、直观、明了的介绍，结果存储在 {{description}} 中，同时要注意：
+Task2 给网站一段介绍，结果存储在 {{description}} 中，同时要注意：
 - 参考 <head> 中的 <meta name="description"> 标签的 content 内容。
 - 减少商业营销性质的文字。
 - 文本长度不超过 100 字。
-- 请避免太过宽泛的描述。
+- 请避免太过宽泛的描述，同时保证简短、直观、明了。
+- **结果若为英文请务必翻译为中文。**
 
 Task3 分析网站的图标地址，结果存储在 {{favicon}} 中，请注意：
 - 结果必须以 http 起始
@@ -43,34 +42,41 @@ Task4 从传入的 JSON 的 tags 中找到和这个网站主题最为相关若�
 - 从 tags 中最终选出的标签个数最多为 5 个。
 - 如果 tags 中的标签的相关性得分都很低，即你认为这些标签和网站相关性都很低，可以一个也不入选。
 - 如果你认为有其他标签，虽然不在 tags 中的标签中但是和当前网站相关度很高，也可以返回，但是最多 2 个。
-- 最终结果为字符串数组，例如：["A", "B", ...]。
+- **最终结果为字符串数组，例如：["A", "B", ...]。**
 
 将处理结果以 JSON 格式输出，并且有以下 key：
-- title 值为 {{title}}。
-- description 值为 {{description}}。
-- tags 值为 {{tags}}。
-- favicon 值为 {{favicon}}。
+- title 值为 {{title}}，类型为 string。
+- description 值为 {{description}}，类型为 string。
+- tags 值为 {{tags}}，类型为 string[]。
+- favicon 值为 {{favicon}}，类型为 string。
 
 以下是你需要分析的 JSON:
 ${JSON.stringify(payload)}
 `
-    .replace(/\\/g, '')
-    .replace(/\s{2,}/g, '')
-  process.env.AI_DEBUG && console.log(content)
-  const rsp = await sendRequest(content)
-  const chatMessageContent = objGet(rsp, responseContentPath)
-  process.env.AI_DEBUG && console.log(rsp, chatMessageContent)
-  if (!chatMessageContent) {
-    throw new Error('AI 响应异常')
-  }
-  return chatResultAdapter(chatMessageContent)
+  process.env.AI_DEBUG && console.log(prompt)
+
+  const { output, text } = await generateText({
+    model: getOpenAICompatibleModel(),
+    system:
+      '你是一个熟悉 Web HTML、拥有丰富的 SEO 优化经验、可以熟练地提炼归纳信息的高级人工智能机器人。',
+    prompt,
+    output: Output.object({
+      schema: z.object({
+        title: z.string(),
+        description: z.string(),
+        tags: z.array(z.string()),
+        favicon: z.string(),
+      }),
+    }),
+  })
+  console.log(text)
+  return output
 }
 
 /**
  * 传入一个标签名称，从数据库中读取所有标签名称，根据名字语义分析和传入标签相关的书签
  */
 export async function analyzeRelatedTags(tag: string, tags: string[]) {
-  const { sendRequest, responseContentPath } = getServer()
   const payload = {
     targetTag: tag,
     tags,
@@ -78,7 +84,7 @@ export async function analyzeRelatedTags(tag: string, tags: string[]) {
   if (!payload.tags.length) {
     throw new Error('数据库标签数据为空，请先创建标签再调用当前 AI 功能')
   }
-  const content = `
+  const prompt = `
 我将会给你一份 JSON，它有这些 Key：
 - targetTag: 目标标签
 - tags: 一组标签，使用 / 分隔。
@@ -96,20 +102,23 @@ Task1 请你从传入的 tags 中找到 targetTag 最为相关的若干个标签
 Task2 请你根据你对传入的 targetTag 的理解，再根据其对应的常见的 logo、品牌色，告诉我一个和 targetTag 最为相关的主题色，使用 HEX 色值格式，将结果存储在 {{themeColor}} 中。
 
 将处理结果以 JSON 格式输出，并且有以下 key：
-- relatedTags 值为 {{relatedTags}}。
-- color 值为 {{themeColor}}。
+- relatedTags 值为 {{relatedTags}}，类型为 string[]。
+- themeColor 值为 {{themeColor}}，类型为 string。
 
 以下是你需要分析的 JSON:
 ${JSON.stringify(payload)}
 `
-    .replace(/\\/g, '')
-    .replace(/\s{2,}/g, '')
-  process.env.AI_DEBUG && console.log(content)
-  const rsp = await sendRequest(content)
-  const chatMessageContent = objGet(rsp, responseContentPath)
-  process.env.AI_DEBUG && console.log(rsp, chatMessageContent)
-  if (!chatMessageContent) {
-    throw new Error('AI 响应异常')
-  }
-  return chatResultAdapter2(chatMessageContent)
+
+  process.env.AI_DEBUG && console.log(prompt)
+  const { output } = await generateText({
+    model: getOpenAICompatibleModel(),
+    prompt,
+    output: Output.object({
+      schema: z.object({
+        relatedTags: z.array(z.string()),
+        themeColor: z.string(),
+      }),
+    }),
+  })
+  return output
 }

@@ -1,12 +1,13 @@
 import { actAnalyzeRelatedTags } from '@/actions'
 import { ReButton } from '@/components/re-export'
+import { AnalyzeRelatedTagsResult } from '@/lib/ai/types'
 import { runAction } from '@/utils/client'
 import { IconNames } from '@cfg'
 import { cn } from '@heroui/react'
 
 interface Props {
   tagName?: string
-  onOk: (data: { relatedTags: string[]; color: string }) => void
+  onOk: (data: AnalyzeRelatedTagsResult) => void
 }
 
 export default function AiAnalyzeButton(props: Props) {
@@ -21,7 +22,7 @@ export default function AiAnalyzeButton(props: Props) {
     <ReButton
       isIconOnly
       size="sm"
-      className={cn('bg-transparent text-xl text-foreground-600', !props.tagName && 'scale-0')}
+      className={cn('text-foreground-600 bg-transparent text-xl', !props.tagName && 'scale-0')}
       tooltip="AI 智能解析"
       onClick={onAnalyze}
     >
