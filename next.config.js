@@ -1,6 +1,11 @@
-import { codeInspectorPlugin } from 'code-inspector-plugin';
 import nextConst from 'next/constants.js';
 import { checkEnvs, tryLoadParentGitRepoEnv } from './scripts/utils.mjs';
+
+let codeInspectorPlugin;
+if (process.env.NODE_ENV === 'development') {
+  const { codeInspectorPlugin: plugin } = await import('code-inspector-plugin');
+  codeInspectorPlugin = plugin;
+}
 
 export default async function setup(phase) {
   tryLoadParentGitRepoEnv()
@@ -24,10 +29,10 @@ export default async function setup(phase) {
       dangerouslyAllowSVG: true,
     },
     turbopack: {
-      rules: codeInspectorPlugin({
+      rules: codeInspectorPlugin ? codeInspectorPlugin({
         bundler: 'turbopack',
         hideDomPathAttr: true,
-      })
+      }) : undefined
     },
     webpack: (config, { webpack, nextRuntime }) => {
       // TODO 使用 turbopack 后是否需要？
