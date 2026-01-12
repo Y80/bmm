@@ -26,7 +26,7 @@ export default async function setup(phase) {
           pathname: '**',
         },
         process.env.NEXT_PUBLIC_WEBSITE_LOGO ? new URL(process.env.NEXT_PUBLIC_WEBSITE_LOGO) : undefined,
-      ],
+      ].filter(Boolean),
       dangerouslyAllowSVG: true,
     },
     turbopack: {
