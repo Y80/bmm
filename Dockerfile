@@ -4,8 +4,7 @@
 # 所以还是使用普通的 output 模式，通过手动删除不必要的文件，可控制镜像大小仅增加 ~300Mb
 
 
-FROM node:20-alpine AS base
-COPY package.json .
+FROM node:24-alpine AS base
 RUN corepack enable && pnpm -v
 
 
