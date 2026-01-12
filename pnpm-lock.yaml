@@ -122,6 +122,9 @@ importers:
       sharp:
         specifier: ^0.33.5
         version: 0.33.5
+      tsx:
+        specifier: 4.19.3
+        version: 4.19.3
       uvcanvas:
         specifier: ^0.2.1
         version: 0.2.2(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(acorn@8.14.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -131,6 +134,9 @@ importers:
       zod-validation-error:
         specifier: 4.0.2
         version: 4.0.2(zod@4.1.11)
+      zx:
+        specifier: 8.1.5
+        version: 8.1.5
     devDependencies:
       '@faker-js/faker':
         specifier: ^8.4.1
@@ -195,9 +201,6 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.1.17)
-      tsx:
-        specifier: 4.19.3
-        version: 4.19.3
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -210,9 +213,6 @@ importers:
       vitest:
         specifier: 3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.17.28)(lightningcss@1.30.2)
-      zx:
-        specifier: 8.1.5
-        version: 8.1.5
 
 packages:
 
