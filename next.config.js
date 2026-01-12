@@ -25,6 +25,7 @@ export default async function setup(phase) {
           hostname: '*.iconify.design',
           pathname: '**',
         },
+        process.env.NEXT_PUBLIC_WEBSITE_LOGO ? new URL(process.env.NEXT_PUBLIC_WEBSITE_LOGO) : undefined,
       ],
       dangerouslyAllowSVG: true,
     },

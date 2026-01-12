@@ -35,13 +35,13 @@ export default function AdminNav() {
         <Link href={PageRoutes.Admin.INDEX} color="foreground">
           <div className="flex cursor-pointer items-center gap-4">
             <Image
-              src={Assets.LOGO_NO_BG_SVG}
-              width={48}
-              height={48}
+              src={Assets.LOGO_SVG}
+              width={32}
+              height={32}
               className="hidden sm:inline-block"
               alt="logo"
             />
-            <h3 className="font-mono text-2xl font-black text-foreground-700">
+            <h3 className="text-foreground-700 font-mono text-2xl font-black">
               {WEBSITE_NAME} CMS
             </h3>
           </div>
