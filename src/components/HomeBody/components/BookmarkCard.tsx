@@ -61,9 +61,19 @@ export default function BookmarkCard(props: Props) {
         )
         if (isMobile) return node
         return (
-          <Tooltip delay={300} content={<span className="break-all">{desc}</span>} className="w-80">
-            {node}
-          </Tooltip>
+          <p className="text-foreground-500 line-clamp-3 text-xs break-all" role="description">
+            <Tooltip
+              delay={500}
+              content={
+                <span className="break-all">
+                  {props.name}：{desc}
+                </span>
+              }
+              className="max-w-80"
+            >
+              <span>{desc}</span>
+            </Tooltip>
+          </p>
         )
       })()}
       <div
