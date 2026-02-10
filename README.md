@@ -1,154 +1,257 @@
 <div align="center">
-  <img width="120" src="./doc/images/logo.svg">
+  <img width="120" src="./doc/images/logo.svg" alt="BMM Logo">
   <br>
-  <h3 style="font-size: 3rem">BMM</h3>
+  <h1>BMM</h1>
   <p>收纳、分享、探索优质网站</p>
-  <i>BMM / bookmark manager / 你的专属书签管家</i>
+  <p><i>Bookmark Manager - 你的专属书签管家</i></p>
+  <p>
+    <a href="./README.en.md">🌐 English</a> •
+    <a href="https://bmm.lccl.cc/" target="_blank">✨ 在线体验</a> •
+    <a href="https://github.com/Y80/bmm" target="_blank">📦 GitHub</a> •
+    <a href="#快速开始">🚀 快速开始</a>
+  </p>
+  <p>
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT">
+    <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js 16">
+    <img src="https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript" alt="TypeScript">
+    <img src="https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?logo=tailwind-css" alt="Tailwind CSS">
+    <img src="https://img.shields.io/badge/Drizzle_ORM-0.44-green" alt="Drizzle ORM">
+  </p>
 </div>
 
-<br>
+---
 
 <div align="center">
-
-  <img alt="PC 端明亮/暗夜主题" src="./doc/images/screenshot-pc-light-dark.webp">
-
+  <img alt="PC 端明亮/暗夜主题" src="./doc/images/screenshot-pc-light-dark.png">
   <img alt="后台管理" src="./doc/images/screenshot-pc-cms-light-dark.png">
-
   <img width="680" alt="移动端" src="./doc/images/screenshot-mobile.png">
-
   <img alt="AI 解析网站" width="680" src="./doc/images/screenshot-ai-analyse.gif">
-
 </div>
 
+---
 
-## ✨ 功能
+## 📋 目录
 
-基本功能：
+- [✨ 功能特性](#-功能特性)
+- [🛠️ 技术栈](#️-技术栈)
+- [🚀 快速开始](#-快速开始)
+- [⚙️ 环境变量](#️-环境变量)
+- [🗄️ 数据库配置](#️-数据库配置)
+- [🌍 项目部署](#-项目部署)
+- [🤖 AI 集成](#-ai-集成)
+- [🔐 GitHub OAuth 配置](#-github-oauth-配置)
+- [❓ 常见问题](#-常见问题)
+- [📄 许可证](#-许可证)
 
-- [x] 支持移动端/桌面端、明亮主题/暗夜主题
-- [x] 搜索书签、标签
-- [x] 标签和标签、书签和标签间的相互关联
-- [x] Github 授权登录、账号密码登录
-- [x] 登录用户可管理自己的书签、标签
+---
 
-后台管理功能：
+## ✨ 功能特性
 
-- [x] 导入浏览器导出的书签
-- [x] 标签、书签的增删改查
-- [x] 标签间的相互关联
-- [x] 标签和书签的相互关联
-- [x] 标签排序
-- [x] 爬取网站标题、图标、简介，多个 API 获取网站图标
-- [x] AI 智能解析网站标题、图标、简介、关联标签
-- [x] AI 为标签关联标签
+### 基础功能
 
-待实现：
+| 功能 | 描述 |
+|------|------|
+| 📱 响应式设计 | 支持移动端/桌面端、明亮/暗黑主题 |
+| 🔍 智能搜索 | 支持书签、标签的拼音和关键词搜索 |
+| 🏷️ 标签关联 | 标签间、书签与标签间的多对多关联 |
+| 🔐 认证系统 | GitHub OAuth + 邮箱/密码双登录方式 |
+| 👤 用户管理 | 登录用户可管理自己的书签和标签 |
 
-- [ ] 多功能卡片，支持展示天气、资讯...
-- [ ] 浏览器插件
-- [ ] 服务端、客户端检测书签可用性
+### 后台管理功能
+
+- 📥 **批量导入** - 导入浏览器导出的书签文件 (HTML/JSON)
+- 📝 **CRUD 操作** - 标签、书签的增删改查
+- 🔗 **标签关联** - 标签间的相互关联管理
+- 📊 **标签排序** - 拖拽式标签排序
+- 🕷️ **元数据抓取** - 自动爬取网站标题、图标、简介
+- 🤖 **AI 智能解析** - AI 自动提取网站信息并推荐标签
+- 🎨 **主题生成** - AI 为标签分析关联标签和主题色
+
+### 待实现功能
+
+- [ ] 多功能卡片（天气、资讯等）
+- [ ] 浏览器扩展插件
+- [ ] 书签可用性检测
 - [ ] 稍后阅读系统
 
-## 🧑‍💻 本地开发
+---
 
-1. git 克隆项目至本地 `git clone https://github.com/Y80/bmm.git`
+## 🛠️ 技术栈
 
-2. 安装依赖 `pnpm install`
+| 类别 | 技术 |
+|------|------|
+| 框架 | [Next.js 16](https://nextjs.org/) (App Router) |
+| 语言 | [TypeScript 5](https://www.typescriptlang.org/) |
+| 样式 | [Tailwind CSS 4](https://tailwindcss.com/) |
+| UI 组件 | [HeroUI](https://heroui.com/) + [Ant Design](https://ant.design/) |
+| ORM | [Drizzle ORM](https://orm.drizzle.team/) |
+| 数据库 | SQLite / PostgreSQL / Turso |
+| 认证 | [NextAuth v5](https://authjs.dev/) |
+| AI SDK | [Vercel AI SDK](https://sdk.vercel.ai/) |
+| 测试 | [Vitest](https://vitest.dev/) |
 
-3. 启动项目 `pnpm dev`
+---
 
-## 环境变量
+## 🚀 快速开始
 
-具体的环境变量配置可以参考 [.env](./.env) 。
+### 环境要求
 
-若您只是想快速体验项目，本地拉取项目后，无需修改任何环境变量即可启动开发服务器（数据库用的是本地 SQLite）。
+- [Node.js](https://nodejs.org/) >= 24.0.0
+- [pnpm](https://pnpm.io/) >= 10.24.0
 
-若您需要部署到服务器上，重点关注 `AUTH_URL` 和数据库相关变量配置。
+### 本地开发
 
-## 🗄️ 数据库
+```bash
+# 1. 克隆项目
+git clone https://github.com/Y80/bmm.git
+cd bmm
 
-BMM 使用 Drizzle ORM 持久化存储数据，当前开箱即用的支持 SQLite 和 PostgreSQL 数据库。
+# 2. 安装依赖
+pnpm install
 
-默认的配置使用本地的 SQLite 数据库，通过 `pnpm dev` 可在本地自动创建数据库文件，并供本地开发服务器使用。
+# 3. 启动开发服务器
+pnpm dev
+```
 
-若需部署到线上，需要使用线上数据库，这里提供两篇文档以便您能快速、免费获取线上数据库资源：
+项目将在 `http://localhost:3000` 启动，并自动创建 SQLite 数据库文件。
 
-1. [BMM 接入 Turso](https://github.com/Y80/bmm/wiki/%E4%BD%BF%E7%94%A8-Turso-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9C%8D%E5%8A%A1)
-2. [一些免费的 PostgreSQL 数据库](https://juejin.cn/post/7411047482651951119)
+---
 
-您也可以使用自己的数据库云服务。
+## ⚙️ 环境变量
 
-## 🚀 项目部署
+详见 [.env](./.env) 文件。
+
+### 快速体验
+
+本地开发无需修改任何环境变量，使用默认 SQLite 配置即可。
+
+### 生产部署
+
+重点关注以下变量：
+
+| 变量 | 说明 |
+|------|------|
+| `AUTH_URL` | 认证回调地址，必须与部署地址一致 |
+| `DB_DRIVER` | 数据库驱动 (sqlite/postgresql) |
+| `DB_CONNECTION_URL` | 数据库连接字符串 |
+| `DB_AUTH_TOKEN` | Turso 数据库令牌（可选） |
+
+---
+
+## 🗄️ 数据库配置
+
+BMM 使用 Drizzle ORM，开箱即用支持 SQLite 和 PostgreSQL。
+
+### 默认配置（SQLite）
+
+```bash
+# 本地自动创建数据库文件
+pnpm dev
+```
+
+### 线上数据库
+
+#### 方案一：Turso（推荐）
+
+- [BMM 接入 Turso 指南](https://github.com/Y80/bmm/wiki/使用-Turso-数据库服务)
+
+#### 方案二：免费 PostgreSQL
+
+- [一些免费的 PostgreSQL 数据库](https://juejin.cn/post/7411047482651951119)
+
+---
+
+## 🌍 项目部署
 
 ### 方式一：Node 项目常规部署
 
-1. 通过 `git clone` 或其他方式将项目复制到服务器上
+```bash
+# 1. 克隆项目
+git clone https://github.com/Y80/bmm.git
+cd bmm
 
-2. 安装依赖 `pnpm install`
+# 2. 安装依赖
+pnpm install
 
-3. 构建项目 `pnpm build`
+# 3. 构建项目
+pnpm build
 
-4. 启动生产环境服务器 `pnpm start`；若您使用了 PM2，可通过 `pm2 start "pnpm start"` 启动项目。
+# 4. 启动（或使用 PM2）
+pnpm start
+# 或
+pm2 start "pnpm start"
+```
 
 ### 方式二：部署至 Vercel
 
-1. fork 当前 Github 仓库
+1. **Fork** 本仓库到您的 GitHub 账户
+2. 登录 [Vercel](https://vercel.com)，新建项目并关联 Fork 的仓库
+3. 在 Environment Variables 页面配置环境变量
 
-2. 登入 <a href="https://vercel.com" target="_blank">Vercel</a>，新建项目，并关联 fork 的 Github 仓库
+   <details>
+   <summary>查看截图</summary>
 
-3. 在当前项目下的 Environment Variables 页面中配置环境变量
+   ![vercel-settings-env](./doc/images/vercel-settings-env.png)
 
-<details>
-  <summary>查看截图</summary>
-  
-  ![vercel-settings-env](./doc/images/vercel-settings-env.png)
+   **注意**：Vercel 自动分配的域名可免配 `AUTH_URL`
+   </details>
 
-  Vercel 上每个项目都会被自动分配一个域名，如 bmm.vercel.app，如果你最终使用这个域名访问 BMM 服务，那么可以不用配置 `AUTH_URL`，否则必须配置该环境变量。
-</details>
-
-
-4. 在 「Deployments 面板」再重新部署一下即可
+4. 在 Deployments 面板重新部署即可
 
 ### 方式三：使用 Docker 部署
 
-```sh
+```bash
 # 拉取镜像
 docker pull lcclcc/bmm
 
-# 启动容器（使用本地 SQLite， 通过 docker volume bmm 查看数据库文件地址）
-docker run --rm  \
--e DB_DRIVER=sqlite \
--e DB_CONNECTION_URL=file:/app/volume/sqlite.db \
--v bmm:/app/volume \
--p 3000:3000 \
-lcclcc/bmm \
-pnpm start
+# 启动容器（SQLite 模式，通过 docker volume bmm 查看数据库文件地址）
+docker run --rm \
+  -e DB_DRIVER=sqlite \
+  -e DB_CONNECTION_URL=file:/app/volume/sqlite.db \
+  -v bmm:/app/volume \
+  -p 3000:3000 \
+  lcclcc/bmm \
+  pnpm start
 
-# 启动容器（使用 Turso ）
-docker run --rm  \
--e DB_DRIVER=sqlite \
--e DB_CONNECTION_URL=libsql://Turso数据库地址  \
--e DB_AUTH_TOKEN=<Turso数据库令牌> \
--p 3000:3000 \
-lcclcc/bmm \
-pnpm start
+# 启动容器（Turso 模式）
+docker run --rm \
+  -e DB_DRIVER=sqlite \
+  -e DB_CONNECTION_URL=libsql://Turso数据库地址 \
+  -e DB_AUTH_TOKEN=<Turso数据库令牌> \
+  -p 3000:3000 \
+  lcclcc/bmm \
+  pnpm start
 
-# 启动容器（使用 PostgreSQL ）
-docker run --rm  \
--e DB_DRIVER=postgresql \
--e DB_CONNECTION_URL=postgresql://数据库地址 \
--p 3000:3000 \
-lcclcc/bmm \
-pnpm start
-
+# 启动容器（PostgreSQL 模式）
+docker run --rm \
+  -e DB_DRIVER=postgresql \
+  -e DB_CONNECTION_URL=postgresql://数据库地址 \
+  -p 3000:3000 \
+  lcclcc/bmm \
+  pnpm start
 ```
 
+---
 
-## 🤖 接入 AI 服务（可选）
+## 🤖 AI 集成
 
-本项目通过 AI 实现了 **分析总结网站、给网站打标签、分析相关联的标签** 的功能，可大大减少维护书签数据的工作量。
+AI 功能可大幅减少维护书签的工作量：
 
-目前已内置 OpenAI 接口标准的支持。无需修改代码，只需在环境变量中配置即可直接接入 **OpenAI** 以及 **DeepSeek、Moonshot (Kimi)、GLM、豆包** 等支持该标准的第三方服务。
+- 📝 **网站分析** - 自动提取标题、描述、图标
+- 🏷️ **智能标签** - 自动推荐相关标签
+- 🎨 **主题生成** - 分析标签关联和主题色
+
+### 支持的 AI 服务
+
+本项目支持所有 OpenAI 接口标准的服务：
+
+- [OpenAI](https://openai.com/)
+- [DeepSeek](https://www.deepseek.com/)
+- [Moonshot (Kimi)](https://www.moonshot.cn/)
+- [GLM (智谱)](https://www.zhipuai.cn/)
+- ......
+
+### 配置示例
 
 在 `.env` 文件中添加：
 
@@ -159,92 +262,109 @@ OPENAI_BASE_URL=https://api.deepseek.com/v1
 OPENAI_MODEL=deepseek-chat
 ```
 
-对于其它不兼容 OpenAI API 标准的服务，如 Gemini / Anthropic 等，可参考 [AI SDK Providers](https://ai-sdk.dev/providers/ai-sdk-providers) 接入。
+对于其它不兼容 OpenAI API 标准的服务（如 Gemini / Anthropic 等），可参考 [AI SDK Providers](https://ai-sdk.dev/providers/ai-sdk-providers) 接入。
 
+---
 
-## 接入 Github 授权登录（可选）
+## 🔐 GitHub OAuth 配置
 
-BMM 支持使用 Github 授权登录，配置 Github OAuth 即可实现。
+### 创建 OAuth App
+
+1. 登录 GitHub 账户，访问 https://github.com/settings/applications/new
+2. 填写表单内容
+
+   <img width="480" src="./doc/images/github-oauth-new.png">
+
+   **重要**：`Authorization callback URL` 必须与部署地址一致！
+
+3. 创建 Client secret
+
+   <img width="480" src="./doc/images/github-oauth-new-secret.png">
+
+### 环境变量
+
+```bash
+AUTH_GITHUB_ID=your-client-id
+AUTH_GITHUB_SECRET=your-client-secret
+AUTH_URL=https://your-domain.com  # 必须与 callback URL 一致
+```
+
+---
+
+## ❓ 常见问题
 
 <details>
-  <summary>
-  查看创建步骤
-  </summary>
+<summary>
+如何设置 <code>AUTH_URL</code> 和 GitHub Authorization callback URL？
+</summary>
 
-1. 登录您的 Github 账户后，访问 https://github.com/settings/applications/new
+<br>
 
-2. 依次填写表单内容
+`AUTH_URL` 和 GitHub OAuth App 中的 Authorization callback URL 必须一致，等于您访问 BMM 的地址：
 
-<img width="480" src="./doc/images/github-oauth-new.png">
-
-其他内容可随意填写，最重要的是 `Authorization callback URL` 这一项，请保证它和你的项目最终部署的 **线上访问地址** 一致！
-
-3. 创建一个 Client secret
-
-<img width="480" src="./doc/images/github-oauth-new-secret.png">
+- `http://localhost:3000` - 本地开发
+- `https://bmm.vercel.app` - Vercel 默认域名
+- `https://example.com` - 自定义域名
+- `http://10.1.2.3:3000` - IP 直接访问
 
 </details>
 
-Github OAuth App 的 Client ID 和 Client Secret 将分别用作环境变量 `AUTH_GITHUB_ID` 和 `AUTH_GITHUB_SECRET`，填写的 Authorization callback URL 要和环境变量 `AUTH_URL` 保持一致。
-
-## 🤔 常见问题
-
 <details>
-  <summary>
-    如何设置环境变量 <code>AUTH_URL</code> 和 Github 中的 Authorization callback URL?
-  </summary>
-  
-  <br>
-  首先需要明确， <code>AUTH_URL</code> 和 Github OAuth App 中的 Authorization callback URL 是一致的，用于指定用户在 Github 确认授权后，浏览器需要重定向的服务器地址。
-  
-  <br>
-  它们的值如何设定，简单来说，通过什么地址访问 BMM 服务，就把该地址作为它们的值，例如：
+<summary>
+Github 登录失败：redirect_uri 错误
+</summary>
 
-  - http://localhost:3000 - 本地开发
-  - https://bmm.vercel.app - 部署到 Vercel 的平台上，使用 Vercel 为你分配的域名
-  - https://example.com - 用 nginx 代理了本机地址，线上通过域名访问服务
-  - http://10.1.2.3:3000 - 线上通过 IP:PORT 直接访问服务
-  
-</details>
+<br>
 
-
-<details>
-  <summary>
-    Github 登录失败：redirect_uri 错误
-  </summary>
-
-  <br>
-  如果在 Github 授权之后出现如下错误提示：
+错误提示：
 
 ![github-redirect-uri-error](./doc/images/github-redirect-uri-err.png)
 
-这表示授权之后 Github 需要跳转的地址和 [Github:OAuth Apps](https://github.com/settings/developers) 中的配置不一致。
-
-**请保证下方配置的 Authorization callback URL 和你访问的域名地址、 `AUTH_URL` 一致。**
+**解决方案**：确保 GitHub OAuth App 中的 `Authorization callback URL` 与 `AUTH_URL` 和访问域名一致。
 
 ![github-oauth-cb-url](./doc/images/github-oauth-cb-url.png)
 
 </details>
 
 <details>
-  <summary>
-    修改了项目端口后，Github 授权登录回调地址的端口有误
-  </summary>
+<summary>
+修改端口后回调地址有误
+</summary>
 
-  <br>
-  如果你修改了项目端口，并通过 http://{IP}:{PORT} 的方式访问 bmm，那你也需要修改环境变量 <code>AUTH_URL</code>。
+<br>
 
-  <br>
-  再次明确：访问项目的地址、Authorization callback URL、AUTH_URL 这三者应该是一致的。
+如果您修改了项目端口并通过 `http://{IP}:{PORT}` 访问，需要同步修改 `AUTH_URL`。
+
+**原则**：访问地址 = Authorization callback URL = `AUTH_URL`
+
 </details>
-
 
 <details>
-  <summary>
-    支持其他数据库吗？
-  </summary>
-  
-  <br>
-  借助 drizzle-orm 的能力，本项目可以快速接入 MySQL 数据库。
+<summary>
+支持其他数据库吗？
+</summary>
+
+<br>
+
+借助 Drizzle ORM，可快速接入 MySQL 等数据库。
+
 </details>
 
+---
+
+## 📄 许可证
+
+本项目采用 [MIT](./LICENSE) 许可证。
+
+---
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+---
+
+<div align="center">
+  <p>Made with ❤️ by <a href="https://github.com/Y80">Y80</a></p>
+  <p>如果这个项目对您有帮助，请给个 ⭐ Star！</p>
+</div>
