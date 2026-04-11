@@ -12,11 +12,11 @@ export default function Page() {
   const { totalBookmarks } = usePublicContext()
 
   return (
-    <div className="-mt-[10vh] h-full flex-col gap-4 flex-center">
+    <div className="flex-center -mt-[10vh] h-full flex-col gap-4">
       {!totalBookmarks && (
         <>
           <Image src={Assets.BOX_EMPTY_PNG} alt="empty" width={128} height={128} />
-          <span className="text-xs text-foreground-500">暂无数据</span>
+          <span className="text-foreground-500 text-xs">暂无数据</span>
         </>
       )}
       {session.status === 'authenticated' ? (
@@ -45,7 +45,7 @@ export default function Page() {
           href={PageRoutes.LOGIN}
           className="w-56"
           color="primary"
-          startContent={<span className={cn(IconNames.USER, 'text-base')} />}
+          startContent={<span className={cn(IconNames.Tabler.USER, 'text-base')} />}
         >
           登录后继续
         </ReButton>

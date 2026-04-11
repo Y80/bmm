@@ -13,6 +13,7 @@ https://www.heroui.com/docs/guide/tailwind-v4
 
 @import 'tailwindcss';
 @config '../tailwind.config.ts';
+@source not '../.agents';
 
 @utility container {
   margin-inline: auto;

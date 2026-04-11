@@ -229,8 +229,8 @@ export default function UploadPage() {
               <span
                 className={cn(
                   state.openedCategoryIds.includes(node.id)
-                    ? 'icon-[tabler--folder-open]'
-                    : 'icon-[tabler--folder]'
+                    ? IconNames.Tabler.FOLDER_OPEN
+                    : IconNames.Tabler.FOLDER
                 )}
               />
               <span>{node.name}</span>
@@ -257,7 +257,7 @@ export default function UploadPage() {
             className="text-foreground-700 inline-flex max-w-full items-center gap-2 hover:opacity-70"
             target="_blank"
           >
-            <span className="icon-[hugeicons--internet]" />
+            <span className={IconNames.Huge.INTERNET} />
             <span className="truncate">{node.name}</span>
           </a>
         </section>
@@ -269,14 +269,16 @@ export default function UploadPage() {
           <ButtonGroup>
             <ReButton
               size="sm"
-              startContent={<span className="icon-[tabler--arrows-move-vertical] text-xl" />}
+              startContent={
+                <span className={cn(IconNames.Tabler.ARROWS_MOVE_VERTICAL, 'text-xl')} />
+              }
               onClick={() => setState({ openedCategoryIds: allCategories.map((e) => e.id) })}
             >
               展开全部
             </ReButton>
             <ReButton
               size="sm"
-              startContent={<span className={'icon-[tabler--fold] text-xl'} />}
+              startContent={<span className={cn(IconNames.Tabler.FOLD, 'text-xl')} />}
               onClick={() => setState({ openedCategoryIds: [] })}
             >
               收起全部
@@ -285,7 +287,7 @@ export default function UploadPage() {
           <ReButton
             size="sm"
             className="ml-auto"
-            startContent={<span className={'icon-[tabler--arrow-back-up] text-xl'} />}
+            startContent={<span className={cn(IconNames.Tabler.ARROW_BACK_UP, 'text-xl')} />}
             onClick={() => {
               setState({ file: null })
               inputRef.current!.value = ''
@@ -319,7 +321,10 @@ export default function UploadPage() {
     <main className="flex-center py-20">
       <div className={cn(state.file && 'hidden!', 'w-lg text-center')}>
         <span
-          className={cn(IconNames.IMPORT, 'bg-linear-to-r from-rose-500 to-purple-500 text-6xl')}
+          className={cn(
+            IconNames.Huge.IMPORT,
+            'bg-linear-to-r from-rose-500 to-purple-500 text-6xl'
+          )}
         />
         <h1 className="mt-8 mb-10 text-xl">导入浏览器书签</h1>
         <div
@@ -330,7 +335,7 @@ export default function UploadPage() {
           onClick={() => inputRef.current?.click()}
         >
           <BorderBeam size={160} duration={10} />
-          <span className={cn(IconNames.PLUS, 'text-3xl')} />
+          <span className={cn(IconNames.Tabler.PLUS, 'text-3xl')} />
           <span>选择文件</span>
           <input
             className="hidden"
@@ -351,7 +356,7 @@ export default function UploadPage() {
       <div className={cn((!state.file || state.showUploadList) && 'hidden')}>
         <Panel className="mb-10">
           <h2 className="flex-items-center mb-4 gap-2 text-xl">
-            <span className="icon-[hugeicons--file-01] text-2xl" />
+            <span className={cn(IconNames.Huge.FILE, 'text-2xl')} />
             <span>{state.file?.name}</span>
           </h2>
           <Divider className="mb-5" />
@@ -360,7 +365,7 @@ export default function UploadPage() {
 
         <Panel className='[&_[role="radiogroup"]_label_div]:ml-2'>
           <h2 className="flex-items-center mb-4 gap-2 text-xl">
-            <span className="icon-[hugeicons--settings-05] text-2xl" />
+            <span className={cn(IconNames.Huge.SETTINGS, 'text-2xl')} />
             <span>导入配置</span>
           </h2>
           <Divider />
@@ -429,7 +434,7 @@ export default function UploadPage() {
                   </div>
                 }
               >
-                <span className={cn(IconNames.QUESTION_CIRCLE, 'cursor-pointer')} />
+                <span className={cn(IconNames.Mdi.QUESTION_CIRCLE, 'cursor-pointer')} />
               </ReTooltip>
             </label>
             <div className="mt-4 flex flex-wrap gap-2">

@@ -35,14 +35,14 @@ export default async function Page() {
             <span
               className={cn(
                 'text-2xl',
-                link.label.includes('书签') ? IconNames.BOOKMARK : IconNames.TAG
+                link.label.includes('书签') ? IconNames.Tabler.BOOKMARK : IconNames.Tabler.TAG
               )}
             />
             <span>{link.label}</span>
             <span
               className={cn(
                 'absolute top-1 right-1 text-5xl opacity-30 transition group-hover:opacity-80',
-                link.label.includes('新建') ? IconNames.PLUS : IconNames.LIST
+                link.label.includes('新建') ? IconNames.Tabler.PLUS : IconNames.Tabler.LIST
               )}
             />
           </ReButton>
@@ -52,7 +52,7 @@ export default async function Page() {
           size="lg"
           className="bg-foreground text-background max-xs:col-span-1 max-xs:h-24 col-span-2 py-7"
         >
-          <span className={cn(IconNames.IMPORT, 'text-xl')} />
+          <span className={cn(IconNames.Huge.IMPORT, 'text-xl')} />
           <span>导入浏览器书签</span>
         </ReButton>
       </div>

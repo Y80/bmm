@@ -1,5 +1,6 @@
 'use client'
 
+import { IconNames } from '@cfg'
 import {
   Input,
   Modal,
@@ -183,7 +184,7 @@ export default function IconPicker(props: Props) {
               isClearable
               value={state.input}
               onValueChange={(v) => setState({ input: v })}
-              startContent={<span className="icon-[tabler--search] size-5" />}
+              startContent={<span className={cn(IconNames.Tabler.SEARCH, 'size-5')} />}
             />
             <Select
               className="w-56"
@@ -204,10 +205,10 @@ export default function IconPicker(props: Props) {
             className={cn('-mr-4 h-96 overflow-scroll pr-4', !showPagination && 'h-[416px]')}
           >
             {!state.icon.names.length && (
-              <div className="h-full text-sm text-gray-400 flex-center">暂无内容</div>
+              <div className="flex-center h-full text-sm text-gray-400">暂无内容</div>
             )}
             {state.loading && (
-              <div className="h-full flex-center">
+              <div className="flex-center h-full">
                 <Spinner />
               </div>
             )}
@@ -216,7 +217,7 @@ export default function IconPicker(props: Props) {
                 <span
                   key={item.name}
                   title={item.name}
-                  className="cursor-pointer rounded-xl p-1.5 text-4xl transition-all hover:scale-90 hover:bg-foreground-200"
+                  className="hover:bg-foreground-200 cursor-pointer rounded-xl p-1.5 text-4xl transition-all hover:scale-90"
                   onClick={() => {
                     props.onSelect?.({
                       name: item.name,

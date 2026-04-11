@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from '@heroui/react'
+import { IconNames } from '@cfg'
 import { useSetState, useUpdateEffect } from 'ahooks'
 import { PropsWithChildren } from 'react'
 import ReTooltip from './re-export/ReTooltip'
@@ -34,7 +35,7 @@ function Wrapper(props: PropsWithChildren<Pick<Props, 'size' | 'className'>>) {
   const size = props.size || DEFAULT_FAVICON_WRAPPER_SIZE
   return (
     <div
-      className={cn('shrink-0 rounded-lg bg-white p-[3px] flex-center', props.className)}
+      className={cn('flex-center shrink-0 rounded-lg bg-white p-[3px]', props.className)}
       style={{ width: size, height: size }}
     >
       {props.children}
@@ -45,7 +46,7 @@ function Wrapper(props: PropsWithChildren<Pick<Props, 'size' | 'className'>>) {
 function renderDefault(props: Props) {
   return (
     <Wrapper {...props}>
-      <span className="icon-[mdi--web] size-full text-zinc-700" />
+      <span className={cn(IconNames.Mdi.WEB, 'size-full text-zinc-700')} />
     </Wrapper>
   )
 }
@@ -54,7 +55,7 @@ function renderError(props: Props) {
   return (
     <Wrapper {...props}>
       <ReTooltip content="加载失败">
-        <span className="icon-[mdi--image-remove-outline] size-full text-red-500" />
+        <span className={cn(IconNames.Mdi.IMAGE_REMOVE_OUTLINE, 'size-full text-red-500')} />
       </ReTooltip>
     </Wrapper>
   )
@@ -90,7 +91,7 @@ export default function Favicon(props: Props) {
         onLoad={() => setState({ status: LoadStatus.LOADED })}
       />
       {showSpinner && (
-        <span className="icon-[tabler--loader] size-full animate-spin text-gray-700" />
+        <span className={cn(IconNames.Tabler.LOADER, 'size-full animate-spin text-gray-700')} />
       )}
     </Wrapper>
   )

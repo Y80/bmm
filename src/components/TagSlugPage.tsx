@@ -12,8 +12,8 @@ import { ReInput, ReTooltip } from '@/components/re-export'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import useSlug from '@/hooks/useSlug'
 import { AnalyzeRelatedTagsResult } from '@/lib/ai/types'
-import { FieldConstraints } from '@cfg'
-import { Accordion, AccordionItem, addToast, Switch } from '@heroui/react'
+import { FieldConstraints, IconNames } from '@cfg'
+import { Accordion, AccordionItem, addToast, cn, Switch } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { useSetState } from 'ahooks'
 import { useEffect } from 'react'
@@ -154,7 +154,7 @@ export default function TagSlugPage(props: TagSlugPageProps) {
                 <span>主标签</span>
                 <ReTooltip content="首页可设置「仅展示主标签」">
                   <div className="border-foreground flex-center cursor-pointer rounded-full border p-px">
-                    <span className="icon-[tabler--question-mark] size-3" />
+                    <span className={cn(IconNames.Tabler.QUESTION_MARK, 'size-3')} />
                   </div>
                 </ReTooltip>
               </label>

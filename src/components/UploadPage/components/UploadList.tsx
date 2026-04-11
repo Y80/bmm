@@ -253,23 +253,38 @@ export default function UploadList(props: Props) {
                       content={`当前书签不会被上传：${bookmark.tip}`}
                       classNames={{ content: 'max-w-56 text-xs' }}
                     >
-                      <span className="icon-[tabler--alert-circle] text-warning-500 cursor-pointer" />
+                      <span
+                        className={cn(
+                          IconNames.Tabler.ALERT_CIRCLE,
+                          'text-warning-500 cursor-pointer'
+                        )}
+                      />
                     </ReTooltip>
                   )}
                   {bookmark.status === UploadStatus.TRUNCATED && (
                     <ReTooltip content={bookmark.tip} classNames={{ content: 'max-w-56 text-xs' }}>
-                      <span className="icon-[tabler--alert-triangle] text-warning-500 cursor-pointer" />
+                      <span
+                        className={cn(
+                          IconNames.Tabler.ALERT_TRIANGLE,
+                          'text-warning-500 cursor-pointer'
+                        )}
+                      />
                     </ReTooltip>
                   )}
                   {bookmark.status === UploadStatus.WAIT && state.uploading && (
-                    <span className="icon-[tabler--loader-2] text-foreground-500 animate-spin cursor-wait" />
+                    <span
+                      className={cn(
+                        IconNames.Tabler.LOADER_2,
+                        'text-foreground-500 animate-spin cursor-wait'
+                      )}
+                    />
                   )}
                   {bookmark.status === UploadStatus.SUCCESS && (
-                    <span className="icon-[tabler--check] text-success-500" />
+                    <span className={cn(IconNames.Tabler.CHECK, 'text-success-500')} />
                   )}
                   {bookmark.status === UploadStatus.FAILED && (
                     <ReTooltip content={bookmark.tip}>
-                      <span className="icon-[tabler--x] text-danger-400 cursor-pointer" />
+                      <span className={cn(IconNames.Tabler.X, 'text-danger-400 cursor-pointer')} />
                     </ReTooltip>
                   )}
                 </span>

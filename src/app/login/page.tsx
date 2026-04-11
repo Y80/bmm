@@ -180,9 +180,9 @@ export default function Page() {
                     )}
                     onClick={toggleRegisterMode}
                   >
-                    {state.isRegisterMode && <span className={IconNames.ARROW_LEFT} />}
+                    {state.isRegisterMode && <span className={IconNames.Tabler.ARROW_LEFT} />}
                     <span>{state.isRegisterMode ? '返回登录' : '还没账号？去注册'}</span>
-                    {!state.isRegisterMode && <span className={IconNames.ARROW_RIGHT} />}
+                    {!state.isRegisterMode && <span className={IconNames.Tabler.ARROW_RIGHT} />}
                   </button>
                 </div>
                 <ReButton
@@ -198,7 +198,7 @@ export default function Page() {
               <ReButton
                 className="bg-foreground text-background mt-8"
                 fullWidth
-                startContent={<span className="icon-[mdi--github] text-2xl" />}
+                startContent={<span className={cn(IconNames.Mdi.GITHUB, 'text-2xl')} />}
                 onClick={handleGithubAuth}
               >
                 Github 授权登录（免注册）

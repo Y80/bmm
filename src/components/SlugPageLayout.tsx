@@ -1,6 +1,7 @@
 'use client'
 
-import { Button, Divider } from '@heroui/react'
+import { IconNames } from '@cfg'
+import { Button, Divider, cn } from '@heroui/react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { PropsWithChildren } from 'react'
 import { ReButton } from './re-export'
@@ -17,9 +18,9 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
   const router = useRouter()
 
   return (
-    <div className="mx-auto w-md flex-col py-16 flex-items-center">
+    <div className="flex-items-center mx-auto w-md flex-col py-16">
       <h1 className="text-3xl">
-        <span className="mr-4 rounded-xl bg-foreground-200 px-4 py-1 text-foreground">
+        <span className="bg-foreground-200 text-foreground mr-4 rounded-xl px-4 py-1">
           {slug === 'new' ? '新建' : '编辑'}
         </span>
         <span>{pathname.includes('/tag') ? '标签' : '书签'}</span>
@@ -34,7 +35,7 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
         className="mt-20 w-full"
         isLoading={props.isSaving}
         onPress={router.back}
-        startContent={<span className="icon-[tabler--arrow-back] text-xl" />}
+        startContent={<span className={cn(IconNames.Tabler.ARROW_BACK, 'text-xl')} />}
       >
         返 回
       </Button>
@@ -42,7 +43,9 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
         color="primary"
         className="mt-4 w-full shadow-lg"
         onClick={props.onSave}
-        startContent={!props.isSaving && <span className="icon-[tabler--download] text-xl" />}
+        startContent={
+          !props.isSaving && <span className={cn(IconNames.Tabler.DOWNLOAD, 'text-xl')} />
+        }
       >
         保 存
       </ReButton>

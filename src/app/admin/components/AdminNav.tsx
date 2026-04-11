@@ -59,7 +59,7 @@ export default function AdminNav() {
             content: '前往主页',
           }}
         >
-          <span className={IconNames.HOME} />
+          <span className={IconNames.Tabler.HOME} />
         </ReButton>
         <ThemeToggle />
       </NavbarContent>

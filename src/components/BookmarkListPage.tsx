@@ -46,10 +46,10 @@ import { useRef } from 'react'
 import z from 'zod'
 
 const SORTERS = [
-  { name: '创建时间降序', key: '-createTime', iconCls: IconNames.SORT_DESC },
-  { name: '创建时间升序', key: '+createTime', iconCls: IconNames.SORT_ASC },
-  { name: '更新时间降序', key: '-updateTime', iconCls: IconNames.SORT_DESC },
-  { name: '更新时间升序', key: '+updateTime', iconCls: IconNames.SORT_ASC },
+  { name: '创建时间降序', key: '-createTime', iconCls: IconNames.Tabler.SORT_DESC },
+  { name: '创建时间升序', key: '+createTime', iconCls: IconNames.Tabler.SORT_ASC },
+  { name: '更新时间降序', key: '-updateTime', iconCls: IconNames.Tabler.SORT_DESC },
+  { name: '更新时间升序', key: '+updateTime', iconCls: IconNames.Tabler.SORT_ASC },
 ] as const
 
 export type BookmarkListPageProps = {
@@ -173,7 +173,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           variant="flat"
           size="sm"
           className="w-20"
-          startContent={<span className={cn(IconNames.PLUS, 'text-sm')} />}
+          startContent={<span className={cn(IconNames.Tabler.PLUS, 'text-sm')} />}
           href={(isUserSpace ? PageRoutes.User : PageRoutes.Admin).bookmarkSlug('new')}
         >
           新建
@@ -282,7 +282,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                 </TableCell>
                 <TableCell>
                   <div
-                    className="max-w-32 truncate text-sm max-xs:max-w-24"
+                    className="max-xs:max-w-24 max-w-32 truncate text-sm"
                     title={renderRelatedTags(item.relatedTagIds)}
                   >
                     {renderRelatedTags(item.relatedTagIds)}
@@ -301,7 +301,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                     variant="light"
                     isIconOnly
                     className="text-2xl"
-                    startContent={<span className={IconNames.TRASH} />}
+                    startContent={<span className={IconNames.Tabler.TRASH} />}
                     popoverContent={
                       <div className="flex max-w-52 flex-col gap-4 p-4">
                         <p>确定删除「{item.name}」？</p>
@@ -316,7 +316,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                     className="text-2xl"
                     isIconOnly
                     color="warning"
-                    startContent={<span className={IconNames.EDIT} />}
+                    startContent={<span className={IconNames.Tabler.EDIT} />}
                     onClick={() => toEditPage(item)}
                   />
                 </TableCell>

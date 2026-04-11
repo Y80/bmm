@@ -30,7 +30,7 @@ export default function TagPickerItem({ tag, tags, onClick }: Props) {
         onClickTag({ event: e, tag })
       }}
     >
-      <ClientIcon color={tag.color || undefined} icon={tag.icon || IconNames.TAG} />
+      <ClientIcon color={tag.color || undefined} icon={tag.icon || IconNames.Tabler.TAG} />
       <span className="text-foreground-600 grow truncate">{tag.name}</span>
     </a>
   )

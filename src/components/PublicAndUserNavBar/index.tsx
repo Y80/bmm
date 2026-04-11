@@ -26,7 +26,7 @@ import { SearchInput } from './SearchInput'
 const UserLinkGroups = [
   {
     key: 'bookmark',
-    icon: IconNames.BOOKMARK,
+    icon: IconNames.Tabler.BOOKMARK,
     list: [
       {
         label: '新建书签',
@@ -42,7 +42,7 @@ const UserLinkGroups = [
   },
   {
     key: 'tag',
-    icon: IconNames.TAG,
+    icon: IconNames.Tabler.TAG,
     list: [
       {
         label: '新建标签',
@@ -136,7 +136,7 @@ export function PublicAndUserNavbar(props: Props) {
           className={cn(IconButtonProps.className, !totalBookmarks && 'hidden', 'max-xs:hidden')}
           href={isUserSpace ? PageRoutes.User.RANDOM : PageRoutes.Public.RANDOM}
           tooltip="随便看看"
-          startContent={<span className={IconNames.SIEVE} />}
+          startContent={<span className={IconNames.Tabler.DICE_3} />}
         />
         <ThemeToggle />
         <ReButton
@@ -148,13 +148,13 @@ export function PublicAndUserNavbar(props: Props) {
             placement: 'bottom-end',
             content: (
               <div className="flex-center gap-2 p-2">
-                <span className="icon-[tabler--star-filled] text-xl text-yellow-400" />
+                <span className={cn(IconNames.Tabler.STAR_FILLED, 'text-xl text-yellow-400')} />
                 <span>欢迎 Star</span>
               </div>
             ),
           }}
         >
-          <span className={IconNames.GITHUB} />
+          <span className={IconNames.Tabler.BRAND_GITHUB} />
         </ReButton>
         <NavUser />
       </NavbarContent>

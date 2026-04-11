@@ -63,7 +63,7 @@ export function SearchInput(props: BaseComponentProps) {
         inputWrapper: 'dark:bg-default-100/50',
       }}
       baseRef={inputRef}
-      startContent={<span className={cn(IconNames.SEARCH, 'text-xl')} />}
+      startContent={<span className={cn(IconNames.Tabler.SEARCH, 'text-xl')} />}
       endContent={
         !state.focusInput && !state.input && <Kbd className="b dark:bg-default-100/80 px-3">/</Kbd>
       }

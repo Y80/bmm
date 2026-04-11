@@ -90,7 +90,7 @@ export default function ColorPicker(props: Props) {
           <div
             style={{ backgroundColor: state.color }}
             className={cn(
-              'mt-2 gap-1 rounded-lg py-1 flex-center',
+              'flex-center mt-2 gap-1 rounded-lg py-1',
               Color(state.color).isDark() ? 'text-white' : 'text-black'
             )}
           >
@@ -103,7 +103,7 @@ export default function ColorPicker(props: Props) {
             />
           </div>
           <div className="mt-4 text-sm">
-            <div className="gap-2 flex-items-center">
+            <div className="flex-items-center gap-2">
               <label>预览</label>
               <Tooltip
                 content={
@@ -112,43 +112,43 @@ export default function ColorPicker(props: Props) {
                   </div>
                 }
               >
-                <span className={cn(IconNames.QUESTION_CIRCLE, 'cursor-pointer text-base')} />
+                <span className={cn(IconNames.Mdi.QUESTION_CIRCLE, 'cursor-pointer text-base')} />
               </Tooltip>
             </div>
             <Divider className="mt-2" />
             <div className="mt-4 flex">
               <section className="w-[48%]">
-                <div className="mb-2 text-xs text-foreground-500">
+                <div className="text-foreground-500 mb-2 text-xs">
                   <span>明亮</span>
                   <span>（对比度：{foregroundColors.light.contrast}）</span>
                 </div>
                 <div className={cn('rounded-xl border p-4', Background.LIGHT_CLASS)}>
                   <div
-                    className="mx-auto gap-2 rounded-xl py-2 flex-center"
+                    className="flex-center mx-auto gap-2 rounded-xl py-2"
                     style={{
                       color: foregroundColors.light.color.hex(),
                       backgroundColor: foregroundColors.light.color.fade(0.85).toString(),
                     }}
                   >
-                    <span className={IconNames.TAG} />
+                    <span className={IconNames.Tabler.TAG} />
                     <span>Tag 测试</span>
                   </div>
                 </div>
               </section>
               <section className="ml-auto w-[48%]">
-                <div className="mb-2 text-xs text-foreground-500">
+                <div className="text-foreground-500 mb-2 text-xs">
                   <span>暗夜</span>
                   <span>（对比度：{foregroundColors.dark.contrast}）</span>
                 </div>
                 <div className={cn('rounded-xl border p-4', Background.DARK_CLASS)}>
                   <div
-                    className="mx-auto gap-2 rounded-xl py-2 flex-center"
+                    className="flex-center mx-auto gap-2 rounded-xl py-2"
                     style={{
                       color: foregroundColors.dark.color.hex(),
                       backgroundColor: foregroundColors.dark.color.fade(0.85).toString(),
                     }}
                   >
-                    <span className={IconNames.TAG} />
+                    <span className={IconNames.Tabler.TAG} />
                     <span>Tag 测试</span>
                   </div>
                 </div>

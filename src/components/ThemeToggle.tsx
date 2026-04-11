@@ -9,9 +9,9 @@ import { IconButtonProps } from './common'
 import ReButton from './re-export/ReButton'
 
 const ThemeListItems = [
-  { key: 'light', label: 'Light', icon: IconNames.SUN },
-  { key: 'dark', label: 'Dark', icon: IconNames.MOON_STARS },
-  { key: 'system', label: 'System', icon: IconNames.DEVICE_DESKTOP },
+  { key: 'light', label: 'Light', icon: IconNames.Tabler.SUN },
+  { key: 'dark', label: 'Dark', icon: IconNames.Tabler.MOON_STARS },
+  { key: 'system', label: 'System', icon: IconNames.Tabler.DEVICE_DESKTOP },
 ]
 
 export default function ThemeToggle() {
@@ -31,19 +31,19 @@ export default function ThemeToggle() {
       <ReButton
         role="mobile-dark-button"
         {...IconButtonProps}
-        className={cn(IconButtonProps.className, 'hidden max-xs:dark:flex')}
+        className={cn(IconButtonProps.className, 'max-xs:dark:flex hidden')}
         onClick={() => mergedSetTheme('light')}
       >
-        <span className={IconNames.MOON_STARS} />
+        <span className={IconNames.Tabler.MOON_STARS} />
       </ReButton>
       {/* 仅在 Mobile + Light 条件下展示 */}
       <ReButton
         role="mobile-light-button"
         {...IconButtonProps}
-        className={cn(IconButtonProps.className, 'hidden max-xs:light:flex')}
+        className={cn(IconButtonProps.className, 'max-xs:light:flex hidden')}
         onClick={() => mergedSetTheme('dark')}
       >
-        <span className={IconNames.SUN} />
+        <span className={IconNames.Tabler.SUN} />
       </ReButton>
       {/* PC 端的主题切换按钮 */}
       <ReButton
@@ -72,7 +72,7 @@ export default function ThemeToggle() {
           ),
         }}
       >
-        <span className={isClient ? currentThemeIcon : IconNames.DEVICE_DESKTOP} />
+        <span className={isClient ? currentThemeIcon : IconNames.Tabler.DEVICE_DESKTOP} />
       </ReButton>
     </>
   )

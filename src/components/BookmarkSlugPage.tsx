@@ -208,7 +208,9 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
             isLoading={state.loading}
             className={cn('bg-transparent text-xl', !hasValidUrl && 'scale-0')}
           >
-            <span className={cn('bg-linear-to-r from-pink-500 to-violet-500', IconNames.STARS)} />
+            <span
+              className={cn('bg-linear-to-r from-pink-500 to-violet-500', IconNames.Mdi.STARS)}
+            />
           </Button>
         </DropdownTrigger>
         <DropdownMenu>
@@ -299,7 +301,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
                 ) : state.probeResult === 'failed' ? (
                   <span className={cn(IconNames.Tabler.ALERT_CIRCLE, 'text-warning text-lg')} />
                 ) : (
-                  <span className={cn(IconNames.SEARCH, 'text-lg')} />
+                  <span className={cn(IconNames.Tabler.SEARCH, 'text-lg')} />
                 )}
               </div>
             </DropdownItem>

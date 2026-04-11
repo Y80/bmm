@@ -69,7 +69,7 @@ export default function TagListPage(props: TagListPageProps) {
     <ListPageLayout>
       <ButtonGroup variant="flat" size="sm" className="mb-4">
         <ReButton
-          startContent={<span className={cn(IconNames.PLUS, 'text-sm')} />}
+          startContent={<span className={cn(IconNames.Tabler.PLUS, 'text-sm')} />}
           href={(isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug('new')}
         >
           新建
@@ -77,7 +77,7 @@ export default function TagListPage(props: TagListPageProps) {
         <SortTagModal refreshTags={props.refreshTags} tags={props.tags}>
           <ReButton
             isDisabled={props.tags.length < 2}
-            startContent={<span className={cn(IconNames.SORT, 'text-sm')} />}
+            startContent={<span className={cn(IconNames.Tabler.ARROWS_SORT, 'text-sm')} />}
           >
             排序
           </ReButton>
@@ -95,11 +95,11 @@ export default function TagListPage(props: TagListPageProps) {
         <TableBody emptyContent={<EmptyListPlaceholder target="tag" />}>
           {props.tags.map((tag) => (
             <TableRow key={tag.id}>
-              <TableCell className="text-3xl text-foreground-700 max-xs:text-xl">
+              <TableCell className="text-foreground-700 max-xs:text-xl text-3xl">
                 {tag.icon && <Icon color={tag.color || undefined} icon={tag.icon} />}
               </TableCell>
               <TableCell className="max-xs:text-sm">{tag.name}</TableCell>
-              <TableCell className="w-24 pr-8 max-xs:hidden md:w-40">
+              <TableCell className="max-xs:hidden w-24 pr-8 md:w-40">
                 {tag.color ? (
                   <div
                     className="h-8 w-full cursor-pointer rounded-lg border-2 transition duration-500"
@@ -127,7 +127,7 @@ export default function TagListPage(props: TagListPageProps) {
                 />
               </TableCell>
               <TableCell>
-                <div className="truncate text-sm max-xs:max-w-24">
+                <div className="max-xs:max-w-24 truncate text-sm">
                   {getRelatedTagsName(tag.relatedTagIds)}
                 </div>
               </TableCell>
@@ -137,7 +137,7 @@ export default function TagListPage(props: TagListPageProps) {
                   color="danger"
                   className="text-2xl"
                   isIconOnly
-                  startContent={<span className={IconNames.TRASH} />}
+                  startContent={<span className={IconNames.Tabler.TRASH} />}
                   popoverContent={
                     <div className="flex max-w-[280px] flex-col gap-4 p-4">
                       <p>确定删除标签「{tag.name}」？</p>
@@ -157,7 +157,7 @@ export default function TagListPage(props: TagListPageProps) {
                   className="text-2xl"
                   isIconOnly
                   color="warning"
-                  startContent={<span className={IconNames.EDIT} />}
+                  startContent={<span className={IconNames.Tabler.EDIT} />}
                   onClick={() =>
                     router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug(tag.id))
                   }
