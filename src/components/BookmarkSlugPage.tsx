@@ -17,7 +17,6 @@ import { runAction } from '@/utils/client'
 import { buildWebsiteIconCandidates, probeWebsiteIcon } from '@/utils/website-icon'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import {
-  addToast,
   Button,
   cn,
   Dropdown,
@@ -174,15 +173,6 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       probeResult: icon ? 'success' : 'failed',
       probeMatchedIcon: icon,
     })
-
-    if (!icon) {
-      addToast({
-        color: 'warning',
-        title: '未找到可用站点图标',
-        description: '可以手动输入图标地址，或继续尝试第三方 API。',
-      })
-      return
-    }
   }
 
   async function onSave() {
