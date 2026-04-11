@@ -88,10 +88,13 @@ export const IconNames = {
   TAG: 'icon-[tabler--tag]',
   TRASH: 'icon-[tabler--trash]',
   Tabler: {
+    API: 'icon-[tabler--api]',
+    ALERT_CIRCLE: 'icon-[tabler--alert-circle]',
     USER: 'icon-[tabler--user]',
     DASHBOARD: 'icon-[tabler--layout-dashboard]',
     LOGOUT: 'icon-[tabler--logout-2]',
     EXCLAMATION_CIRCLE: 'icon-[tabler--exclamation-circle]',
+    LOADER: 'icon-[tabler--loader]',
   },
   Huge: {
     SEARCH: 'icon-[hugeicons--search-01]',

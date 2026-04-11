@@ -14,8 +14,10 @@ import { usePageUtil, useSlug } from '@/hooks'
 import { z } from '@/lib/zod'
 import { isValidUrl } from '@/utils'
 import { runAction } from '@/utils/client'
+import { buildWebsiteIconCandidates, probeWebsiteIcon } from '@/utils/website-icon'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import {
+  addToast,
   Button,
   cn,
   Dropdown,
@@ -27,7 +29,7 @@ import {
 } from '@heroui/react'
 import { useSetState, useUpdateEffect } from 'ahooks'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { fromZodError } from 'zod-validation-error'
 
 const formSchema = z.object({
@@ -68,7 +70,18 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     name: '',
     icon: '',
   })
-  const [state, setState] = useState({ loading: false })
+  const [state, setState] = useSetState({
+    loading: false,
+    iconLoading: false,
+    iconDropdownOpen: false,
+    probePathIndex: 0,
+    probeResult: '' as '' | 'success' | 'failed',
+    probeMatchedIcon: '',
+  })
+  const hasValidUrl = !!bookmark.url && !invalidInfos.url
+  const siteIcons = hasValidUrl ? buildWebsiteIconCandidates(bookmark.url) : []
+  const probeRequestIdRef = useRef(0)
+  const latestUrlRef = useRef(bookmark.url)
 
   useUpdateEffect(() => {
     props.bookmark && setBookmark({ ...props.bookmark })
@@ -76,6 +89,36 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   useUpdateEffect(() => {
     !state.loading && validateAll()
   }, [state.loading])
+  useUpdateEffect(() => {
+    if (!state.iconDropdownOpen) return
+
+    if (hasValidUrl) {
+      detectWebsiteIcon()
+      return
+    }
+
+    probeRequestIdRef.current += 1
+    setState({
+      iconLoading: false,
+      probePathIndex: 0,
+      probeResult: '',
+      probeMatchedIcon: '',
+    })
+  }, [bookmark.url, hasValidUrl, state.iconDropdownOpen])
+
+  useEffect(() => {
+    latestUrlRef.current = bookmark.url
+  }, [bookmark.url])
+
+  useEffect(() => {
+    if (!state.iconLoading || !state.iconDropdownOpen || siteIcons.length < 2) return
+
+    const timer = window.setInterval(() => {
+      setState((s) => ({ ...s, probePathIndex: (s.probePathIndex + 1) % siteIcons.length }))
+    }, 100)
+
+    return () => window.clearInterval(timer)
+  }, [setState, siteIcons.length, state.iconDropdownOpen, state.iconLoading])
 
   function validateItem(key: keyof typeof invalidInfos) {
     const res = formSchema.shape[key].safeParse(bookmark[key])
@@ -113,6 +156,35 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       relatedTagIds: props.tags.filter((tag) => data.tags.includes(tag.name)).map((tag) => tag.id),
     })
   }
+
+  async function detectWebsiteIcon() {
+    if (!hasValidUrl || state.iconLoading) return
+
+    const targetUrl = bookmark.url
+    const requestId = probeRequestIdRef.current + 1
+    probeRequestIdRef.current = requestId
+
+    setState({ iconLoading: true, probePathIndex: 0, probeResult: '', probeMatchedIcon: '' })
+    const icon = await probeWebsiteIcon(targetUrl)
+
+    if (requestId !== probeRequestIdRef.current || latestUrlRef.current !== targetUrl) return
+
+    setState({
+      iconLoading: false,
+      probeResult: icon ? 'success' : 'failed',
+      probeMatchedIcon: icon,
+    })
+
+    if (!icon) {
+      addToast({
+        color: 'warning',
+        title: '未找到可用站点图标',
+        description: '可以手动输入图标地址，或继续尝试第三方 API。',
+      })
+      return
+    }
+  }
+
   async function onSave() {
     if (!validateAll()) return
     const action = slug.isNew
@@ -182,14 +254,66 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       // { name: 'Uomg', src: 'https://api.uomg.com/api/get.favicon?url=' + host },
       { name: '流浪猫', src: `https://api.cxr.cool/ico/?url=${host}` },
     ]
+    const currentProbePath = siteIcons[state.probePathIndex]
+    const probeLabel = state.iconLoading
+      ? `${new URL(currentProbePath).pathname}`
+      : state.probeResult === 'success'
+        ? new URL(state.probeMatchedIcon).pathname
+        : state.probeResult === 'failed'
+          ? '常见路径探测失败'
+          : '打开下拉框后自动探测'
+
     return (
-      <Dropdown placement="right-start">
+      <Dropdown
+        placement="right-start"
+        onOpenChange={(isOpen) => setState({ iconDropdownOpen: isOpen })}
+      >
         <DropdownTrigger>
           <Button isIconOnly size="sm" className={cn('bg-transparent', !hasValidUrl && 'scale-0')}>
-            <span className="icon-[tabler--api] text-2xl" />
+            <span className={cn(IconNames.Tabler.API, 'text-2xl')} />
           </Button>
         </DropdownTrigger>
         <DropdownMenu>
+          <DropdownSection title="站点路径探测">
+            <DropdownItem
+              key="probe-status"
+              textValue={probeLabel}
+              className="opacity-100"
+              isDisabled={state.iconLoading || state.probeResult === 'failed'}
+              onClick={() =>
+                state.probeResult === 'success' &&
+                state.probeMatchedIcon &&
+                setBookmark({ icon: state.probeMatchedIcon })
+              }
+            >
+              <div className="flex-items-center justify-between gap-4">
+                <span
+                  className={cn(
+                    'min-w-0 flex-1 truncate',
+                    state.probeResult === 'failed' && 'text-warning'
+                  )}
+                >
+                  {probeLabel}
+                </span>
+                {state.iconLoading ? (
+                  <span className={cn(IconNames.Tabler.LOADER, 'animate-spin text-lg')} />
+                ) : state.probeResult === 'success' && state.probeMatchedIcon ? (
+                  <Favicon
+                    size={20}
+                    src={state.probeMatchedIcon}
+                    showSpinner
+                    className="border"
+                    disableLazyLoading
+                    showErrorIconOnFailed
+                  />
+                ) : state.probeResult === 'failed' ? (
+                  <span className={cn(IconNames.Tabler.ALERT_CIRCLE, 'text-warning text-lg')} />
+                ) : (
+                  <span className={cn(IconNames.SEARCH, 'text-lg')} />
+                )}
+              </div>
+            </DropdownItem>
+          </DropdownSection>
           <DropdownSection title="第三方 API 获取图标">
             {list.map((item) => (
               <DropdownItem
@@ -215,8 +339,6 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       </Dropdown>
     )
   }
-
-  const hasValidUrl = bookmark.url && !invalidInfos.url
 
   return (
     <SlugPageLayout onSave={onSave}>
