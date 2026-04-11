@@ -1,0 +1,4 @@
+interface:
+  display_name: "BMM Iconify Icons"
+  short_description: "Update Iconify usage and IconNames conventions in BMM"
+  default_prompt: "Use $bmm-iconify-icons to update Iconify classes and IconNames usage in this repository."
