@@ -1,0 +1,4 @@
+interface:
+  display_name: "BMM Bookmark Form"
+  short_description: "Update BMM bookmark form, favicon, and probing flows"
+  default_prompt: "Use $bmm-bookmark-form to update the bookmark create/edit flow in this repository."
