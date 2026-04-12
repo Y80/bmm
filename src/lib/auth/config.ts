@@ -28,7 +28,14 @@ export const authConfig = {
     jwt(params) {
       // console.log('[next-auth][callbacks.jwt]\n', params)
       if (params.user) {
+        params.token.name = params.user.name
+        params.token.email = params.user.email
+        params.token.picture = params.user.image
         params.token.role = params.user.role
+      }
+      if (params.trigger === 'update' && params.session) {
+        params.token.name = params.session.name
+        params.token.picture = params.session.image
       }
       return params.token
     },
@@ -39,6 +46,10 @@ export const authConfig = {
       if (session.user) {
         // 这里的 params.token 是上面 jwt() 的返回
         session.user.id = params.token.sub!
+        session.user.name = params.token.name || ''
+        session.user.email = params.token.email || ''
+        session.user.image = typeof params.token.picture === 'string' ? params.token.picture : null
+        session.user.role = params.token.role as typeof session.user.role
         session.user.isAdmin = params.token.role === 'admin'
       }
       return params.session

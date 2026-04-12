@@ -15,7 +15,7 @@ export const credentialsProvider = CredentialsProvider({
     const [err, user] = await to(CredentialsController.verify(result.data))
     if (err) return null
     return {
-      ...pick(user, ['id', 'name', 'email']),
+      ...pick(user, ['id', 'name', 'email', 'image']),
       role: user.role!,
       isAdmin: user.role === 'admin',
     }

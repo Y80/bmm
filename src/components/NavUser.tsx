@@ -37,6 +37,7 @@ export function NavUser() {
       tooltip={{
         adaptMobile: true,
         placement: 'bottom-end',
+        isOpen: true,
         content: (
           <Listbox
             aria-label="user"
@@ -54,9 +55,15 @@ export function NavUser() {
             <ListboxSection showDivider>
               <ListboxItem
                 href={PageRoutes.User.INDEX}
-                startContent={<span className={cn(IconNames.Tabler.USER, 'text-base')} />}
+                startContent={<span className={cn(IconNames.Tabler.USER, 'h-full text-base')} />}
               >
                 个人空间
+              </ListboxItem>
+              <ListboxItem
+                href={PageRoutes.User.SETTINGS}
+                startContent={<span className={cn(IconNames.Huge.SETTINGS, 'text-base')} />}
+              >
+                个人资料
               </ListboxItem>
               <ListboxItem
                 className="max-xs:hidden"

@@ -12,6 +12,7 @@ import {
   aiAnalyzeWebsiteInput,
   checkGithubOAuthConfig,
   extractHtmlInfoInput,
+  updateUserProfileInput,
 } from './items'
 import { makeAction as make } from './make-action'
 
@@ -55,5 +56,6 @@ export const actAnalyzeRelatedTags = make(aiAnalyzeRelatedTagsInput)
 /// 账号认证
 export const actRegisterUser = make(CredentialsController.create, { guard: false })
 export const actVerifyUser = make(CredentialsController.verify, { guard: false })
+export const actUpdateUserProfile = make(updateUserProfileInput)
 
 export const actCheckGithubOAuthConfig = make(checkGithubOAuthConfig, { guard: false })
