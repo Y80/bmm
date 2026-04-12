@@ -5,6 +5,8 @@ import { Avatar, Divider, Listbox, ListboxItem, ListboxSection, addToast, cn } f
 import { signOut, useSession } from 'next-auth/react'
 import { IconButtonProps } from './common'
 
+const MENU_ITEM_ICON_CLS = 'text-base translate-y-0.5'
+
 export function NavUser() {
   const session = useSession()
   const user = session.data?.user
@@ -37,7 +39,6 @@ export function NavUser() {
       tooltip={{
         adaptMobile: true,
         placement: 'bottom-end',
-        isOpen: true,
         content: (
           <Listbox
             aria-label="user"
@@ -55,20 +56,20 @@ export function NavUser() {
             <ListboxSection showDivider>
               <ListboxItem
                 href={PageRoutes.User.INDEX}
-                startContent={<span className={cn(IconNames.Tabler.USER, 'h-full text-base')} />}
+                startContent={<span className={cn(IconNames.Tabler.USER, MENU_ITEM_ICON_CLS)} />}
               >
                 个人空间
               </ListboxItem>
               <ListboxItem
                 href={PageRoutes.User.SETTINGS}
-                startContent={<span className={cn(IconNames.Huge.SETTINGS, 'text-base')} />}
+                startContent={<span className={cn(IconNames.Huge.SETTINGS, MENU_ITEM_ICON_CLS)} />}
               >
                 个人资料
               </ListboxItem>
               <ListboxItem
                 className="max-xs:hidden"
                 href={PageRoutes.User.UPLOAD}
-                startContent={<span className={cn(IconNames.Huge.IMPORT, 'text-base')} />}
+                startContent={<span className={cn(IconNames.Huge.IMPORT, MENU_ITEM_ICON_CLS)} />}
               >
                 导入浏览器书签
               </ListboxItem>
@@ -76,7 +77,9 @@ export function NavUser() {
             <ListboxSection showDivider hidden={!user.isAdmin} className="max-xs:hidden">
               <ListboxItem
                 href={PageRoutes.Admin.INDEX}
-                startContent={<span className={cn(IconNames.Tabler.DASHBOARD, 'text-base')} />}
+                startContent={
+                  <span className={cn(IconNames.Tabler.DASHBOARD, MENU_ITEM_ICON_CLS)} />
+                }
               >
                 后台管理
               </ListboxItem>
@@ -84,7 +87,7 @@ export function NavUser() {
             <ListboxSection showDivider hidden={!pageUtil.isUserSpace}>
               <ListboxItem
                 href={PageRoutes.Public.INDEX}
-                startContent={<span className={cn(IconNames.Tabler.HOME, 'text-base')} />}
+                startContent={<span className={cn(IconNames.Tabler.HOME, MENU_ITEM_ICON_CLS)} />}
               >
                 BMM 首页
               </ListboxItem>
@@ -92,7 +95,7 @@ export function NavUser() {
             <ListboxItem
               onPress={handleSignOut}
               color="danger"
-              startContent={<span className={cn(IconNames.Tabler.LOGOUT, 'text-base')} />}
+              startContent={<span className={cn(IconNames.Tabler.LOGOUT, MENU_ITEM_ICON_CLS)} />}
             >
               退出登录
             </ListboxItem>
