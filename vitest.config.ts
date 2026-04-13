@@ -11,5 +11,10 @@ export default defineConfig(async () => {
 
   return {
     plugins: [tsconfigPaths()],
+    test: {
+      fileParallelism: false,
+      maxWorkers: 1,
+      minWorkers: 1,
+    },
   }
 })

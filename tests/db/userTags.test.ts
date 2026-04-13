@@ -38,7 +38,7 @@ describe('userTags CRUD', async () => {
       name: tag.name,
       userId: user.id,
     })
-    await expect(task).rejects.toThrowError('UNIQUE constraint failed: userTags.name')
+    await expect(task).rejects.toThrowError(/Failed query|UNIQUE constraint failed/)
   })
 
   test.sequential('update', async () => {

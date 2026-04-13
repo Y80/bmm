@@ -9,7 +9,7 @@ import PublicTagController from '../PublicTag.controller'
 
 const { publicBookmarks, publicTags, publicBookmarkToTag, publicTagToTag } = schema
 
-describe('G: PublicTagController', () => {
+describe('G: PublicTagController', { sequential: true }, () => {
   let id = 0
 
   test('Insert a Tag', async () => {
@@ -39,45 +39,50 @@ describe('G: PublicTagController', () => {
   })
 })
 
-describe('G: PublicBookmarkController', () => {
+describe('G: PublicBookmarkController', { sequential: true }, () => {
   const ctl = PublicBookmarkController
+  let bookmarkId = 0
+
   test('CRUD:C insert a bookmark', async () => {
-    const tags = await db.select({ id: publicTags.id }).from(publicTags).limit(2)
+    const tags = await db
+      .insert(publicTags)
+      .values([{ name: faker.word.noun() }, { name: faker.word.noun() }])
+      .returning()
     const res = await ctl.insert({
       name: faker.word.noun(),
       url: faker.internet.url(),
       relatedTagIds: tags.map((el) => el.id),
     })
     assert.isNumber(res.id)
+    bookmarkId = res.id
   })
 
   test('CRUD:R get a bookmark', async () => {
-    const rows = await db.select().from(publicBookmarks).limit(1)
-    const res = await ctl.query({ id: rows[0].id })
+    const res = await ctl.query({ id: bookmarkId })
     assert.isObject(res)
   })
 
   test('CRUD:U update a bookmark', async () => {
-    const rows = await db.select().from(publicBookmarks).limit(1)
     const newName = faker.word.noun()
-    const res = await ctl.update({ id: rows[0].id, name: newName })
-    // console.log(newName, res)
-  })
-
-  test('CRUD:D delete a bookmark', async () => {
-    const rows = await db.select({ id: publicBookmarks.id }).from(publicBookmarks).limit(1)
-    const res = await ctl.delete({ id: rows[0].id })
-    assert.isTrue(res.length === 1)
+    const res = await ctl.update({ id: bookmarkId, name: newName })
+    assert.equal(res?.name, newName)
   })
 
   test('inert same name bookmark', async () => {
-    const rows = await db.select().from(publicBookmarks).limit(1)
+    const rows = await db.select().from(publicBookmarks).where(eq(publicBookmarks.id, bookmarkId)).limit(1)
     const [err, res] = await to(
       ctl.insert({
         name: rows[0].name,
         url: rows[0].url,
       })
     )
+    assert.isDefined(err)
+    assert.isUndefined(res)
+  })
+
+  test('CRUD:D delete a bookmark', async () => {
+    const res = await ctl.delete({ id: bookmarkId })
+    assert.isTrue(res.length === 1)
   })
 })
 
@@ -128,9 +133,48 @@ describe('G: PublicTagToTag relations', async () => {
 })
 
 describe('G: Bookmark to tag relations', () => {
+  let tagRows: Array<{ id: number }> = []
+  let bookmarkRows: Array<{ id: number }> = []
+
+  beforeAll(async () => {
+    tagRows = await db
+      .insert(publicTags)
+      .values([{ name: faker.word.noun() }, { name: faker.word.noun() }, { name: faker.word.noun() }])
+      .returning({ id: publicTags.id })
+
+    bookmarkRows = await db
+      .insert(publicBookmarks)
+      .values([
+        { name: faker.word.noun(), url: faker.internet.url() },
+        { name: faker.word.noun(), url: faker.internet.url() },
+      ])
+      .returning({ id: publicBookmarks.id })
+
+    await db.insert(publicBookmarkToTag).values([
+      { bId: bookmarkRows[0].id, tId: tagRows[0].id },
+      { bId: bookmarkRows[0].id, tId: tagRows[1].id },
+      { bId: bookmarkRows[1].id, tId: tagRows[0].id },
+    ])
+  })
+
+  afterAll(async () => {
+    await db.delete(publicBookmarks).where(
+      inArray(
+        publicBookmarks.id,
+        bookmarkRows.map((row) => row.id)
+      )
+    )
+    await db.delete(publicTags).where(
+      inArray(
+        publicTags.id,
+        tagRows.map((row) => row.id)
+      )
+    )
+  })
+
   // 找到所有关联指定 tagId 的 bookmark
   test('find bookmarks that related special tagId', async () => {
-    const tagId = 13
+    const tagId = tagRows[0].id
     const subQuery = db
       .select()
       .from(publicBookmarkToTag)
@@ -142,24 +186,18 @@ describe('G: Bookmark to tag relations', () => {
       .from(publicBookmarks)
       .innerJoin(subQuery, eq(publicBookmarks.id, subQuery.bId))
 
-    // 结果中的 sq.tId 应该和等于 tagId
+    assert.equal(res.length, 2)
   })
 
-  test('B', async () => {
-    const tagId = 13
+  test('find bookmarks that related all tagIds', async () => {
     const res = await db.query.publicBookmarks.findMany({
       where(fields, op) {
-        // return op.sql`id IN (SELECT bId FROM publicBookmarkToTag WHERE tId IN (25, 48) GROUP BY bId HAVING COUNT(DISTINCT tId) = 2)`
-        // return op.inArray(
-        //   fields.id,
-        //   op.sql`(SELECT bId FROM publicBookmarkToTag WHERE tId IN (25, 48) GROUP BY bId HAVING COUNT(DISTINCT tId) = 2)`
-        // )
         return op.inArray(
           fields.id,
           db
             .select({ id: publicBookmarkToTag.bId })
             .from(publicBookmarkToTag)
-            .where(inArray(publicBookmarkToTag.tId, [25, 48]))
+            .where(inArray(publicBookmarkToTag.tId, [tagRows[0].id, tagRows[1].id]))
             .groupBy(publicBookmarkToTag.bId)
             .having(op.sql`COUNT(DISTINCT tId) = 2`)
         )
@@ -170,6 +208,7 @@ describe('G: Bookmark to tag relations', () => {
       ...el,
       relatedTagIds: el.relatedTagIds.map((item) => item.tId),
     }))
-    console.log(list)
+    assert.equal(list.length, 1)
+    assert.sameMembers(list[0].relatedTagIds, [tagRows[0].id, tagRows[1].id])
   })
 })

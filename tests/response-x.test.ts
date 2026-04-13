@@ -16,7 +16,7 @@ describe('G: ResponseX', () => {
     test('T:', async () => {
       let resX = ResponseX.ok(body as any)
       console.log(resX)
-      expect(await resX.text()).toEqual(await new Response(body as any).text())
+      expect(await resX.text()).toEqual(JSON.stringify(body))
     })
   })
 

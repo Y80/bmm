@@ -1,5 +1,6 @@
 import { db, schema } from '@/db'
 import { initGlobalData } from '@/utils/global-data'
+import { FieldConstraints } from '@cfg'
 import { and, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
 
 const { publicTagToTag, publicTags } = schema
@@ -29,6 +30,13 @@ const cacheAllTags = initGlobalData({
   },
 })
 
+function validateTagName(name?: string | null) {
+  if (!name) return
+  if (name.length > FieldConstraints.MaxLen.TAG_NAME) {
+    throw new Error(`标签名称长度不能超过 ${FieldConstraints.MaxLen.TAG_NAME} 个字符`)
+  }
+}
+
 namespace PublicTagController {
   export async function getAll() {
     if (!cacheAllTags.value) {
@@ -46,6 +54,7 @@ namespace PublicTagController {
 
   export async function insert(tag: InsertTag) {
     cacheAllTags.reset()
+    validateTagName(tag.name)
     const { relatedTagIds, ...resetTag } = tag
     const count = await db.$count(publicTags, eq(publicTags.name, tag.name))
     if (count > 0) throw new Error('已存在相同名称的标签')
@@ -63,6 +72,7 @@ namespace PublicTagController {
 
   export async function update(tag: TagOnlyIdRequired) {
     cacheAllTags.reset()
+    validateTagName(tag.name)
     const { id, relatedTagIds, ...resetTag } = tag
     const tasks = []
     if (Object.keys(resetTag).length) {
