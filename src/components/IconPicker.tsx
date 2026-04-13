@@ -83,6 +83,18 @@ export default function IconPicker(props: Props) {
     loading: false,
   })
 
+  function setIconNames(names: string[] = []) {
+    setState((state) => {
+      return {
+        icon: { ...state.icon, names, objects: [] },
+        pagination: {
+          page: 1,
+          total: Math.round(names.length / PAGESIZE),
+        },
+      }
+    })
+  }
+
   const fetchAllIconNames = useMemoizedFn(async function (prefix: string) {
     const res: FetchCollectionRes = await fetch(
       `https://api.iconify.design/collection?prefix=${prefix}`
@@ -96,18 +108,6 @@ export default function IconPicker(props: Props) {
     }
     setIconNames(names)
   })
-
-  function setIconNames(names: string[] = []) {
-    setState((state) => {
-      return {
-        icon: { ...state.icon, names, objects: [] },
-        pagination: {
-          page: 1,
-          total: Math.round(names.length / PAGESIZE),
-        },
-      }
-    })
-  }
 
   function onChangeIconSet(prefix: string) {
     setState({ icon: { ...state.icon, prefix, names: [] } })

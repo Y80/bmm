@@ -25,14 +25,6 @@ export default function Page() {
   const session = useSession()
   const searchParams = useSearchParams()
 
-  // 登录成功后，根据用户角色重定向到不同的页面
-  if (session.status === 'authenticated') {
-    if (session.data.user.isAdmin) {
-      return redirect(PageRoutes.INDEX)
-    }
-    return redirect(PageRoutes.User.INDEX)
-  }
-
   const [state, setState] = useSetState({
     isRedirecting: false,
     showBg: true,
@@ -67,6 +59,14 @@ export default function Page() {
     }
     authError.title && setState({ authError })
   })
+
+  // 登录成功后，根据用户角色重定向到不同的页面
+  if (session.status === 'authenticated') {
+    if (session.data.user.isAdmin) {
+      return redirect(PageRoutes.INDEX)
+    }
+    return redirect(PageRoutes.User.INDEX)
+  }
 
   async function handleGithubAuth() {
     const res = await runAction(actCheckGithubOAuthConfig())

@@ -1,7 +1,9 @@
-import { useLayoutEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
+
+function subscribe() {
+  return function unsubscribe() {}
+}
 
 export default function useIsClient() {
-  const [isClient, setIsClient] = useState(false)
-  useLayoutEffect(() => setIsClient(true), [])
-  return isClient
+  return useSyncExternalStore(subscribe, () => true, () => false)
 }

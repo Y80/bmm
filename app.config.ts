@@ -16,19 +16,6 @@ export const Background = {
   DARK_CLASS: 'bg-slate-950',
 }
 
-export const ApiRoutes = {
-  Public: {
-    TAG: '/api/public/tag',
-    BOOKMARK: '/api/public/bookmark',
-    BOOKMARK_LIST: '/api/public/bookmark/list',
-  },
-  Ai: {
-    ANALYZE_WEBSITE: '/api/ai/analyze-website',
-    ANALYZE_RELATED_TAGS: '/api/ai/analyze-related-tags',
-  },
-  PARSE_WEBSITE: '/api/parse-website',
-} as const
-
 export const PageRoutes = {
   INDEX: '/',
   LOGIN: '/login',

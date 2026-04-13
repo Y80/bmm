@@ -17,8 +17,9 @@ export default function ClientPage() {
     changeTag: async (tag) => {
       const idx = tags.findIndex((e) => e.id === tag.id)
       if (idx === -1) return
-      tags[idx] = tag
-      setCtxValue((state) => ({ ...state, tags: [...tags] }))
+      const nextTags = [...tags]
+      nextTags[idx] = tag
+      setCtxValue((state) => ({ ...state, tags: nextTags }))
       await runAction(actUpdateUserTag(tag), { onOk: () => updateTags() })
     },
   }

@@ -82,43 +82,6 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   const probeRequestIdRef = useRef(0)
   const latestUrlRef = useRef(bookmark.url)
 
-  useUpdateEffect(() => {
-    props.bookmark && setBookmark({ ...props.bookmark })
-  }, [props.bookmark])
-  useUpdateEffect(() => {
-    !state.loading && validateAll()
-  }, [state.loading])
-  useUpdateEffect(() => {
-    if (!state.iconDropdownOpen) return
-
-    if (hasValidUrl) {
-      detectWebsiteIcon()
-      return
-    }
-
-    probeRequestIdRef.current += 1
-    setState({
-      iconLoading: false,
-      probePathIndex: 0,
-      probeResult: '',
-      probeMatchedIcon: '',
-    })
-  }, [bookmark.url, hasValidUrl, state.iconDropdownOpen])
-
-  useEffect(() => {
-    latestUrlRef.current = bookmark.url
-  }, [bookmark.url])
-
-  useEffect(() => {
-    if (!state.iconLoading || !state.iconDropdownOpen || siteIcons.length < 2) return
-
-    const timer = window.setInterval(() => {
-      setState((s) => ({ ...s, probePathIndex: (s.probePathIndex + 1) % siteIcons.length }))
-    }, 100)
-
-    return () => window.clearInterval(timer)
-  }, [setState, siteIcons.length, state.iconDropdownOpen, state.iconLoading])
-
   function validateItem(key: keyof typeof invalidInfos) {
     const res = formSchema.shape[key].safeParse(bookmark[key])
     const info = res.success
@@ -174,6 +137,43 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       probeMatchedIcon: icon,
     })
   }
+
+  useUpdateEffect(() => {
+    props.bookmark && setBookmark({ ...props.bookmark })
+  }, [props.bookmark])
+  useUpdateEffect(() => {
+    !state.loading && validateAll()
+  }, [state.loading])
+  useUpdateEffect(() => {
+    if (!state.iconDropdownOpen) return
+
+    if (hasValidUrl) {
+      detectWebsiteIcon()
+      return
+    }
+
+    probeRequestIdRef.current += 1
+    setState({
+      iconLoading: false,
+      probePathIndex: 0,
+      probeResult: '',
+      probeMatchedIcon: '',
+    })
+  }, [bookmark.url, hasValidUrl, state.iconDropdownOpen])
+
+  useEffect(() => {
+    latestUrlRef.current = bookmark.url
+  }, [bookmark.url])
+
+  useEffect(() => {
+    if (!state.iconLoading || !state.iconDropdownOpen || siteIcons.length < 2) return
+
+    const timer = window.setInterval(() => {
+      setState((s) => ({ ...s, probePathIndex: (s.probePathIndex + 1) % siteIcons.length }))
+    }, 100)
+
+    return () => window.clearInterval(timer)
+  }, [setState, siteIcons.length, state.iconDropdownOpen, state.iconLoading])
 
   async function onSave() {
     if (!validateAll()) return
