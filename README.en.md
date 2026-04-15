@@ -1,370 +1,289 @@
 <div align="center">
-  <img width="120" src="./doc/images/logo.svg" alt="BMM Logo">
-  <br>
+  <img width="108" src="./doc/images/logo.svg" alt="BMM Logo">
   <h1>BMM</h1>
-  <p>Collect, Share, and Explore Quality Websites</p>
-  <p><i>Bookmark Manager - Your Personal Bookmark Manager</i></p>
+  <p>An open-source full-stack app for collecting, organizing, searching, and sharing website bookmarks.</p>
+  <p>Built for personal and team use, with a public showcase, user workspace, admin tools, and AI-assisted bookmark workflows.</p>
   <p>
-    <a href="./README.md">🇨🇳 简体中文</a> •
-    <a href="https://bmm.lccl.cc/" target="_blank">✨ Live Demo</a> •
-    <a href="https://github.com/Y80/bmm" target="_blank">📦 GitHub</a> •
-    <a href="#quick-start">🚀 Quick Start</a>
+    <a href="https://bmm.lccl.cc/" target="_blank">Live Demo</a> ·
+    <a href="https://github.com/Y80/bmm" target="_blank">GitHub</a> ·
+    <a href="#quick-start">Quick Start</a>
   </p>
   <p>
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT">
     <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js 16">
-    <img src="https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript" alt="TypeScript">
-    <img src="https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?logo=tailwind-css" alt="Tailwind CSS">
+    <img src="https://img.shields.io/badge/React-19-149eca?logo=react" alt="React 19">
+    <img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript" alt="TypeScript 5">
     <img src="https://img.shields.io/badge/Drizzle_ORM-0.44-green" alt="Drizzle ORM">
   </p>
 </div>
 
----
+<!-- README-I18N:START -->
+
+[简体中文](./README.md) | **English**
+
+<!-- README-I18N:END -->
 
 <div align="center">
-  <img alt="PC Light/Dark Theme" src="./doc/images/screenshot-pc-light-dark.png">
-  <img alt="Admin Panel" src="./doc/images/screenshot-pc-cms-light-dark.png">
-  <img width="680" alt="Mobile View" src="./doc/images/screenshot-mobile.png">
-  <img alt="AI Analysis Demo" width="680" src="./doc/images/screenshot-ai-analyse.gif">
+  <img alt="Desktop light and dark themes" src="./doc/images/screenshot-pc-light-dark.png">
+  <img alt="Admin dashboard" src="./doc/images/screenshot-pc-cms-light-dark.png">
+  <img width="680" alt="Mobile layout" src="./doc/images/screenshot-mobile.png">
+  <img width="680" alt="AI website analysis demo" src="./doc/images/screenshot-ai-analyse.gif">
 </div>
 
----
+<a id="overview"></a>
 
-## 📋 Table of Contents
+## Overview
 
-- [✨ Features](#-features)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [🚀 Quick Start](#-quick-start)
-- [⚙️ Environment Variables](#️-environment-variables)
-- [🗄️ Database Configuration](#️-database-configuration)
-- [🌍 Deployment](#-deployment)
-- [🤖 AI Integration](#-ai-integration)
-- [🔐 GitHub OAuth Setup](#-github-oauth-setup)
-- [❓ FAQ](#-faq)
-- [📄 License](#-license)
+BMM is an open-source application for managing website bookmarks. It combines collecting links, organizing them with tags, publishing curated websites, and maintaining the data from an admin interface in one system, with automatic metadata fetching and AI-assisted entry flows.
 
----
+You can use it as:
 
-## ✨ Features
+- a personal bookmark dashboard
+- a team knowledge directory
+- a public website curation portal
 
-### Basic Features
+<a id="highlights"></a>
 
-| Feature | Description |
-|---------|-------------|
-| 📱 Responsive Design | Mobile/Desktop support with Light/Dark themes |
-| 🔍 Smart Search | Pinyin and keyword search for bookmarks and tags |
-| 🏷️ Tag Relations | Many-to-many relationships between tags and bookmarks |
-| 🔐 Authentication | GitHub OAuth + Email/Password login |
-| 👤 User Management | Users can manage their own bookmarks and tags |
+## Highlights
 
-### Admin Features
+- Public pages, user workspaces, and admin tools live in the same product, so you can grow from personal use to a shared navigation site.
+- Browser bookmark exports can be imported and mapped into tag relationships, which makes migration easier.
+- Supports many-to-many tag and bookmark relations, drag-and-drop sorting, keyword search, and pinyin search.
+- Automatically fetches website titles, descriptions, and icons, with extra probing for common icon paths.
+- Supports both GitHub OAuth and email/password authentication.
+- Uses AI to analyze websites, suggest tags, and generate related-tag suggestions and theme colors.
+- Responsive UI works across desktop and mobile, with light and dark themes.
 
-- 📥 **Batch Import** - Import bookmarks from browser exports (HTML/JSON)
-- 📝 **CRUD Operations** - Create, read, update, delete tags and bookmarks
-- 🔗 **Tag Relations** - Manage relationships between tags
-- 📊 **Tag Sorting** - Drag-and-drop tag ordering
-- 🕷️ **Metadata Scraping** - Auto-fetch website title, icon, and description
-- 🤖 **AI Smart Analysis** - AI auto-extracts website info and recommends tags
-- 🎨 **Theme Generation** - AI analyzes tag relations and generates theme colors
+<a id="roadmap"></a>
 
-### Roadmap
+## Planned Features
 
-- [ ] Multi-function cards (weather, news, etc.)
+- [ ] Multi-purpose cards such as weather and news
 - [ ] Browser extension
-- [ ] Bookmark availability checking
-- [ ] Read-it-later system
+- [ ] Bookmark availability checks
+- [ ] Read-it-later workflow
 
----
+<a id="stack"></a>
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Category | Technology |
-|----------|------------|
-| Framework | [Next.js 16](https://nextjs.org/) (App Router) |
-| Language | [TypeScript 5](https://www.typescriptlang.org/) |
+| --- | --- |
+| Framework | [Next.js 16](https://nextjs.org/) + React 19 |
+| Language | [TypeScript](https://www.typescriptlang.org/) |
 | Styling | [Tailwind CSS 4](https://tailwindcss.com/) |
-| UI Components | [HeroUI](https://heroui.com/) + [Ant Design](https://ant.design/) |
-| ORM | [Drizzle ORM](https://orm.drizzle.team/) |
+| UI | [HeroUI](https://heroui.com/) + [Ant Design](https://ant.design/) |
 | Database | SQLite / PostgreSQL / Turso |
-| Auth | [NextAuth v5](https://authjs.dev/) |
-| AI SDK | [Vercel AI SDK](https://sdk.vercel.ai/) |
+| ORM | [Drizzle ORM](https://orm.drizzle.team/) |
+| Auth | [NextAuth v5 beta](https://authjs.dev/) |
+| AI | [Vercel AI SDK](https://sdk.vercel.ai/) + OpenAI-compatible provider |
 | Testing | [Vitest](https://vitest.dev/) |
 
----
+<a id="quick-start"></a>
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Requirements
 
 - [Node.js](https://nodejs.org/) >= 24.0.0
 - [pnpm](https://pnpm.io/) >= 10.24.0
 
+> [!TIP]
+> Local startup uses SQLite by default. `pnpm dev`, `pnpm build`, and `pnpm start` all run the database bootstrap script first, so manual database setup is usually unnecessary.
+
 ### Local Development
 
 ```bash
-# 1. Clone repository
 git clone https://github.com/Y80/bmm.git
 cd bmm
-
-# 2. Install dependencies
 pnpm install
-
-# 3. Start dev server
 pnpm dev
 ```
 
-The project will start at `http://localhost:3000` with an auto-created SQLite database.
+Then open `http://localhost:3000`.
 
----
+<a id="scripts"></a>
 
-## ⚙️ Environment Variables
+## Common Commands
 
-See [.env](./.env) for reference.
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Start the development server and initialize the database first |
+| `pnpm build` | Build for production |
+| `pnpm start` | Run the production build |
+| `pnpm lint` | Run ESLint |
+| `pnpm test` | Run Vitest |
+| `pnpm db:test` | Check database connectivity |
+| `pnpm db:migrate` | Generate and apply database migrations |
+| `pnpm db:push` | Push schema changes directly and may risk data loss |
+| `pnpm studio` | Open Drizzle Studio |
 
-### Quick Demo
+<a id="env"></a>
 
-No environment variables needed for local development - SQLite works out of the box.
+## Environment Variables
 
-### Production
+See [`.env`](./.env) for the full example.
 
-Key variables for production:
+> [!TIP]
+> If you only want to get the app running, local development usually works with the default SQLite configuration. AI features and GitHub login are optional add-ons.
 
-| Variable | Description |
-|----------|-------------|
-| `AUTH_URL` | Auth callback URL, must match your deployment URL |
-| `DB_DRIVER` | Database driver (sqlite/postgresql) |
+| Variable | Purpose |
+| --- | --- |
+| `DB_DRIVER` | Database driver, `sqlite` or `postgresql` |
 | `DB_CONNECTION_URL` | Database connection string |
-| `DB_AUTH_TOKEN` | Turso auth token (optional) |
+| `DB_AUTH_TOKEN` | Optional token for Turso or libsql |
+| `AUTH_URL` | Current site URL used by auth and deployment flows |
+| `AUTH_SECRET` | NextAuth secret, recommended for production |
+| `AUTH_GITHUB_ID` | Optional GitHub OAuth Client ID |
+| `AUTH_GITHUB_SECRET` | Optional GitHub OAuth Client Secret |
+| `OPENAI_API_KEY` | Optional AI provider key |
+| `OPENAI_BASE_URL` | Optional OpenAI-compatible base URL |
+| `OPENAI_MODEL` | Optional AI model name |
 
----
+<a id="database"></a>
 
-## 🗄️ Database Configuration
+## Database
 
-BMM uses Drizzle ORM with out-of-the-box support for SQLite and PostgreSQL.
+BMM currently supports SQLite, PostgreSQL, and Turso directly.
 
-### Default (SQLite)
+- SQLite is the default local option, and the database file is initialized automatically on first run.
+- To switch to PostgreSQL or Turso, update `DB_DRIVER` and `DB_CONNECTION_URL`.
+- The repository includes [`docker-compose.yml`](./docker-compose.yml) as a PostgreSQL deployment example.
+
+If you only want to verify database readiness, run:
 
 ```bash
-# Auto-create database file locally
-pnpm dev
+pnpm db:test
+pnpm db:migrate
 ```
 
-### Production Database
+<a id="deployment"></a>
 
-#### Option 1: Turso (Recommended)
+## Deployment
 
-- [BMM + Turso Guide](https://github.com/Y80/bmm/wiki/使用-Turso-数据库服务)
-
-#### Option 2: Free PostgreSQL
-
-- [Free PostgreSQL Providers](https://juejin.cn/post/7411047482651951119)
-
----
-
-## 🌍 Deployment
-
-### Method 1: Node Deployment
+### Node Deployment
 
 ```bash
-# 1. Clone
 git clone https://github.com/Y80/bmm.git
 cd bmm
-
-# 2. Install
 pnpm install
-
-# 3. Build
 pnpm build
-
-# 4. Start (or use PM2)
 pnpm start
-# or
-pm2 start "pnpm start"
 ```
 
-### Method 2: Vercel
+### Docker Deployment
 
-1. **Fork** this repository to your GitHub account
-2. Login to [Vercel](https://vercel.com) and create a new project linked to your fork
-3. Configure environment variables in the Environment Variables page
-
-   <details>
-   <summary>View Screenshot</summary>
-
-   ![vercel-settings-env](./doc/images/vercel-settings-env.png)
-
-   **Note**: No `AUTH_URL` needed if using Vercel's auto-assigned domain
-   </details>
-
-4. Redeploy the project
-
-### Method 3: Docker
+The repository includes a ready-to-use [`Dockerfile`](./Dockerfile). The example below uses SQLite with a mounted volume:
 
 ```bash
-# Pull image
-docker pull lcclcc/bmm
+docker build -t bmm .
 
-# SQLite mode (use docker volume bmm to locate database file)
 docker run --rm \
   -e DB_DRIVER=sqlite \
   -e DB_CONNECTION_URL=file:/app/volume/sqlite.db \
   -v bmm:/app/volume \
   -p 3000:3000 \
-  lcclcc/bmm \
-  pnpm start
-
-# Turso mode
-docker run --rm \
-  -e DB_DRIVER=sqlite \
-  -e DB_CONNECTION_URL=libsql://your-turso-db-url \
-  -e DB_AUTH_TOKEN=<your-turso-token> \
-  -p 3000:3000 \
-  lcclcc/bmm \
-  pnpm start
-
-# PostgreSQL mode
-docker run --rm \
-  -e DB_DRIVER=postgresql \
-  -e DB_CONNECTION_URL=postgresql://your-db-url \
-  -p 3000:3000 \
-  lcclcc/bmm \
-  pnpm start
+  bmm
 ```
 
----
+### Vercel Deployment
 
-## 🤖 AI Integration
+1. Fork this repository and import it into Vercel.
+2. Configure database, auth, and optional AI variables in Environment Variables.
+3. After deployment, verify that `AUTH_URL` matches the GitHub OAuth callback URL.
 
-AI features significantly reduce bookmark maintenance effort:
+<a id="ai"></a>
 
-- 📝 **Website Analysis** - Auto-extract title, description, icon
-- 🏷️ **Smart Tags** - Auto-recommend related tags
-- 🎨 **Theme Generation** - Analyze tag relations and theme colors
+## AI Integration
 
-### Supported AI Services
+The AI features reduce manual work during bookmark entry and organization. Current coverage includes:
 
-Any OpenAI-compatible API is supported:
+- automatic website title, description, and icon analysis
+- related tag suggestions for bookmarks
+- related-tag suggestions and theme colors for tags
 
-- [OpenAI](https://openai.com/)
-- [DeepSeek](https://www.deepseek.com/)
-- [Moonshot (Kimi)](https://www.moonshot.cn/)
-- [GLM](https://www.zhipuai.cn/)
-- [Doubao](https://www.doubao.com/)
-
-### Configuration
-
-Add to `.env`:
+The project uses Vercel AI SDK with an OpenAI-compatible provider. A typical configuration looks like:
 
 ```bash
-# Example: DeepSeek
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxx
 OPENAI_BASE_URL=https://api.deepseek.com/v1
 OPENAI_MODEL=deepseek-chat
 ```
 
-For non-OpenAI services (Gemini, Claude), refer to [AI SDK Providers](https://ai-sdk.dev/providers/ai-sdk-providers).
+Supported options include OpenAI-compatible providers such as OpenAI, DeepSeek, Moonshot, and GLM. For non OpenAI-compatible services, refer to [AI SDK Providers](https://ai-sdk.dev/providers/ai-sdk-providers).
 
----
+<a id="oauth"></a>
 
-## 🔐 GitHub OAuth Setup
+## GitHub OAuth Setup
 
-### Create OAuth App
+> [!IMPORTANT]
+> `AUTH_URL`, the GitHub OAuth App `Authorization callback URL`, and the actual URL users use to access BMM must match exactly.
 
-1. Go to [GitHub OAuth Apps](https://github.com/settings/applications/new)
-2. Fill the form:
-
-   <img width="480" src="./doc/images/github-oauth-new.png">
-
-   **Important**: `Authorization callback URL` must match your deployment URL!
-
-3. Create a Client Secret
-
-   <img width="480" src="./doc/images/github-oauth-new-secret.png">
-
-### Environment Variables
+1. Create a GitHub OAuth App at <https://github.com/settings/applications/new>.
+2. Set the callback URL in the form `https://your-domain.com/api/auth/callback/github`.
+3. Configure these variables:
 
 ```bash
 AUTH_GITHUB_ID=your-client-id
 AUTH_GITHUB_SECRET=your-client-secret
-AUTH_URL=https://your-domain.com  # Must match callback URL
+AUTH_URL=https://your-domain.com
 ```
 
----
+These screenshots can help when checking the configuration:
 
-## ❓ FAQ
+<img width="480" alt="Create GitHub OAuth app" src="./doc/images/github-oauth-new.png">
+
+<img width="480" alt="Check GitHub callback URL" src="./doc/images/github-oauth-cb-url.png">
+
+<a id="faq"></a>
+
+## FAQ
 
 <details>
-<summary>
-How to set <code>AUTH_URL</code> and GitHub Authorization callback URL?
-</summary>
+<summary>What should <code>AUTH_URL</code> be?</summary>
 
 <br>
 
-Both must match your BMM access URL:
+It should equal the real URL users open BMM with, for example:
 
-- `http://localhost:3000` - Local development
-- `https://bmm.vercel.app` - Vercel default domain
-- `https://example.com` - Custom domain
-- `http://10.1.2.3:3000` - Direct IP access
+- `http://localhost:3000`
+- `https://bmm.vercel.app`
+- `https://example.com`
+- `http://10.1.2.3:3000`
 
 </details>
 
 <details>
-<summary>
-Github login failed: redirect_uri error
-</summary>
+<summary>What if GitHub login fails with a <code>redirect_uri</code> error?</summary>
 
 <br>
 
-Error message:
+Check whether these three values are exactly the same:
 
-![github-redirect-uri-error](./doc/images/github-redirect-uri-err.png)
+- the GitHub OAuth App `Authorization callback URL`
+- the `AUTH_URL` environment variable
+- the actual BMM access URL
 
-**Solution**: Ensure GitHub OAuth App's `Authorization callback URL` matches `AUTH_URL` and your access domain.
+Example error screenshot:
 
-![github-oauth-cb-url](./doc/images/github-oauth-cb-url.png)
+![GitHub redirect_uri error](./doc/images/github-redirect-uri-err.png)
 
 </details>
 
 <details>
-<summary>
-Callback URL incorrect after changing port
-</summary>
+<summary>What if the callback URL becomes wrong after changing the port or using an IP address?</summary>
 
 <br>
 
-If you changed the port and access via `http://{IP}:{PORT}`, update `AUTH_URL` accordingly.
-
-**Rule**: Access URL = Authorization callback URL = `AUTH_URL`
+Whenever the access URL changes, update both `AUTH_URL` and the callback URL in the GitHub OAuth App.
 
 </details>
 
 <details>
-<summary>
-Support for other databases?
-</summary>
+<summary>Are more databases supported?</summary>
 
 <br>
 
-With Drizzle ORM, MySQL and other databases can be easily integrated.
+This repository directly implements SQLite / PostgreSQL / Turso. Because it uses Drizzle ORM, extending to more databases is feasible, but it still requires the matching schema and driver work.
 
 </details>
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT](./LICENSE) License.
-
----
-
-## 🤝 Contributing
-
-Issues and Pull Requests are welcome!
-
----
-
-<div align="center">
-  <p>Made with ❤️ by <a href="https://github.com/Y80">Y80</a></p>
-  <p>If this project helps you, please give it a ⭐ Star!</p>
-</div>
