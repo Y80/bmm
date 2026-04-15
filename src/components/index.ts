@@ -1,5 +1,6 @@
 export { default as AiAnalyzeRelatedTagButton } from './AiAnalyzeRelatedTagButton'
 export { default as BookmarkListPage } from './BookmarkListPage'
+export { default as BookmarkIconDropdown } from './BookmarkIconDropdown'
 export { default as BookmarkSlugPage } from './BookmarkSlugPage'
 export { default as ClientIcon } from './ClientIcon'
 export { default as ColorPicker } from './ColorPicker'
