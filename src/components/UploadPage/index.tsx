@@ -1,6 +1,14 @@
 'use client'
 
-import { BorderBeam, NumberTicker, ReButton, ReTooltip } from '@/components'
+import {
+  AdminPageTitle,
+  AdminSurfaceCard,
+  BorderBeam,
+  NumberTicker,
+  ReButton,
+  ReTooltip,
+} from '@/components'
+import { usePageUtil } from '@/hooks'
 import { FieldConstraints, IconNames } from '@cfg'
 import {
   addToast,
@@ -41,12 +49,24 @@ export type Bookmark = Pick<BookmarkNode, 'id' | 'name' | 'url' | 'categories'>
 
 const ROOT_ID = '0'
 
+function getStrategyLabel(strategy: LinkTagStrategy) {
+  switch (strategy) {
+    case LinkTagStrategy.CLOSED_FOLDER:
+      return '最近目录'
+    case LinkTagStrategy.OTHER:
+      return '仅关联其它'
+    default:
+      return '完整目录层级'
+  }
+}
+
 /**
  * 页面：上传浏览器导出的书签数据
  *
  * 浏览器导出的书签中的目录允许重名
  */
 export default function UploadPage() {
+  const { isAdminSpace } = usePageUtil()
   const inputRef = useRef<null | HTMLInputElement>(null)
   const [state, setState] = useSetState({
     file: null as null | File,
@@ -317,20 +337,183 @@ export default function UploadPage() {
     setState({ showUploadList: true })
   }
 
+  if (isAdminSpace) {
+    return (
+      <div className="xs:py-2 mx-auto w-full max-w-6xl py-1">
+        <div className="pt-8 pb-9 sm:pt-10 sm:pb-11">
+          <AdminPageTitle title="批量导入浏览器书签" pathname="/admin/upload" />
+        </div>
+
+        <div className={cn(state.file && 'hidden', 'mx-auto w-full max-w-4xl')}>
+          <AdminSurfaceCard bodyClassName="p-6 text-center sm:p-8">
+            <div
+              className="border-foreground-200 text-foreground-400 hover:text-foreground-600 bg-default-50/70 dark:bg-default-100/5 relative mt-8 flex h-[280px] cursor-pointer flex-col items-center justify-center gap-4 rounded-[28px] border border-dashed transition"
+              onClick={() => inputRef.current?.click()}
+            >
+              <BorderBeam size={160} duration={10} />
+              <span className={cn(IconNames.Tabler.PLUS, 'text-3xl')} />
+              <span>选择文件</span>
+              <input
+                className="hidden"
+                type="file"
+                accept=".html"
+                ref={inputRef}
+                onChange={(evt) => {
+                  const files = evt.target.files
+                  if (files?.length !== 1) return
+                  setState({ file: files[0] })
+                  readFile(files[0])
+                }}
+              />
+            </div>
+            <div className="mt-6">
+              <ExportBookmarksGuide />
+            </div>
+          </AdminSurfaceCard>
+        </div>
+
+        <div className={cn((!state.file || state.showUploadList) && 'hidden', 'space-y-5')}>
+          <Panel className="max-w-none">
+            <h2 className="flex-items-center mb-4 gap-2 text-xl">
+              <span className={cn(IconNames.Huge.FILE, 'text-2xl')} />
+              <span>{state.file?.name}</span>
+            </h2>
+            <Divider className="mb-5" />
+            {renderTree()}
+          </Panel>
+
+          <Panel className='max-w-none [&_[role="radiogroup"]_label_div]:ml-2'>
+            <h2 className="flex-items-center mb-4 gap-2 text-xl">
+              <span className={cn(IconNames.Huge.SETTINGS, 'text-2xl')} />
+              <span>导入配置</span>
+            </h2>
+            <Divider />
+
+            <div className="text-foreground-500 mt-4 text-sm">
+              <div className="text-base">注意事项</div>
+              <ul className="text-foreground-800 mt-2 ml-5 list-disc space-y-1">
+                <li>原始的目录将会作为标签存在（仅用标签组织、关联书签）</li>
+                <li>已过滤内容为空的目录</li>
+                <li>书签至少会被关联「其它」标签</li>
+                <li className="font-extrabold">如无特定需求，使用默认配置即可</li>
+              </ul>
+            </div>
+
+            <RadioGroup
+              label="标签关联策略"
+              size="sm"
+              className="mt-8"
+              value={state.linkTagStrategy}
+              onValueChange={(v) => setState({ linkTagStrategy: v as LinkTagStrategy })}
+            >
+              <ReTooltip
+                offset={0}
+                content="例：某书签在目录「foo > bar」中，则该书签将关联「foo」和「bar」标签"
+              >
+                <Radio value={LinkTagStrategy.FOLDER_PATH}>按照目录层级，分别关联标签</Radio>
+              </ReTooltip>
+              <ReTooltip
+                offset={0}
+                content="例：某书签在目录「foo > bar」中，则该书签仅关联「bar」标签"
+              >
+                <Radio value={LinkTagStrategy.CLOSED_FOLDER}>仅将最近的目录作为标签进行关联</Radio>
+              </ReTooltip>
+              <Radio value={LinkTagStrategy.OTHER}>全部书签关联「其它」标签</Radio>
+            </RadioGroup>
+
+            <div className="mt-6">
+              <label className="text-foreground-500 text-base">选择书签</label>
+              <Tree
+                key={categoryTree.length}
+                rootClassName="mt-2! bg-transparent! "
+                checkable
+                selectable={false}
+                treeData={categoryTree}
+                checkedKeys={state.checkedTreeKeys}
+                onCheck={(keys) => setState({ checkedTreeKeys: keys as string[] })}
+                defaultExpandedKeys={[ROOT_ID]}
+              />
+              <p className="text-foreground-400 mt-2 text-sm">
+                将导入 <NumberTicker value={waitUploadBookmarks.length} /> 个书签 / 共{' '}
+                {allBookmarks.length} 个
+              </p>
+            </div>
+
+            <div className="mt-6">
+              <label className="text-foreground-500 flex-items-center gap-2 text-base">
+                <span>可关联的标签</span>
+                <ReTooltip
+                  content={
+                    <div>
+                      <p>仅影响书签可关联的标签，不影响导入的书签数量。</p>
+                      <p>
+                        标签应该是简洁明了的，因此无法关联超过 {FieldConstraints.MaxLen.TAG_NAME}{' '}
+                        个字符的标签。
+                      </p>
+                    </div>
+                  }
+                >
+                  <span className={cn(IconNames.Mdi.QUESTION_CIRCLE, 'cursor-pointer')} />
+                </ReTooltip>
+              </label>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <CheckboxGroup
+                  orientation="horizontal"
+                  color="default"
+                  size="sm"
+                  value={state.checkedLinkableTags}
+                  onChange={(v) => setState({ checkedLinkableTags: v })}
+                >
+                  {linkableTags.map((tag) => (
+                    <Checkbox
+                      key={tag}
+                      value={tag}
+                      isDisabled={'其它' === tag || tag.length > FieldConstraints.MaxLen.TAG_NAME}
+                    >
+                      {tag}
+                    </Checkbox>
+                  ))}
+                </CheckboxGroup>
+              </div>
+            </div>
+
+            <ReButton fullWidth size="lg" className="mt-8" onClick={submitConfig}>
+              确认配置，预览上传列表
+            </ReButton>
+          </Panel>
+        </div>
+
+        {state.showUploadList && (
+          <UploadList
+            tagNames={state.checkedLinkableTags}
+            bookmarks={waitUploadBookmarks}
+            linkTagStrategy={state.linkTagStrategy}
+            onCancel={() => setState({ showUploadList: false })}
+          />
+        )}
+      </div>
+    )
+  }
+
   return (
-    <main className="flex-center py-20">
-      <div className={cn(state.file && 'hidden!', 'w-lg text-center')}>
-        <span
-          className={cn(
-            IconNames.Huge.IMPORT,
-            'bg-linear-to-r from-rose-500 to-purple-500 text-6xl'
-          )}
-        />
-        <h1 className="mt-8 mb-10 text-xl">导入浏览器书签</h1>
+    <main className={cn('flex-center py-20', isAdminSpace && 'xs:py-4 py-2')}>
+      <div
+        className={cn(
+          state.file && 'hidden!',
+          isAdminSpace
+            ? 'rounded-large border-divider bg-content1 w-full max-w-4xl border p-6 text-center shadow-sm sm:p-8'
+            : 'w-lg text-center'
+        )}
+      >
+        <span className={cn(IconNames.Huge.IMPORT, 'text-default-400 text-5xl')} />
+        <h1 className={cn('mt-6 mb-8 text-xl', isAdminSpace && 'text-2xl font-semibold')}>
+          导入浏览器书签
+        </h1>
         <div
           className={cn(
-            'border-foreground-200 text-foreground-400 flex-center relative h-[280px] cursor-pointer flex-col gap-4 rounded-xl border',
-            'hover:text-foreground-600 transition'
+            'border-foreground-200 text-foreground-400 flex-center relative h-[280px] cursor-pointer flex-col gap-4 rounded-xl border border-dashed',
+            'hover:text-foreground-600 transition',
+            isAdminSpace && 'rounded-large bg-default-50/70 dark:bg-default-100/5'
           )}
           onClick={() => inputRef.current?.click()}
         >
@@ -353,7 +536,7 @@ export default function UploadPage() {
         <ExportBookmarksGuide />
       </div>
 
-      <div className={cn((!state.file || state.showUploadList) && 'hidden')}>
+      <div className={cn((!state.file || state.showUploadList) && 'hidden', 'w-full')}>
         <Panel className="mb-10">
           <h2 className="flex-items-center mb-4 gap-2 text-xl">
             <span className={cn(IconNames.Huge.FILE, 'text-2xl')} />
@@ -369,16 +552,6 @@ export default function UploadPage() {
             <span>导入配置</span>
           </h2>
           <Divider />
-
-          <div className="text-foreground-500 mt-4 text-sm">
-            <div className="text-base">注意事项</div>
-            <ul className="text-foreground-800 mt-2 ml-5 list-disc space-y-1">
-              <li>原始的目录将会作为标签存在（仅用标签组织、关联书签）</li>
-              <li>已过滤内容为空的目录</li>
-              <li>书签至少会被关联「其它」标签</li>
-              <li className="font-extrabold">如无特定需求，使用默认配置即可</li>
-            </ul>
-          </div>
 
           <RadioGroup
             label="标签关联策略"

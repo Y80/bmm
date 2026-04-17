@@ -25,3 +25,18 @@ export const findManyBookmarksSchema = z.object({
     .optional()
     .transform((v) => Number(v) || 1),
 })
+
+export const findManyUsersSchema = z.object({
+  keyword: z.string().optional(),
+  sorterKey: z.enum(['-createTime', '+createTime']).default('-createTime'),
+  limit: z
+    .number()
+    .or(z.string())
+    .optional()
+    .transform((v) => Number(v) || DEFAULT_BOOKMARK_PAGESIZE),
+  page: z
+    .number()
+    .or(z.string())
+    .optional()
+    .transform((v) => Number(v) || 1),
+})

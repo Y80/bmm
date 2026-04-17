@@ -13,3 +13,8 @@ export function createBookmarkFilterByKeyword(
     sql(table.description, `%${kw}%`)
   )!
 }
+
+export function createUserFilterByKeyword(table: typeof schema.users, kw: string) {
+  const sql = process.env.DB_DRIVER === 'postgresql' ? ilike : like
+  return or(sql(table.name, `%${kw}%`), sql(table.email, `%${kw}%`))!
+}

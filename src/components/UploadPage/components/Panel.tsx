@@ -6,7 +6,7 @@ export default function Panel(props: PropsWithChildren<{ className?: string }>) 
     <div
       role="upload-panel"
       className={cn(
-        'bg-foreground-50 light:border w-[680px] rounded-xl px-8 py-6',
+        'border-divider/70 bg-content1 w-full max-w-[860px] rounded-[28px] border px-6 py-6 shadow-sm sm:px-8',
         props.className
       )}
     >

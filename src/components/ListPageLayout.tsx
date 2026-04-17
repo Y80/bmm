@@ -1,17 +1,47 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
+import AdminPageTitle from './AdminPageTitle'
+import { AdminSurfaceCard } from './AdminPageShell'
 
-export default function ListPageLayout(props: PropsWithChildren) {
+interface ListPageLayoutProps extends PropsWithChildren {
+  title?: string
+  surfaceExtra?: ReactNode
+  bodyClassName?: string
+}
+
+export default function ListPageLayout(props: ListPageLayoutProps) {
   const pathname = usePathname()
+  const pageName = pathname.includes('/bookmark')
+    ? '书签'
+    : pathname.includes('/tag')
+      ? '标签'
+      : '用户'
+  const isAdminSpace = pathname.startsWith('/admin')
+  const title = props.title || `${pageName}列表`
+
+  if (!isAdminSpace) {
+    return (
+      <div className="mx-auto w-full max-w-5xl py-16">
+        <h1 className="mb-16 text-center text-3xl">{pageName}列表</h1>
+        {props.children}
+      </div>
+    )
+  }
 
   return (
-    <div className="mx-auto w-full max-w-5xl py-16">
-      <h1 className="mb-16 text-center text-3xl">
-        {pathname.includes('/tag') ? '标签' : '书签'}列表
-      </h1>
-      {props.children}
+    <div className="xs:py-2 mx-auto w-full max-w-7xl py-1">
+      <div className="pt-8 pb-9 sm:pt-10 sm:pb-11">
+        <AdminPageTitle title={title} pathname={pathname} />
+      </div>
+
+      <AdminSurfaceCard
+        extra={props.surfaceExtra}
+        bodyClassName={props.bodyClassName || 'p-4 sm:p-5'}
+      >
+        {props.children}
+      </AdminSurfaceCard>
     </div>
   )
 }

@@ -10,13 +10,15 @@ interface AdminContextType {
   tags: SelectTag[]
   /** publicBookmarks 个数 */
   totalBookmarks: number
+  /** 用户数量 */
+  totalUsers: number
   setCtxValue(fn: (value: ContextValuePart) => ContextValuePart): void
   /** 立即更新标签，并重新请求获取书签 */
   updateTags(tags?: SelectTag[]): Promise<void>
   /** 立即变更并重新获取书签个数 */
   updateTotalBookmarks(value: number): Promise<void>
 }
-type ContextValuePart = Pick<AdminContextType, 'tags' | 'totalBookmarks'>
+type ContextValuePart = Pick<AdminContextType, 'tags' | 'totalBookmarks' | 'totalUsers'>
 
 const AdminContext = createContext<AdminContextType | null>(null)
 
@@ -30,6 +32,7 @@ export function AdminProvider(props: PropsWithChildren<ContextValuePart>) {
   const [state, setState] = useSetState({
     tags: props.tags,
     totalBookmarks: props.totalBookmarks,
+    totalUsers: props.totalUsers,
   })
 
   const ctxValue = useMemo<AdminContextType>(() => {

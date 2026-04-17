@@ -1,9 +1,40 @@
 import { db, schema } from '@/db'
-import { eq } from 'drizzle-orm'
+import { z } from '@/lib/zod'
+import { asc, count, desc, eq } from 'drizzle-orm'
+import { createUserFilterByKeyword } from './common'
+import { findManyUsersSchema } from './schemas'
+
+export type SelectUser = typeof schema.users.$inferSelect
 
 const UserController = {
   async count() {
     return await db.$count(schema.users)
+  },
+  async findMany(query?: z.output<typeof findManyUsersSchema>) {
+    query ||= findManyUsersSchema.parse({})
+    const { keyword, page, limit, sorterKey } = query
+    const filters = keyword ? createUserFilterByKeyword(schema.users, keyword) : undefined
+
+    const [list, [{ total }]] = await Promise.all([
+      db.query.users.findMany({
+        where: filters,
+        limit,
+        offset: (page - 1) * limit,
+        orderBy: [
+          asc(schema.users.role),
+          sorterKey.startsWith('-')
+            ? desc(schema.users.createdAt)
+            : asc(schema.users.createdAt),
+        ],
+      }),
+      db.select({ total: count() }).from(schema.users).where(filters),
+    ])
+
+    return {
+      total,
+      hasMore: total > page * limit,
+      list,
+    }
   },
   async updateProfile(
     userId: UserId,

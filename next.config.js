@@ -40,7 +40,8 @@ export default async function setup(phase) {
     },
     typescript: {
       ignoreBuildErrors: Boolean(process.env.IGNORE_BUILD_ERRORS),
-    }
+    },
+    allowedDevOrigins: ['127.0.0.1'],
   }
   return nextConfig
 }

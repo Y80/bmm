@@ -165,20 +165,14 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   }
 
   return (
-    <ListPageLayout>
+    <ListPageLayout title="书签列表">
       <div
-        className={cn('grid grid-cols-2 gap-2 sm:grid-cols-5', !props.totalBookmarks && 'hidden')}
+        className={cn(
+          'flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end',
+          !props.totalBookmarks && 'hidden'
+        )}
       >
-        <ReButton
-          variant="flat"
-          size="sm"
-          className="w-20"
-          startContent={<span className={cn(IconNames.Tabler.PLUS, 'text-sm')} />}
-          href={(isUserSpace ? PageRoutes.User : PageRoutes.Admin).bookmarkSlug('new')}
-        >
-          新建
-        </ReButton>
-        <div className="inline-grid sm:col-end-4">
+        <div className="w-full sm:order-1 sm:w-[220px]">
           <ReInput
             size="sm"
             placeholder="输入名称、地址"
@@ -189,26 +183,28 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
             onClear={() => onNameChange('')}
           />
         </div>
-        <Select
-          aria-label="选择标签"
-          placeholder="选择标签"
-          size="sm"
-          selectedKeys={state.selectedTag ? [state.selectedTag] : []}
-          onSelectionChange={(val) => {
-            setState({ selectedTag: val.currentKey || null, pager: { ...state.pager, page: 1 } })
-          }}
-        >
-          {props.tags.map((tag) => (
-            <SelectItem
-              key={tag.id}
-              startContent={tag.icon ? <ClientIcon icon={tag.icon} /> : null}
-            >
-              {tag.name}
-            </SelectItem>
-          ))}
-        </Select>
+        <div className="sm:order-2 sm:w-[180px]">
+          <Select
+            aria-label="选择标签"
+            placeholder="选择标签"
+            size="sm"
+            selectedKeys={state.selectedTag ? [state.selectedTag] : []}
+            onSelectionChange={(val) => {
+              setState({ selectedTag: val.currentKey || null, pager: { ...state.pager, page: 1 } })
+            }}
+          >
+            {props.tags.map((tag) => (
+              <SelectItem
+                key={tag.id}
+                startContent={tag.icon ? <ClientIcon icon={tag.icon} /> : null}
+              >
+                {tag.name}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
         <Dropdown>
-          <DropdownTrigger className="justify-start">
+          <DropdownTrigger className="justify-start sm:order-3">
             {(function () {
               const target = SORTERS.find((item) => item.key === state.sorterKey)
               if (!target) return null
@@ -245,86 +241,88 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
         </Dropdown>
       </div>
 
-      <Table aria-label="items table" className="mt-4 px-0" key={props.tags?.length}>
-        <TableHeader>
-          <TableColumn>图标</TableColumn>
-          <TableColumn>名称</TableColumn>
-          <TableColumn className="max-xs:hidden">地址</TableColumn>
-          <TableColumn>关联标签</TableColumn>
-          <TableColumn>置顶</TableColumn>
-          <TableColumn>操作</TableColumn>
-        </TableHeader>
-        <TableBody<SelectBookmark>
-          items={state.loading ? [] : bookmarks}
-          isLoading={state.loading}
-          loadingContent={<Spinner className="mt-12" label="Loading..." />}
-          emptyContent={<EmptyListPlaceholder target="bookmark" />}
-        >
-          {(item) => {
-            return (
-              <TableRow key={item.id}>
-                <TableCell className="flex min-w-8 items-center">
-                  <Favicon src={item.icon} showErrorIconOnFailed showSpinner />
-                </TableCell>
-                <TableCell>
-                  <div className="max-w-60 truncate">{item.name}</div>
-                </TableCell>
-                <TableCell className="max-xs:hidden">
-                  <Link
-                    href={item.url}
-                    color="foreground"
-                    isExternal
-                    size="sm"
-                    className="block max-w-52 truncate"
-                  >
-                    {item.url}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <div
-                    className="max-xs:max-w-24 max-w-32 truncate text-sm"
-                    title={renderRelatedTags(item.relatedTagIds)}
-                  >
-                    {renderRelatedTags(item.relatedTagIds)}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    size="sm"
-                    isSelected={item.isPinned || false}
-                    onValueChange={(v) => onChangeIsPinned(item, v)}
-                  />
-                </TableCell>
-                <TableCell>
-                  <ReButton
-                    color="danger"
-                    variant="light"
-                    isIconOnly
-                    className="text-2xl"
-                    startContent={<span className={IconNames.Tabler.TRASH} />}
-                    popoverContent={
-                      <div className="flex max-w-52 flex-col gap-4 p-4">
-                        <p>确定删除「{item.name}」？</p>
-                        <ReButton color="danger" size="sm" onClick={() => onRemove(item)}>
-                          确定
-                        </ReButton>
-                      </div>
-                    }
-                  />
-                  <ReButton
-                    variant="light"
-                    className="text-2xl"
-                    isIconOnly
-                    color="warning"
-                    startContent={<span className={IconNames.Tabler.EDIT} />}
-                    onClick={() => toEditPage(item)}
-                  />
-                </TableCell>
-              </TableRow>
-            )
-          }}
-        </TableBody>
-      </Table>
+      <div className="mt-3 overflow-hidden">
+        <Table aria-label="items table" className="px-0" key={props.tags?.length} removeWrapper>
+          <TableHeader>
+            <TableColumn>图标</TableColumn>
+            <TableColumn>名称</TableColumn>
+            <TableColumn className="max-xs:hidden">地址</TableColumn>
+            <TableColumn>关联标签</TableColumn>
+            <TableColumn>置顶</TableColumn>
+            <TableColumn>操作</TableColumn>
+          </TableHeader>
+          <TableBody<SelectBookmark>
+            items={state.loading ? [] : bookmarks}
+            isLoading={state.loading}
+            loadingContent={<Spinner className="mt-12" label="Loading..." />}
+            emptyContent={<EmptyListPlaceholder target="bookmark" />}
+          >
+            {(item) => {
+              return (
+                <TableRow key={item.id}>
+                  <TableCell className="flex min-w-8 items-center">
+                    <Favicon src={item.icon} showErrorIconOnFailed showSpinner />
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-60 truncate">{item.name}</div>
+                  </TableCell>
+                  <TableCell className="max-xs:hidden">
+                    <Link
+                      href={item.url}
+                      color="foreground"
+                      isExternal
+                      size="sm"
+                      className="block max-w-52 truncate"
+                    >
+                      {item.url}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <div
+                      className="max-xs:max-w-24 max-w-32 truncate text-sm"
+                      title={renderRelatedTags(item.relatedTagIds)}
+                    >
+                      {renderRelatedTags(item.relatedTagIds)}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Switch
+                      size="sm"
+                      isSelected={item.isPinned || false}
+                      onValueChange={(v) => onChangeIsPinned(item, v)}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <ReButton
+                      color="danger"
+                      variant="light"
+                      isIconOnly
+                      className="text-2xl"
+                      startContent={<span className={IconNames.Tabler.TRASH} />}
+                      popoverContent={
+                        <div className="flex max-w-52 flex-col gap-4 p-4">
+                          <p>确定删除「{item.name}」？</p>
+                          <ReButton color="danger" size="sm" onClick={() => onRemove(item)}>
+                            确定
+                          </ReButton>
+                        </div>
+                      }
+                    />
+                    <ReButton
+                      variant="light"
+                      className="text-2xl"
+                      isIconOnly
+                      color="warning"
+                      startContent={<span className={IconNames.Tabler.EDIT} />}
+                      onClick={() => toEditPage(item)}
+                    />
+                  </TableCell>
+                </TableRow>
+              )
+            }}
+          </TableBody>
+        </Table>
+      </div>
       {!state.loading && state.pager.total > 1 && (
         <div className="flex justify-center pt-4">
           <Pagination

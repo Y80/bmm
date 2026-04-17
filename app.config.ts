@@ -32,6 +32,7 @@ export const PageRoutes = {
     PREFIX: '/admin',
     INDEX: '/admin',
     UPLOAD: '/admin/upload',
+    USERS: '/admin/user/list',
     tagSlug: (slug?: 'new' | TagId | 'list') => '/admin/tag/' + (slug || ''),
     bookmarkSlug: (slug: 'new' | 'list' | BookmarkId) => '/admin/bookmark/' + slug,
   },
@@ -116,10 +117,55 @@ export const IconNames = {
 
 /** 管理后台的导航链接 */
 export const ADMIN_NAV_LINKS = [
-  { label: '新建书签', href: PageRoutes.Admin.bookmarkSlug('new') },
-  { label: '新建标签', href: PageRoutes.Admin.tagSlug('new') },
-  { label: '书签列表', href: PageRoutes.Admin.bookmarkSlug('list') },
-  { label: '标签列表', href: PageRoutes.Admin.tagSlug('list') },
+  {
+    label: '控制台概览',
+    href: PageRoutes.Admin.INDEX,
+    icon: IconNames.Tabler.DASHBOARD,
+    description: '查看后台总览、近期动作与常用入口',
+    accent: 'from-amber-300 via-orange-400 to-rose-500',
+  },
+  {
+    label: '用户列表',
+    href: PageRoutes.Admin.USERS,
+    icon: IconNames.Tabler.USER,
+    description: '查看系统用户与注册信息',
+    accent: 'from-slate-300 via-slate-400 to-slate-500',
+  },
+  {
+    label: '书签列表',
+    href: PageRoutes.Admin.bookmarkSlug('list'),
+    icon: IconNames.Tabler.BOOKMARK,
+    description: '筛选、排序并维护全部公共书签',
+    accent: 'from-sky-400 via-cyan-400 to-blue-500',
+  },
+  {
+    label: '新建书签',
+    href: PageRoutes.Admin.bookmarkSlug('new'),
+    icon: IconNames.Huge.ADD_SQUARE,
+    description: '录入单条书签并补全网站信息',
+    accent: 'from-fuchsia-400 via-pink-500 to-rose-500',
+  },
+  {
+    label: '标签列表',
+    href: PageRoutes.Admin.tagSlug('list'),
+    icon: IconNames.Tabler.TAG,
+    description: '整理标签结构、颜色和关联关系',
+    accent: 'from-emerald-300 via-teal-400 to-cyan-500',
+  },
+  {
+    label: '新建标签',
+    href: PageRoutes.Admin.tagSlug('new'),
+    icon: IconNames.Huge.ADD_SQUARE,
+    description: '创建新标签并设置图标、颜色与主标签属性',
+    accent: 'from-lime-300 via-green-400 to-emerald-500',
+  },
+  {
+    label: '批量导入',
+    href: PageRoutes.Admin.UPLOAD,
+    icon: IconNames.Tabler.UPLOAD,
+    description: '从浏览器书签文件批量迁移内容',
+    accent: 'from-violet-400 via-indigo-500 to-blue-600',
+  },
 ]
 
 export const Assets = {
@@ -138,7 +184,7 @@ export const DEFAULT_PUBLIC_TAG_PAGESIZE = 3 * 4 * 50
 export const FieldConstraints = {
   MaxLen: {
     DEFAULT: 100,
-    USER_NICKNAME: 10,
+    USER_NICKNAME: 20,
     TAG_NAME: 20,
     BOOKMARK_NAME: 50,
     URL: 1000,

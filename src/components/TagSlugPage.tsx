@@ -110,7 +110,7 @@ export default function TagSlugPage(props: TagSlugPageProps) {
   }
 
   return (
-    <SlugPageLayout onSave={onSave}>
+    <SlugPageLayout onSave={onSave} title={slug.number === null ? '新建标签' : '编辑标签'}>
       <ReInput
         label="名称"
         isRequired

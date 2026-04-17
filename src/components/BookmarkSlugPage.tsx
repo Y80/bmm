@@ -21,7 +21,15 @@ import { usePageUtil, useSlug } from '@/hooks'
 import { z } from '@/lib/zod'
 import { runAction } from '@/utils/client'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
-import { Button, cn, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Switch } from '@heroui/react'
+import {
+  Button,
+  cn,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Switch,
+} from '@heroui/react'
 import { useSetState, useUpdateEffect } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import { fromZodError } from 'zod-validation-error'
@@ -166,7 +174,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   }
 
   return (
-    <SlugPageLayout onSave={onSave}>
+    <SlugPageLayout onSave={onSave} title={slug.isNew ? '新建书签' : '编辑书签'}>
       <ReInput
         label="网址"
         type="url"
@@ -205,10 +213,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
           )
         }
         endContent={
-          <BookmarkIconDropdown
-            url={bookmark.url}
-            onSelectIcon={(icon) => setBookmark({ icon })}
-          />
+          <BookmarkIconDropdown url={bookmark.url} onSelectIcon={(icon) => setBookmark({ icon })} />
         }
       />
       <ReTextarea

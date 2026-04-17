@@ -1,4 +1,6 @@
 export { default as AiAnalyzeRelatedTagButton } from './AiAnalyzeRelatedTagButton'
+export { default as AdminPageTitle } from './AdminPageTitle'
+export * from './AdminPageShell'
 export { default as BookmarkListPage } from './BookmarkListPage'
 export { default as BookmarkIconDropdown } from './BookmarkIconDropdown'
 export { default as BookmarkSlugPage } from './BookmarkSlugPage'

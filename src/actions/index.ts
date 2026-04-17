@@ -4,6 +4,7 @@ import {
   CredentialsController,
   PublicBookmarkController,
   PublicTagController,
+  UserController,
   UserBookmarkController,
   UserTagController,
 } from '@/controllers'
@@ -47,6 +48,9 @@ export const actInsertUserBookmark = make(UserBookmarkController.insert)
 export const actQueryUserBookmark = make(UserBookmarkController.query)
 export const actDeleteUserBookmark = make(UserBookmarkController.delete)
 export const actUpdateUserBookmark = make(UserBookmarkController.update)
+
+/// Users
+export const actFindUsers = make(UserController.findMany, { guard: 'admin' })
 
 /// 解析网站、标签
 export const actExtractHtmlInfo = make(extractHtmlInfoInput)

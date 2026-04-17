@@ -3,14 +3,18 @@ import { Accordion, AccordionItem } from '@heroui/react'
 export default function ExportBookmarksGuide() {
   return (
     <div className="mt-8 text-sm">
-      <Accordion variant="shadow" className="bg-content1/60">
+      <Accordion
+        variant="shadow"
+        className="border-divider/70 bg-default-100/85 dark:bg-content2/85 rounded-2xl border shadow-sm"
+      >
         <AccordionItem
           aria-label="export-bookmarks-guide"
           title="教程：如何导出浏览器书签"
           classNames={{
-            title: 'text-foreground-600 text-sm',
-            trigger: 'cursor-pointer',
-            content: 'text-foreground-500 text-left',
+            base: 'bg-transparent',
+            title: 'text-foreground-700 text-sm font-medium',
+            trigger: 'cursor-pointer px-4',
+            content: 'text-foreground-500 px-4 pb-4 text-left',
           }}
         >
           <div>以 Chrome 浏览器为例：</div>
