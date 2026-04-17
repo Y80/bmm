@@ -20,12 +20,12 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
   const { slug } = useParams<{ slug: string }>()
   const pathname = usePathname()
   const router = useRouter()
-  const isAdminSpace = pathname.startsWith('/admin')
+  const isCmsSpace = pathname.startsWith('/admin') || pathname.startsWith('/user')
   const pageName = pathname.includes('/tag') ? '标签' : '书签'
   const actionName = slug === 'new' ? '新建' : '编辑'
   const title = props.title || `${actionName}${pageName}`
 
-  if (!isAdminSpace) {
+  if (!isCmsSpace) {
     return (
       <div className="flex-items-center mx-auto w-md flex-col py-16">
         <h1 className="text-3xl">

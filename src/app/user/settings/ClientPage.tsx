@@ -1,13 +1,14 @@
 'use client'
 
 import { actUpdateUserProfile } from '@/actions'
+import AdminPageTitle from '@/components/AdminPageTitle'
 import { ReButton, ReInput } from '@/components'
 import { zodSchemas } from '@/lib/zod'
 import { robustUrl } from '@/utils'
 import { runAction } from '@/utils/client'
-import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
+import { FieldConstraints, IconNames } from '@cfg'
 import { Avatar, Form, FormProps } from '@heroui/react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { FormEvent, useState, useTransition } from 'react'
 
@@ -20,6 +21,7 @@ type Props = {
 }
 
 export default function ClientPage(props: Props) {
+  const pathname = usePathname()
   const router = useRouter()
   const session = useSession()
   const [isRefreshing, startTransition] = useTransition()
@@ -68,11 +70,8 @@ export default function ClientPage(props: Props) {
   return (
     <div className="relative mx-auto flex h-full w-full max-w-5xl items-center px-6 py-10">
       <div className="mx-auto w-full max-w-4xl">
-        <div className="mb-6">
-          <h1 className="mt-2 flex items-center gap-3 text-3xl font-semibold tracking-tight">
-            <span className={IconNames.Tabler.USER} />
-            <span>个人资料</span>
-          </h1>
+        <div className="pb-9 sm:pb-11">
+          <AdminPageTitle title="个人资料" pathname={pathname} icon={IconNames.Tabler.USER} />
         </div>
 
         <div className="bg-background relative grid overflow-hidden rounded-[2rem] shadow-[0_18px_56px_rgba(15,23,42,0.08)] md:grid-cols-[240px_minmax(0,1fr)]">
@@ -133,14 +132,6 @@ export default function ClientPage(props: Props) {
                   }
                 >
                   保存资料
-                </ReButton>
-                <ReButton
-                  href={PageRoutes.User.INDEX}
-                  variant="light"
-                  className="text-foreground-600"
-                  startContent={<span className={IconNames.Tabler.ARROW_LEFT} />}
-                >
-                  返回个人空间
                 </ReButton>
               </div>
             </Form>

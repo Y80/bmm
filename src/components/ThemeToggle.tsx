@@ -4,7 +4,6 @@ import useIsClient from '@/hooks/useIsClient'
 import { IconNames } from '@cfg'
 import { cn, Listbox, ListboxItem } from '@heroui/react'
 import { useTheme } from 'next-themes'
-import { useState } from 'react'
 import { IconButtonProps } from './common'
 import ReButton from './re-export/ReButton'
 
@@ -15,14 +14,17 @@ const ThemeListItems = [
 ]
 
 export default function ThemeToggle() {
-  const { setTheme, theme } = useTheme()
-  const [selectedKeys, setSelectedKeys] = useState([theme!])
+  const { resolvedTheme, setTheme, theme } = useTheme()
   const isClient = useIsClient()
-  const currentThemeIcon = ThemeListItems.find((el) => el.key === selectedKeys[0])?.icon
+  const currentThemeKey = theme || 'system'
+  const currentThemeIcon = ThemeListItems.find((el) => el.key === currentThemeKey)?.icon
 
   function mergedSetTheme(theme: string) {
-    setSelectedKeys([theme])
     setTheme(theme)
+  }
+
+  function cycleTheme() {
+    mergedSetTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
   }
 
   return (
@@ -32,7 +34,7 @@ export default function ThemeToggle() {
         role="mobile-dark-button"
         {...IconButtonProps}
         className={cn(IconButtonProps.className, 'max-xs:dark:flex hidden')}
-        onClick={() => mergedSetTheme('light')}
+        onClick={cycleTheme}
       >
         <span className={IconNames.Tabler.MOON_STARS} />
       </ReButton>
@@ -41,7 +43,7 @@ export default function ThemeToggle() {
         role="mobile-light-button"
         {...IconButtonProps}
         className={cn(IconButtonProps.className, 'max-xs:light:flex hidden')}
-        onClick={() => mergedSetTheme('dark')}
+        onClick={cycleTheme}
       >
         <span className={IconNames.Tabler.SUN} />
       </ReButton>
@@ -49,6 +51,7 @@ export default function ThemeToggle() {
       <ReButton
         {...IconButtonProps}
         className={cn(IconButtonProps.className, 'max-xs:hidden')}
+        onClick={cycleTheme}
         tooltip={{
           placement: 'bottom-end',
           content: (
@@ -57,7 +60,7 @@ export default function ThemeToggle() {
               aria-label="theme list"
               selectionMode="single"
               disallowEmptySelection
-              selectedKeys={selectedKeys}
+              selectedKeys={[currentThemeKey]}
               onSelectionChange={(v) => mergedSetTheme([...v][0] as string)}
             >
               {ThemeListItems.map((item) => (

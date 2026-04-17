@@ -1,9 +1,9 @@
-import { PublicAndUserNavbar } from '@/components/PublicAndUserNavBar'
 import { UserBookmarkController, UserTagController } from '@/controllers'
 import { auth } from '@/lib/auth'
 import { PageRoutes } from '@cfg'
 import { redirect } from 'next/navigation'
 import { PropsWithChildren } from 'react'
+import UserLayoutShell from './UserLayoutShell'
 import { UserContextProvider } from './ctx'
 
 export const generateMetadata = async () => {
@@ -30,8 +30,9 @@ export default async function UserLayout(props: PropsWithChildren) {
 
   return (
     <UserContextProvider tags={tags} totalBookmarks={totalBookmarks}>
-      <PublicAndUserNavbar tags={tags} totalBookmarks={totalBookmarks} />
-      <div className="h-screen pt-16">{props.children}</div>
+      <UserLayoutShell tags={tags} totalBookmarks={totalBookmarks}>
+        {props.children}
+      </UserLayoutShell>
     </UserContextProvider>
   )
 }

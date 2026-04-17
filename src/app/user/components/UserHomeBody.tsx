@@ -1,11 +1,13 @@
 'use client'
 
 import { HomeBody } from '@/components'
+import { ReactNode } from 'react'
 import { useUserContext } from '../ctx'
 
 interface Props {
   bookmarks: SelectBookmark[]
   searchedTotalBookmarks?: number
+  header?: ReactNode
 }
 
 export default function UserHomeBody(props: Props) {
@@ -16,6 +18,7 @@ export default function UserHomeBody(props: Props) {
       tags={tags}
       bookmarks={props.bookmarks}
       searchedTotalBookmarks={props.searchedTotalBookmarks}
+      header={props.header}
     />
   )
 }

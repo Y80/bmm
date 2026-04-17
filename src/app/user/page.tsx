@@ -1,13 +1,11 @@
-import { UserBookmarkController } from '@/controllers'
-import { PageRoutes } from '@cfg'
-import { redirect } from 'next/navigation'
-import UserHomeBody from './components/UserHomeBody'
+import { Metadata } from 'next'
 
-export default async function Page() {
-  const res = await UserBookmarkController.findMany()
-  if (!res.total) {
-    redirect(PageRoutes.User.WELCOME)
-  }
+import ClientHomePage from './ClientHomePage'
 
-  return <UserHomeBody bookmarks={res.list} />
+export const metadata: Metadata = {
+  title: '内容管理',
+}
+
+export default function Page() {
+  return <ClientHomePage />
 }

@@ -11,7 +11,9 @@ import { useRef } from 'react'
 export function SearchInput(props: BaseComponentProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const routes = usePageUtil().isUserSpace ? PageRoutes.User : PageRoutes.Public
+  const isUserSpace = usePageUtil().isUserSpace
+  const routes = isUserSpace ? PageRoutes.User : PageRoutes.Public
+  const fallbackHref = isUserSpace ? PageRoutes.User.SPACE : PageRoutes.Public.INDEX
   const [state, setState] = useSetState({
     input: searchParams.get('keyword') || '',
     focusInput: false,
@@ -21,7 +23,7 @@ export function SearchInput(props: BaseComponentProps) {
   const handleSearch = useMemoizedFn(() => {
     const keyword = state.input.trim()
     if (keyword === (searchParams.get('keyword') || '')) return
-    router.push(keyword ? routes.search(keyword) : routes.INDEX)
+    router.push(keyword ? routes.search(keyword) : fallbackHref)
   })
 
   // 按下回车键，执行搜索
@@ -48,7 +50,7 @@ export function SearchInput(props: BaseComponentProps) {
   })
 
   useMount(() => {
-    if (location.pathname === PageRoutes.Public.SEARCH && inputRef.current) {
+    if ([PageRoutes.Public.SEARCH, PageRoutes.User.SEARCH].includes(location.pathname as any) && inputRef.current) {
       inputRef.current.querySelector('input')?.focus()
     }
   })
@@ -67,7 +69,7 @@ export function SearchInput(props: BaseComponentProps) {
       endContent={
         !state.focusInput && !state.input && <Kbd className="b dark:bg-default-100/80 px-3">/</Kbd>
       }
-      onClear={state.input ? () => router.push(routes.INDEX) : undefined}
+      onClear={state.input ? () => router.push(fallbackHref) : undefined}
       onValueChange={(v) => setState({ input: v })}
       onFocusChange={(v) => setState({ focusInput: v })}
     />

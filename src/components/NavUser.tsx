@@ -55,10 +55,18 @@ export function NavUser() {
           >
             <ListboxSection showDivider>
               <ListboxItem
-                href={PageRoutes.User.INDEX}
+                href={PageRoutes.User.SPACE}
                 startContent={<span className={cn(IconNames.Tabler.USER, MENU_ITEM_ICON_CLS)} />}
               >
                 个人空间
+              </ListboxItem>
+              <ListboxItem
+                href={PageRoutes.User.INDEX}
+                startContent={
+                  <span className={cn(IconNames.Tabler.DASHBOARD, MENU_ITEM_ICON_CLS)} />
+                }
+              >
+                内容管理
               </ListboxItem>
               <ListboxItem
                 href={PageRoutes.User.SETTINGS}

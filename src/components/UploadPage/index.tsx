@@ -25,6 +25,7 @@ import { Tree, TreeDataNode } from 'antd'
 import { motion } from 'framer-motion'
 import { pick } from 'lodash'
 import { nanoid } from 'nanoid'
+import { usePathname } from 'next/navigation'
 import { useMemo, useRef } from 'react'
 import { LinkTagStrategy } from './common'
 import ExportBookmarksGuide from './components/ExportBookmarksGuide'
@@ -67,6 +68,8 @@ function getStrategyLabel(strategy: LinkTagStrategy) {
  */
 export default function UploadPage() {
   const { isAdminSpace } = usePageUtil()
+  const pathname = usePathname()
+  const isCmsSpace = isAdminSpace || pathname.startsWith('/user')
   const inputRef = useRef<null | HTMLInputElement>(null)
   const [state, setState] = useSetState({
     file: null as null | File,
@@ -337,7 +340,7 @@ export default function UploadPage() {
     setState({ showUploadList: true })
   }
 
-  if (isAdminSpace) {
+  if (isCmsSpace) {
     return (
       <div className="xs:py-2 mx-auto w-full max-w-6xl py-1">
         <div className="pt-8 pb-9 sm:pt-10 sm:pb-11">
@@ -496,24 +499,24 @@ export default function UploadPage() {
   }
 
   return (
-    <main className={cn('flex-center py-20', isAdminSpace && 'xs:py-4 py-2')}>
+    <main className={cn('flex-center py-20', isCmsSpace && 'xs:py-4 py-2')}>
       <div
         className={cn(
           state.file && 'hidden!',
-          isAdminSpace
+          isCmsSpace
             ? 'rounded-large border-divider bg-content1 w-full max-w-4xl border p-6 text-center shadow-sm sm:p-8'
             : 'w-lg text-center'
         )}
       >
         <span className={cn(IconNames.Huge.IMPORT, 'text-default-400 text-5xl')} />
-        <h1 className={cn('mt-6 mb-8 text-xl', isAdminSpace && 'text-2xl font-semibold')}>
+        <h1 className={cn('mt-6 mb-8 text-xl', isCmsSpace && 'text-2xl font-semibold')}>
           导入浏览器书签
         </h1>
         <div
           className={cn(
             'border-foreground-200 text-foreground-400 flex-center relative h-[280px] cursor-pointer flex-col gap-4 rounded-xl border border-dashed',
             'hover:text-foreground-600 transition',
-            isAdminSpace && 'rounded-large bg-default-50/70 dark:bg-default-100/5'
+            isCmsSpace && 'rounded-large bg-default-50/70 dark:bg-default-100/5'
           )}
           onClick={() => inputRef.current?.click()}
         >

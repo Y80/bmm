@@ -6,57 +6,12 @@ import { MobileTagPicker } from '@/components/MobileTagPicker'
 import { usePageUtil } from '@/hooks'
 import { getTagLinkAttrs } from '@/utils'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
-import {
-  cn,
-  Link,
-  Listbox,
-  ListboxItem,
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarMenu,
-  NavbarMenuToggle,
-} from '@heroui/react'
+import { cn, Link, Navbar, NavbarBrand, NavbarContent, NavbarMenu, NavbarMenuToggle } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { SearchInput } from './SearchInput'
-
-const UserLinkGroups = [
-  {
-    key: 'bookmark',
-    icon: IconNames.Tabler.BOOKMARK,
-    list: [
-      {
-        label: '新建书签',
-        href: PageRoutes.User.bookmarkSlug('new'),
-        icon: IconNames.Huge.ADD_SQUARE,
-      },
-      {
-        label: '书签列表',
-        href: PageRoutes.User.bookmarkSlug('list'),
-        icon: IconNames.Huge.LIST,
-      },
-    ],
-  },
-  {
-    key: 'tag',
-    icon: IconNames.Tabler.TAG,
-    list: [
-      {
-        label: '新建标签',
-        href: PageRoutes.User.tagSlug('new'),
-        icon: IconNames.Huge.ADD_SQUARE,
-      },
-      {
-        label: '标签列表',
-        href: PageRoutes.User.tagSlug('list'),
-        icon: IconNames.Huge.LIST,
-      },
-    ],
-  },
-]
 
 interface Props {
   totalBookmarks: number
@@ -69,6 +24,7 @@ export function PublicAndUserNavbar(props: Props) {
   const pathname = usePathname()
   const isUserSpace = usePageUtil().isUserSpace
   const routes = isUserSpace ? PageRoutes.User : PageRoutes.Public
+  const homeHref = isUserSpace ? PageRoutes.User.SPACE : PageRoutes.Public.INDEX
   const user = session?.data?.user
   const [state, setState] = useSetState({
     isSelectedMenuToggle: false,
@@ -79,7 +35,7 @@ export function PublicAndUserNavbar(props: Props) {
     if (!isUserSpace) return true
     const userRoutes = PageRoutes.User
     if (
-      [userRoutes.INDEX, userRoutes.RANDOM, userRoutes.SEARCH].includes(pathname as any) ||
+      [userRoutes.SPACE, userRoutes.RANDOM, userRoutes.SEARCH].includes(pathname as any) ||
       pathname.startsWith(userRoutes.tags())
     ) {
       return true
@@ -93,7 +49,7 @@ export function PublicAndUserNavbar(props: Props) {
       onMenuOpenChange={(v) => setState({ isSelectedMenuToggle: v })}
     >
       <NavbarBrand className="max-xs:basis-20 xs:basis-56 shrink-0 grow-0">
-        <Link href={routes.INDEX} className="flex-items-center gap-4">
+        <Link href={homeHref} className="flex-items-center gap-4">
           <Image src={Assets.LOGO_SVG} width={32} height={32} alt="logo" priority />
           <h3 className="text-foreground-700 translate-y-0.5 font-mono text-2xl font-light">
             {isUserSpace ? user?.name : WEBSITE_NAME}
@@ -103,34 +59,6 @@ export function PublicAndUserNavbar(props: Props) {
       <NavbarContent justify="end" className="gap-0">
         {/* pathname 发生变化时，重新渲染 SearchInput */}
         {showSearchInput() && <SearchInput key={pathname} className="max-xs:hidden mr-4 w-72" />}
-        {isUserSpace &&
-          UserLinkGroups.map((group) => (
-            <ReButton
-              key={group.key}
-              {...IconButtonProps}
-              className={cn(IconButtonProps.className, 'max-xs:hidden')}
-              href={group.list[1].href}
-              tooltip={{
-                placement: 'top-start',
-                content: (
-                  <Listbox label={group.key}>
-                    {group.list.map((el) => (
-                      <ListboxItem
-                        key={el.label}
-                        href={el.href}
-                        className="w-28"
-                        startContent={<span className={cn(el.icon, 'text-base')} />}
-                      >
-                        {el.label}
-                      </ListboxItem>
-                    ))}
-                  </Listbox>
-                ),
-              }}
-            >
-              <span className={group.icon} />
-            </ReButton>
-          ))}
         <ReButton
           {...IconButtonProps}
           className={cn(IconButtonProps.className, !totalBookmarks && 'hidden', 'max-xs:hidden')}

@@ -18,10 +18,10 @@ export default function ListPageLayout(props: ListPageLayoutProps) {
     : pathname.includes('/tag')
       ? '标签'
       : '用户'
-  const isAdminSpace = pathname.startsWith('/admin')
+  const isCmsSpace = pathname.startsWith('/admin') || pathname.startsWith('/user')
   const title = props.title || `${pageName}列表`
 
-  if (!isAdminSpace) {
+  if (!isCmsSpace) {
     return (
       <div className="mx-auto w-full max-w-5xl py-16">
         <h1 className="mb-16 text-center text-3xl">{pageName}列表</h1>

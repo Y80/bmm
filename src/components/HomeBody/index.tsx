@@ -6,7 +6,7 @@ import { Divider } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import Image from 'next/image'
 import { useParams, usePathname } from 'next/navigation'
-import { useEffect, useMemo } from 'react'
+import { ReactNode, useEffect, useMemo } from 'react'
 import Banner from './components/Banner'
 import BookmarkCard from './components/BookmarkCard'
 import BookmarkContainer from './components/BookmarkContainer'
@@ -19,6 +19,7 @@ interface Props {
   bookmarks: SelectBookmark[]
   totalBookmarks: number
   searchedTotalBookmarks?: number
+  header?: ReactNode
 }
 
 export default function HomeBody(props: Props) {
@@ -70,6 +71,7 @@ export default function HomeBody(props: Props) {
       </aside>
       <div className="xs:ml-56">
         <div className="flex flex-col px-6 pb-14">
+          {props.header}
           <Banner
             tags={props.tags}
             totalBookmarks={props.totalBookmarks}

@@ -12,7 +12,7 @@ export const generateMetadata: GenerateMetadata<{ keyword: string }> = async pro
 export default async function Page(props: RSCPageProps) {
   const keyword = (await props.searchParams).keyword
   if (!keyword?.length || Array.isArray(keyword)) {
-    redirect(PageRoutes.User.INDEX)
+    redirect(PageRoutes.User.SPACE)
   }
   const payload: z.input<typeof findManyBookmarksSchema> = { keyword }
   const res = await UserBookmarkController.findMany(findManyBookmarksSchema.parse(payload))

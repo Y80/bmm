@@ -211,7 +211,7 @@ export default function UploadList(props: Props) {
               window.open(PageRoutes.INDEX)
             } else {
               window.open(PageRoutes.User.bookmarkSlug('list'))
-              window.open(PageRoutes.User.INDEX)
+              window.open(PageRoutes.User.SPACE)
             }
           }}
         >
