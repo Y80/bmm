@@ -117,6 +117,11 @@ src/
 └── db/                  # Database (Drizzle ORM)
 ```
 
+### Action Module Rule
+
+- `src/actions/index.ts` only serves as a module export surface. Do not place business logic in this file.
+- Put action-specific business logic, schemas, and `makeActionInput(...)` definitions under `src/actions/items/`, then export the final action from `src/actions/index.ts`.
+
 ### Server Actions Pattern
 
 **Always use `makeAction` wrapper** for server actions:

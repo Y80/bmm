@@ -78,6 +78,11 @@ import type { SelectBookmark } from '@/controllers'
 import UserHomeBody from './components/UserHomeBody'
 ```
 
+#### Actions Module Boundary
+- `src/actions/index.ts` is only the export entry for actions.
+- Do not place business logic in `src/actions/index.ts`.
+- Put action-specific handler logic, schemas, and `makeActionInput(...)` declarations in `src/actions/items/`, then export the final action from `src/actions/index.ts`.
+
 #### Server Actions Pattern
 All server actions use the `makeAction` utility (`/src/utils/server-actions.ts`):
 - Automatic Zod validation
