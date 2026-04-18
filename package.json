@@ -16,6 +16,7 @@
     "db:migrate": "tsx scripts/db-migration.mjs",
     "根据项目中的 schema，更新数据库（忽略 migrations，可能会导致数据丢失）": "⬇️",
     "db:push": "tsx scripts/db-push.mjs",
+    "user:list": "tsx scripts/list-users.mjs",
     "user:reset-password": "tsx scripts/reset-user-password.mjs",
     "以上这些命令行均允许加上 -P 或 --production，以加载正式环境变量，如 pnpm db:test -P": ""
   },

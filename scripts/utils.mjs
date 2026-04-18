@@ -21,7 +21,7 @@ export async function dbExecute(sql = '') {
 
 export async function testDbConnect() {
   try {
-    dbExecute('SELECT 1;')
+    await dbExecute('SELECT 1;')
     return true
   } catch (err) {
     console.error(err)
@@ -29,8 +29,48 @@ export async function testDbConnect() {
   }
 }
 
+export function redactDbConnectionUrl(connectionUrl = '') {
+  if (!connectionUrl || connectionUrl.startsWith('file:') || connectionUrl === ':memory:') {
+    return connectionUrl
+  }
+
+  try {
+    const url = new URL(connectionUrl)
+    const sensitiveKeys = new Set([
+      'access_token',
+      'api_key',
+      'apikey',
+      'auth_token',
+      'authtoken',
+      'key',
+      'password',
+      'passwd',
+      'pwd',
+      'secret',
+      'token',
+    ])
+
+    if (url.username) {
+      url.username = '***'
+    }
+    if (url.password) {
+      url.password = '***'
+    }
+
+    for (const key of [...url.searchParams.keys()]) {
+      if (sensitiveKeys.has(key.toLowerCase())) {
+        url.searchParams.set(key, '***')
+      }
+    }
+
+    return url.toString()
+  } catch {
+    return connectionUrl.replace(/\/\/([^/@:]+)(?::[^/@]*)?@/, '//***:***@')
+  }
+}
+
 // 加载环境变量
-export async function loadEnv() {
+export async function loadEnv(options = {}) {
   // 命令行传入 -P 或 --production 将使用正式环境变量
   const args = zx.minimist(process.argv.slice(2), { alias: { production: 'P' } })
   const isProduction = args.production === true
@@ -41,12 +81,12 @@ export async function loadEnv() {
   const NextEnv = await import('@next/env')
   const loadEnvConfig = NextEnv.loadEnvConfig || NextEnv.default.loadEnvConfig
   loadEnvConfig(process.cwd(), isProduction)
-  tryLoadParentGitRepoEnv()
+  tryLoadParentGitRepoEnv(options)
 }
 
 
 // 当前应用如果作为 git submodule 存在，加载父级目录是的环境配置文件
-export function tryLoadParentGitRepoEnv() {
+export function tryLoadParentGitRepoEnv(options = {}) {
   if (!fs.existsSync(path.resolve('..', '.gitmodules'))) return
   const envPaths = [path.resolve('..', '.env'), path.resolve('..', '.env.' + process.env.NODE_ENV)]
   for (const envPath of envPaths) {
@@ -56,7 +96,9 @@ export function tryLoadParentGitRepoEnv() {
       override: true,
     })
   }
-  console.log(zx.chalk.cyan('💡 当前项目作为 git submodule，已加载主目录环境配置'))
+  if (!options.silentParentEnvHint) {
+    console.log(zx.chalk.cyan('💡 当前项目作为 git submodule，已加载主目录环境配置'))
+  }
 }
 
 

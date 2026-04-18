@@ -10,6 +10,11 @@ const UserController = {
   async count() {
     return await db.$count(schema.users)
   },
+  async findAll() {
+    return await db.query.users.findMany({
+      orderBy: [asc(schema.users.role), desc(schema.users.createdAt)],
+    })
+  },
   async findMany(query?: z.output<typeof findManyUsersSchema>) {
     query ||= findManyUsersSchema.parse({})
     const { keyword, page, limit, sorterKey } = query
