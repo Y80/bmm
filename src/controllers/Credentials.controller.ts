@@ -1,7 +1,7 @@
 import { db, schema } from '@/db'
 import { z, zodSchemas } from '@/lib/zod'
 import crypto from 'crypto'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import UserController from './User.controller'
 
 // 使用 pbkdf2 算法生成哈希，1000 轮迭代，32 字节长度的密钥
@@ -70,6 +70,58 @@ const CredentialsController = {
     if (!verifyPassword(payload.password, hash, salt)) {
       throw new Error('邮箱或密码错误，请检查后重试')
     }
+    return user
+  },
+  // 重设账户密码
+  async resetPassword(payload: z.infer<typeof zodSchemas.userCredential>) {
+    const { email, password } = zodSchemas.userCredential.parse(payload)
+    const { hash, salt } = saltAndHashPassword(password)
+
+    const user = await db.transaction(async (tx) => {
+      const targetUser = await tx.query.users.findFirst({
+        where: eq(schema.users.email, email),
+        with: { credential: true },
+      })
+
+      if (!targetUser) {
+        throw new Error('用户不存在')
+      }
+
+      if (targetUser.credential) {
+        await tx
+          .update(schema.credentials)
+          .set({
+            password: hash,
+            salt,
+          })
+          .where(eq(schema.credentials.userId, targetUser.id))
+      } else {
+        await tx.insert(schema.credentials).values({
+          userId: targetUser.id,
+          password: hash,
+          salt,
+        })
+      }
+
+      const credentialsAccount = await tx.query.accounts.findFirst({
+        where: and(
+          eq(schema.accounts.provider, 'credentials'),
+          eq(schema.accounts.providerAccountId, email)
+        ),
+      })
+
+      if (!credentialsAccount) {
+        await tx.insert(schema.accounts).values({
+          userId: targetUser.id,
+          type: 'email',
+          provider: 'credentials',
+          providerAccountId: email,
+        })
+      }
+
+      return targetUser
+    })
+
     return user
   },
   // 删除账户

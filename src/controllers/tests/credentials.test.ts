@@ -1,6 +1,6 @@
 import { db, schema } from '@/db'
 import { faker } from '@faker-js/faker'
-import { count, eq } from 'drizzle-orm'
+import { and, count, eq } from 'drizzle-orm'
 import { afterAll, describe, expect, test } from 'vitest'
 import CredentialsController from '../Credentials.controller'
 import UserController from '../User.controller'
@@ -125,5 +125,73 @@ describe('G: 删除用户时清理关联数据', { sequential: true }, () => {
       .from(schema.userBookmarkToTag)
       .where(eq(schema.userBookmarkToTag.bId, bookmark.id))
     expect(totalBookmarkRefs).toBe(0)
+  })
+})
+
+describe('G: 重设密码', { sequential: true }, () => {
+  const email = faker.internet.email()
+  const oldPassword = createValidPassword()
+  const newPassword = createValidPassword()
+
+  afterAll(async () => {
+    try {
+      await CredentialsController.delete(email)
+    } catch {}
+  })
+
+  test('reset existing credentials password', async () => {
+    await CredentialsController.create({ email, password: oldPassword })
+
+    await CredentialsController.resetPassword({ email, password: newPassword })
+
+    await expect(
+      CredentialsController.verify({ email, password: oldPassword })
+    ).rejects.toThrowError('邮箱或密码错误，请检查后重试')
+
+    await expect(
+      CredentialsController.verify({ email, password: newPassword })
+    ).resolves.toMatchObject({ email })
+  })
+})
+
+describe('G: 为第三方账号补建密码登录', { sequential: true }, () => {
+  const email = faker.internet.email()
+  const password = createValidPassword()
+
+  afterAll(async () => {
+    try {
+      await CredentialsController.delete(email)
+    } catch {}
+  })
+
+  test('reset password creates credentials auth records when absent', async () => {
+    const [user] = await db
+      .insert(schema.users)
+      .values({
+        email,
+        name: faker.person.firstName(),
+      })
+      .returning()
+
+    await db.insert(schema.accounts).values({
+      userId: user.id,
+      type: 'oauth',
+      provider: 'github',
+      providerAccountId: faker.string.numeric(8),
+    })
+
+    await CredentialsController.resetPassword({ email, password })
+
+    await expect(CredentialsController.verify({ email, password })).resolves.toMatchObject({ email })
+    await expect(db.$count(schema.credentials, eq(schema.credentials.userId, user.id))).resolves.toBe(1)
+    await expect(
+      db.$count(
+        schema.accounts,
+        and(
+          eq(schema.accounts.provider, 'credentials'),
+          eq(schema.accounts.providerAccountId, email)
+        )
+      )
+    ).resolves.toBe(1)
   })
 })
