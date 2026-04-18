@@ -51,9 +51,6 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
           color="primary"
           className="mt-4 w-full shadow-lg"
           onClick={props.onSave}
-          startContent={
-            !props.isSaving && <span className={cn(IconNames.Tabler.DOWNLOAD, 'text-xl')} />
-          }
         >
           保 存
         </ReButton>
@@ -72,14 +69,11 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
           {props.children}
         </div>
 
-        <div>
+        <div className="flex justify-end">
           <ReButton
             color="primary"
-            className="w-full"
+            className="min-w-28"
             onClick={props.onSave}
-            startContent={
-              !props.isSaving && <span className={cn(IconNames.Tabler.DOWNLOAD, 'text-xl')} />
-            }
           >
             保存
           </ReButton>

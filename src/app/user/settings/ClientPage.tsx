@@ -7,7 +7,7 @@ import { zodSchemas } from '@/lib/zod'
 import { robustUrl } from '@/utils'
 import { runAction } from '@/utils/client'
 import { FieldConstraints, IconNames } from '@cfg'
-import { Avatar, Form, FormProps } from '@heroui/react'
+import { Avatar, Card, CardBody, Form, FormProps, cn } from '@heroui/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { FormEvent, useState, useTransition } from 'react'
@@ -74,69 +74,65 @@ export default function ClientPage(props: Props) {
           <AdminPageTitle title="个人资料" pathname={pathname} icon={IconNames.Tabler.USER} />
         </div>
 
-        <div className="bg-background relative grid overflow-hidden rounded-[2rem] shadow-[0_18px_56px_rgba(15,23,42,0.08)] md:grid-cols-[240px_minmax(0,1fr)]">
-          <div className="from-secondary-100/55 via-background to-primary-100/70 absolute inset-0 bg-linear-to-br" />
+        <Card
+          shadow="none"
+          className="border-divider/60 bg-white/90 dark:bg-content1/80 overflow-hidden rounded-[28px] border shadow-[0_18px_50px_-32px_rgba(15,23,42,0.18)] dark:shadow-none"
+        >
+          <CardBody className="relative overflow-hidden p-0">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.12),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.1),transparent_28%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.2),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(251,146,60,0.12),transparent_30%)]" />
+            <div className="absolute inset-0 [background-image:linear-gradient(rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.04)_1px,transparent_1px)] [background-size:26px_26px] opacity-45 dark:[background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] dark:opacity-20" />
 
-          <section className="relative flex items-center justify-center px-5 py-6 md:px-6">
-            <div className="w-full max-w-[188px] rounded-[1.5rem] bg-white/72 px-4 py-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-md dark:bg-white/6 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_18px_36px_rgba(0,0,0,0.34)]">
-              <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-white/70 shadow-[0_10px_24px_rgba(15,23,42,0.08)] dark:bg-white/8 dark:shadow-[0_12px_28px_rgba(0,0,0,0.28)]">
-                <Avatar
-                  className="h-20 w-20 text-2xl shadow-md"
-                  src={previewSrc}
-                  name={form.name || props.user.email}
-                  showFallback
-                />
-              </div>
-              <h2 className="mt-3 text-base font-semibold">{form.name || '未设置昵称'}</h2>
-              <p className="text-foreground-400 mt-1 text-xs break-all">{props.user.email}</p>
+            <div className="relative flex flex-col gap-6 px-5 py-6 sm:px-7 sm:py-7">
+              <section className="flex justify-center">
+                <div className="bg-white/82 dark:bg-default-100/5 w-full max-w-[188px] rounded-[24px] px-4 py-5 text-center">
+                  <div className="border-divider/60 bg-background/70 mx-auto flex h-24 w-24 items-center justify-center rounded-full border shadow-[0_10px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_12px_28px_rgba(0,0,0,0.22)]">
+                    <Avatar
+                      className="h-20 w-20 text-2xl shadow-md"
+                      src={previewSrc}
+                      name={form.name || props.user.email}
+                      showFallback
+                    />
+                  </div>
+                  <h2 className="mt-3 text-base font-semibold">{form.name || '未设置昵称'}</h2>
+                  <p className="text-foreground-400 mt-1 text-xs break-all">{props.user.email}</p>
+                </div>
+              </section>
+
+              <section className="bg-white/82 dark:bg-default-100/5 rounded-[24px] px-6 py-7 md:px-7 md:py-7">
+                <Form validationErrors={validationErrors} onSubmit={handleSubmit}>
+                  <ReInput
+                    label="昵称"
+                    name="name"
+                    isRequired
+                    maxLength={FieldConstraints.MaxLen.USER_NICKNAME}
+                    description={`最多 ${FieldConstraints.MaxLen.USER_NICKNAME} 个字符`}
+                    value={form.name}
+                    onValueChange={(name) => setForm({ ...form, name })}
+                  />
+                  <ReInput
+                    label="头像 URL"
+                    name="image"
+                    placeholder="https://example.com/avatar.png"
+                    description="支持留空"
+                    value={form.image}
+                    onValueChange={(image) => setForm({ ...form, image })}
+                  />
+
+                  <div className="mt-5 flex w-full justify-end">
+                    <ReButton
+                      type="submit"
+                      color="primary"
+                      className={cn('min-w-28 shadow-sm')}
+                      isLoading={isSaving || isRefreshing}
+                    >
+                      保存资料
+                    </ReButton>
+                  </div>
+                </Form>
+              </section>
             </div>
-          </section>
-
-          <section className="relative flex flex-col justify-center px-6 py-7 md:px-9 md:py-8">
-            <div className="mb-6">
-              <h2 className="flex items-center gap-2 text-xl font-semibold">
-                <span className={IconNames.Tabler.EDIT} />
-                <span>编辑资料</span>
-              </h2>
-            </div>
-
-            <Form validationErrors={validationErrors} onSubmit={handleSubmit}>
-              <ReInput
-                label="昵称"
-                name="name"
-                isRequired
-                maxLength={FieldConstraints.MaxLen.USER_NICKNAME}
-                description={`最多 ${FieldConstraints.MaxLen.USER_NICKNAME} 个字符`}
-                value={form.name}
-                onValueChange={(name) => setForm({ ...form, name })}
-              />
-              <ReInput
-                label="头像 URL"
-                name="image"
-                placeholder="https://example.com/avatar.png"
-                description="支持留空"
-                value={form.image}
-                onValueChange={(image) => setForm({ ...form, image })}
-              />
-
-              <div className="mt-5 flex w-full flex-wrap gap-2.5">
-                <ReButton
-                  type="submit"
-                  color="primary"
-                  className="min-w-28 shadow-sm"
-                  isLoading={isSaving || isRefreshing}
-                  startContent={
-                    isSaving || isRefreshing ? null : (
-                      <span className={IconNames.Tabler.CHECK} />
-                    )
-                  }
-                >
-                  保存资料
-                </ReButton>
-              </div>
-            </Form>
-          </section>
-        </div>
+          </CardBody>
+        </Card>
       </div>
     </div>
   )

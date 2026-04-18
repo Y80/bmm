@@ -1,5 +1,4 @@
 import { ReButton } from '@/components'
-import { usePageUtil } from '@/hooks'
 import { IconNames, PageRoutes } from '@cfg'
 import { Avatar, Divider, Listbox, ListboxItem, ListboxSection, addToast, cn } from '@heroui/react'
 import { signOut, useSession } from 'next-auth/react'
@@ -10,7 +9,6 @@ const MENU_ITEM_ICON_CLS = 'text-base translate-y-0.5'
 export function NavUser() {
   const session = useSession()
   const user = session.data?.user
-  const pageUtil = usePageUtil()
   const isAuthenticated = session.status === 'authenticated'
 
   function handleSignOut() {
@@ -68,36 +66,15 @@ export function NavUser() {
               >
                 内容管理
               </ListboxItem>
-              <ListboxItem
-                href={PageRoutes.User.SETTINGS}
-                startContent={<span className={cn(IconNames.Huge.SETTINGS, MENU_ITEM_ICON_CLS)} />}
-              >
-                个人资料
-              </ListboxItem>
-              <ListboxItem
-                className="max-xs:hidden"
-                href={PageRoutes.User.UPLOAD}
-                startContent={<span className={cn(IconNames.Huge.IMPORT, MENU_ITEM_ICON_CLS)} />}
-              >
-                导入浏览器书签
-              </ListboxItem>
             </ListboxSection>
             <ListboxSection showDivider hidden={!user.isAdmin} className="max-xs:hidden">
               <ListboxItem
                 href={PageRoutes.Admin.INDEX}
                 startContent={
-                  <span className={cn(IconNames.Tabler.DASHBOARD, MENU_ITEM_ICON_CLS)} />
+                  <span className={cn(IconNames.Tabler.SHIELD_LOCK, MENU_ITEM_ICON_CLS)} />
                 }
               >
-                后台管理
-              </ListboxItem>
-            </ListboxSection>
-            <ListboxSection showDivider hidden={!pageUtil.isUserSpace}>
-              <ListboxItem
-                href={PageRoutes.Public.INDEX}
-                startContent={<span className={cn(IconNames.Tabler.HOME, MENU_ITEM_ICON_CLS)} />}
-              >
-                BMM 首页
+                管理员后台
               </ListboxItem>
             </ListboxSection>
             <ListboxItem

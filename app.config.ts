@@ -87,6 +87,7 @@ export const IconNames = {
     PHOTO_OFF: 'icon-[tabler--photo-off]',
     QUESTION_MARK: 'icon-[tabler--question-mark]',
     SEARCH: 'icon-[tabler--search]',
+    SHIELD_LOCK: 'icon-[tabler--shield-lock]',
     SORT_ASC: 'icon-[tabler--sort-ascending]',
     SORT_DESC: 'icon-[tabler--sort-descending]',
     SPARKLES: 'icon-[tabler--sparkles]',
