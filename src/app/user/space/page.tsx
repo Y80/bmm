@@ -16,16 +16,7 @@ export default async function Page() {
 
   return (
     <div className="h-full overflow-auto">
-      <UserHomeBody
-        bookmarks={res.list}
-        header={
-          <div className="pt-6 pb-3">
-            <h1 className="my-10 text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-              个人空间
-            </h1>
-          </div>
-        }
-      />
+      <UserHomeBody bookmarks={res.list} />
     </div>
   )
 }

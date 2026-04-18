@@ -1,16 +1,18 @@
 import { ButtonProps, NavbarProps } from '@heroui/react'
 
 export const IconButtonProps = {
-  className: 'text-2xl text-foreground-600 xs:hover:text-foreground-800 outline-hidden',
+  className:
+    'text-xl text-default-600 border border-transparent bg-transparent outline-hidden transition-[background-color,border-color,color,box-shadow] hover:text-foreground hover:border-sky-500/12 hover:bg-white/70 hover:shadow-[0_14px_28px_-22px_rgba(15,23,42,0.18)] dark:text-white/72 dark:hover:text-white dark:hover:border-white/10 dark:hover:bg-white/[0.08] dark:hover:shadow-none rounded-xl',
   isIconOnly: true,
   variant: 'light',
 } satisfies ButtonProps
 
 export const NavBarProps = {
   maxWidth: 'full',
-  className: 'fixed dark:bg-black/25 light:bg-white/35',
+  className:
+    'fixed border-b border-divider/50 bg-white/68 shadow-[0_18px_48px_-34px_rgba(15,23,42,0.22)] backdrop-blur-xl dark:border-white/6 dark:bg-[#06111c]/72',
   isBlurred: true,
-  isBordered: true,
+  isBordered: false,
 } satisfies NavbarProps
 
 export const TagPickerBox = {

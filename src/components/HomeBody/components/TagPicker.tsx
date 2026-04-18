@@ -49,21 +49,44 @@ export default function TagPicker(props: Props) {
   }, [state.onlyMain])
 
   return (
-    <div className="flex h-full flex-col" style={props.style}>
-      <div className="flex-items-center my-4 shrink-0 gap-1 pr-4">
-        <ReInput
-          size="sm"
-          classNames={{ inputWrapper: 'dark:bg-default-100/50' }}
-          placeholder="过滤标签"
-          isClearable
-          value={state.filterTagInput}
-          onValueChange={(v) => setState({ filterTagInput: v })}
-        />
+    <div
+      className={cn(
+        'border-divider/60 relative flex h-full flex-col overflow-hidden rounded-[26px] border bg-white/76 shadow-[0_18px_42px_-34px_rgba(15,23,42,0.14)] backdrop-blur dark:border-white/8 dark:bg-white/[0.035] dark:shadow-none',
+        props.className
+      )}
+      style={props.style}
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_22%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.03),transparent_20%)]" />
+
+      <div className="border-divider/40 relative border-b px-3 py-3.5">
+        <div className="px-1">
+          <div className="text-sm font-semibold">标签池</div>
+        </div>
+
+        <div className="mt-2.5">
+          <ReInput
+            size="sm"
+            placeholder="过滤标签"
+            classNames={{
+              inputWrapper:
+                'border-divider/60 min-h-10 h-10 border bg-white/56 px-2.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.12)] data-[hover=true]:bg-white/72 data-[focus=true]:border-sky-500/20 dark:bg-white/[0.03] dark:shadow-none',
+              input: 'text-sm',
+              clearButton: 'text-default-400',
+            }}
+            isClearable
+            value={state.filterTagInput}
+            onValueChange={(v) => setState({ filterTagInput: v })}
+          />
+        </div>
+
+        <div className="text-default-500 mt-2.5 px-1 text-[11px] leading-5">
+          共 {tags.length} 个标签，可快速筛选当前书签
+        </div>
       </div>
 
-      <div className="grow-0 overflow-auto">
+      <div className="relative flex min-h-0 flex-1 flex-col px-2.5 py-3">
         <ScrollShadow
-          className="scrollbar-hide flex h-full flex-col gap-2"
+          className="scrollbar-hide flex flex-col content-start gap-1.5 pr-1"
           ref={scrollDivRef}
           role={TagPickerBox.SCROLLER_ROLE}
         >
@@ -74,29 +97,31 @@ export default function TagPicker(props: Props) {
       </div>
 
       {!state.filterTagInput && (
-        <>
-          <div className="flex-items-center my-4 shrink-0">
-            <Switch
-              size="sm"
-              className="scale-[0.75]"
-              key={Number(state.onlyMain)}
-              isSelected={state.onlyMain}
-              onValueChange={(v) => setState({ onlyMain: v })}
-            />
-            <span
-              className={cn(
-                'text-sm',
-                state.onlyMain ? 'text-foreground-600' : 'text-foreground-400'
-              )}
-            >
-              仅展示主标签
-            </span>
+        <div className="border-divider/40 relative border-t px-3 pt-2.5 pb-3">
+          <div className="rounded-xl bg-white/38 px-1.5 py-1.5 dark:bg-white/[0.02]">
+            <div className="flex items-center gap-1.5">
+              <Switch
+                size="sm"
+                className="scale-[0.72]"
+                key={Number(state.onlyMain)}
+                isSelected={state.onlyMain}
+                onValueChange={(v) => setState({ onlyMain: v })}
+              />
+              <span
+                className={cn(
+                  'text-[11px] transition-colors',
+                  state.onlyMain ? 'text-foreground-700 dark:text-white' : 'text-default-500'
+                )}
+              >
+                仅展示主标签
+              </span>
+            </div>
+            <div className="text-default-400 mt-2 text-[11px] leading-4.5">
+              点击标签时，按住 <Kbd className="scale-75 opacity-75" keys={['alt']} />{' '}
+              可多选，实现交叉筛选书签
+            </div>
           </div>
-          <div className="text-foreground-300 pb-4 text-xs">
-            点击标签时，按住 <Kbd className="scale-80 opacity-80" keys={['alt']} />{' '}
-            可多选，实现交叉筛选书签
-          </div>
-        </>
+        </div>
       )}
     </div>
   )

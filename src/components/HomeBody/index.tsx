@@ -61,21 +61,31 @@ export default function HomeBody(props: Props) {
       bookmarks: state.bookmarks,
     }
   }, [props.tags, state.bookmarks])
+  const recentUpdatedAt = useMemo(() => {
+    return [...props.tags, ...props.bookmarks].reduce<Date | null>((latest, item) => {
+      const value = item.updatedAt || item.createdAt
+      if (!value) return latest
+      const date = value instanceof Date ? value : new Date(value)
+      if (Number.isNaN(date.getTime())) return latest
+      return !latest || date.getTime() > latest.getTime() ? date : latest
+    }, null)
+  }, [props.bookmarks, props.tags])
 
   const showEnd = isClient && !!bookmarks.length && state.hasMore === false
 
   return (
     <HomeBodyProvider value={homeBodyCtx}>
-      <aside className="fixed bottom-0 top-16 w-56 pl-6 max-xs:hidden">
+      <aside className="max-xs:hidden fixed top-20 bottom-4 w-60 pl-4">
         <TagPicker />
       </aside>
-      <div className="xs:ml-56">
-        <div className="flex flex-col px-6 pb-14">
+      <div className="xs:ml-60">
+        <div className="xs:px-6 xs:pb-14 flex flex-col px-4 pb-12">
           {props.header}
           <Banner
             tags={props.tags}
             totalBookmarks={props.totalBookmarks}
             searchedTotalBookmarks={props.searchedTotalBookmarks}
+            recentUpdatedAt={recentUpdatedAt}
           />
           <BookmarkContainer>
             {bookmarks.map((bookmark) => {
@@ -83,17 +93,17 @@ export default function HomeBody(props: Props) {
             })}
           </BookmarkContainer>
           {!bookmarks.length && isClient && !state.hasMore && (
-            <div className="grow flex-col flex-center">
+            <div className="flex-center grow flex-col">
               <Image width={128} height={128} src={Assets.BOX_EMPTY_PNG} alt="empty" priority />
-              <p className="mt-4 text-sm text-foreground-500">
+              <p className="text-foreground-500 mt-4 text-sm">
                 {isSearchPage ? '要不，换个关键词再试试？' : '暂无相关内容'}
               </p>
             </div>
           )}
           {showEnd && (
-            <div className="mt-12 flex-center">
+            <div className="flex-center mt-12">
               <Divider orientation="vertical" className="h-3" />
-              <span className="mx-4 text-xs text-foreground-400 xs:mx-8">END</span>
+              <span className="text-foreground-400 xs:mx-8 mx-4 text-xs">END</span>
               <Divider orientation="vertical" className="h-3" />
             </div>
           )}

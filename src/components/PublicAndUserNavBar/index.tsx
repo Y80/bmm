@@ -6,7 +6,15 @@ import { MobileTagPicker } from '@/components/MobileTagPicker'
 import { usePageUtil } from '@/hooks'
 import { getTagLinkAttrs } from '@/utils'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
-import { cn, Link, Navbar, NavbarBrand, NavbarContent, NavbarMenu, NavbarMenuToggle } from '@heroui/react'
+import {
+  cn,
+  Link,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarMenu,
+  NavbarMenuToggle,
+} from '@heroui/react'
 import { useSetState } from 'ahooks'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -48,17 +56,24 @@ export function PublicAndUserNavbar(props: Props) {
       isMenuOpen={state.isSelectedMenuToggle}
       onMenuOpenChange={(v) => setState({ isSelectedMenuToggle: v })}
     >
-      <NavbarBrand className="max-xs:basis-20 xs:basis-56 shrink-0 grow-0">
-        <Link href={homeHref} className="flex-items-center gap-4">
-          <Image src={Assets.LOGO_SVG} width={32} height={32} alt="logo" priority />
-          <h3 className="text-foreground-700 translate-y-0.5 font-mono text-2xl font-light">
+      <NavbarBrand className="xs:basis-60 min-w-0 shrink grow-0 basis-auto">
+        <Link
+          href={homeHref}
+          className="group flex min-w-0 items-center gap-2.5 rounded-2xl px-1 py-1.5 no-underline sm:gap-3"
+        >
+          <div className="border-divider/60 relative flex size-10 shrink-0 items-center justify-center rounded-[20px] border bg-gradient-to-br from-white/82 to-white/58 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.18)] transition-[border-color,background-color,box-shadow,transform] duration-150 group-hover:-translate-y-0.5 group-hover:border-sky-500/15 group-hover:bg-white/86 sm:size-11 sm:rounded-2xl dark:from-white/[0.12] dark:to-white/[0.04] dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.08] dark:group-hover:shadow-none">
+            <Image src={Assets.LOGO_SVG} width={24} height={24} alt="logo" priority />
+          </div>
+          <h3 className="text-foreground translate-y-0.5 truncate text-lg font-semibold tracking-tight sm:text-xl">
             {isUserSpace ? user?.name : WEBSITE_NAME}
           </h3>
         </Link>
       </NavbarBrand>
-      <NavbarContent justify="end" className="gap-0">
+      <NavbarContent justify="end" className="gap-1.5 sm:gap-2">
         {/* pathname 发生变化时，重新渲染 SearchInput */}
-        {showSearchInput() && <SearchInput key={pathname} className="max-xs:hidden mr-4 w-72" />}
+        {showSearchInput() && (
+          <SearchInput key={pathname} className="max-xs:hidden mr-1 w-[min(36vw,460px)]" />
+        )}
         <ReButton
           {...IconButtonProps}
           className={cn(IconButtonProps.className, !totalBookmarks && 'hidden', 'max-xs:hidden')}
@@ -86,7 +101,12 @@ export function PublicAndUserNavbar(props: Props) {
         </ReButton>
         <NavUser />
       </NavbarContent>
-      <NavbarMenuToggle className="xs:hidden" />
+      {showSearchInput() && (
+        <div className="xs:hidden order-last basis-full px-4 pt-1 pb-3">
+          <SearchInput key={`${pathname}-mobile`} className="w-full" compact />
+        </div>
+      )}
+      <NavbarMenuToggle className="xs:hidden ml-0.5" />
       <NavbarMenu className={cn(Background.CLASS)}>
         <MobileTagPicker
           tags={tags}

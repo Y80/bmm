@@ -18,8 +18,8 @@ export default function BookmarkContainer({ children }: PropsWithChildren) {
   return (
     <div
       ref={divRef}
-      className="grid translate-y-16 gap-8 opacity-0 duration-300"
-      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}
+      className="xs:gap-8 grid translate-y-16 gap-5 opacity-0 duration-300"
+      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))' }}
     >
       {children}
     </div>

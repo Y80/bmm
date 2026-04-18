@@ -5,13 +5,11 @@ export function AppBackground() {
   return (
     <div
       role="app-background"
-      className={cn(
-        'fixed -z-10 h-screen w-screen max-xs:hidden max-xs:dark:block',
-        Background.CLASS
-      )}
+      className={cn('max-xs:hidden max-xs:dark:block fixed inset-0 -z-10 overflow-hidden')}
     >
-      <div className="absolute -left-48 top-20 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.1),rgba(255,255,255,0))]" />
-      <div className="absolute bottom-[-200px] right-[-200px] size-200 rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.1),rgba(255,255,255,0))]" />
+      <div className={cn('absolute inset-0', Background.CLASS)} />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.1),transparent_24%),radial-gradient(circle_at_18%_72%,rgba(16,185,129,0.08),transparent_30%),radial-gradient(circle_at_78%_18%,rgba(59,130,246,0.06),transparent_22%),radial-gradient(circle_at_86%_86%,rgba(245,158,11,0.08),transparent_24%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.12),transparent_24%),radial-gradient(circle_at_22%_72%,rgba(16,185,129,0.08),transparent_30%),radial-gradient(circle_at_76%_20%,rgba(59,130,246,0.06),transparent_22%),radial-gradient(circle_at_88%_84%,rgba(245,158,11,0.08),transparent_24%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.4),transparent_24%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.035),transparent_20%)]" />
     </div>
   )
 }
