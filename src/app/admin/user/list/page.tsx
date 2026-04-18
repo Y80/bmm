@@ -1,7 +1,7 @@
 'use client'
 
-import { actFindUsers } from '@/actions'
-import { AdminPageTitle, AdminSurfaceCard, ReInput } from '@/components'
+import { actDeleteUser, actFindUsers } from '@/actions'
+import { AdminPageTitle, AdminSurfaceCard, ReButton, ReInput } from '@/components'
 import type { SelectUser } from '@/controllers/User.controller'
 import { findManyUsersSchema } from '@/controllers/schemas'
 import { runAction } from '@/utils/client'
@@ -25,6 +25,7 @@ import {
   cn,
 } from '@heroui/react'
 import { useDebounceFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
+import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import z from 'zod'
 
@@ -51,17 +52,19 @@ function getDisplayName(user: SelectUser) {
 export default function Page() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const session = useSession()
   const [state, setState] = useSetState({
     loading: true,
     sorterKey: (searchParams.get('sorterKey') || SORTERS[0].key) as (typeof SORTERS)[number]['key'],
     keyword: searchParams.get('keyword') || '',
+    deletingUserId: '',
     pager: {
       page: Number(searchParams.get('page')) || 1,
       total: 1,
     },
   })
 
-  const { data: users = [] } = useRequest(
+  const { data: users = [], refresh } = useRequest(
     async () => {
       const input: z.input<typeof findManyUsersSchema> = {
         limit: PAGESIZE,
@@ -104,6 +107,21 @@ export default function Page() {
 
   function onPageChange(page: number) {
     setState({ pager: { ...state.pager, page } })
+  }
+
+  async function onDeleteUser(user: SelectUser) {
+    setState({ deletingUserId: user.id })
+    await runAction(actDeleteUser({ id: user.id }), {
+      okMsg: '用户已删除',
+      onOk: async () => {
+        if (users.length === 1 && state.pager.page > 1) {
+          setState({ pager: { ...state.pager, page: state.pager.page - 1 } })
+          return
+        }
+        await refresh()
+      },
+    })
+    setState({ deletingUserId: '' })
   }
 
   return (
@@ -169,6 +187,7 @@ export default function Page() {
               <TableColumn className="max-xs:hidden">邮箱</TableColumn>
               <TableColumn>角色</TableColumn>
               <TableColumn className="max-xs:hidden">注册时间</TableColumn>
+              <TableColumn>操作</TableColumn>
             </TableHeader>
             <TableBody<SelectUser>
               items={state.loading ? [] : users}
@@ -207,6 +226,30 @@ export default function Page() {
                     </Chip>
                   </TableCell>
                   <TableCell className="max-xs:hidden">{formatDate(item.createdAt)}</TableCell>
+                  <TableCell>
+                    <ReButton
+                      isDisabled={session.data?.user.id === item.id}
+                      isLoading={state.deletingUserId === item.id}
+                      variant="light"
+                      color="danger"
+                      className="text-2xl"
+                      isIconOnly
+                      startContent={<span className={IconNames.Tabler.TRASH} />}
+                      popoverContent={
+                        <div className="flex max-w-[280px] flex-col gap-4 p-4">
+                          <p>确定删除用户「{getDisplayName(item)}」？</p>
+                          <ReButton
+                            color="danger"
+                            size="sm"
+                            variant="shadow"
+                            onClick={() => onDeleteUser(item)}
+                          >
+                            确定
+                          </ReButton>
+                        </div>
+                      }
+                    />
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>

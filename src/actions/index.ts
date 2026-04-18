@@ -12,6 +12,7 @@ import {
   aiAnalyzeRelatedTagsInput,
   aiAnalyzeWebsiteInput,
   checkGithubOAuthConfig,
+  deleteUserInput,
   extractHtmlInfoInput,
   updateUserProfileInput,
 } from './items'
@@ -51,6 +52,7 @@ export const actUpdateUserBookmark = make(UserBookmarkController.update)
 
 /// Users
 export const actFindUsers = make(UserController.findMany, { guard: 'admin' })
+export const actDeleteUser = make(deleteUserInput)
 
 /// 解析网站、标签
 export const actExtractHtmlInfo = make(extractHtmlInfoInput)
