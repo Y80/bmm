@@ -12,11 +12,11 @@ function Wrapper(props: PropsWithChildren) {
 
 const H1_CLS = 'text-3xl font-bold flex-center text-foreground-700'
 const SURFACE_CLS =
-  'border-divider/60 dark:border-white/8 relative w-full overflow-hidden rounded-[28px] border bg-white/84 shadow-[0_20px_48px_-34px_rgba(15,23,42,0.18)] backdrop-blur dark:bg-white/[0.045] dark:shadow-none'
+  'relative w-full overflow-hidden rounded-[28px] border border-slate-200/85 bg-white/[0.42] shadow-[0_20px_48px_-34px_rgba(15,23,42,0.16)] backdrop-blur-md dark:border-white/8 dark:bg-white/[0.045] dark:shadow-none'
 const SURFACE_HIGHLIGHT_CLS =
-  'absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_40%,rgba(56,189,248,0.05))] dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_38%,rgba(34,211,238,0.04))]'
+  'absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.12),transparent_36%,rgba(148,163,184,0.06))] dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_38%,rgba(34,211,238,0.04))]'
 const INNER_PANEL_CLS =
-  'border-divider/60 dark:border-white/8 rounded-[22px] border bg-white/52 px-3.5 py-3.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.12)] dark:bg-white/[0.03] dark:shadow-none sm:px-4.5'
+  'rounded-[22px] border border-slate-200/75 bg-slate-100/68 px-3.5 py-3.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.1)] backdrop-blur-sm dark:border-white/8 dark:bg-white/[0.03] dark:shadow-none sm:px-4.5'
 
 interface Props {
   tags: SelectTag[]

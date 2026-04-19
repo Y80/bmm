@@ -51,14 +51,14 @@ export default function TagPicker(props: Props) {
   return (
     <div
       className={cn(
-        'border-divider/60 relative flex h-full flex-col overflow-hidden rounded-[26px] border bg-white/76 shadow-[0_18px_42px_-34px_rgba(15,23,42,0.14)] backdrop-blur dark:border-white/8 dark:bg-white/[0.035] dark:shadow-none',
+        'relative flex h-full flex-col overflow-hidden rounded-[26px] border border-slate-200/85 bg-white/[0.34] shadow-[0_18px_42px_-34px_rgba(15,23,42,0.14)] backdrop-blur-md dark:border-white/8 dark:bg-white/[0.035] dark:shadow-none',
         props.className
       )}
       style={props.style}
     >
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_22%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.03),transparent_20%)]" />
 
-      <div className="border-divider/40 relative border-b px-3 py-3.5">
+      <div className="relative border-b border-slate-200/80 px-3 py-3.5 dark:border-white/8">
         <div className="px-1">
           <div className="text-sm font-semibold">标签池</div>
         </div>
@@ -69,7 +69,7 @@ export default function TagPicker(props: Props) {
             placeholder="过滤标签"
             classNames={{
               inputWrapper:
-                'border-divider/60 h-8 border bg-white/56 px-2.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.12)] data-[hover=true]:bg-white/72 data-[focus=true]:border-sky-500/20 dark:bg-white/[0.03] dark:shadow-none',
+                'h-8 border border-slate-200/80 bg-white/[0.5] px-2.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.12)] data-[hover=true]:bg-white/[0.62] data-[focus=true]:border-slate-300/95 dark:border-white/8 dark:bg-white/[0.03] dark:shadow-none',
               input: 'text-sm',
               clearButton: 'text-default-400',
             }}
@@ -97,29 +97,27 @@ export default function TagPicker(props: Props) {
       </div>
 
       {!state.filterTagInput && (
-        <div className="border-divider/40 relative border-t px-3 pt-2.5 pb-3">
-          <div className="rounded-xl bg-white/38 px-1.5 py-1.5 dark:bg-white/[0.02]">
-            <div className="flex items-center gap-1.5">
-              <Switch
-                size="sm"
-                className="scale-[0.72]"
-                key={Number(state.onlyMain)}
-                isSelected={state.onlyMain}
-                onValueChange={(v) => setState({ onlyMain: v })}
-              />
-              <span
-                className={cn(
-                  'text-[11px] transition-colors',
-                  state.onlyMain ? 'text-foreground-700 dark:text-white' : 'text-default-500'
-                )}
-              >
-                仅展示主标签
-              </span>
-            </div>
-            <div className="text-default-400 mt-2 text-[11px] leading-4.5">
-              点击标签时，按住 <Kbd className="scale-75 opacity-75" keys={['alt']} />{' '}
-              可多选，实现交叉筛选书签
-            </div>
+        <div className="relative border-t border-slate-200/80 px-4 py-3 dark:border-white/8">
+          <div className="-ml-1 flex items-center gap-2">
+            <Switch
+              size="sm"
+              className="scale-70"
+              key={Number(state.onlyMain)}
+              isSelected={state.onlyMain}
+              onValueChange={(v) => setState({ onlyMain: v })}
+            />
+            <span
+              className={cn(
+                'text-[11px]',
+                state.onlyMain ? 'text-foreground-700 dark:text-white' : 'text-default-500'
+              )}
+            >
+              仅展示主标签
+            </span>
+          </div>
+          <div className="text-default-400 mt-1 text-[11px] leading-4.5">
+            点击标签时，按住 <Kbd className="scale-75 opacity-75" keys={['alt']} />{' '}
+            可多选，实现交叉筛选书签。
           </div>
         </div>
       )}

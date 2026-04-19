@@ -78,7 +78,7 @@ export function SearchInput(props: Props) {
       classNames={{
         base: props.className,
         inputWrapper: cn(
-          'border-divider/60 border bg-white/76 shadow-[0_14px_28px_-20px_rgba(15,23,42,0.16)] data-[hover=true]:bg-white/86 data-[focus=true]:border-sky-500/18 data-[focus=true]:shadow-[0_16px_32px_-22px_rgba(14,165,233,0.22)] dark:bg-white/[0.04] dark:data-[hover=true]:bg-white/[0.06] dark:data-[focus=true]:bg-white/[0.07] dark:shadow-none',
+          'border border-slate-200/80 bg-white/[0.5] shadow-[0_14px_28px_-22px_rgba(15,23,42,0.12)] backdrop-blur-md data-[hover=true]:bg-white/[0.6] data-[focus=true]:border-slate-300/95 data-[focus=true]:bg-white/[0.68] data-[focus=true]:shadow-[0_16px_32px_-24px_rgba(15,23,42,0.14)] dark:border-white/8 dark:bg-white/[0.04] dark:data-[hover=true]:bg-white/[0.06] dark:data-[focus=true]:bg-white/[0.07] dark:shadow-none',
           props.compact ? 'h-12 rounded-[22px] px-1' : 'h-11 rounded-2xl'
         ),
         input: cn('text-sm', props.compact && 'text-[15px]'),
@@ -89,7 +89,7 @@ export function SearchInput(props: Props) {
         !props.compact &&
         !state.focusInput &&
         !state.input && (
-          <Kbd className="border-divider/60 text-default-400 rounded-xl border bg-white/78 px-2.5 py-0 dark:bg-white/[0.06]">
+          <Kbd className="text-default-400 rounded-xl border border-slate-200/80 bg-slate-100/90 px-2.5 py-0 dark:border-white/8 dark:bg-white/[0.06]">
             /
           </Kbd>
         )

@@ -22,9 +22,9 @@ export default function TagPickerItem({ tag, tags, onClick }: Props) {
       {...getTagLinkAttrs(tag)}
       className={cn(
         'group relative flex h-10 w-full shrink-0 cursor-pointer items-center gap-3 overflow-hidden rounded-xl px-3 transition-[background-color,border-color,box-shadow,color,transform] duration-150',
-        'text-default-700 border border-transparent hover:translate-x-0.5 hover:border-sky-500/15 hover:bg-sky-500/8 dark:text-white/82 dark:hover:border-white/10 dark:hover:bg-white/[0.08]',
+        'border border-transparent text-default-700 hover:translate-x-0.5 hover:border-slate-200/90 hover:bg-slate-100/78 dark:text-white/82 dark:hover:border-white/10 dark:hover:bg-white/[0.08]',
         isSelected &&
-          'border-sky-500/15 bg-sky-500/10 text-slate-900 shadow-[0_12px_30px_-22px_rgba(14,165,233,0.35)] dark:border-white/10 dark:bg-white/10 dark:text-white'
+          'border-slate-300/90 bg-slate-100/88 text-slate-900 shadow-[0_12px_30px_-22px_rgba(15,23,42,0.12)] dark:border-white/10 dark:bg-white/10 dark:text-white'
       )}
       onClick={(e) => {
         onClick?.()
