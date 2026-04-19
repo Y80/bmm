@@ -28,7 +28,7 @@ export default function BookmarkCard(props: Props) {
 
   return (
     <div
-      className="max-xs:pb-3 max-xs:dark:border-0 max-xs:dark:bg-foreground-200/20 xs:hover:-translate-y-0.5 xs:hover:border-slate-200/75 xs:hover:bg-white/[0.42] dark:xs:hover:border-white/10 dark:xs:hover:bg-white/[0.065] dark:xs:hover:shadow-none flex cursor-pointer flex-col gap-2 rounded-3xl border border-slate-200/85 bg-white/[0.34] p-4 backdrop-blur-md transition-all dark:border-white/8 dark:bg-white/[0.045]"
+      className="max-xs:pb-3 max-xs:dark:border-0 max-xs:dark:bg-foreground-200/20 xs:hover:-translate-y-0.5 xs:hover:border-slate-200/75 xs:hover:bg-white/[0.34] dark:xs:hover:border-white/10 dark:xs:hover:bg-white/[0.065] dark:xs:hover:shadow-none flex cursor-pointer flex-col gap-2 rounded-3xl border border-slate-200/85 bg-white/[0.24] p-4 backdrop-blur-md transition-all dark:border-white/8 dark:bg-white/[0.045]"
       onClick={() => window.open(props.url, '_blank')}
     >
       <a
