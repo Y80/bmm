@@ -4,7 +4,7 @@ import { getTagLinkAttrs } from '@/utils'
 import { PageRoutes, WEBSITE_NAME } from '@cfg'
 import { Chip } from '@heroui/react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { PropsWithChildren, ReactNode, useMemo } from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 
 function Wrapper(props: PropsWithChildren) {
   return <header className="flex-center flex-col gap-4 py-8">{props.children}</header>
@@ -35,15 +35,6 @@ export default function Banner(props: Props) {
   const routes = pageUtil.isUserSpace ? PageRoutes.User : PageRoutes.Public
   const isHomeLikePage =
     pathname === routes.INDEX || (pageUtil.isUserSpace && pathname === PageRoutes.User.SPACE)
-  const recentTags = useMemo(() => {
-    return [...tags]
-      .sort((a, b) => {
-        const aValue = new Date(a.updatedAt || a.createdAt || 0).getTime()
-        const bValue = new Date(b.updatedAt || b.createdAt || 0).getTime()
-        return bValue - aValue
-      })
-      .slice(0, 5)
-  }, [tags])
 
   function formatRecentUpdatedAt(date?: Date | null) {
     if (!date) return '暂无记录'
@@ -107,25 +98,6 @@ export default function Banner(props: Props) {
               {tags.length}
             </div>
             <div className="text-default-500 mt-1 text-[11px] sm:text-xs">用于筛选与导航归类</div>
-          </div>
-          <div className={`${INNER_PANEL_CLS} col-span-2`}>
-            <div className="text-default-500 text-[0.68rem] font-medium tracking-[0.24em] uppercase">
-              最近标签
-            </div>
-            <div className="mt-2.5 flex flex-wrap gap-2">
-              {recentTags.map((tag) => (
-                <Chip
-                  key={tag.id}
-                  variant="flat"
-                  as="a"
-                  {...getTagLinkAttrs(tag)}
-                  onClick={(event) => onClickTag({ tag, event: event as any })}
-                  className="text-foreground-600 hover:text-foreground-800 cursor-pointer border-none bg-white/70 px-2.5 text-xs font-medium transition dark:bg-white/[0.06] dark:hover:bg-white/[0.1]"
-                >
-                  {tag.name}
-                </Chip>
-              ))}
-            </div>
           </div>
         </div>
       </div>
