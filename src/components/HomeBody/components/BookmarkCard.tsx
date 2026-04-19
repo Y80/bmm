@@ -103,7 +103,7 @@ export default function BookmarkCard(props: Props) {
               as="a"
               {...getTagLinkAttrs(tag)}
               onClick={(event) => onClickTag({ tag, event: event as any })}
-              className="text-foreground-500 xs:hover:text-foreground-700 h-fit cursor-pointer border-none bg-white/70 px-2 py-0.5 text-xs transition active:opacity-50 dark:bg-white/[0.06]"
+              className="text-foreground-500 xs:hover:text-foreground-700 h-6 cursor-pointer border-none bg-white/70 px-2 text-xs transition active:opacity-50 dark:bg-white/[0.06]"
             >
               {tag.name}
             </Chip>

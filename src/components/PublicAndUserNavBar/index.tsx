@@ -61,7 +61,7 @@ export function PublicAndUserNavbar(props: Props) {
           href={homeHref}
           className="group flex min-w-0 items-center gap-2.5 rounded-2xl px-1 py-1.5 no-underline sm:gap-3"
         >
-          <div className="border-divider/60 relative flex size-10 shrink-0 items-center justify-center rounded-[20px] border bg-gradient-to-br from-white/82 to-white/58 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.18)] transition-[border-color,background-color,box-shadow,transform] duration-150 group-hover:-translate-y-0.5 group-hover:border-sky-500/15 group-hover:bg-white/86 sm:size-11 sm:rounded-2xl dark:from-white/[0.12] dark:to-white/[0.04] dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.08] dark:group-hover:shadow-none">
+          <div className="border-divider/60 relative flex size-10 shrink-0 items-center justify-center rounded-[20px] border bg-gradient-to-br from-white/82 to-white/58 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.18)] transition-[border-color,background-color,box-shadow,transform] duration-150 group-hover:border-sky-500/15 group-hover:bg-white/86 sm:size-11 sm:rounded-2xl dark:from-white/[0.12] dark:to-white/[0.04] dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.08] dark:group-hover:shadow-none">
             <Image src={Assets.LOGO_SVG} width={24} height={24} alt="logo" priority />
           </div>
           <h3 className="text-foreground translate-y-0.5 truncate text-lg font-semibold tracking-tight sm:text-xl">

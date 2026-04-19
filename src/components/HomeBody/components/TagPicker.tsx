@@ -69,7 +69,7 @@ export default function TagPicker(props: Props) {
             placeholder="过滤标签"
             classNames={{
               inputWrapper:
-                'border-divider/60 min-h-10 h-10 border bg-white/56 px-2.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.12)] data-[hover=true]:bg-white/72 data-[focus=true]:border-sky-500/20 dark:bg-white/[0.03] dark:shadow-none',
+                'border-divider/60 h-8 border bg-white/56 px-2.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.12)] data-[hover=true]:bg-white/72 data-[focus=true]:border-sky-500/20 dark:bg-white/[0.03] dark:shadow-none',
               input: 'text-sm',
               clearButton: 'text-default-400',
             }}
@@ -86,7 +86,7 @@ export default function TagPicker(props: Props) {
 
       <div className="relative flex min-h-0 flex-1 flex-col px-2.5 py-3">
         <ScrollShadow
-          className="scrollbar-hide flex flex-col content-start gap-1.5 pr-1"
+          className="scrollbar-hide flex flex-col content-start gap-1 pr-1"
           ref={scrollDivRef}
           role={TagPickerBox.SCROLLER_ROLE}
         >
