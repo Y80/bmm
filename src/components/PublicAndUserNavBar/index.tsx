@@ -61,7 +61,7 @@ export function PublicAndUserNavbar(props: Props) {
           href={homeHref}
           className="group flex min-w-0 items-center gap-2.5 rounded-2xl px-1 py-1.5 no-underline sm:gap-3"
         >
-          <div className="relative flex size-10 shrink-0 items-center justify-center rounded-[20px] border border-slate-200/85 bg-gradient-to-br from-white/[0.62] via-white/[0.52] to-slate-100/80 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.14)] backdrop-blur-md transition-[border-color,background-color,box-shadow,transform] duration-150 group-hover:border-slate-300/90 group-hover:bg-white/[0.72] sm:size-11 sm:rounded-2xl dark:border-white/10 dark:from-white/[0.12] dark:via-white/[0.08] dark:to-white/[0.04] dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.08] dark:group-hover:shadow-none">
+          <div className="relative flex size-10 shrink-0 items-center justify-center rounded-[20px] border border-slate-200/85 bg-gradient-to-br from-white/[0.62] via-white/[0.52] to-slate-100/80 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.14)] backdrop-blur-md transition-[background-color,box-shadow,transform] duration-150 group-hover:bg-white/[0.72] sm:size-11 sm:rounded-2xl dark:border-white/10 dark:from-white/[0.12] dark:via-white/[0.08] dark:to-white/[0.04] dark:group-hover:bg-white/[0.08] dark:group-hover:shadow-none">
             <Image src={Assets.LOGO_SVG} width={24} height={24} alt="logo" priority />
           </div>
           <h3 className="text-foreground translate-y-0.5 truncate text-lg font-semibold tracking-tight sm:text-xl">

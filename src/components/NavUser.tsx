@@ -34,6 +34,7 @@ export function NavUser() {
   return (
     <ReButton
       {...IconButtonProps}
+      className={cn(IconButtonProps.className, 'hover:bg-transparent dark:hover:bg-transparent')}
       tooltip={{
         adaptMobile: true,
         placement: 'bottom-end',
