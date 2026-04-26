@@ -238,6 +238,7 @@ export default function AdminNav(props: AdminNavProps) {
             isIconOnly
             variant="light"
             size="sm"
+            className="size-10 min-w-10 rounded-xl text-lg"
           >
             <span className={IconNames.Tabler.BRAND_GITHUB} />
           </ReButton>

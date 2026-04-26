@@ -9,7 +9,7 @@ import { ClientIcon } from '@/components'
 import type { SelectUserReadLaterItem } from '@/controllers'
 import { runAction } from '@/utils/client'
 import { IconNames } from '@cfg'
-import { Button, Card, CardBody, CardHeader, cn } from '@heroui/react'
+import { Button, Card, CardBody, cn } from '@heroui/react'
 import { useSetState } from 'ahooks'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
@@ -169,7 +169,7 @@ export default function ClientPage(props: ClientPageProps) {
             type="button"
             onClick={() => setActiveStatus(item.key)}
             className={cn(
-              'flex h-9 items-center gap-2 rounded-xl px-4 text-sm transition-colors',
+              'flex h-9 cursor-pointer items-center gap-2 rounded-xl px-4 text-sm transition-colors',
               activeStatus === item.key
                 ? 'bg-slate-950 text-white hover:bg-slate-900 dark:bg-white dark:text-black dark:hover:bg-white/90'
                 : 'text-foreground-600 hover:bg-slate-100/80 hover:text-slate-950 dark:text-white/70 dark:hover:bg-white/[0.08] dark:hover:text-white'
@@ -225,64 +225,71 @@ function ReadLaterCard(props: {
       shadow="none"
       className="border-divider/60 border bg-white/58 backdrop-blur-xl transition hover:border-sky-500/20 hover:bg-white/72 dark:bg-content1/62 dark:hover:border-white/12 dark:hover:bg-content1/72"
     >
-      <CardHeader className="flex items-start gap-3 px-4 pb-1 pt-4 sm:px-5">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-700 ring-1 ring-amber-500/15 dark:bg-white/10 dark:text-white">
-          <span className={cn(IconNames.Tabler.READING, 'text-xl')} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <a
-            href={item.url}
-            target="_blank"
-            rel="noreferrer"
-            className="text-foreground line-clamp-2 text-base font-semibold no-underline hover:text-sky-600 dark:hover:text-sky-300"
-          >
-            {item.title}
-          </a>
-          <div className="text-default-500 mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs">
-            <span>{item.estimatedReadingMinutes} 分钟阅读</span>
-            <span>
-              {item.status === 'read'
-                ? `已读于 ${formatDate(item.readAt)}`
-                : `${formatFromNow(item.createdAt)}加入`}
-            </span>
+      <CardBody className="p-4 sm:p-5">
+        <div className="flex flex-col gap-4 md:min-h-32 md:flex-row md:justify-between">
+          <div className="flex min-w-0 flex-1 gap-3 md:max-w-[calc(100%-12rem)]">
+            <div className="border-divider/70 flex size-10 shrink-0 items-center justify-center rounded-xl border bg-amber-500/8 text-amber-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-white/80">
+              <span className={cn(IconNames.Tabler.READING, 'text-xl')} />
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col">
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-foreground line-clamp-2 text-base font-semibold no-underline hover:text-sky-600 dark:hover:text-sky-300"
+              >
+                {item.title}
+              </a>
+              <p className="text-default-600 mt-2 line-clamp-3 text-sm leading-6">
+                {item.summary}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2 md:mt-auto md:pt-4">
+                <Button
+                  as="a"
+                  href={item.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  size="sm"
+                  variant="bordered"
+                  className="border-divider/70 bg-white/50 dark:bg-white/[0.04]"
+                  startContent={<span className={IconNames.Tabler.EXTERNAL_LINK} />}
+                >
+                  打开链接
+                </Button>
+                {props.onMarkRead ? (
+                  <Button
+                    size="sm"
+                    color="primary"
+                    variant="flat"
+                    onPress={props.onMarkRead}
+                    startContent={<span className={IconNames.Tabler.CHECK} />}
+                  >
+                    标记已读
+                  </Button>
+                ) : null}
+                <Button
+                  size="sm"
+                  color="danger"
+                  variant="light"
+                  onPress={props.onDelete}
+                  startContent={<span className={IconNames.Tabler.TRASH} />}
+                >
+                  删除
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardBody className="px-4 pb-4 pt-2 sm:px-5">
-        <p className="text-default-600 line-clamp-3 text-sm leading-6">{item.summary}</p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Button
-            as="a"
-            href={item.url}
-            target="_blank"
-            rel="noreferrer"
-            size="sm"
-            variant="bordered"
-            className="border-divider/70 bg-white/50 dark:bg-white/[0.04]"
-            startContent={<span className={IconNames.Tabler.EXTERNAL_LINK} />}
-          >
-            打开链接
-          </Button>
-          {props.onMarkRead ? (
-            <Button
-              size="sm"
-              color="primary"
-              variant="flat"
-              onPress={props.onMarkRead}
-              startContent={<span className={IconNames.Tabler.CHECK} />}
-            >
-              标记已读
-            </Button>
-          ) : null}
-          <Button
-            size="sm"
-            color="danger"
-            variant="light"
-            onPress={props.onDelete}
-            startContent={<span className={IconNames.Tabler.TRASH} />}
-          >
-            删除
-          </Button>
+
+          <div className="flex shrink-0 md:w-44 md:items-end md:justify-end">
+            <div className="text-default-500 flex flex-wrap justify-start gap-x-3 gap-y-1 text-xs md:justify-end md:text-right">
+              <span>{item.estimatedReadingMinutes} 分钟阅读</span>
+              <span>
+                {item.status === 'read'
+                  ? `已读于 ${formatDate(item.readAt)}`
+                  : `${formatFromNow(item.createdAt)}加入`}
+              </span>
+            </div>
+          </div>
         </div>
       </CardBody>
     </Card>
