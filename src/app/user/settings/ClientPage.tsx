@@ -68,23 +68,18 @@ export default function ClientPage(props: Props) {
   }
 
   return (
-    <div className="relative mx-auto flex h-full w-full max-w-5xl items-center px-6 py-10">
-      <div className="mx-auto w-full max-w-4xl">
-        <div className="pb-9 sm:pb-11">
-          <AdminPageTitle title="个人资料" pathname={pathname} icon={IconNames.Tabler.USER} />
-        </div>
+    <div className="relative mx-auto flex h-full w-full max-w-5xl items-start px-6">
+      <div className="mx-auto w-full max-w-4xl space-y-5">
+        <AdminPageTitle title="个人资料" pathname={pathname} icon={IconNames.Tabler.USER} />
 
         <Card
           shadow="none"
-          className="border-divider/60 bg-white/90 dark:bg-content1/80 overflow-hidden rounded-[28px] border shadow-[0_18px_50px_-32px_rgba(15,23,42,0.18)] dark:shadow-none"
+          className="border-divider/60 bg-white/58 backdrop-blur-xl dark:bg-content1/62 overflow-hidden rounded-[28px] border shadow-[0_18px_50px_-32px_rgba(15,23,42,0.18)] dark:shadow-none"
         >
           <CardBody className="relative overflow-hidden p-0">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.12),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.1),transparent_28%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.2),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(251,146,60,0.12),transparent_30%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.04)_1px,transparent_1px)] [background-size:26px_26px] opacity-45 dark:bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] dark:opacity-20" />
-
             <div className="relative flex flex-col gap-6 px-5 py-6 sm:px-7 sm:py-7">
               <section className="flex justify-center">
-                <div className="bg-white/82 dark:bg-default-100/5 w-full max-w-[188px] rounded-[24px] px-4 py-5 text-center">
+                <div className="bg-white/38 backdrop-blur-md dark:bg-default-100/5 w-full max-w-[188px] rounded-[24px] px-4 py-5 text-center">
                   <div className="border-divider/60 bg-background/70 mx-auto flex h-24 w-24 items-center justify-center rounded-full border shadow-[0_10px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_12px_28px_rgba(0,0,0,0.22)]">
                     <Avatar
                       className="h-20 w-20 text-2xl shadow-md"
@@ -98,7 +93,7 @@ export default function ClientPage(props: Props) {
                 </div>
               </section>
 
-              <section className="bg-white/82 dark:bg-default-100/5 rounded-[24px] px-6 py-7 md:px-7 md:py-7">
+              <section className="bg-white/38 backdrop-blur-md dark:bg-default-100/5 rounded-[24px] px-6 py-7 md:px-7 md:py-7">
                 <Form validationErrors={validationErrors} onSubmit={handleSubmit}>
                   <ReInput
                     label="昵称"

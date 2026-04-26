@@ -41,7 +41,7 @@ export function AdminPageShell(props: AdminPageShellProps) {
     <div className={cn('flex flex-col gap-6', props.className)}>
       <Card
         shadow="none"
-        className="border-divider/70 bg-content1/80 overflow-hidden rounded-[28px] border"
+        className="border-divider/70 overflow-hidden rounded-[28px] border bg-white/58 backdrop-blur-xl dark:bg-content1/62"
       >
         <CardBody className="relative overflow-hidden p-0">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.18),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.14),transparent_28%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(251,146,60,0.12),transparent_30%)]" />
@@ -138,7 +138,7 @@ export function AdminSurfaceCard(props: AdminSurfaceCardProps) {
     <Card
       shadow="none"
       className={cn(
-        'border-divider/70 bg-content1/90 dark:bg-content1/80 overflow-hidden rounded-[28px] border shadow-sm shadow-black/[0.03] dark:shadow-black/10',
+        'border-divider/70 overflow-hidden rounded-[28px] border bg-white/58 shadow-sm shadow-black/[0.03] backdrop-blur-xl dark:bg-content1/62 dark:shadow-black/10',
         props.className
       )}
     >

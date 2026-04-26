@@ -342,12 +342,10 @@ export default function UploadPage() {
 
   if (isCmsSpace) {
     return (
-      <div className="xs:py-2 mx-auto w-full max-w-6xl py-1">
-        <div className="pt-8 pb-9 sm:pt-10 sm:pb-11">
-          <AdminPageTitle title="批量导入浏览器书签" pathname="/admin/upload" />
-        </div>
+      <div className="mx-auto w-full max-w-6xl space-y-5">
+        <AdminPageTitle title="批量导入浏览器书签" pathname="/admin/upload" />
 
-        <div className={cn(state.file && 'hidden', 'mx-auto w-full max-w-4xl')}>
+        <div className={cn(state.file && 'hidden', 'w-full')}>
           <AdminSurfaceCard bodyClassName="p-6 text-center sm:p-8">
             <div
               className="border-foreground-200 text-foreground-400 hover:text-foreground-600 bg-default-50/70 dark:bg-default-100/5 relative mt-8 flex h-[280px] cursor-pointer flex-col items-center justify-center gap-4 rounded-[28px] border border-dashed transition"

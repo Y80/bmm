@@ -59,10 +59,8 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
   }
 
   return (
-    <div className="xs:py-2 mx-auto w-full max-w-4xl py-1">
-      <div className="pt-8 pb-9 sm:pt-10 sm:pb-11">
-        <AdminPageTitle title={title} pathname={pathname} />
-      </div>
+    <div className="mx-auto w-full max-w-4xl space-y-5">
+      <AdminPageTitle title={title} pathname={pathname} />
 
       <AdminSurfaceCard bodyClassName={cn('p-5 sm:p-6', props.bodyClassName)}>
         <div role="form-box" className="mb-8 flex w-full flex-col gap-6">

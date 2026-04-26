@@ -31,10 +31,8 @@ export default function ListPageLayout(props: ListPageLayoutProps) {
   }
 
   return (
-    <div className="xs:py-2 mx-auto w-full max-w-7xl py-1">
-      <div className="pt-8 pb-9 sm:pt-10 sm:pb-11">
-        <AdminPageTitle title={title} pathname={pathname} />
-      </div>
+    <div className="mx-auto w-full max-w-7xl space-y-5">
+      <AdminPageTitle title={title} pathname={pathname} />
 
       <AdminSurfaceCard
         extra={props.surfaceExtra}

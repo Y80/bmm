@@ -34,7 +34,7 @@ export default async function AdminLayout(props: PropsWithChildren) {
 
   return (
     <AdminProvider tags={tags} totalBookmarks={total} totalUsers={totalUsers}>
-      <div className="min-h-screen bg-default-50 dark:bg-background">
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.12),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.1),transparent_34%),linear-gradient(135deg,rgba(248,250,252,0.96),rgba(241,245,249,0.92))] dark:bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.1),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.08),transparent_34%),linear-gradient(135deg,rgba(3,7,18,0.98),rgba(15,23,42,0.96))]">
         <div className="flex min-h-screen">
           <AdminNav />
           <main className="min-w-0 flex-1 px-4 pb-5 pt-20 xs:px-6 xs:py-6">

@@ -125,10 +125,8 @@ export default function Page() {
   }
 
   return (
-    <div className="xs:py-2 mx-auto w-full max-w-7xl py-1">
-      <div className="pt-8 pb-9 sm:pt-10 sm:pb-11">
-        <AdminPageTitle title="用户列表" pathname="/admin/user/list" />
-      </div>
+    <div className="mx-auto w-full max-w-7xl space-y-5">
+      <AdminPageTitle title="用户列表" pathname="/admin/user/list" />
 
       <AdminSurfaceCard bodyClassName="p-4 sm:p-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">

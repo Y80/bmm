@@ -173,7 +173,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
     <div className="flex flex-col gap-6">
       <Card
         shadow="none"
-        className="border-divider/60 dark:bg-content1/80 overflow-hidden rounded-[28px] border bg-white/90 shadow-[0_18px_50px_-32px_rgba(15,23,42,0.18)] dark:shadow-none"
+        className="border-divider/60 overflow-hidden rounded-[28px] border bg-white/58 shadow-[0_18px_50px_-32px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:bg-content1/62 dark:shadow-none"
       >
         <CardBody className="relative overflow-hidden p-0">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.12),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.1),transparent_28%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.2),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(251,146,60,0.12),transparent_30%)]" />
@@ -217,7 +217,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
           <Card
             key={stat.label}
             shadow="none"
-            className="border-divider/60 dark:bg-content1 overflow-hidden border bg-white/88 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.18)] dark:shadow-none"
+            className="border-divider/60 overflow-hidden border bg-white/58 backdrop-blur-xl dark:bg-content1/62 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.18)] dark:shadow-none"
           >
             <CardBody className="relative gap-5 p-5">
               <div
@@ -252,7 +252,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
         {isAdmin && (
           <Card
             shadow="none"
-            className="border-divider/60 dark:bg-content1 border bg-white/88 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
+            className="border-divider/60 border bg-white/58 backdrop-blur-xl dark:bg-content1/62 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
           >
             <CardHeader className="flex-col items-start gap-2 px-6 pt-6 pb-0 sm:px-7">
               <div className="flex w-full flex-wrap items-start justify-between gap-3">
@@ -304,7 +304,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
 
         <Card
           shadow="none"
-          className="border-divider/60 dark:bg-content1 border bg-white/88 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
+          className="border-divider/60 border bg-white/58 backdrop-blur-xl dark:bg-content1/62 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
         >
           <CardHeader className="flex-col items-start gap-2 px-6 pt-6 pb-0 sm:px-7">
             <h2 className="text-xl font-semibold">标签结构</h2>
@@ -314,19 +314,19 @@ export default function CmsHomePage(props: CmsHomePageProps) {
           </CardHeader>
           <CardBody className="gap-6 px-6 pt-5 pb-6 sm:px-7 sm:pb-7">
             <div className="grid gap-3 md:grid-cols-3">
-              <div className="border-divider/60 dark:bg-default-100/5 rounded-2xl border bg-white/82 px-4 py-3.5">
+              <div className="border-divider/60 dark:bg-default-100/5 rounded-2xl border bg-white/38 backdrop-blur-md px-4 py-3.5">
                 <div className="text-default-500 text-xs">主标签</div>
                 <div className="mt-2 text-2xl font-semibold tracking-tight">{mainTagCount}</div>
                 <div className="text-default-500 mt-1 text-xs">当前占比 {mainTagPercent}%</div>
               </div>
-              <div className="border-divider/60 dark:bg-default-100/5 rounded-2xl border bg-white/82 px-4 py-3.5">
+              <div className="border-divider/60 dark:bg-default-100/5 rounded-2xl border bg-white/38 backdrop-blur-md px-4 py-3.5">
                 <div className="text-default-500 text-xs">辅助标签</div>
                 <div className="mt-2 text-2xl font-semibold tracking-tight">
                   {secondaryTagCount}
                 </div>
                 <div className="text-default-500 mt-1 text-xs">负责补充筛选和语义关联</div>
               </div>
-              <div className="border-divider/60 dark:bg-default-100/5 rounded-2xl border bg-white/82 px-4 py-3.5">
+              <div className="border-divider/60 dark:bg-default-100/5 rounded-2xl border bg-white/38 backdrop-blur-md px-4 py-3.5">
                 <div className="text-default-500 text-xs">视觉配置</div>
                 <div className="mt-2 text-2xl font-semibold tracking-tight">{visualTagCount}</div>
                 <div className="text-default-500 mt-1 text-xs">已配置图标或颜色</div>
@@ -414,7 +414,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
               </div>
             </div>
 
-            <div className="border-divider/60 dark:bg-default-100/5 rounded-3xl border bg-white/80 p-5">
+            <div className="border-divider/60 dark:bg-default-100/5 rounded-3xl border bg-white/38 backdrop-blur-md p-5">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-medium">带视觉配置的标签</div>
@@ -459,7 +459,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
       <div className="grid gap-6">
         <Card
           shadow="none"
-          className="border-divider/60 dark:bg-content1 border bg-white/88 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
+          className="border-divider/60 border bg-white/58 backdrop-blur-xl dark:bg-content1/62 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
         >
           <CardHeader className="flex-col items-start gap-2 px-6 pt-6 pb-0 sm:px-7">
             <h2 className="text-xl font-semibold">{isAdmin ? '管理提示' : '整理提示'}</h2>
@@ -471,7 +471,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
             {hints.map((hint, idx) => (
               <div
                 key={hint}
-                className="border-divider/60 dark:bg-default-100/5 flex gap-4 rounded-3xl border bg-white/80 px-5 py-4.5"
+                className="border-divider/60 dark:bg-default-100/5 flex gap-4 rounded-3xl border bg-white/38 backdrop-blur-md px-5 py-4.5"
               >
                 <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-sky-500/10 text-xs font-semibold text-sky-700 ring-1 ring-sky-500/15 dark:bg-white dark:text-black">
                   {idx + 1}

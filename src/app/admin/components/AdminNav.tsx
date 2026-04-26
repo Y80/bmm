@@ -110,10 +110,9 @@ export default function AdminNav(props: AdminNavProps) {
     <>
       <aside className="xs:flex xs:w-60 xs:shrink-0 hidden">
         <div className="sticky top-0 h-screen w-full px-4 py-6">
-          <div className="border-divider/60 dark:bg-content1/80 relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white/88 shadow-[0_20px_48px_-34px_rgba(15,23,42,0.22)] backdrop-blur dark:shadow-xl dark:shadow-black/5">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.08),transparent_36%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.2),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(251,146,60,0.1),transparent_38%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.04)_1px,transparent_1px)] [background-size:26px_26px] opacity-45 dark:bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] dark:opacity-20" />
-            <Link
+            <div className="border-divider/60 dark:bg-content1/80 relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white/88 shadow-[0_20px_48px_-34px_rgba(15,23,42,0.22)] backdrop-blur dark:shadow-xl dark:shadow-black/5">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.08),transparent_36%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.2),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(251,146,60,0.1),transparent_38%)]" />
+              <Link
               href={brandHref}
               color="foreground"
               className="border-divider/40 group relative block border-b no-underline"
@@ -149,7 +148,7 @@ export default function AdminNav(props: AdminNavProps) {
 
             <div className="border-divider/40 relative border-t">
               <div className="p-3">
-                <div className="border-divider/60 flex items-center gap-1.5 rounded-xl border bg-white/78 p-1.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.22)] dark:bg-white/[0.04] dark:shadow-none">
+                <div className="border-divider/60 flex items-center gap-1.5 rounded-xl border bg-white/42 p-1.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.16)] backdrop-blur-md dark:bg-white/[0.04] dark:shadow-none">
                   <ReButton
                     href={ExternalLinks.REPO}
                     target="_blank"
@@ -177,7 +176,7 @@ export default function AdminNav(props: AdminNavProps) {
                   <Link
                     href={PageRoutes.User.SETTINGS}
                     color="foreground"
-                    className="border-divider/60 mt-3 flex items-center gap-3 rounded-xl border bg-white/78 px-3 py-2.5 no-underline shadow-[0_10px_24px_-20px_rgba(15,23,42,0.22)] transition-[background-color,border-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:border-sky-500/20 hover:bg-sky-500/6 hover:shadow-[0_14px_28px_-22px_rgba(14,165,233,0.28)] dark:bg-white/[0.04] dark:hover:border-white/12 dark:hover:bg-white/[0.06]"
+                    className="border-divider/60 mt-3 flex items-center gap-3 rounded-xl border bg-white/42 px-3 py-2.5 no-underline shadow-[0_10px_24px_-20px_rgba(15,23,42,0.16)] backdrop-blur-md transition-[background-color,border-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:border-sky-500/20 hover:bg-white/58 hover:shadow-[0_14px_28px_-22px_rgba(14,165,233,0.24)] dark:bg-white/[0.04] dark:hover:border-white/12 dark:hover:bg-white/[0.06]"
                   >
                     <Avatar
                       size="sm"

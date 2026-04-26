@@ -33,6 +33,7 @@ export default function Page() {
     authError: null as null | { title: string; desc: string },
   })
   const [validationErrors, setValidationErrors] = useState<FormProps['validationErrors']>()
+  const fieldErrors = validationErrors as Record<string, string | undefined> | undefined
 
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -106,8 +107,16 @@ export default function Page() {
       ? registerSchema.safeParse(values)
       : loginSchema.safeParse(values)
     if (result.success) return result.data
-    setValidationErrors(result.error.flatten().fieldErrors)
+    setValidationErrors(toFormValidationErrors(result.error.flatten().fieldErrors))
     return false
+  }
+
+  function toFormValidationErrors(fieldErrors: Record<string, string[] | undefined>) {
+    return Object.fromEntries(
+      Object.entries(fieldErrors)
+        .map(([key, messages]) => [key, messages?.[0]])
+        .filter((item): item is [string, string] => Boolean(item[1]))
+    )
   }
 
   async function handleSubmit(evt: FormEvent<HTMLFormElement>) {
@@ -168,12 +177,32 @@ export default function Page() {
             <div>
               <Form ref={formRef} validationErrors={validationErrors} onSubmit={handleSubmit}>
                 <ReInput label="邮箱" name="email" type="email" isRequired />
-                <ReInput label="密码" name="password" type="password" isRequired />
+                <ReInput
+                  label="密码"
+                  name="password"
+                  type="password"
+                  isRequired
+                  minLength={6}
+                  maxLength={32}
+                  description="6-32 位英文或数字"
+                  isInvalid={!!fieldErrors?.password}
+                  errorMessage={fieldErrors?.password}
+                />
                 {state.isRegisterMode && (
-                  <ReInput label="确认密码" name="confirmPassword" type="password" isRequired />
+                  <ReInput
+                    label="确认密码"
+                    name="confirmPassword"
+                    type="password"
+                    isRequired
+                    minLength={6}
+                    maxLength={32}
+                    isInvalid={!!fieldErrors?.confirmPassword}
+                    errorMessage={fieldErrors?.confirmPassword}
+                  />
                 )}
                 <div className="mt-4 text-xs">
                   <button
+                    type="button"
                     className={cn(
                       'text-primary flex-items-center space-x-1 transition-all hover:opacity-80',
                       state.isRegisterMode && 'text-secondary'

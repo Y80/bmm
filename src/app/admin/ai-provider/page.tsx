@@ -270,10 +270,8 @@ export default function Page() {
   }
 
   return (
-    <div className="xs:py-2 mx-auto w-full max-w-7xl py-1">
-      <div className="pt-8 pb-9 sm:pt-10 sm:pb-11">
-        <AdminPageTitle title="大模型供应商" pathname={PageRoutes.Admin.AI_PROVIDER} />
-      </div>
+    <div className="mx-auto w-full max-w-7xl space-y-5">
+      <AdminPageTitle title="大模型供应商" pathname={PageRoutes.Admin.AI_PROVIDER} />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.55fr)]">
         <AdminSurfaceCard bodyClassName="p-5 sm:p-6">
