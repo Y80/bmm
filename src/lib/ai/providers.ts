@@ -1,19 +1,12 @@
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
+import AiProviderController from '@/controllers/AiProvider.controller'
 
-export function getOpenAICompatibleModel() {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('请配置环境变量 OPENAI_API_KEY')
-  }
-  if (!process.env.OPENAI_BASE_URL) {
-    throw new Error('请配置环境变量 OPENAI_BASE_URL')
-  }
-  if (!process.env.OPENAI_MODEL) {
-    throw new Error('请配置环境变量 OPENAI_MODEL')
-  }
+export async function getOpenAICompatibleModel() {
+  const activeProvider = await AiProviderController.getActiveProvider()
   const provider = createOpenAICompatible({
-    apiKey: process.env.OPENAI_API_KEY!,
-    baseURL: process.env.OPENAI_BASE_URL!,
-    name: 'openai-compatible',
+    apiKey: activeProvider.apiKey,
+    baseURL: activeProvider.baseUrl,
+    name: activeProvider.name,
   })
-  return provider(process.env.OPENAI_MODEL!)
+  return provider(activeProvider.model)
 }

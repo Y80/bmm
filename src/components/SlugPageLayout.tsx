@@ -73,6 +73,7 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
           <ReButton
             color="primary"
             className="min-w-28"
+            isLoading={props.isSaving}
             onClick={props.onSave}
           >
             保存

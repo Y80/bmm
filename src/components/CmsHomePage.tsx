@@ -1,11 +1,14 @@
 'use client'
 
 import { Card, CardBody, CardHeader, Progress, cn } from '@heroui/react'
+import { useRequest } from 'ahooks'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import Link from 'next/link'
 
+import { actGetAiProvidersConfig } from '@/actions'
 import { ClientIcon, NumberTicker, ReButton } from '@/components'
+import { runAction } from '@/utils/client'
 import { IconNames, PageRoutes } from '@cfg'
 
 type Scope = 'admin' | 'user'
@@ -30,7 +33,10 @@ export default function CmsHomePage(props: CmsHomePageProps) {
   const tagsWithVisuals = tags.filter((tag) => tag.icon || tag.color).slice(0, 6)
   const missingIconTags = tags
     .filter((tag) => !tag.icon)
-    .sort((a, b) => Number(b.isMain) - Number(a.isMain) || b.relatedTagIds.length - a.relatedTagIds.length)
+    .sort(
+      (a, b) =>
+        Number(b.isMain) - Number(a.isMain) || b.relatedTagIds.length - a.relatedTagIds.length
+    )
   const missingIconCount = missingIconTags.length
   const missingMainIconCount = missingIconTags.filter((tag) => tag.isMain).length
   const iconCoveragePercent = tags.length
@@ -151,16 +157,27 @@ export default function CmsHomePage(props: CmsHomePageProps) {
         },
       ]
   const visibleStats = stats.filter((stat) => !hiddenStats.includes(stat.label))
+  const { data: aiProvidersConfig } = useRequest(
+    async () => {
+      if (!isAdmin) return undefined
+      const res = await runAction(actGetAiProvidersConfig())
+      return res.ok ? res.data : undefined
+    },
+    { ready: isAdmin }
+  )
+  const activeAiProvider = aiProvidersConfig?.providers.find(
+    (provider) => provider.id === aiProvidersConfig.activeProviderId
+  )
 
   return (
     <div className="flex flex-col gap-6">
       <Card
         shadow="none"
-        className="border-divider/60 bg-white/90 dark:bg-content1/80 overflow-hidden rounded-[28px] border shadow-[0_18px_50px_-32px_rgba(15,23,42,0.18)] dark:shadow-none"
+        className="border-divider/60 dark:bg-content1/80 overflow-hidden rounded-[28px] border bg-white/90 shadow-[0_18px_50px_-32px_rgba(15,23,42,0.18)] dark:shadow-none"
       >
         <CardBody className="relative overflow-hidden p-0">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.12),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.1),transparent_28%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.2),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(251,146,60,0.12),transparent_30%)]" />
-          <div className="absolute inset-0 [background-image:linear-gradient(rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.04)_1px,transparent_1px)] [background-size:26px_26px] opacity-45 dark:[background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] dark:opacity-20" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.04)_1px,transparent_1px)] bg-size-[26px_26px] opacity-45 dark:bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] dark:opacity-20" />
 
           <div className="relative px-5 py-6 sm:px-7 sm:py-7">
             <div className="max-w-3xl space-y-5">
@@ -184,7 +201,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
                 <ReButton
                   href={routes.UPLOAD}
                   variant="bordered"
-                  className="border-divider/70 bg-white/70 hover:bg-white/90 dark:bg-background/40 px-5"
+                  className="border-divider/70 dark:bg-background/40 bg-white/70 px-5 hover:bg-white/90"
                   startContent={<span className={cn(IconNames.Tabler.UPLOAD, 'text-base')} />}
                 >
                   批量导入
@@ -200,10 +217,15 @@ export default function CmsHomePage(props: CmsHomePageProps) {
           <Card
             key={stat.label}
             shadow="none"
-            className="border-divider/60 bg-white/88 dark:bg-content1 overflow-hidden border shadow-[0_16px_40px_-30px_rgba(15,23,42,0.18)] dark:shadow-none"
+            className="border-divider/60 dark:bg-content1 overflow-hidden border bg-white/88 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.18)] dark:shadow-none"
           >
             <CardBody className="relative gap-5 p-5">
-              <div className={cn('absolute inset-0 bg-linear-to-br opacity-90 dark:opacity-100', stat.accent)} />
+              <div
+                className={cn(
+                  'absolute inset-0 bg-linear-to-br opacity-90 dark:opacity-100',
+                  stat.accent
+                )}
+              />
               <div className="relative flex items-start justify-between gap-4">
                 <div>
                   <div className="text-default-500 text-sm">{stat.label}</div>
@@ -227,27 +249,84 @@ export default function CmsHomePage(props: CmsHomePageProps) {
       </div>
 
       <div className="grid gap-6">
+        {isAdmin && (
+          <Card
+            shadow="none"
+            className="border-divider/60 dark:bg-content1 border bg-white/88 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
+          >
+            <CardHeader className="flex-col items-start gap-2 px-6 pt-6 pb-0 sm:px-7">
+              <div className="flex w-full flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-semibold">当前大模型供应商</h2>
+                  <p className="text-default-500 mt-1 text-sm">
+                    管理员当前启用的站点级大模型接入配置。
+                  </p>
+                </div>
+                <ReButton
+                  href={PageRoutes.Admin.AI_PROVIDER}
+                  size="sm"
+                  variant="flat"
+                  startContent={<span className={IconNames.Tabler.API} />}
+                >
+                  管理配置
+                </ReButton>
+              </div>
+            </CardHeader>
+            <CardBody className="px-6 pt-5 pb-6 sm:px-7 sm:pb-7">
+              <div className="border-divider/60 bg-default-50/55 dark:bg-default-100/5 rounded-2xl border p-4">
+                <div className="grid gap-4 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.1fr)_minmax(0,0.9fr)]">
+                  <div>
+                    <div className="text-default-500 text-xs">供应商</div>
+                    <div className="mt-2 truncate text-lg font-semibold">
+                      {activeAiProvider?.name || '未配置'}
+                    </div>
+                    <div className="text-default-500 mt-1 text-xs">
+                      {activeAiProvider?.type || 'openai-compatible'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-default-500 text-xs">API 地址</div>
+                    <div className="mt-2 truncate font-mono text-sm">
+                      {activeAiProvider?.baseUrl || '-'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-default-500 text-xs">模型</div>
+                    <div className="mt-2 truncate font-mono text-sm">
+                      {activeAiProvider?.model || '-'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        )}
+
         <Card
           shadow="none"
-          className="border-divider/60 bg-white/88 dark:bg-content1 border shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
+          className="border-divider/60 dark:bg-content1 border bg-white/88 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
         >
           <CardHeader className="flex-col items-start gap-2 px-6 pt-6 pb-0 sm:px-7">
             <h2 className="text-xl font-semibold">标签结构</h2>
-            <p className="text-default-500 text-sm">用主标签、辅助标签和视觉配置快速判断当前整理进度。</p>
+            <p className="text-default-500 text-sm">
+              用主标签、辅助标签和视觉配置快速判断当前整理进度。
+            </p>
           </CardHeader>
           <CardBody className="gap-6 px-6 pt-5 pb-6 sm:px-7 sm:pb-7">
             <div className="grid gap-3 md:grid-cols-3">
-              <div className="border-divider/60 bg-white/82 dark:bg-default-100/5 rounded-2xl border px-4 py-3.5">
+              <div className="border-divider/60 dark:bg-default-100/5 rounded-2xl border bg-white/82 px-4 py-3.5">
                 <div className="text-default-500 text-xs">主标签</div>
                 <div className="mt-2 text-2xl font-semibold tracking-tight">{mainTagCount}</div>
                 <div className="text-default-500 mt-1 text-xs">当前占比 {mainTagPercent}%</div>
               </div>
-              <div className="border-divider/60 bg-white/82 dark:bg-default-100/5 rounded-2xl border px-4 py-3.5">
+              <div className="border-divider/60 dark:bg-default-100/5 rounded-2xl border bg-white/82 px-4 py-3.5">
                 <div className="text-default-500 text-xs">辅助标签</div>
-                <div className="mt-2 text-2xl font-semibold tracking-tight">{secondaryTagCount}</div>
+                <div className="mt-2 text-2xl font-semibold tracking-tight">
+                  {secondaryTagCount}
+                </div>
                 <div className="text-default-500 mt-1 text-xs">负责补充筛选和语义关联</div>
               </div>
-              <div className="border-divider/60 bg-white/82 dark:bg-default-100/5 rounded-2xl border px-4 py-3.5">
+              <div className="border-divider/60 dark:bg-default-100/5 rounded-2xl border bg-white/82 px-4 py-3.5">
                 <div className="text-default-500 text-xs">视觉配置</div>
                 <div className="mt-2 text-2xl font-semibold tracking-tight">{visualTagCount}</div>
                 <div className="text-default-500 mt-1 text-xs">已配置图标或颜色</div>
@@ -269,8 +348,8 @@ export default function CmsHomePage(props: CmsHomePageProps) {
                 </div>
               </div>
 
-              <div className="border-divider/60 bg-amber-400/8 mt-4 flex items-start gap-2 rounded-xl border px-3 py-2.5">
-                <span className={cn(IconNames.Tabler.SPARKLES, 'text-amber-500 mt-0.5 text-sm')} />
+              <div className="border-divider/60 mt-4 flex items-start gap-2 rounded-xl border bg-amber-400/8 px-3 py-2.5">
+                <span className={cn(IconNames.Tabler.SPARKLES, 'mt-0.5 text-sm text-amber-500')} />
                 <p className="text-default-600 text-xs leading-5">
                   补充标签图标后，浏览导航和筛选时会更容易识别分类入口，整体体验也会更顺手。
                 </p>
@@ -302,12 +381,14 @@ export default function CmsHomePage(props: CmsHomePageProps) {
                     <Link
                       key={tag.id}
                       href={routes.tagSlug(tag.id)}
-                      className="border-divider/70 bg-default-50/85 text-foreground hover:border-amber-500/20 hover:bg-amber-400/10 inline-flex h-8 max-w-full items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium transition-[background-color,border-color,color] outline-none focus-visible:ring-2 focus-visible:ring-amber-400/30 dark:bg-default-100/5 dark:hover:bg-amber-400/10"
+                      className="border-divider/70 bg-default-50/85 text-foreground dark:bg-default-100/5 inline-flex h-8 max-w-full items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium transition-[background-color,border-color,color] outline-none hover:border-amber-500/20 hover:bg-amber-400/10 focus-visible:ring-2 focus-visible:ring-amber-400/30 dark:hover:bg-amber-400/10"
                     >
-                      <span className={cn(IconNames.Tabler.PHOTO_OFF, 'text-default-400 text-sm')} />
+                      <span
+                        className={cn(IconNames.Tabler.PHOTO_OFF, 'text-default-400 text-sm')}
+                      />
                       <span className="max-w-24 truncate">{tag.name}</span>
                       {tag.isMain && (
-                        <span className="bg-amber-400/15 text-amber-700 rounded-full px-1.5 py-0.5 text-[10px] leading-none dark:text-amber-300">
+                        <span className="rounded-full bg-amber-400/15 px-1.5 py-0.5 text-[10px] leading-none text-amber-700 dark:text-amber-300">
                           主
                         </span>
                       )}
@@ -333,11 +414,13 @@ export default function CmsHomePage(props: CmsHomePageProps) {
               </div>
             </div>
 
-            <div className="border-divider/60 bg-white/80 dark:bg-default-100/5 rounded-3xl border p-5">
+            <div className="border-divider/60 dark:bg-default-100/5 rounded-3xl border bg-white/80 p-5">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-medium">带视觉配置的标签</div>
-                  <div className="text-default-500 mt-1 text-xs">优先展示可直接用于导航辨识的标签。</div>
+                  <div className="text-default-500 mt-1 text-xs">
+                    优先展示可直接用于导航辨识的标签。
+                  </div>
                 </div>
                 <div className="text-default-400 text-xs">共 {visualTagCount} 个</div>
               </div>
@@ -347,7 +430,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
                     <Link
                       key={tag.id}
                       href={routes.tagSlug(tag.id)}
-                      className="border-divider/70 bg-default-50/80 text-foreground hover:border-foreground/10 hover:bg-default-100 hover:shadow-sm hover:shadow-black/5 focus-visible:ring-foreground/30 active:border-foreground/15 active:bg-foreground active:text-background dark:bg-default-100/5 dark:hover:bg-default-100/10 dark:hover:shadow-black/10 dark:active:bg-white/14 inline-flex h-9 max-w-full items-center gap-2 rounded-full border px-2.5 text-xs font-medium transition-[background-color,border-color,color,transform,box-shadow] outline-none hover:-translate-y-px active:scale-[0.98] active:translate-y-0 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] focus-visible:ring-2"
+                      className="border-divider/70 bg-default-50/80 text-foreground hover:border-foreground/10 hover:bg-default-100 focus-visible:ring-foreground/30 active:border-foreground/15 active:bg-foreground active:text-background dark:bg-default-100/5 dark:hover:bg-default-100/10 inline-flex h-9 max-w-full items-center gap-2 rounded-full border px-2.5 text-xs font-medium transition-[background-color,border-color,color,transform,box-shadow] outline-none hover:-translate-y-px hover:shadow-sm hover:shadow-black/5 focus-visible:ring-2 active:translate-y-0 active:scale-[0.98] active:shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] dark:hover:shadow-black/10 dark:active:bg-white/14"
                     >
                       <span className="bg-background/80 dark:bg-default-100/10 flex size-6 shrink-0 items-center justify-center rounded-full">
                         <ClientIcon
@@ -376,7 +459,7 @@ export default function CmsHomePage(props: CmsHomePageProps) {
       <div className="grid gap-6">
         <Card
           shadow="none"
-          className="border-divider/60 bg-white/88 dark:bg-content1 border shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
+          className="border-divider/60 dark:bg-content1 border bg-white/88 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.16)] dark:shadow-none"
         >
           <CardHeader className="flex-col items-start gap-2 px-6 pt-6 pb-0 sm:px-7">
             <h2 className="text-xl font-semibold">{isAdmin ? '管理提示' : '整理提示'}</h2>
@@ -388,9 +471,9 @@ export default function CmsHomePage(props: CmsHomePageProps) {
             {hints.map((hint, idx) => (
               <div
                 key={hint}
-                className="border-divider/60 bg-white/80 dark:bg-default-100/5 flex gap-4 rounded-3xl border px-5 py-4.5"
+                className="border-divider/60 dark:bg-default-100/5 flex gap-4 rounded-3xl border bg-white/80 px-5 py-4.5"
               >
-                <div className="bg-sky-500/10 text-sky-700 ring-1 ring-sky-500/15 dark:bg-white dark:text-black flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-sky-500/10 text-xs font-semibold text-sky-700 ring-1 ring-sky-500/15 dark:bg-white dark:text-black">
                   {idx + 1}
                 </div>
                 <p className="text-default-600 text-sm leading-6">{hint}</p>

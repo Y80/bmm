@@ -70,6 +70,7 @@ import UserHomeBody from './components/UserHomeBody'
 - No semicolons
 - Single quotes
 - 100 character line limit
+- 默认情况下，智能体完成代码修改后不要主动运行代码格式化；但在提交代码之前，一定要先运行代码格式化。
 
 ### TypeScript Configuration
 
@@ -80,15 +81,15 @@ import UserHomeBody from './components/UserHomeBody'
 
 ### Naming Conventions
 
-| Type | Convention | Examples |
-|------|------------|----------|
-| Components | PascalCase | `BookmarkListPage`, `UserHomeBody` |
-| Functions | camelCase | `parseWebsite`, `getPinyin`, `to()` |
-| Variables | camelCase | `const isUserSpace = ...` |
-| Constants | UPPER_SNAKE_CASE | `const PAGESIZE = 20` |
-| Types/Interfaces | PascalCase | `type UserId = string`, `interface ActionResult` |
-| Enums | PascalCase | `enum UploadStatus` |
-| File names | PascalCase for components, camelCase for utilities | `BookmarkListPage.tsx`, `index.ts`, `utils.ts` |
+| Type             | Convention                                         | Examples                                         |
+| ---------------- | -------------------------------------------------- | ------------------------------------------------ |
+| Components       | PascalCase                                         | `BookmarkListPage`, `UserHomeBody`               |
+| Functions        | camelCase                                          | `parseWebsite`, `getPinyin`, `to()`              |
+| Variables        | camelCase                                          | `const isUserSpace = ...`                        |
+| Constants        | UPPER_SNAKE_CASE                                   | `const PAGESIZE = 20`                            |
+| Types/Interfaces | PascalCase                                         | `type UserId = string`, `interface ActionResult` |
+| Enums            | PascalCase                                         | `enum UploadStatus`                              |
+| File names       | PascalCase for components, camelCase for utilities | `BookmarkListPage.tsx`, `index.ts`, `utils.ts`   |
 
 ### File Structure Patterns
 
@@ -280,7 +281,7 @@ async function onDelete(item: SelectBookmark) {
 
 **Required**: `DB_CONNECTION_URL`, `DB_DRIVER` (postgresql | sqlite)
 
-**Optional**: `AUTH_URL`, `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `AI_*`
+**Optional**: `AUTH_URL`, `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`
 
 **Loading**: Environment variables loaded via `scripts/utils.mjs` before server starts.
 
@@ -289,6 +290,7 @@ async function onDelete(item: SelectBookmark) {
 **Framework**: Vitest
 
 **Pattern**:
+
 ```typescript
 import { describe, expect, it, test } from 'vitest'
 
@@ -304,6 +306,7 @@ describe('FeatureName', () => {
 ```
 
 **Run single test**:
+
 ```bash
 pnpm test -- index.test.ts
 ```
@@ -313,10 +316,12 @@ pnpm test -- index.test.ts
 **ORM**: Drizzle ORM
 
 **Migration**:
+
 - `pnpm db:migrate` - Create migrations
 - `pnpm db:push` - Push schema directly (use with caution)
 
 **Query patterns**:
+
 ```typescript
 import { db, schema } from '@/db'
 import { eq } from 'drizzle-orm'
@@ -330,35 +335,43 @@ const user = await db.query.users.findFirst({
 })
 
 // Update
-await db.update(schema.users)
-  .set({ name: 'Jane' })
-  .where(eq(schema.users.id, userId))
+await db.update(schema.users).set({ name: 'Jane' }).where(eq(schema.users.id, userId))
 ```
 
 ## Key Utilities
 
 ### `to()` - Promise Error Handling
+
 ```typescript
 const [error, data] = await to(promise)
-if (error) { /* handle */ }
+if (error) {
+  /* handle */
+}
 ```
 
 ### `runAction()` - Server Action Wrapper
+
 ```typescript
 const res = await runAction(action(args), {
   okMsg: 'Success message',
-  onOk: (data) => { /* success callback */ },
+  onOk: (data) => {
+    /* success callback */
+  },
 })
 ```
 
 ### `pageSpace()` - Route Detection
+
 ```typescript
 const { isAdmin, isUser } = pageSpace('auto')
 ```
 
 ### `isValidUrl()` / `robustUrl()` - URL Validation
+
 ```typescript
-if (isValidUrl(url)) { /* valid */ }
+if (isValidUrl(url)) {
+  /* valid */
+}
 const fixedUrl = robustUrl(url) // Adds http/https if needed
 ```
 
@@ -368,6 +381,6 @@ const fixedUrl = robustUrl(url) // Adds http/https if needed
 - **Node version**: >=24.0.0
 - **Language**: Chinese error messages and UI text
 - **Database**: Supports SQLite (default) and PostgreSQL
-- **AI Integration**: OpenAI-compatible APIs supported via env vars
+- **AI Integration**: OpenAI-compatible providers are configured in the admin dashboard
 - **Auth**: NextAuth v5 with GitHub OAuth and credentials
 - **Output mode**: `standalone` for Docker/serverless deployment

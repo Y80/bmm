@@ -11,7 +11,6 @@ declare global {
     type OptionalVariables =
       | 'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID'
       | 'NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID'
-      | 'AI_DEBUG'
       | 'VERCEL' // 是否运行在 Vercel 平台中
       | 'AUTH_GITHUB_ID'
       | 'AUTH_GITHUB_SECRET'

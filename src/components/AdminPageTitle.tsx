@@ -16,6 +16,9 @@ export function getAdminPageTitleIcon(pathname: string, title: string) {
   if (title.includes('用户') || pathname.includes('/user/list')) {
     return IconNames.Tabler.USER
   }
+  if (title.includes('模型') || pathname.includes('/ai-provider')) {
+    return IconNames.Tabler.API
+  }
   if (title.includes('新建')) {
     return IconNames.Huge.ADD_SQUARE
   }

@@ -66,7 +66,8 @@ export default function TagSlugPage(props: TagSlugPageProps) {
       addToast({ title: '请输入「名称」', color: 'warning' })
       return
     }
-    await props.save(tag)
+    setState({ isSaving: true })
+    await props.save(tag).finally(() => setState({ isSaving: false }))
   }
 
   function onSelectIcon(icon: SelectedIcon) {
@@ -97,9 +98,10 @@ export default function TagSlugPage(props: TagSlugPageProps) {
   }
 
   function onReceiveRelatedTags(params: AnalyzeRelatedTagsResult) {
-    const { relatedTags, themeColor } = params
+    const { relatedTags, themeColor, icon } = params
     setTag({
       color: themeColor,
+      icon,
       relatedTagIds: relatedTags.reduce((acc: number[], tagName) => {
         const foundTag = props.tags.find(({ name }) => name === tagName)
         if (!foundTag?.id || foundTag.id === slug.number || acc.includes(foundTag.id)) return acc
@@ -110,7 +112,11 @@ export default function TagSlugPage(props: TagSlugPageProps) {
   }
 
   return (
-    <SlugPageLayout onSave={onSave} title={slug.number === null ? '新建标签' : '编辑标签'}>
+    <SlugPageLayout
+      isSaving={state.isSaving}
+      onSave={onSave}
+      title={slug.number === null ? '新建标签' : '编辑标签'}
+    >
       <ReInput
         label="名称"
         isRequired

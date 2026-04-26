@@ -112,7 +112,7 @@ export default function AdminNav(props: AdminNavProps) {
         <div className="sticky top-0 h-screen w-full px-4 py-6">
           <div className="border-divider/60 dark:bg-content1/80 relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white/88 shadow-[0_20px_48px_-34px_rgba(15,23,42,0.22)] backdrop-blur dark:shadow-xl dark:shadow-black/5">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.08),transparent_36%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.2),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(251,146,60,0.1),transparent_38%)]" />
-            <div className="absolute inset-0 [background-image:linear-gradient(rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.04)_1px,transparent_1px)] [background-size:26px_26px] opacity-45 dark:[background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] dark:opacity-20" />
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.04)_1px,transparent_1px)] [background-size:26px_26px] opacity-45 dark:bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] dark:opacity-20" />
             <Link
               href={brandHref}
               color="foreground"

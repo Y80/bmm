@@ -41,6 +41,7 @@ pnpm studio           # Open Drizzle Studio for database management
 ## High-Level Architecture
 
 ### Authentication System
+
 - **NextAuth v5 (Beta)** with dual provider support:
   - GitHub OAuth (`/src/lib/auth/github-provider.ts`)
   - Credentials (email/password) (`/src/lib/auth/credentials-provider.ts`)
@@ -49,6 +50,7 @@ pnpm studio           # Open Drizzle Studio for database management
 - Use `getAuthedUserId()` helper for server-side authentication checks
 
 ### Database Architecture
+
 - **ORM**: Drizzle with multi-database support (SQLite/PostgreSQL)
 - **Schema separation**: Different schemas for SQLite (`/src/db/sqlite/`) and PostgreSQL (`/src/db/postgres/`)
 - **Key tables**:
@@ -58,15 +60,17 @@ pnpm studio           # Open Drizzle Studio for database management
 - **Many-to-many patterns**: Bookmark↔Tags, Tags↔Tags (related tags)
 
 ### AI Integration
+
 - **OpenAI-compatible APIs**: Any provider supporting OpenAI format
 - **Key functions** (`/src/lib/ai/index.ts`):
   - `analyzeWebsite()`: Extracts title, description, favicon, suggests tags
   - `analyzeRelatedTags()`: Finds semantic tag relationships, suggests theme colors
-- **Environment variables**: `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_MODEL`
+- **Provider configuration**: Admin-managed in the dashboard and stored in `siteConfigs`
 
 ### Code Organization Patterns
 
 #### Import Order
+
 ```typescript
 // 1. External dependencies
 import { useState } from 'react'
@@ -79,22 +83,26 @@ import UserHomeBody from './components/UserHomeBody'
 ```
 
 #### Actions Module Boundary
+
 - `src/actions/index.ts` is only the export entry for actions.
 - Do not place business logic in `src/actions/index.ts`.
 - Put action-specific handler logic, schemas, and `makeActionInput(...)` declarations in `src/actions/items/`, then export the final action from `src/actions/index.ts`.
 
 #### Server Actions Pattern
+
 All server actions use the `makeAction` utility (`/src/utils/server-actions.ts`):
+
 - Automatic Zod validation
 - Role-based guards (`false` | `'user'` | `'admin'`)
 - Standardized error handling
 - Automatic redirects for auth failures
 
 Example:
+
 ```typescript
 export const actDeleteBookmark = makeAction(
   deleteBookmarkSchema,
-  'admin',  // role guard
+  'admin', // role guard
   async (input, userId) => {
     // action logic
   }
@@ -102,6 +110,7 @@ export const actDeleteBookmark = makeAction(
 ```
 
 #### Component Structure
+
 - **Server components**: Default, fetch initial data
 - **Client components**: Suffixed with "ClientPage", manage interactivity
 - **Context providers**: `/src/components/providers` for global state
@@ -118,7 +127,7 @@ export const actDeleteBookmark = makeAction(
 
 1. **Always use absolute imports** with `@/` alias, never relative paths
 2. **Check authentication** in server actions using the role guard parameter
-3. **AI features** require `OPENAI_API_KEY` and compatible API configuration
+3. **AI features** require an active provider configured in the admin dashboard
 4. **Database changes**: Use migrations, avoid `db:push` in development
 5. **Testing**: Run specific tests with `pnpm test -- <filename>`
 6. **Production flag**: Use `-P` for production environment variables
@@ -126,17 +135,19 @@ export const actDeleteBookmark = makeAction(
 ### Common Tasks
 
 **Adding a new server action**:
+
 1. Create Zod schema in `/src/controllers/schemas/`
 2. Implement action in `/src/actions/`
 3. Use `makeAction` with appropriate role guard
 4. Import in client components and call via `runAction`
 
 **Working with bookmarks**:
+
 - User bookmarks: Use `userBookmarks` table, scoped to userId
 - Public bookmarks: Use `publicBookmarks` table, admin-managed
 - Search: Use `keywordSearch()` helper, supports pinyin and partial matches
 
 **AI features**:
+
 - Website analysis: Calls `analyzeWebsite()` with URL
 - Tag relations: Calls `analyzeRelatedTags()` for semantic grouping
-- Debug: Enable `AI_DEBUG=1` in environment variables

@@ -67,17 +67,17 @@ You can use it as:
 
 ## Tech Stack
 
-| Category | Technology |
-| --- | --- |
-| Framework | [Next.js 16](https://nextjs.org/) + React 19 |
-| Language | [TypeScript](https://www.typescriptlang.org/) |
-| Styling | [Tailwind CSS 4](https://tailwindcss.com/) |
-| UI | [HeroUI](https://heroui.com/) + [Ant Design](https://ant.design/) |
-| Database | SQLite / PostgreSQL / Turso |
-| ORM | [Drizzle ORM](https://orm.drizzle.team/) |
-| Auth | [NextAuth v5 beta](https://authjs.dev/) |
-| AI | [Vercel AI SDK](https://sdk.vercel.ai/) + OpenAI-compatible provider |
-| Testing | [Vitest](https://vitest.dev/) |
+| Category  | Technology                                                           |
+| --------- | -------------------------------------------------------------------- |
+| Framework | [Next.js 16](https://nextjs.org/) + React 19                         |
+| Language  | [TypeScript](https://www.typescriptlang.org/)                        |
+| Styling   | [Tailwind CSS 4](https://tailwindcss.com/)                           |
+| UI        | [HeroUI](https://heroui.com/) + [Ant Design](https://ant.design/)    |
+| Database  | SQLite / PostgreSQL / Turso                                          |
+| ORM       | [Drizzle ORM](https://orm.drizzle.team/)                             |
+| Auth      | [NextAuth v5 beta](https://authjs.dev/)                              |
+| AI        | [Vercel AI SDK](https://sdk.vercel.ai/) + OpenAI-compatible provider |
+| Testing   | [Vitest](https://vitest.dev/)                                        |
 
 <a id="quick-start"></a>
 
@@ -106,17 +106,17 @@ Then open `http://localhost:3000`.
 
 ## Common Commands
 
-| Command | Description |
-| --- | --- |
-| `pnpm dev` | Start the development server and initialize the database first |
-| `pnpm build` | Build for production |
-| `pnpm start` | Run the production build |
-| `pnpm lint` | Run ESLint |
-| `pnpm test` | Run Vitest |
-| `pnpm db:test` | Check database connectivity |
-| `pnpm db:migrate` | Generate and apply database migrations |
-| `pnpm db:push` | Push schema changes directly and may risk data loss |
-| `pnpm studio` | Open Drizzle Studio |
+| Command           | Description                                                    |
+| ----------------- | -------------------------------------------------------------- |
+| `pnpm dev`        | Start the development server and initialize the database first |
+| `pnpm build`      | Build for production                                           |
+| `pnpm start`      | Run the production build                                       |
+| `pnpm lint`       | Run ESLint                                                     |
+| `pnpm test`       | Run Vitest                                                     |
+| `pnpm db:test`    | Check database connectivity                                    |
+| `pnpm db:migrate` | Generate and apply database migrations                         |
+| `pnpm db:push`    | Push schema changes directly and may risk data loss            |
+| `pnpm studio`     | Open Drizzle Studio                                            |
 
 <a id="env"></a>
 
@@ -125,20 +125,17 @@ Then open `http://localhost:3000`.
 See [`.env`](./.env) for the full example.
 
 > [!TIP]
-> If you only want to get the app running, local development usually works with the default SQLite configuration. AI features and GitHub login are optional add-ons.
+> If you only want to get the app running, local development usually works with the default SQLite configuration. AI providers are configured in the admin dashboard and do not require environment variables.
 
-| Variable | Purpose |
-| --- | --- |
-| `DB_DRIVER` | Database driver, `sqlite` or `postgresql` |
-| `DB_CONNECTION_URL` | Database connection string |
-| `DB_AUTH_TOKEN` | Optional token for Turso or libsql |
-| `AUTH_URL` | Current site URL used by auth and deployment flows |
-| `AUTH_SECRET` | NextAuth secret, recommended for production |
-| `AUTH_GITHUB_ID` | Optional GitHub OAuth Client ID |
-| `AUTH_GITHUB_SECRET` | Optional GitHub OAuth Client Secret |
-| `OPENAI_API_KEY` | Optional AI provider key |
-| `OPENAI_BASE_URL` | Optional OpenAI-compatible base URL |
-| `OPENAI_MODEL` | Optional AI model name |
+| Variable             | Purpose                                            |
+| -------------------- | -------------------------------------------------- |
+| `DB_DRIVER`          | Database driver, `sqlite` or `postgresql`          |
+| `DB_CONNECTION_URL`  | Database connection string                         |
+| `DB_AUTH_TOKEN`      | Optional token for Turso or libsql                 |
+| `AUTH_URL`           | Current site URL used by auth and deployment flows |
+| `AUTH_SECRET`        | NextAuth secret, recommended for production        |
+| `AUTH_GITHUB_ID`     | Optional GitHub OAuth Client ID                    |
+| `AUTH_GITHUB_SECRET` | Optional GitHub OAuth Client Secret                |
 
 <a id="database"></a>
 
@@ -189,7 +186,7 @@ docker run --rm \
 ### Vercel Deployment
 
 1. Fork this repository and import it into Vercel.
-2. Configure database, auth, and optional AI variables in Environment Variables.
+2. Configure database and auth variables in Environment Variables.
 3. After deployment, verify that `AUTH_URL` matches the GitHub OAuth callback URL.
 
 <a id="ai"></a>
@@ -202,13 +199,7 @@ The AI features reduce manual work during bookmark entry and organization. Curre
 - related tag suggestions for bookmarks
 - related-tag suggestions and theme colors for tags
 
-The project uses Vercel AI SDK with an OpenAI-compatible provider. A typical configuration looks like:
-
-```bash
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxx
-OPENAI_BASE_URL=https://api.deepseek.com/v1
-OPENAI_MODEL=deepseek-chat
-```
+The project uses Vercel AI SDK with an OpenAI-compatible provider. After signing in as an administrator, configure site-level providers in the "AI Providers" admin page and choose the active provider there.
 
 Supported options include OpenAI-compatible providers such as OpenAI, DeepSeek, Moonshot, and GLM. For non OpenAI-compatible services, refer to [AI SDK Providers](https://ai-sdk.dev/providers/ai-sdk-providers).
 

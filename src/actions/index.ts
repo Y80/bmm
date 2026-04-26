@@ -1,12 +1,17 @@
 'use server'
 
 import {
+  AiProviderController,
   CredentialsController,
   PublicBookmarkController,
   PublicTagController,
   UserController,
   UserBookmarkController,
   UserTagController,
+  aiProvidersConfigSchema,
+  duplicateAiProviderSchema,
+  listAiProviderModelsSchema,
+  testAiProviderSchema,
 } from '@/controllers'
 import {
   aiAnalyzeRelatedTagsInput,
@@ -53,6 +58,26 @@ export const actUpdateUserBookmark = make(UserBookmarkController.update)
 /// Users
 export const actFindUsers = make(UserController.findMany, { guard: 'admin' })
 export const actDeleteUser = make(deleteUserInput)
+
+/// 大模型供应商配置
+export const actGetAiProvidersConfig = make(AiProviderController.getConfig, { guard: 'admin' })
+export const actSaveAiProvidersConfig = make(AiProviderController.saveConfig, {
+  guard: 'admin',
+  schema: aiProvidersConfigSchema,
+})
+export const actDuplicateAiProvider = make(AiProviderController.duplicateProvider, {
+  guard: 'admin',
+  schema: duplicateAiProviderSchema,
+})
+export const actTestAiProvider = make(AiProviderController.testProvider, {
+  guard: 'admin',
+  schema: testAiProviderSchema,
+})
+export const actListAiProviderModels = make(AiProviderController.listModels, {
+  guard: 'admin',
+  schema: listAiProviderModelsSchema,
+})
+export const actClearAiProvidersConfig = make(AiProviderController.clearConfig, { guard: 'admin' })
 
 /// 解析网站、标签
 export const actExtractHtmlInfo = make(extractHtmlInfoInput)

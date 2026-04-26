@@ -1,6 +1,8 @@
+export * from './AiProvider.controller'
 export * from './PublicBookmark.controller'
 export * from './PublicTag.controller'
 
+export { default as AiProviderController } from './AiProvider.controller'
 export { default as CredentialsController } from './Credentials.controller'
 export { default as PublicBookmarkController } from './PublicBookmark.controller'
 export { default as PublicTagController } from './PublicTag.controller'

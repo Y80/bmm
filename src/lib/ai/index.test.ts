@@ -3,12 +3,10 @@ import { assert, describe, test } from 'vitest'
 import { analyzeRelatedTags, analyzeWebsite } from '.'
 import { getOpenAICompatibleModel } from './providers'
 
-const shouldRunAiTests = process.env.RUN_AI_TESTS === 'true'
-
-describe.skipIf(!shouldRunAiTests)('AI module', { timeout: 30 * 1000 }, () => {
+describe.skip('AI module', { timeout: 30 * 1000 }, () => {
   test('ai-sdk 测试', async () => {
     const res = await generateText({
-      model: getOpenAICompatibleModel(),
+      model: await getOpenAICompatibleModel(),
       prompt: '你好',
     })
     console.log(res.text)

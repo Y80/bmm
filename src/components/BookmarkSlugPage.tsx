@@ -105,7 +105,6 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     const { data } = await runAction(actAnalyzeWebsite(bookmark.url))
     setState({ loading: false })
     if (!data) return
-    process.env.AI_DEBUG && console.log('AI 解析结果：', data)
     setBookmark({
       name: data.title,
       icon: data.favicon,

@@ -33,6 +33,7 @@ export const PageRoutes = {
     INDEX: '/admin',
     UPLOAD: '/admin/upload',
     USERS: '/admin/user/list',
+    AI_PROVIDER: '/admin/ai-provider',
     tagSlug: (slug?: 'new' | TagId | 'list') => '/admin/tag/' + (slug || ''),
     bookmarkSlug: (slug: 'new' | 'list' | BookmarkId) => '/admin/bookmark/' + slug,
   },
@@ -66,6 +67,9 @@ export const IconNames = {
     BOOKMARK: 'icon-[tabler--bookmark]',
     BRAND_GITHUB: 'icon-[tabler--brand-github]',
     CHECK: 'icon-[tabler--check]',
+    CHEVRON_DOWN: 'icon-[tabler--chevron-down]',
+    COPY: 'icon-[tabler--copy]',
+    PLUG_CONNECTED: 'icon-[tabler--plug-connected]',
     USER: 'icon-[tabler--user]',
     DASHBOARD: 'icon-[tabler--layout-dashboard]',
     DEVICE_DESKTOP: 'icon-[tabler--device-desktop]',
@@ -180,6 +184,13 @@ export const ADMIN_NAV_LINKS = [
     icon: IconNames.Tabler.UPLOAD,
     description: '从浏览器书签文件批量迁移内容',
     accent: 'from-violet-400 via-indigo-500 to-blue-600',
+  },
+  {
+    label: '大模型供应商',
+    href: PageRoutes.Admin.AI_PROVIDER,
+    icon: IconNames.Tabler.API,
+    description: '维护站点可用的大模型接入配置',
+    accent: 'from-violet-400 via-sky-400 to-cyan-500',
   },
 ]
 
