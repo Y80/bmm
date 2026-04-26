@@ -71,6 +71,29 @@ export const userBookmarks = sqliteTable(
   (table) => [unique().on(table.url, table.userId), unique().on(table.name, table.userId)]
 )
 
+export const userReadLaterItems = sqliteTable(
+  'userReadLaterItems',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    url: text('url').notNull(),
+    title: text('title').notNull(),
+    summary: text('summary').notNull(),
+    estimatedReadingMinutes: integer('estimatedReadingMinutes').notNull().default(1),
+    status: text('status', { enum: ['unread', 'read'] }).notNull().default('unread'),
+    createdAt: integer('createdAt', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer('updatedAt', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    readAt: integer('readAt', { mode: 'timestamp' }),
+    userId: text('userId')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+  },
+  (table) => [unique().on(table.url, table.userId)]
+)
+
 /**
  * 书签与标签的关系表
  * Bookmark : Tag = M : N

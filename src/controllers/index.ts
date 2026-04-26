@@ -1,6 +1,8 @@
 export * from './AiProvider.controller'
 export * from './PublicBookmark.controller'
 export * from './PublicTag.controller'
+export * from './schemas'
+export * from './UserReadLater.controller'
 
 export { default as AiProviderController } from './AiProvider.controller'
 export { default as CredentialsController } from './Credentials.controller'
@@ -8,4 +10,5 @@ export { default as PublicBookmarkController } from './PublicBookmark.controller
 export { default as PublicTagController } from './PublicTag.controller'
 export { default as UserController } from './User.controller'
 export { default as UserBookmarkController } from './UserBookmark.controller'
+export { default as UserReadLaterController } from './UserReadLater.controller'
 export { default as UserTagController } from './UserTag.controller'

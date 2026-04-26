@@ -82,6 +82,29 @@ export const userBookmarks = pgTable(
   (table) => [unique().on(table.name, table.userId), unique().on(table.userId, table.url)]
 )
 
+export const userReadLaterItems = pgTable(
+  'userReadLaterItems',
+  {
+    id: serial('id').primaryKey(),
+    url: varchar('url', { length: FieldConstraints.MaxLen.URL }).notNull(),
+    title: varchar('title', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).notNull(),
+    summary: varchar('summary', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }).notNull(),
+    estimatedReadingMinutes: integer('estimatedReadingMinutes').notNull().default(1),
+    status: varchar('status', { length: 10 }).notNull().default('unread'),
+    createdAt: timestamp('createdAt', { mode: 'date' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: timestamp('updatedAt', { mode: 'date' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    readAt: timestamp('readAt', { mode: 'date' }),
+    userId: varchar('userId')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+  },
+  (table) => [unique().on(table.userId, table.url)]
+)
+
 /**
  * 书签与标签的关系表
  * Bookmark : Tag = M : N

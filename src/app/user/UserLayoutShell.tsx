@@ -19,6 +19,7 @@ function isUserCmsPath(pathname: string) {
   const nestedCmsPaths = [
     `${PageRoutes.User.PREFIX}/bookmark`,
     `${PageRoutes.User.PREFIX}/tag`,
+    PageRoutes.User.READ_LATER,
     PageRoutes.User.SETTINGS,
     PageRoutes.User.UPLOAD,
   ]

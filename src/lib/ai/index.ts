@@ -1,14 +1,20 @@
 import fetchHtml from '@/utils/fetch-html'
 import { generateText } from 'ai'
 import { parseAiJsonObject } from './json'
-import { createWebsiteAnalysisPayload } from './payload'
+import { createReadLaterArticlePayload, createWebsiteAnalysisPayload } from './payload'
 import { getOpenAICompatibleModel } from './providers'
 import {
+  analyzeReadLaterArticleSystemPrompt,
   analyzeWebsiteSystemPrompt,
+  createAnalyzeReadLaterArticlePrompt,
   createAnalyzeRelatedTagsPrompt,
   createAnalyzeWebsitePrompt,
 } from './prompts'
-import { analyzeRelatedTagsSchema, analyzeWebsiteSchema } from './schemas'
+import {
+  analyzeReadLaterArticleSchema,
+  analyzeRelatedTagsSchema,
+  analyzeWebsiteSchema,
+} from './schemas'
 
 /**
  * 分析网站，自动打标签、获取标题、描述、图标地址
@@ -43,4 +49,18 @@ export async function analyzeRelatedTags(tag: string, tags: string[]) {
   return parseAiJsonObject(text, analyzeRelatedTagsSchema)
 }
 
-export type { AnalyzeRelatedTagsResult, AnalyzeWebsiteResult } from './schemas'
+export async function analyzeReadLaterArticle(html: string, url: string) {
+  const payload = createReadLaterArticlePayload({ html, url })
+  const { text } = await generateText({
+    model: await getOpenAICompatibleModel(),
+    system: analyzeReadLaterArticleSystemPrompt,
+    prompt: createAnalyzeReadLaterArticlePrompt(payload),
+  })
+  return parseAiJsonObject(text, analyzeReadLaterArticleSchema)
+}
+
+export type {
+  AnalyzeReadLaterArticleResult,
+  AnalyzeRelatedTagsResult,
+  AnalyzeWebsiteResult,
+} from './schemas'

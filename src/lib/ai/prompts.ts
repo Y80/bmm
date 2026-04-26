@@ -1,6 +1,7 @@
-import type { createWebsiteAnalysisPayload } from './payload'
+import type { createReadLaterArticlePayload, createWebsiteAnalysisPayload } from './payload'
 
 type WebsiteAnalysisPayload = ReturnType<typeof createWebsiteAnalysisPayload>
+type ReadLaterArticlePayload = ReturnType<typeof createReadLaterArticlePayload>
 
 export const analyzeWebsiteSystemPrompt =
   '你是一个书签信息整理助手，擅长从网页 HTML 中提炼准确、克制、适合收藏管理的标题、简介、图标和标签。'
@@ -81,8 +82,6 @@ export function createAnalyzeRelatedTagsPrompt(payload: { targetTag: string; tag
   "relatedTags": ["从输入 tags 中选择的相关标签"],
   "themeColor": "#RRGGBB",
   "icon": "最符合 targetTag 语义的 Iconify 图标名称"
-}
-
 字段要求：
 - relatedTags: 最多 5 个；按相关性从高到低排序；只包含输入 tags 中存在的字符串；没有合适项时返回空数组。
 - themeColor: 使用 HEX 色值格式。优先选择 targetTag 对应品牌、产品、框架或技术社区常见主色；没有明确品牌色时，选择一个符合该标签语义且辨识度好的颜色。
@@ -93,6 +92,44 @@ export function createAnalyzeRelatedTagsPrompt(payload: { targetTag: string; tag
 - 不要输出 Markdown 代码块。
 - 不要输出解释、注释或额外文本。
 - 不要把字段值写成 null，未知相关标签使用空数组，主题色仍需返回合法 HEX 色值，图标仍需返回合法 Iconify 图标名称。
+
+以下是你需要分析的 JSON:
+${JSON.stringify(payload)}
+`
+}
+
+export const analyzeReadLaterArticleSystemPrompt =
+  '你是一个稍后阅读整理助手，擅长从网页 HTML 中提炼适合阅读清单的文章标题、摘要和预计阅读用时。'
+
+export function createAnalyzeReadLaterArticlePrompt(payload: ReadLaterArticlePayload) {
+  return `
+你需要把一个网页整理成适合保存到“稍后阅读”列表里的结构化信息。
+
+输入 JSON 字段说明：
+- url: 实际抓取到的网页地址。
+- head: 网页 <head> 内容，可能包含 title、description、Open Graph 等元信息。
+- innerText: 网页正文可见文本，可能包含导航、页脚、广告等噪声。
+
+请综合 head、innerText 和 URL 判断正文主题。不要编造网页中无法合理推出的信息。
+
+请返回一个 JSON 对象：
+
+{
+  "title": "文章标题",
+  "summary": "中文摘要",
+  "estimatedReadingMinutes": 5
+}
+
+字段要求：
+- title: 3 到 50 个字符。优先使用文章标题或页面核心主题，删除站点名、营销后缀和多余分隔符。
+- summary: 30 到 160 个中文字符。概括这篇内容讲什么、适合用户稍后阅读时快速回忆；如果原文是英文，请用自然中文概括。
+- estimatedReadingMinutes: 正整数。按正文信息量估算阅读时间；较短内容至少返回 1。
+
+输出要求：
+- 只输出一个合法 JSON 对象。
+- 不要输出 Markdown 代码块。
+- 不要输出解释、注释或额外文本。
+- 不要把字段值写成 null，未知时从可见文本中给出保守概括。
 
 以下是你需要分析的 JSON:
 ${JSON.stringify(payload)}

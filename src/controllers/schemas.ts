@@ -40,3 +40,27 @@ export const findManyUsersSchema = z.object({
     .optional()
     .transform((v) => Number(v) || 1),
 })
+
+export const readLaterStatusSchema = z.enum(['unread', 'read'])
+
+export const findManyReadLaterItemsSchema = z.object({
+  status: readLaterStatusSchema.optional().default('unread'),
+  limit: z
+    .number()
+    .or(z.string())
+    .optional()
+    .transform((v) => Number(v) || DEFAULT_BOOKMARK_PAGESIZE),
+  page: z
+    .number()
+    .or(z.string())
+    .optional()
+    .transform((v) => Number(v) || 1),
+})
+
+export const createReadLaterItemSchema = z.object({
+  url: z.url(),
+})
+
+export const readLaterItemIdSchema = z.object({
+  id: z.number().or(z.string()).transform(Number),
+})

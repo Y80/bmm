@@ -46,3 +46,21 @@ export function createWebsiteAnalysisPayload(params: { html: string; url: string
     tags,
   }
 }
+
+export function createReadLaterArticlePayload(params: { html: string; url: string }) {
+  const { html, url } = params
+  const $ = load(html)
+
+  $('script').remove()
+  $('style').remove()
+  $('link[rel="dns-prefetch"]').remove()
+  $('link[rel="stylesheet"]').remove()
+  $('nav').remove()
+  $('footer').remove()
+
+  return {
+    url,
+    head: $('head').html(),
+    innerText: getInnerText($.html(), '\n').slice(0, 20000),
+  }
+}

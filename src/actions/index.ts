@@ -7,10 +7,14 @@ import {
   PublicTagController,
   UserController,
   UserBookmarkController,
+  UserReadLaterController,
   UserTagController,
   aiProvidersConfigSchema,
   duplicateAiProviderSchema,
   listAiProviderModelsSchema,
+  createReadLaterItemSchema,
+  findManyReadLaterItemsSchema,
+  readLaterItemIdSchema,
   testAiProviderSchema,
 } from '@/controllers'
 import {
@@ -54,6 +58,20 @@ export const actInsertUserBookmark = make(UserBookmarkController.insert)
 export const actQueryUserBookmark = make(UserBookmarkController.query)
 export const actDeleteUserBookmark = make(UserBookmarkController.delete)
 export const actUpdateUserBookmark = make(UserBookmarkController.update)
+
+/// UserReadLater
+export const actCreateReadLaterItem = make(UserReadLaterController.createFromUrl, {
+  schema: createReadLaterItemSchema,
+})
+export const actFindReadLaterItems = make(UserReadLaterController.findMany, {
+  schema: findManyReadLaterItemsSchema,
+})
+export const actMarkReadLaterItemRead = make(UserReadLaterController.markRead, {
+  schema: readLaterItemIdSchema,
+})
+export const actDeleteReadLaterItem = make(UserReadLaterController.delete, {
+  schema: readLaterItemIdSchema,
+})
 
 /// Users
 export const actFindUsers = make(UserController.findMany, { guard: 'admin' })
