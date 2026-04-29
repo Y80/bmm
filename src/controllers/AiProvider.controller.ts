@@ -36,13 +36,6 @@ export const aiProvidersConfigSchema = z
         path: ['providers'],
       })
     }
-    if (value.providers.length > 0 && !value.activeProviderId) {
-      ctx.addIssue({
-        code: 'custom',
-        message: '请选择一个启用的供应商',
-        path: ['activeProviderId'],
-      })
-    }
     if (
       value.activeProviderId &&
       !value.providers.some((provider) => provider.id === value.activeProviderId)

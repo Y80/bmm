@@ -58,4 +58,26 @@ describe('parseAiJsonObject', () => {
       )
     ).toThrowError('icon 必须是 Iconify 图标名称')
   })
+
+  test('解析带 think 包裹且前面含示例对象的最终 JSON', () => {
+    expect(
+      parseAiJsonObject(
+        `<think>
+先推理，再给出结果。
+示例：
+{"relatedTags":["foo"],"themeColor":"#000000","icon":"mdi:home"}
+</think>
+{
+  "relatedTags": ["React"],
+  "themeColor": "#61DAFB",
+  "icon": "logos:react"
+}`,
+        analyzeRelatedTagsSchema
+      )
+    ).toEqual({
+      relatedTags: ['React'],
+      themeColor: '#61DAFB',
+      icon: 'logos:react',
+    })
+  })
 })

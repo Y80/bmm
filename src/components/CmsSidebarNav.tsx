@@ -1,9 +1,19 @@
 'use client'
 
-import { ReButton, ThemeToggle } from '@/components'
-import { ADMIN_NAV_LINKS, Assets, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
+/**
+ * CmsSidebarNav — CMS 侧边栏导航
+ *
+ * 管理员和用户端共用的侧边栏布局组件。
+ * 通过 mode 属性区分两种视觉风格（admin: 玫瑰色, user: 蓝色），
+ * 支持移动端汉堡菜单和响应式布局。
+ */
+
+import ReButton from '@/components/re-export/ReButton'
+import ThemeToggle from '@/components/ThemeToggle'
+import { ADMIN_NAV_LINKS, Assets, ExternalLinks, IconNames, PageRoutes } from '@cfg'
 import { Avatar, Button, Link, cn } from '@heroui/react'
 import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
@@ -18,33 +28,78 @@ type NavLink = {
   separatorAfter?: boolean
 }
 
-interface AdminNavProps {
+interface CmsSidebarNavProps {
   links?: NavLink[]
   brandHref?: string
   mode?: 'admin' | 'user'
   brandTitle?: string
-  userName?: string
-  userImage?: string | null
-  userEmail?: string
 }
 
-export default function AdminNav(props: AdminNavProps) {
+// admin / user 两种模式的视觉风格配置
+const cmsTone = {
+  admin: {
+    sidebarBackdrop:
+      'bg-[radial-gradient(circle_at_top_right,rgba(244,63,94,0.13),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(249,115,22,0.08),transparent_38%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(251,113,133,0.18),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(249,115,22,0.1),transparent_38%)]',
+    logo:
+      'border-rose-500/15 bg-white/88 shadow-[0_10px_24px_-18px_rgba(244,63,94,0.35)] group-hover:border-rose-500/25 group-hover:shadow-[0_12px_28px_-18px_rgba(244,63,94,0.42)] dark:border-rose-300/12 dark:bg-rose-300/10',
+    hover: 'hover:bg-rose-500/8',
+    active:
+      'bg-rose-500/10 text-rose-950 shadow-[0_12px_30px_-22px_rgba(244,63,94,0.35)] dark:bg-rose-300/10 dark:text-white',
+  },
+  user: {
+    sidebarBackdrop:
+      'bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.14),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.09),transparent_38%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.2),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.12),transparent_38%)]',
+    logo:
+      'border-sky-500/15 bg-white/88 shadow-[0_10px_24px_-18px_rgba(14,165,233,0.35)] group-hover:border-sky-500/25 group-hover:shadow-[0_12px_28px_-18px_rgba(14,165,233,0.45)] dark:border-white/10 dark:bg-white/10',
+    hover: 'hover:bg-sky-500/8',
+    active:
+      'bg-sky-500/10 text-slate-900 shadow-[0_12px_30px_-22px_rgba(14,165,233,0.35)] dark:bg-white/10 dark:text-white',
+  },
+} as const
+
+export default function CmsSidebarNav(props: CmsSidebarNavProps) {
   const pathname = usePathname()
+  const session = useSession()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const links = props.links || ADMIN_NAV_LINKS
   const mode = props.mode || 'admin'
+  const tone = cmsTone[mode]
+  const links = props.links || ADMIN_NAV_LINKS
+  const userName = session.data?.user?.name || '用户'
+  const userImage = session.data?.user?.image || null
+  const userIsAdmin = !!session.data?.user?.isAdmin
+
+  // user 模式下管理员额外看到「网站内容管理」入口
+  const navLinks =
+    mode === 'user' && userIsAdmin
+      ? [
+          ...links.slice(0, 2),
+          { ...links[2], separatorAfter: false },
+          {
+            label: '网站内容管理',
+            href: PageRoutes.Admin.INDEX,
+            icon: IconNames.Tabler.SHIELD_LOCK,
+            description: '新开标签页进入管理员 CMS',
+            accent: 'from-emerald-300 via-teal-400 to-cyan-500',
+            external: true,
+            separatorAfter: true,
+          },
+          ...links.slice(3),
+        ]
+      : links
+
   const brandHref =
     props.brandHref || (mode === 'admin' ? PageRoutes.Admin.INDEX : PageRoutes.User.INDEX)
-  const title = props.brandTitle || `${WEBSITE_NAME} CMS`
-  const showUserIdentity = mode === 'user' && !!props.userName
+  const brandText = mode === 'user' ? userName : props.brandTitle || '网站内容管理'
 
+  // 判断当前链接是否激活（首页精确匹配，子页面前缀匹配）
   function isActiveLink(href: string) {
     if (href === PageRoutes.Admin.INDEX || href === PageRoutes.User.INDEX) return pathname === href
     return pathname === href || pathname.startsWith(href + '/')
   }
 
+  // 渲染导航链接列表，isMobile 控制移动端样式差异
   function renderLinks(isMobile = false) {
-    return links.map((link) => {
+    return navLinks.map((link) => {
       const isActive = isActiveLink(link.href)
 
       return (
@@ -63,11 +118,8 @@ export default function AdminNav(props: AdminNavProps) {
               'group relative h-11 justify-start gap-3 rounded-xl px-3 text-sm font-medium transition-[background-color,color,box-shadow,transform] duration-150 focus-visible:ring-2 focus-visible:ring-cyan-400/45',
               isMobile
                 ? 'hover:bg-content2/70 bg-transparent backdrop-blur'
-                : 'text-foreground hover:text-foreground bg-transparent hover:bg-sky-500/8 dark:text-white/85',
-              isActive &&
-                (isMobile
-                  ? 'bg-primary/10 text-primary'
-                  : 'border border-sky-500/15 bg-sky-500/10 text-slate-900 shadow-[0_12px_30px_-22px_rgba(14,165,233,0.35)] dark:border-white/10 dark:bg-white/10 dark:text-white')
+                : cn('text-foreground hover:text-foreground bg-transparent dark:text-white/85', tone.hover),
+              isActive && (isMobile ? 'bg-primary/10 text-primary' : tone.active)
             )}
           >
             <div
@@ -106,35 +158,69 @@ export default function AdminNav(props: AdminNavProps) {
     })
   }
 
+  // 桌面端品牌 logo 区域：user 模式显示头像，admin 模式显示网站 logo
+  function renderBrandLogo() {
+    if (mode === 'user') {
+      return (
+        <Avatar
+          size="sm"
+          src={userImage || undefined}
+          name={userName}
+          showFallback
+          className="size-10 shrink-0"
+        />
+      )
+    }
+
+    return (
+      <div
+        className={cn(
+          'relative flex size-10 shrink-0 items-center justify-center rounded-lg border text-slate-900 transition-[background-color,border-color,box-shadow] duration-150 dark:text-white dark:group-hover:bg-white/15 dark:group-hover:shadow-none',
+          tone.logo
+        )}
+      >
+        <Image src={Assets.LOGO_SVG} width={25} height={25} alt="logo" className="relative z-10" />
+      </div>
+    )
+  }
+
+  // 移动端品牌 logo（同上逻辑，尺寸略小）
+  function renderMobileBrandLogo() {
+    if (mode === 'user') {
+      return (
+        <Avatar
+          size="sm"
+          src={userImage || undefined}
+          name={userName}
+          showFallback
+          className="size-9 shrink-0"
+        />
+      )
+    }
+
+    return (
+      <div className="border-divider/70 from-content2 to-content1 relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-gradient-to-br shadow-sm">
+        <Image src={Assets.LOGO_SVG} width={20} height={20} alt="logo" className="relative z-10" />
+      </div>
+    )
+  }
+
   return (
     <>
+      {/* 桌面端侧边栏 */}
       <aside className="xs:flex xs:w-60 xs:shrink-0 hidden">
         <div className="sticky top-0 h-screen w-full px-4 py-6">
-            <div className="border-divider/60 dark:bg-content1/80 relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white/88 shadow-[0_20px_48px_-34px_rgba(15,23,42,0.22)] backdrop-blur dark:shadow-xl dark:shadow-black/5">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.08),transparent_36%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.2),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(251,146,60,0.1),transparent_38%)]" />
-              <Link
+          <div className="border-divider/60 dark:bg-content1/80 relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white/88 shadow-[0_20px_48px_-34px_rgba(15,23,42,0.22)] backdrop-blur dark:shadow-xl dark:shadow-black/5">
+            <div className={cn('absolute inset-0', tone.sidebarBackdrop)} />
+            <Link
               href={brandHref}
               color="foreground"
               className="border-divider/40 group relative block border-b no-underline"
             >
               <div className="flex items-center gap-3 px-4 py-3.5">
-                <div className="relative flex size-10 shrink-0 items-center justify-center rounded-lg border border-sky-500/15 bg-white/88 text-slate-900 shadow-[0_10px_24px_-18px_rgba(14,165,233,0.35)] transition-[background-color,border-color,box-shadow] duration-150 group-hover:border-sky-500/25 group-hover:shadow-[0_12px_28px_-18px_rgba(14,165,233,0.45)] dark:border-white/10 dark:bg-white/10 dark:text-white dark:group-hover:bg-white/15 dark:group-hover:shadow-none">
-                  <Image
-                    src={Assets.LOGO_SVG}
-                    width={25}
-                    height={25}
-                    alt="logo"
-                    className="relative z-10"
-                  />
-                </div>
+                {renderBrandLogo()}
                 <div className="min-w-0 flex-1">
-                  <div className="text-default-500 flex items-center gap-1.5 text-xs font-medium">
-                    <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.55)]" />
-                    <span>内容管理</span>
-                  </div>
-                  <div className="mt-0.5 truncate font-mono text-[0.95rem] leading-6 font-semibold">
-                    {title}
-                  </div>
+                  <div className="truncate text-[0.95rem] leading-6 font-semibold">{brandText}</div>
                 </div>
               </div>
             </Link>
@@ -155,7 +241,10 @@ export default function AdminNav(props: AdminNavProps) {
                     rel="noreferrer"
                     size="sm"
                     variant="light"
-                    className="text-default-700 h-10 flex-1 justify-start gap-2 rounded-lg px-2.5 hover:bg-sky-500/8 dark:text-white/80 dark:hover:bg-white/[0.08]"
+                    className={cn(
+                      'text-default-700 h-10 flex-1 justify-start gap-2 rounded-lg px-2.5 dark:text-white/80 dark:hover:bg-white/[0.08]',
+                      tone.hover
+                    )}
                     startContent={
                       <span
                         className={cn(
@@ -172,33 +261,13 @@ export default function AdminNav(props: AdminNavProps) {
                     <ThemeToggle />
                   </div>
                 </div>
-                {showUserIdentity ? (
-                  <Link
-                    href={PageRoutes.User.SETTINGS}
-                    color="foreground"
-                    className="border-divider/60 mt-3 flex items-center gap-3 rounded-xl border bg-white/42 px-3 py-2.5 no-underline shadow-[0_10px_24px_-20px_rgba(15,23,42,0.16)] backdrop-blur-md transition-[background-color,border-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:border-sky-500/20 hover:bg-white/58 hover:shadow-[0_14px_28px_-22px_rgba(14,165,233,0.24)] dark:bg-white/[0.04] dark:hover:border-white/12 dark:hover:bg-white/[0.06]"
-                  >
-                    <Avatar
-                      size="sm"
-                      src={props.userImage || undefined}
-                      name={props.userName}
-                      showFallback
-                      className="shrink-0"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium">{props.userName}</div>
-                      {props.userEmail ? (
-                        <div className="text-default-500 truncate text-xs">{props.userEmail}</div>
-                      ) : null}
-                    </div>
-                  </Link>
-                ) : null}
               </div>
             </div>
           </div>
         </div>
       </aside>
 
+      {/* 移动端顶部导航栏 */}
       <div className="border-divider bg-background/95 xs:hidden fixed inset-x-0 top-0 z-40 border-b backdrop-blur">
         <div className="flex items-center gap-3 px-4 py-3">
           <Button
@@ -214,21 +283,9 @@ export default function AdminNav(props: AdminNavProps) {
             color="foreground"
             className="flex min-w-0 flex-1 items-center gap-3 no-underline"
           >
-            <div className="border-divider/70 from-content2 to-content1 relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-gradient-to-br shadow-sm">
-              <Image
-                src={Assets.LOGO_SVG}
-                width={20}
-                height={20}
-                alt="logo"
-                className="relative z-10"
-              />
-            </div>
+            {renderMobileBrandLogo()}
             <div className="min-w-0">
-              <div className="text-default-500 flex items-center gap-1.5 text-[0.6rem] tracking-wider uppercase">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                内容管理
-              </div>
-              <div className="truncate text-sm font-semibold tracking-wide">{title}</div>
+              <div className="truncate text-sm font-semibold tracking-wide">{brandText}</div>
             </div>
           </Link>
           <ReButton

@@ -1,4 +1,6 @@
+import { robustUrl } from '@/utils'
 import { z } from '@/lib/zod'
+import { FieldConstraints } from '@cfg'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
 
 export const findManyBookmarksSchema = z.object({
@@ -63,4 +65,27 @@ export const createReadLaterItemSchema = z.object({
 
 export const readLaterItemIdSchema = z.object({
   id: z.number().or(z.string()).transform(Number),
+})
+
+export const updateReadLaterItemSchema = readLaterItemIdSchema.extend({
+  icon: z
+    .string()
+    .trim()
+    .refine((value) => !value || !!robustUrl(value), '请输入有效的图标 URL 地址'),
+  title: z
+    .string()
+    .trim()
+    .nonempty('标题不可为空')
+    .max(
+      FieldConstraints.MaxLen.BOOKMARK_NAME,
+      `标题长度不能超过 ${FieldConstraints.MaxLen.BOOKMARK_NAME} 个字符`
+    ),
+  summary: z
+    .string()
+    .trim()
+    .nonempty('摘要不可为空')
+    .max(
+      FieldConstraints.MaxLen.BOOKMARK_DESC,
+      `摘要长度不能超过 ${FieldConstraints.MaxLen.BOOKMARK_DESC} 个字符`
+    ),
 })

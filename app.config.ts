@@ -143,6 +143,13 @@ export const ADMIN_NAV_LINKS = [
     accent: 'from-cyan-300 via-sky-400 to-blue-500',
     external: true,
     separatorBefore: true,
+  },
+  {
+    label: '我的空间',
+    href: PageRoutes.User.SPACE,
+    icon: IconNames.Tabler.USER,
+    description: '进入个人书签浏览与搜索空间',
+    accent: 'from-cyan-300 via-sky-400 to-blue-500',
     separatorAfter: true,
   },
   {
@@ -214,9 +221,9 @@ export const USER_CMS_NAV_LINKS = [
     separatorBefore: true,
   },
   {
-    label: '个人空间',
+    label: '我的书签',
     href: PageRoutes.User.SPACE,
-    icon: IconNames.Tabler.HOME,
+    icon: IconNames.Tabler.BOOKMARK,
     description: '返回你的书签浏览与搜索空间',
     accent: 'from-slate-300 via-slate-400 to-slate-500',
     external: true,

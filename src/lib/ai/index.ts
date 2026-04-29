@@ -1,8 +1,6 @@
 import fetchHtml from '@/utils/fetch-html'
-import { generateText } from 'ai'
-import { parseAiJsonObject } from './json'
+import { generateAiObject } from './generateObject'
 import { createReadLaterArticlePayload, createWebsiteAnalysisPayload } from './payload'
-import { getOpenAICompatibleModel } from './providers'
 import {
   analyzeReadLaterArticleSystemPrompt,
   analyzeWebsiteSystemPrompt,
@@ -22,12 +20,12 @@ import {
 export async function analyzeWebsite(inputUrl: string, tags: string[] = []) {
   const { html, url } = await fetchHtml(inputUrl)
   const payload = createWebsiteAnalysisPayload({ html, url, tags })
-  const { text } = await generateText({
-    model: await getOpenAICompatibleModel(),
+  return generateAiObject({
+    schema: analyzeWebsiteSchema,
+    schemaName: 'website_analysis',
     system: analyzeWebsiteSystemPrompt,
     prompt: createAnalyzeWebsitePrompt(payload),
   })
-  return parseAiJsonObject(text, analyzeWebsiteSchema)
 }
 
 /**
@@ -42,21 +40,21 @@ export async function analyzeRelatedTags(tag: string, tags: string[]) {
     throw new Error('数据库标签数据为空，请先创建标签再调用当前 AI 功能')
   }
 
-  const { text } = await generateText({
-    model: await getOpenAICompatibleModel(),
+  return generateAiObject({
+    schema: analyzeRelatedTagsSchema,
+    schemaName: 'related_tags_analysis',
     prompt: createAnalyzeRelatedTagsPrompt(payload),
   })
-  return parseAiJsonObject(text, analyzeRelatedTagsSchema)
 }
 
 export async function analyzeReadLaterArticle(html: string, url: string) {
   const payload = createReadLaterArticlePayload({ html, url })
-  const { text } = await generateText({
-    model: await getOpenAICompatibleModel(),
+  return generateAiObject({
+    schema: analyzeReadLaterArticleSchema,
+    schemaName: 'read_later_article_analysis',
     system: analyzeReadLaterArticleSystemPrompt,
     prompt: createAnalyzeReadLaterArticlePrompt(payload),
   })
-  return parseAiJsonObject(text, analyzeReadLaterArticleSchema)
 }
 
 export type {

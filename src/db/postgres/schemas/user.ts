@@ -87,6 +87,7 @@ export const userReadLaterItems = pgTable(
   {
     id: serial('id').primaryKey(),
     url: varchar('url', { length: FieldConstraints.MaxLen.URL }).notNull(),
+    icon: varchar('icon', { length: FieldConstraints.MaxLen.URL }),
     title: varchar('title', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).notNull(),
     summary: varchar('summary', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }).notNull(),
     estimatedReadingMinutes: integer('estimatedReadingMinutes').notNull().default(1),

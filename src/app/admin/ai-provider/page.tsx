@@ -18,19 +18,20 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Input,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   Spinner,
+  Switch,
   Table,
   TableBody,
   TableCell,
   TableColumn,
   TableHeader,
   TableRow,
-  Switch,
   addToast,
 } from '@heroui/react'
 import { useRequest } from 'ahooks'
@@ -98,7 +99,14 @@ export default function Page() {
   const [editingId, setEditingId] = useState('')
   const [modelNames, setModelNames] = useState<string[]>([])
   const [modelNamesLoading, setModelNamesLoading] = useState(false)
+  const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false)
+  const [modelKeyword, setModelKeyword] = useState('')
   const activeProvider = useMemo(() => getActiveProvider(config), [config])
+  const filteredModelNames = useMemo(() => {
+    const keyword = modelKeyword.trim().toLowerCase()
+    if (!keyword) return modelNames
+    return modelNames.filter((modelName) => modelName.toLowerCase().includes(keyword))
+  }, [modelKeyword, modelNames])
 
   const { loading, refresh } = useRequest(async () => {
     const res = await runAction(actGetAiProvidersConfig())
@@ -111,6 +119,8 @@ export default function Page() {
     setEditingId('')
     setForm(defaultForm)
     setModelNames([])
+    setModelKeyword('')
+    setIsModelDropdownOpen(false)
     setIsModalOpen(true)
   }
 
@@ -125,6 +135,8 @@ export default function Page() {
       apiKey: '',
     })
     setModelNames([])
+    setModelKeyword('')
+    setIsModelDropdownOpen(false)
     setIsModalOpen(true)
   }
 
@@ -159,14 +171,17 @@ export default function Page() {
     }
   }
 
-  async function setActiveProvider(provider: EditableProvider) {
-    await saveConfig({ ...config, activeProviderId: provider.id }, '已切换启用供应商')
+  async function toggleActiveProvider(provider: EditableProvider, isSelected: boolean) {
+    await saveConfig(
+      { ...config, activeProviderId: isSelected ? provider.id : undefined },
+      isSelected ? '已切换启用供应商' : '已关闭启用供应商'
+    )
   }
 
   async function deleteProvider(provider: EditableProvider) {
     const providers = config.providers.filter((item) => item.id !== provider.id)
     const activeProviderId =
-      config.activeProviderId === provider.id ? providers[0]?.id : config.activeProviderId
+      config.activeProviderId === provider.id ? undefined : config.activeProviderId
     await saveConfig({ activeProviderId, providers }, '供应商已删除')
   }
 
@@ -205,12 +220,17 @@ export default function Page() {
 
     setModelNames(res.data)
     if (!res.data.length) {
+      setIsModelDropdownOpen(false)
       addToast({
         color: 'warning',
         title: '未读取到模型',
         description: '接口返回的模型列表为空',
       })
+      return
     }
+
+    setModelKeyword('')
+    setIsModelDropdownOpen(true)
   }
 
   function renderModelLabel() {
@@ -234,7 +254,11 @@ export default function Page() {
     if (!modelNames.length) return null
 
     return (
-      <Dropdown placement="bottom-end">
+      <Dropdown
+        placement="bottom-end"
+        isOpen={isModelDropdownOpen}
+        onOpenChange={setIsModelDropdownOpen}
+      >
         <DropdownTrigger>
           <Button
             aria-label="选择模型"
@@ -249,9 +273,25 @@ export default function Page() {
         <DropdownMenu
           aria-label="模型列表"
           className="max-h-72 min-w-72 overflow-y-auto"
-          onAction={(key) => setForm((value) => ({ ...value, model: String(key) }))}
+          emptyContent="没有匹配的模型"
+          topContent={
+            <div className="mt-1">
+              <Input
+                aria-label="筛选模型"
+                autoFocus
+                size="sm"
+                placeholder="输入关键词筛选模型"
+                value={modelKeyword}
+                onValueChange={setModelKeyword}
+              />
+            </div>
+          }
+          onAction={(key) => {
+            setForm((value) => ({ ...value, model: String(key) }))
+            setIsModelDropdownOpen(false)
+          }}
         >
-          {modelNames.map((modelName) => (
+          {filteredModelNames.map((modelName) => (
             <DropdownItem key={modelName} textValue={modelName}>
               <span className="font-mono text-xs">{modelName}</span>
             </DropdownItem>
@@ -304,18 +344,11 @@ export default function Page() {
           </div>
 
           <div className="border-divider/70 bg-content2/45 mt-4 rounded-xl border p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <div className="text-default-500 text-sm">数据格式</div>
-                <div className="mt-1 text-sm font-medium">OpenAI-compatible Chat Completions</div>
-              </div>
-              <span className="border-divider/70 text-default-600 rounded-full border px-2.5 py-1 font-mono text-[11px]">
-                /v1/chat/completions
-              </span>
-            </div>
-            <p className="text-default-500 mt-3 text-xs leading-5">
-              当前仅支持兼容 OpenAI Chat Completions 的接口。OpenAI、DeepSeek、Moonshot、通义千问兼容模式和
-              LM Studio 本地服务通常都属于这类格式。
+            <div className="text-default-500 text-sm">数据格式</div>
+            <p className="text-default-500 mt-2 text-xs leading-5">
+              当前仅支持兼容 OpenAI Chat Completions
+              的接口。OpenAI、DeepSeek、Moonshot、通义千问兼容模式和 LM Studio
+              本地服务通常都属于这类格式。
             </p>
           </div>
 
@@ -379,9 +412,7 @@ export default function Page() {
                       size="sm"
                       color="primary"
                       isSelected={config.activeProviderId === item.id}
-                      onValueChange={(isSelected) => {
-                        if (isSelected) setActiveProvider(item)
-                      }}
+                      onValueChange={(isSelected) => toggleActiveProvider(item, isSelected)}
                     />
                   </TableCell>
                   <TableCell>
@@ -459,7 +490,7 @@ export default function Page() {
               <ReInput
                 label="API 地址"
                 autoComplete="off"
-                description="填写基础地址，如 https://api.openai.com/v1；无需追加 /chat/completions。"
+                description="填写 API 基础地址，例如 https://api.openai.com/v1，无需包含 /chat/completions 路径。"
                 name="ai-provider-base-url"
                 value={form.baseUrl}
                 onValueChange={(baseUrl) => setForm((value) => ({ ...value, baseUrl }))}

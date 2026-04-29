@@ -76,6 +76,7 @@ export const userReadLaterItems = sqliteTable(
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
     url: text('url').notNull(),
+    icon: text('icon'),
     title: text('title').notNull(),
     summary: text('summary').notNull(),
     estimatedReadingMinutes: integer('estimatedReadingMinutes').notNull().default(1),

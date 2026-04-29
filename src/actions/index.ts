@@ -16,6 +16,7 @@ import {
   findManyReadLaterItemsSchema,
   readLaterItemIdSchema,
   testAiProviderSchema,
+  updateReadLaterItemSchema,
 } from '@/controllers'
 import {
   aiAnalyzeRelatedTagsInput,
@@ -71,6 +72,9 @@ export const actMarkReadLaterItemRead = make(UserReadLaterController.markRead, {
 })
 export const actDeleteReadLaterItem = make(UserReadLaterController.delete, {
   schema: readLaterItemIdSchema,
+})
+export const actUpdateReadLaterItem = make(UserReadLaterController.update, {
+  schema: updateReadLaterItemSchema,
 })
 
 /// Users
