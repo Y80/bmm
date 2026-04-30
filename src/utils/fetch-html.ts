@@ -1,5 +1,5 @@
 import iconv from 'iconv-lite'
-import { isValidUrl, to } from '.'
+import { to } from '.'
 
 const BROWSER_HEADERS = {
   'User-Agent':
@@ -17,7 +17,7 @@ interface FetchHtmlOptions {
 
 /** 抓取网页 HTML，自动重试、跟随重定向、多编码解码 */
 export default async function fetchHtml(url: string, options: FetchHtmlOptions = {}) {
-  if (!isValidUrl(url)) throw new Error('无效的 URL')
+  if (!URL.canParse(url)) throw new Error('无效的 URL')
 
   const timeout = options.timeout ?? 15_000
   const retries = options.retries ?? 2

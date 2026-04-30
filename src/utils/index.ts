@@ -1,21 +1,12 @@
 import { PageRoutes } from '@cfg'
 import { pinyin } from 'pinyin-pro'
 
-export function isValidUrl(url?: string) {
-  try {
-    return new URL(url || '')
-  } catch (error) {
-    return false
-  }
-}
-
 export function robustUrl(url?: string) {
   if (!url) return false
   const list = [url, 'https://' + url, 'http://' + url]
-  for (const url of list) {
-    const inst = isValidUrl(url)
-    if (inst) {
-      return inst.href
+  for (const candidate of list) {
+    if (URL.canParse(candidate)) {
+      return new URL(candidate).href
     }
   }
   return false

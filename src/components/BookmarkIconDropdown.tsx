@@ -1,7 +1,6 @@
 'use client'
 
 import { Favicon } from '@/components'
-import { isValidUrl } from '@/utils'
 import { buildWebsiteIconCandidates, probeWebsiteIcon } from '@/utils/website-icon'
 import { IconNames } from '@cfg'
 import {
@@ -128,7 +127,7 @@ function isValidThirdPartyIconApiSrcTemplate(srcTemplate: string) {
 }
 
 export default function BookmarkIconDropdown(props: Props) {
-  const parsedUrl = isValidUrl(props.url)
+  const parsedUrl = URL.canParse(props.url) ? new URL(props.url) : null
   const [state, setState] = useSetState({
     iconLoading: false,
     iconDropdownOpen: false,
@@ -169,7 +168,7 @@ export default function BookmarkIconDropdown(props: Props) {
   }
 
   async function detectWebsiteIcon(targetUrl: string) {
-    if (!isValidUrl(targetUrl) || state.iconLoading) return
+    if (!URL.canParse(targetUrl) || state.iconLoading) return
     if (probeStartedUrlRef.current === targetUrl) return
 
     const requestId = probeRequestIdRef.current + 1
@@ -422,7 +421,7 @@ export default function BookmarkIconDropdown(props: Props) {
             resetProbeState()
             return
           }
-          if (isValidUrl(props.url)) {
+          if (URL.canParse(props.url)) {
             detectWebsiteIcon(props.url)
             return
           }
