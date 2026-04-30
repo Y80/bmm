@@ -6,14 +6,12 @@ import {
   actMarkReadLaterItemRead,
   actUpdateReadLaterItem,
 } from '@/actions'
-import {
-  BookmarkIconDropdown,
-  ClientIcon,
-  Favicon,
-  ReButton,
-  ReInput,
-  ReTextarea,
-} from '@/components'
+import BookmarkIconDropdown from '@/components/BookmarkIconDropdown'
+import ClientIcon from '@/components/ClientIcon'
+import Favicon from '@/components/Favicon'
+import ReButton from '@/components/re-export/ReButton'
+import ReInput from '@/components/re-export/ReInput'
+import ReTextarea from '@/components/re-export/ReTextarea'
 import type { SelectUserReadLaterItem } from '@/controllers'
 import { runAction } from '@/utils/client'
 import { IconNames } from '@cfg'

@@ -1,13 +1,11 @@
 'use client'
 
-import {
-  ClientIcon,
-  ColorPicker,
-  EmptyListPlaceholder,
-  ListPageLayout,
-  SortTagModal,
-} from '@/components'
-import { ReButton } from '@/components/re-export'
+import ClientIcon from '@/components/ClientIcon'
+import ColorPicker from '@/components/ColorPicker'
+import EmptyListPlaceholder from '@/components/EmptyListPlaceholder'
+import ListPageLayout from '@/components/ListPageLayout'
+import SortTagModal from '@/components/SortTagModal'
+import ReButton from '@/components/re-export/ReButton'
 import { usePageUtil } from '@/hooks'
 import { IconNames, PageRoutes } from '@cfg'
 import {

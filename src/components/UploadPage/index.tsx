@@ -1,13 +1,11 @@
 'use client'
 
-import {
-  AdminPageTitle,
-  AdminSurfaceCard,
-  BorderBeam,
-  NumberTicker,
-  ReButton,
-  ReTooltip,
-} from '@/components'
+import AdminPageTitle from '@/components/AdminPageTitle'
+import { AdminSurfaceCard } from '@/components/AdminPageShell'
+import { BorderBeam } from '@/components/ui/BorderBeam'
+import { NumberTicker } from '@/components/ui/NumberTicker'
+import ReButton from '@/components/re-export/ReButton'
+import ReTooltip from '@/components/re-export/ReTooltip'
 import { usePageUtil } from '@/hooks'
 import { FieldConstraints, IconNames } from '@cfg'
 import {

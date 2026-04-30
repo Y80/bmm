@@ -1,7 +1,10 @@
 'use client'
 
 import { actDeleteUser, actFindUsers } from '@/actions'
-import { AdminPageTitle, AdminSurfaceCard, ReButton, ReInput } from '@/components'
+import AdminPageTitle from '@/components/AdminPageTitle'
+import { AdminSurfaceCard } from '@/components/AdminPageShell'
+import ReButton from '@/components/re-export/ReButton'
+import ReInput from '@/components/re-export/ReInput'
 import type { SelectUser } from '@/controllers/User.controller'
 import { findManyUsersSchema } from '@/controllers/schemas'
 import { runAction } from '@/utils/client'

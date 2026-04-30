@@ -7,7 +7,9 @@ import 'dayjs/locale/zh-cn'
 import Link from 'next/link'
 
 import { actGetAiProvidersConfig } from '@/actions'
-import { ClientIcon, NumberTicker, ReButton } from '@/components'
+import ClientIcon from '@/components/ClientIcon'
+import { NumberTicker } from '@/components/ui/NumberTicker'
+import ReButton from '@/components/re-export/ReButton'
 import { runAction } from '@/utils/client'
 import { IconNames, PageRoutes } from '@cfg'
 

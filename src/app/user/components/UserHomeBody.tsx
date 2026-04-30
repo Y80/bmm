@@ -1,6 +1,6 @@
 'use client'
 
-import { HomeBody } from '@/components'
+import HomeBody from '@/components/HomeBody'
 import { ReactNode } from 'react'
 import { useUserContext } from '../ctx'
 

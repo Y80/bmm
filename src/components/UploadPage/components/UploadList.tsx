@@ -4,7 +4,9 @@ import {
   actTryCreatePublicTags,
   actTryCreateUserTags,
 } from '@/actions'
-import { Favicon, ReButton, ReTooltip } from '@/components'
+import Favicon from '@/components/Favicon'
+import ReButton from '@/components/re-export/ReButton'
+import ReTooltip from '@/components/re-export/ReTooltip'
 import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil } from '@/hooks'
 import { runAction } from '@/utils/client'

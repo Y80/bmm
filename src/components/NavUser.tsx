@@ -1,4 +1,4 @@
-import { ReButton } from '@/components'
+import ReButton from '@/components/re-export/ReButton'
 import { IconNames, PageRoutes } from '@cfg'
 import { Avatar, Divider, Listbox, ListboxItem, ListboxSection, addToast, cn } from '@heroui/react'
 import { signOut, useSession } from 'next-auth/react'

@@ -1,6 +1,6 @@
 'use client'
 
-import { Favicon } from '@/components'
+import Favicon from '@/components/Favicon'
 import { buildWebsiteIconCandidates, probeWebsiteIcon } from '@/utils/website-icon'
 import { IconNames } from '@cfg'
 import {

@@ -1,6 +1,6 @@
 'use client'
 
-import { ReInput } from '@/components'
+import ReInput from '@/components/re-export/ReInput'
 import { usePageUtil } from '@/hooks'
 import { IconNames, PageRoutes } from '@cfg'
 import { cn, Kbd } from '@heroui/react'

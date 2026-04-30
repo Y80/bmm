@@ -2,7 +2,8 @@
 
 import { actUpdateUserProfile } from '@/actions'
 import AdminPageTitle from '@/components/AdminPageTitle'
-import { ReButton, ReInput } from '@/components'
+import ReButton from '@/components/re-export/ReButton'
+import ReInput from '@/components/re-export/ReInput'
 import { zodSchemas } from '@/lib/zod'
 import { robustUrl } from '@/utils'
 import { runAction } from '@/utils/client'

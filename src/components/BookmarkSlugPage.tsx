@@ -8,14 +8,12 @@ import {
   actUpdatePublicBookmark,
   actUpdateUserBookmark,
 } from '@/actions'
-import {
-  BookmarkIconDropdown,
-  Favicon,
-  ReInput,
-  ReTextarea,
-  SlugPageLayout,
-  TagSelect,
-} from '@/components'
+import BookmarkIconDropdown from '@/components/BookmarkIconDropdown'
+import Favicon from '@/components/Favicon'
+import ReInput from '@/components/re-export/ReInput'
+import ReTextarea from '@/components/re-export/ReTextarea'
+import SlugPageLayout from '@/components/SlugPageLayout'
+import TagSelect from '@/components/TagSelect'
 import { InsertPublicBookmark } from '@/controllers'
 import { usePageUtil, useSlug } from '@/hooks'
 import { z } from '@/lib/zod'

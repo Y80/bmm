@@ -8,7 +8,10 @@ import {
   actSaveAiProvidersConfig,
   actTestAiProvider,
 } from '@/actions'
-import { AdminPageTitle, AdminSurfaceCard, ReButton, ReInput } from '@/components'
+import AdminPageTitle from '@/components/AdminPageTitle'
+import { AdminSurfaceCard } from '@/components/AdminPageShell'
+import ReButton from '@/components/re-export/ReButton'
+import ReInput from '@/components/re-export/ReInput'
 import type { SafeAiProviderConfig, SafeAiProvidersConfig } from '@/controllers'
 import { runAction } from '@/utils/client'
 import { IconNames, PageRoutes } from '@cfg'

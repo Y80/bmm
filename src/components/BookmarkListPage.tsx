@@ -8,14 +8,12 @@ import {
   actUpdatePublicBookmark,
   actUpdateUserBookmark,
 } from '@/actions'
-import {
-  ClientIcon,
-  EmptyListPlaceholder,
-  Favicon,
-  ListPageLayout,
-  ReButton,
-  ReInput,
-} from '@/components'
+import ClientIcon from '@/components/ClientIcon'
+import EmptyListPlaceholder from '@/components/EmptyListPlaceholder'
+import Favicon from '@/components/Favicon'
+import ListPageLayout from '@/components/ListPageLayout'
+import ReButton from '@/components/re-export/ReButton'
+import ReInput from '@/components/re-export/ReInput'
 import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { usePageUtil } from '@/hooks'
 import { runAction } from '@/utils/client'

@@ -1,14 +1,13 @@
 'use client'
 
-import {
-  AiAnalyzeRelatedTagButton,
-  ColorPicker,
-  IconPicker,
-  SlugPageLayout,
-  TagSelect,
-} from '@/components'
+import AiAnalyzeRelatedTagButton from '@/components/AiAnalyzeRelatedTagButton'
+import ColorPicker from '@/components/ColorPicker'
+import IconPicker from '@/components/IconPicker'
+import SlugPageLayout from '@/components/SlugPageLayout'
+import TagSelect from '@/components/TagSelect'
+import ReInput from '@/components/re-export/ReInput'
+import ReTooltip from '@/components/re-export/ReTooltip'
 import { SelectedIcon } from '@/components/IconPicker'
-import { ReInput, ReTooltip } from '@/components/re-export'
 import { SelectPublicTag } from '@/controllers/PublicTag.controller'
 import useSlug from '@/hooks/useSlug'
 import { AnalyzeRelatedTagsResult } from '@/lib/ai/types'

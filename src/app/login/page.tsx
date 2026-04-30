@@ -1,7 +1,8 @@
 'use client'
 
 import { actCheckGithubOAuthConfig, actRegisterUser, actVerifyUser } from '@/actions'
-import { ReButton, ReInput } from '@/components'
+import ReButton from '@/components/re-export/ReButton'
+import ReInput from '@/components/re-export/ReInput'
 import { z, zodSchemas } from '@/lib/zod'
 import { runAction } from '@/utils/client'
 import type { ErrorPageParam, SignInPageErrorParam } from '@auth/core/types'
