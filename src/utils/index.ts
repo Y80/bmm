@@ -115,8 +115,6 @@ export function isServerless() {
   return process.env.SERVERLESS || process.env.VERCEL
 }
 
-
-
 /**
  *
  * @param urlOrPath

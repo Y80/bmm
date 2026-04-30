@@ -1,10 +1,10 @@
 import { and, desc, eq } from 'drizzle-orm'
-import { load } from 'cheerio'
 
 import { db, schema } from '@/db'
 import { analyzeReadLaterArticle } from '@/lib/ai'
 import { getAuthedUserId } from '@/lib/auth'
 import { z } from '@/lib/zod'
+import { extractArticleFromHtml } from '@/utils/extract-article'
 import fetchHtml from '@/utils/fetch-html'
 import {
   createReadLaterItemSchema,
@@ -28,56 +28,6 @@ function userLimiter(userId: UserId, id?: number) {
   return and(eq(userReadLaterItems.id, id), eq(userReadLaterItems.userId, userId))
 }
 
-function createFallbackArticle(url: string) {
-  return {
-    title: url,
-    summary: '暂时无法获取页面内容，请稍后重试，或手动补充标题、图标与摘要。',
-    estimatedReadingMinutes: 1,
-  }
-}
-
-function normalizeText(text = '') {
-  return text.replace(/\s+/g, ' ').trim()
-}
-
-function estimateReadingMinutes(text: string) {
-  const length = normalizeText(text).length
-  if (!length) return 1
-  return Math.max(1, Math.min(60, Math.ceil(length / 350)))
-}
-
-function extractArticleFromHtml(html: string, url: string) {
-  const fallback = createFallbackArticle(url)
-  const $ = load(html)
-
-  $('script, style, nav, footer, noscript').remove()
-
-  const title =
-    normalizeText($('meta[property="og:title"]').attr('content')) ||
-    normalizeText($('head > title').text()) ||
-    normalizeText($('h1').first().text()) ||
-    fallback.title
-
-  const summaryCandidates = [
-    $('meta[name="description"]').attr('content'),
-    $('meta[property="og:description"]').attr('content'),
-    $('article p')
-      .toArray()
-      .map((item) => $(item).text())
-      .join(' '),
-    $('main').text(),
-    $('body').text(),
-  ]
-  const summarySource = summaryCandidates.map((item) => normalizeText(item)).find(Boolean) || ''
-  const summary = summarySource.slice(0, 160) || fallback.summary
-
-  return {
-    title,
-    summary,
-    estimatedReadingMinutes: estimateReadingMinutes($('article').text() || $('body').text()),
-  }
-}
-
 const UserReadLaterController = {
   async createFromUrl(input: z.output<typeof createReadLaterItemSchema>) {
     const userId = await getAuthedUserId()
@@ -95,11 +45,9 @@ const UserReadLaterController = {
     )
     if (count > 0) throw new Error('该链接已在稍后阅读中')
 
-    let article = createFallbackArticle(url)
-    let mode: CreateReadLaterItemResult['mode'] = 'url'
+    let article = extractArticleFromHtml(html, url)
+    let mode: CreateReadLaterItemResult['mode'] = html ? 'html' : 'url'
     if (html) {
-      article = extractArticleFromHtml(html, url)
-      mode = 'html'
       try {
         article = await analyzeReadLaterArticle(html, url)
         mode = 'ai'
