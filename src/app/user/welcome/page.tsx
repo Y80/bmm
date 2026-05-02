@@ -10,6 +10,10 @@ const LINKS = [
   { label: '标签列表', href: PageRoutes.User.tagSlug('list') },
 ]
 
+export const metadata = {
+  title: '欢迎使用',
+}
+
 export default async function Page() {
   const session = await auth()
 

@@ -2,7 +2,7 @@ import Favicon from '@/components/Favicon'
 import { useIsMobile } from '@/hooks'
 import { useOnClickTag } from '@/hooks/useOnClickTag'
 import { getTagLinkAttrs } from '@/utils'
-import { Chip, Tooltip } from '@heroui/react'
+import { Chip, Tooltip, cn } from '@heroui/react'
 import { useHomePageContext } from '../ctx'
 
 interface Props extends SelectBookmark {
@@ -10,6 +10,24 @@ interface Props extends SelectBookmark {
   allTags?: SelectTag[]
   onRemove?: () => void
   onEdit?: () => void
+}
+
+function formatHostCheckedAt(checkedAt: Date | string | null | undefined) {
+  if (!checkedAt) return '未知'
+  return new Date(checkedAt).toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+}
+
+function getHostCheckDotClass(status: Props['hostCheckStatus']) {
+  if (status === 'reachable') return 'bg-success-500'
+  if (status === 'unreachable') return 'bg-danger-500'
+  return 'bg-default-400'
 }
 
 export default function BookmarkCard(props: Props) {
@@ -40,10 +58,37 @@ export default function BookmarkCard(props: Props) {
         onClick={(event) => event.stopPropagation()}
       >
         <Favicon src={props.icon} showDefaultIcon alt={`${props.name}网站图标`} />
-        <div className="min-w-0 grow">
-          <h3 className="text-foreground-700 xs:text-lg truncate" aria-label={`访问${props.name}`}>
+        <div className="flex min-w-0 grow items-center gap-2">
+          <h3
+            className="text-foreground-700 xs:text-lg min-w-0 flex-1 truncate"
+            aria-label={`访问${props.name}`}
+          >
             {props.name}
           </h3>
+          {props.hostCheckStatus === 'unreachable' ? (
+            <Tooltip
+              content={
+                <span className="whitespace-pre-line">
+                  {`书签可能无法访问：${props.hostCheckErrorMessage || '未知原因'}。\n检测时间：${formatHostCheckedAt(props.hostCheckedAt)}。`}
+                </span>
+              }
+              className="max-w-72"
+            >
+              <span
+                className={cn(
+                  'inline-block size-2 shrink-0 rounded-full opacity-45 transition-opacity hover:opacity-80',
+                  getHostCheckDotClass(props.hostCheckStatus)
+                )}
+              />
+            </Tooltip>
+          ) : (
+            <span
+              className={cn(
+                'inline-block size-2 shrink-0 rounded-full opacity-35',
+                getHostCheckDotClass(props.hostCheckStatus)
+              )}
+            />
+          )}
         </div>
       </a>
       <div className="min-h-10">

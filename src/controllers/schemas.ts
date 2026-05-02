@@ -16,6 +16,7 @@ export const findManyBookmarksSchema = z.object({
   sorterKey: z
     .enum(['-updateTime', '+updateTime', '-createTime', '+createTime'])
     .default('-updateTime'),
+  hostCheckStatus: z.enum(['all', 'unchecked', 'reachable', 'unreachable']).default('all'),
   limit: z
     .number()
     .or(z.string())

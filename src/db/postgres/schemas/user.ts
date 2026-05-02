@@ -3,6 +3,7 @@ import { relations } from 'drizzle-orm'
 import {
   alias,
   boolean,
+  index,
   integer,
   pgTable,
   primaryKey,
@@ -65,6 +66,7 @@ export const userBookmarks = pgTable(
     id: serial('id').primaryKey(),
     name: varchar('name', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).notNull(),
     url: varchar('url', { length: FieldConstraints.MaxLen.URL }).notNull(),
+    hostKey: varchar('hostKey', { length: FieldConstraints.MaxLen.URL }),
     icon: varchar('icon', { length: FieldConstraints.MaxLen.URL }),
     pinyin: varchar('pinyin', { length: FieldConstraints.MaxLen.DEFAULT }),
     description: varchar('description', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
@@ -79,7 +81,11 @@ export const userBookmarks = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
-  (table) => [unique().on(table.name, table.userId), unique().on(table.userId, table.url)]
+  (table) => [
+    unique().on(table.name, table.userId),
+    unique().on(table.userId, table.url),
+    index('userBookmarks_hostKey_idx').on(table.hostKey),
+  ]
 )
 
 export const userReadLaterItems = pgTable(

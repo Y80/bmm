@@ -35,6 +35,16 @@ export const actInsertPublicBookmark = make(PublicBookmarkController.insert, { g
 export const actQueryPublicBookmark = make(PublicBookmarkController.query, { guard: 'admin' })
 export const actDeletePublicBookmark = make(PublicBookmarkController.delete, { guard: 'admin' })
 export const actUpdatePublicBookmark = make(PublicBookmarkController.update, { guard: 'admin' })
+export const actCheckPublicBookmarkHost = make(PublicBookmarkController.checkHost, { guard: 'admin' })
+export const actBatchCheckPublicBookmarkHosts = make(PublicBookmarkController.batchCheckHosts, {
+  guard: 'admin',
+})
+export const actStartPublicBookmarkHostCheckTask = make(PublicBookmarkController.startCheckHostsTask, {
+  guard: 'admin',
+})
+export const actGetPublicBookmarkHostCheckTask = make(PublicBookmarkController.getCheckHostsTask, {
+  guard: 'admin',
+})
 
 /// PublicTag
 export const actGetAllPublicTags = make(PublicTagController.getAll, { guard: false })
@@ -59,6 +69,10 @@ export const actInsertUserBookmark = make(UserBookmarkController.insert)
 export const actQueryUserBookmark = make(UserBookmarkController.query)
 export const actDeleteUserBookmark = make(UserBookmarkController.delete)
 export const actUpdateUserBookmark = make(UserBookmarkController.update)
+export const actCheckUserBookmarkHost = make(UserBookmarkController.checkHost)
+export const actBatchCheckUserBookmarkHosts = make(UserBookmarkController.batchCheckHosts)
+export const actStartUserBookmarkHostCheckTask = make(UserBookmarkController.startCheckHostsTask)
+export const actGetUserBookmarkHostCheckTask = make(UserBookmarkController.getCheckHostsTask)
 
 /// UserReadLater
 export const actCreateReadLaterItem = make(UserReadLaterController.createFromUrl, {

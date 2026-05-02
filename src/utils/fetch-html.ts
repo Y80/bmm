@@ -1,35 +1,25 @@
 import iconv from 'iconv-lite'
 import { to } from '.'
+import { createBrowserHeaders } from './browser-request'
 
-const BROWSER_HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-  'Accept-Encoding': 'gzip, deflate, br',
-}
-
-interface FetchHtmlOptions {
-  timeout?: number // ms，默认 15000
-  retries?: number // 默认 2
-  userAgent?: string
-}
+const FETCH_HTML_TIMEOUT = 15_000
+const FETCH_HTML_RETRIES = 2
 
 /** 抓取网页 HTML，自动重试、跟随重定向、多编码解码 */
-export default async function fetchHtml(url: string, options: FetchHtmlOptions = {}) {
+export default async function fetchHtml(url: string) {
   if (!URL.canParse(url)) throw new Error('无效的 URL')
 
-  const timeout = options.timeout ?? 15_000
-  const retries = options.retries ?? 2
-
-  const headers = { ...BROWSER_HEADERS }
-  if (options.userAgent) headers['User-Agent'] = options.userAgent
+  const headers = createBrowserHeaders()
 
   let lastErr: Error | undefined
 
-  for (let attempt = 0; attempt <= retries; attempt++) {
+  for (let attempt = 0; attempt <= FETCH_HTML_RETRIES; attempt++) {
     const [err, res] = await to(
-      fetch(url, { headers, signal: AbortSignal.timeout(timeout), redirect: 'follow' })
+      fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(FETCH_HTML_TIMEOUT),
+        redirect: 'follow',
+      })
     )
 
     if (err) {

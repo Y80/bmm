@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm'
-import { alias, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { alias, index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 /**
  * 公共标签表
@@ -44,10 +44,27 @@ export const publicBookmarks = sqliteTable('publicBookmarks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').unique().notNull(),
   url: text('url').unique().notNull(),
+  hostKey: text('hostKey'),
   icon: text('icon'),
   pinyin: text('pinyin'),
   description: text('description'),
   isPinned: integer('isPinned', { mode: 'boolean' }),
+  createdAt: integer('createdAt', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer('updatedAt', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (table) => [index('publicBookmarks_hostKey_idx').on(table.hostKey)])
+
+export const bookmarkHostChecks = sqliteTable('bookmarkHostChecks', {
+  hostKey: text('hostKey').primaryKey(),
+  status: text('status', { enum: ['reachable', 'unreachable'] }).notNull(),
+  httpStatus: integer('httpStatus'),
+  errorMessage: text('errorMessage'),
+  checkedAt: integer('checkedAt', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
   createdAt: integer('createdAt', { mode: 'timestamp' })
     .notNull()
     .$defaultFn(() => new Date()),

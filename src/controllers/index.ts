@@ -1,10 +1,12 @@
 export * from './AiProvider.controller'
+export * from './BookmarkHostCheck.controller'
 export * from './PublicBookmark.controller'
 export * from './PublicTag.controller'
 export * from './schemas'
 export * from './UserReadLater.controller'
 
 export { default as AiProviderController } from './AiProvider.controller'
+export { default as BookmarkHostCheckController } from './BookmarkHostCheck.controller'
 export { default as CredentialsController } from './Credentials.controller'
 export { default as PublicBookmarkController } from './PublicBookmark.controller'
 export { default as PublicTagController } from './PublicTag.controller'

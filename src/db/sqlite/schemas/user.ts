@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm'
-import { alias, integer, primaryKey, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core'
+import { alias, index, integer, primaryKey, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core'
 import { users } from './auth'
 
 /**
@@ -54,6 +54,7 @@ export const userBookmarks = sqliteTable(
     id: integer('id').primaryKey({ autoIncrement: true }),
     name: text('name').notNull(),
     url: text('url').notNull(),
+    hostKey: text('hostKey'),
     icon: text('icon'),
     pinyin: text('pinyin'),
     description: text('description'),
@@ -68,7 +69,11 @@ export const userBookmarks = sqliteTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
-  (table) => [unique().on(table.url, table.userId), unique().on(table.name, table.userId)]
+  (table) => [
+    unique().on(table.url, table.userId),
+    unique().on(table.name, table.userId),
+    index('userBookmarks_hostKey_idx').on(table.hostKey),
+  ]
 )
 
 export const userReadLaterItems = sqliteTable(

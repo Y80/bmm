@@ -61,21 +61,29 @@ export function NavUser() {
               </ListboxItem>
               <ListboxItem
                 href={PageRoutes.User.INDEX}
+                target="_blank"
                 startContent={
                   <span className={cn(IconNames.Tabler.DASHBOARD, MENU_ITEM_ICON_CLS)} />
                 }
               >
-                内容管理
+                <span className="flex w-full items-center justify-between gap-6">
+                  <span>内容管理</span>
+                  <span className={cn(IconNames.Tabler.EXTERNAL_LINK, 'text-default-400 text-sm')} />
+                </span>
               </ListboxItem>
             </ListboxSection>
             <ListboxSection showDivider hidden={!user.isAdmin} className="max-xs:hidden">
               <ListboxItem
                 href={PageRoutes.Admin.INDEX}
+                target="_blank"
                 startContent={
                   <span className={cn(IconNames.Tabler.SHIELD_LOCK, MENU_ITEM_ICON_CLS)} />
                 }
               >
-                管理员后台
+                <span className="flex w-full items-center justify-between gap-6">
+                  <span>管理员后台</span>
+                  <span className={cn(IconNames.Tabler.EXTERNAL_LINK, 'text-default-400 text-sm')} />
+                </span>
               </ListboxItem>
             </ListboxSection>
             <ListboxItem

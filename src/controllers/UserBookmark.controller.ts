@@ -4,6 +4,12 @@ import { z } from '@/lib/zod'
 import { getPinyin } from '@/utils'
 import { DEFAULT_BOOKMARK_PAGESIZE } from '@cfg'
 import { and, asc, desc, eq, inArray, notInArray, or, sql } from 'drizzle-orm'
+import BookmarkHostCheckController, {
+  BookmarkHostCheckSummary,
+  createBookmarkHostCheckFilter,
+  getBookmarkHostKey,
+  withBookmarkHostCheckSummaries,
+} from './BookmarkHostCheck.controller'
 import { createBookmarkFilterByKeyword } from './common'
 import { findManyBookmarksSchema } from './schemas'
 import UserTagController from './UserTag.controller'
@@ -14,7 +20,7 @@ interface TagIdsExt {
   relatedTagIds: TagId[]
 }
 type InsertBookmark = Partial<TagIdsExt> & Omit<typeof userBookmarks.$inferInsert, 'id' | 'userId'>
-type SelectUserBookmark = TagIdsExt & typeof userBookmarks.$inferSelect
+type SelectUserBookmark = BookmarkHostCheckSummary & TagIdsExt & typeof userBookmarks.$inferSelect
 
 /**
  * 完全更新 PublicBookmarkToTag 表，使与 bId 关联关联的 tId 全是 tagIds 中的 id
@@ -41,6 +47,36 @@ function userLimiter(userId: UserId, bookmarkId?: BookmarkId) {
   return and(eq(userBookmarks.id, bookmarkId), eq(userBookmarks.userId, userId))
 }
 
+async function createFindManyFilters(query: z.output<typeof findManyBookmarksSchema>, userId: UserId) {
+  const { keyword, tagIds = [], tagNames, hostCheckStatus } = query
+  const filters = [userLimiter(userId)]
+  if (keyword) {
+    filters.push(createBookmarkFilterByKeyword(userBookmarks, keyword))
+  }
+  if (tagNames?.length) {
+    const tags = await UserTagController.getAll(userId)
+    for (const name of tagNames) {
+      const tag = tags.find((el) => el.name === name)
+      tag && tagIds.push(tag.id)
+    }
+  }
+  const newTagIds = await UserTagController.filterUserTagIds(userId, tagIds)
+  if (newTagIds.length) {
+    const findTargetBIds = db
+      .select({ bId: userBookmarkToTag.bId })
+      .from(userBookmarkToTag)
+      .where(inArray(userBookmarkToTag.tId, newTagIds))
+      .groupBy(userBookmarkToTag.bId)
+      .having(sql`COUNT(DISTINCT ${userBookmarkToTag.tId}) = ${newTagIds.length}`)
+    filters.push(inArray(userBookmarks.id, findTargetBIds))
+  }
+  const hostCheckFilter = createBookmarkHostCheckFilter(userBookmarks, hostCheckStatus)
+  if (hostCheckFilter) {
+    filters.push(hostCheckFilter)
+  }
+  return and(...filters)
+}
+
 const UserBookmarkController = {
   async insert(bookmark: InsertBookmark) {
     const userId = await getAuthedUserId()
@@ -54,6 +90,7 @@ const UserBookmarkController = {
     )
     if (count > 0) throw new Error('已存在相同网址或名称的书签')
     bookmark.pinyin ||= getPinyin(bookmark.name)
+    bookmark.hostKey = getBookmarkHostKey(bookmark.url)
     const rows = await db
       .insert(userBookmarks)
       .values({ ...bookmark, userId })
@@ -73,12 +110,23 @@ const UserBookmarkController = {
     }
   },
   async update(bookmark: Partial<SelectUserBookmark> & Pick<SelectUserBookmark, 'id'>) {
-    const { relatedTagIds, id, ...resetBookmark } = bookmark
+    const {
+      relatedTagIds,
+      id,
+      hostCheckStatus,
+      hostCheckedAt,
+      hostCheckHttpStatus,
+      hostCheckErrorMessage,
+      ...resetBookmark
+    } = bookmark
     const tasks = []
     tasks.push(fullSetBookmarkToTag(id, relatedTagIds))
     if (Object.keys(resetBookmark).length) {
       if (resetBookmark.name && !resetBookmark.pinyin) {
         resetBookmark.pinyin = getPinyin(resetBookmark.name)
+      }
+      if (resetBookmark.url) {
+        resetBookmark.hostKey = getBookmarkHostKey(resetBookmark.url)
       }
       tasks.push(
         db
@@ -105,33 +153,9 @@ const UserBookmarkController = {
    */
   async findMany(query?: z.output<typeof findManyBookmarksSchema>) {
     query ||= findManyBookmarksSchema.parse({})
-    const { keyword, tagIds = [], tagNames, page, limit, sorterKey } = query
+    const { page, limit, sorterKey } = query
     const userId = await getAuthedUserId()
-    const getFilters = async () => {
-      const filters = [userLimiter(userId)]
-      if (keyword) {
-        filters.push(createBookmarkFilterByKeyword(userBookmarks, keyword))
-      }
-      if (tagNames?.length) {
-        const tags = await UserTagController.getAll(userId)
-        for (const name of tagNames) {
-          const tag = tags.find((el) => el.name === name)
-          tag && tagIds.push(tag.id)
-        }
-      }
-      const newTagIds = await UserTagController.filterUserTagIds(userId, tagIds)
-      if (newTagIds.length) {
-        const findTargetBIds = db
-          .select({ bId: userBookmarkToTag.bId })
-          .from(userBookmarkToTag)
-          .where(inArray(userBookmarkToTag.tId, newTagIds))
-          .groupBy(userBookmarkToTag.bId)
-          .having(sql`COUNT(DISTINCT ${userBookmarkToTag.tId}) = ${newTagIds.length}`)
-        filters.push(inArray(userBookmarks.id, findTargetBIds))
-      }
-      return and(...filters)
-    }
-    const filters = await getFilters()
+    const filters = await createFindManyFilters(query, userId)
     const [total, list] = await Promise.all([
       db.$count(userBookmarks, filters),
       await db.query.userBookmarks.findMany({
@@ -151,14 +175,37 @@ const UserBookmarkController = {
       }),
     ])
 
+    const listWithTags = list.map((item) => ({
+      ...item,
+      relatedTagIds: item.relatedTagIds.map((el) => el.tId),
+    }))
+
     return {
       total,
       hasMore: total > page * limit,
-      list: list.map((item) => ({
-        ...item,
-        relatedTagIds: item.relatedTagIds.map((el) => el.tId),
-      })),
+      list: await withBookmarkHostCheckSummaries(listWithTags),
     }
+  },
+  async checkHost(bookmark: Pick<SelectUserBookmark, 'id'>) {
+    const row = await db.query.userBookmarks.findFirst({
+      where: userLimiter(await getAuthedUserId(), bookmark.id),
+    })
+    if (!row) throw new Error('书签不存在')
+    if (!row.hostKey) throw new Error('当前书签无法解析出可检测的网站 Host')
+    return await BookmarkHostCheckController.checkHost(row.hostKey)
+  },
+  async batchCheckHosts(query?: z.output<typeof findManyBookmarksSchema>) {
+    query ||= findManyBookmarksSchema.parse({})
+    const userId = await getAuthedUserId()
+    const filters = await createFindManyFilters(query, userId)
+    const rows = await db.select({ hostKey: userBookmarks.hostKey }).from(userBookmarks).where(filters)
+    return await BookmarkHostCheckController.checkHosts(rows.map((item) => item.hostKey))
+  },
+  async startCheckHostsTask() {
+    return await BookmarkHostCheckController.startUserCheckHostsTask(await getAuthedUserId())
+  },
+  async getCheckHostsTask() {
+    return await BookmarkHostCheckController.getUserCheckHostsTask(await getAuthedUserId())
   },
   async random() {
     const list = await db.query.userBookmarks.findMany({
@@ -167,11 +214,13 @@ const UserBookmarkController = {
       limit: DEFAULT_BOOKMARK_PAGESIZE,
       where: eq(userBookmarks.userId, await getAuthedUserId()),
     })
+    const listWithTags = list.map((item) => ({
+      ...item,
+      relatedTagIds: item.relatedTagIds.map((el) => el.tId),
+    }))
+
     return {
-      list: list.map((item) => ({
-        ...item,
-        relatedTagIds: item.relatedTagIds.map((el) => el.tId),
-      })),
+      list: await withBookmarkHostCheckSummaries(listWithTags),
     }
   },
   /** 获取所有书签数量 */

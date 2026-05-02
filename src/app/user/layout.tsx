@@ -8,7 +8,7 @@ import { UserContextProvider } from './ctx'
 
 export const generateMetadata = async () => {
   const session = await auth()
-  const userName = session?.user.name || ''
+  const userName = session?.user.name || session?.user.email || '用户'
   return {
     title: {
       default: '个人空间 - ' + userName,

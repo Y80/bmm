@@ -3,6 +3,7 @@ import { relations } from 'drizzle-orm'
 import {
   alias,
   boolean,
+  index,
   integer,
   pgTable,
   primaryKey,
@@ -68,10 +69,27 @@ export const publicBookmarks = pgTable('publicBookmarks', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: FieldConstraints.MaxLen.BOOKMARK_NAME }).unique().notNull(),
   url: varchar('url', { length: FieldConstraints.MaxLen.URL }).unique().notNull(),
+  hostKey: varchar('hostKey', { length: FieldConstraints.MaxLen.URL }),
   icon: varchar('icon', { length: FieldConstraints.MaxLen.URL }),
   pinyin: varchar('pinyin', { length: FieldConstraints.MaxLen.DEFAULT }),
   description: varchar('description', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
   isPinned: boolean('isPinned'),
+  createdAt: timestamp('createdAt', { mode: 'date' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: timestamp('updatedAt', { mode: 'date' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+}, (table) => [index('publicBookmarks_hostKey_idx').on(table.hostKey)])
+
+export const bookmarkHostChecks = pgTable('bookmarkHostChecks', {
+  hostKey: varchar('hostKey', { length: FieldConstraints.MaxLen.URL }).primaryKey(),
+  status: varchar('status', { length: 20 }).notNull(),
+  httpStatus: integer('httpStatus'),
+  errorMessage: varchar('errorMessage', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
+  checkedAt: timestamp('checkedAt', { mode: 'date' })
+    .notNull()
+    .$defaultFn(() => new Date()),
   createdAt: timestamp('createdAt', { mode: 'date' })
     .notNull()
     .$defaultFn(() => new Date()),
