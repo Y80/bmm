@@ -31,15 +31,13 @@ export default function PaginationControls(props: PaginationControlsProps) {
 
   return (
     <div className="flex flex-col items-center justify-center gap-3 pt-4 sm:flex-row">
-      {props.total > 1 && (
-        <Pagination
-          showShadow
-          showControls
-          page={props.page}
-          total={props.total}
-          onChange={props.onPageChange}
-        />
-      )}
+      <Pagination
+        showShadow
+        showControls
+        page={props.page}
+        total={props.total}
+        onChange={props.onPageChange}
+      />
       <Select
         aria-label="选择每页条数"
         className="w-[120px]"
