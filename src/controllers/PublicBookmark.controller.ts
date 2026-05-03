@@ -169,11 +169,14 @@ const PublicBookmarkController = {
       ...item,
       relatedTagIds: item.relatedTagIds.map((el) => el.tId),
     }))
+    const resultList: SelectBookmark[] = query.includeHostCheckSummary
+      ? await withBookmarkHostCheckSummaries(listWithTags)
+      : listWithTags
 
     return {
       total,
       hasMore: total > page * limit,
-      list: await withBookmarkHostCheckSummaries(listWithTags),
+      list: resultList,
     }
   },
   async checkHost(bookmark: Pick<SelectBookmark, 'id'>) {
@@ -205,13 +208,11 @@ const PublicBookmarkController = {
       orderBy: sql`RANDOM()`,
       limit: DEFAULT_BOOKMARK_PAGESIZE,
     })
-    const listWithTags = list.map((item) => ({
-      ...item,
-      relatedTagIds: item.relatedTagIds.map((el) => el.tId),
-    }))
-
     return {
-      list: await withBookmarkHostCheckSummaries(listWithTags),
+      list: list.map((item) => ({
+        ...item,
+        relatedTagIds: item.relatedTagIds.map((el) => el.tId),
+      })),
     }
   },
   /** 获取所有书签数量 */

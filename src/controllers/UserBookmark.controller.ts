@@ -179,11 +179,14 @@ const UserBookmarkController = {
       ...item,
       relatedTagIds: item.relatedTagIds.map((el) => el.tId),
     }))
+    const resultList: SelectUserBookmark[] = query.includeHostCheckSummary
+      ? await withBookmarkHostCheckSummaries(listWithTags)
+      : listWithTags
 
     return {
       total,
       hasMore: total > page * limit,
-      list: await withBookmarkHostCheckSummaries(listWithTags),
+      list: resultList,
     }
   },
   async checkHost(bookmark: Pick<SelectUserBookmark, 'id'>) {
@@ -214,13 +217,11 @@ const UserBookmarkController = {
       limit: DEFAULT_BOOKMARK_PAGESIZE,
       where: eq(userBookmarks.userId, await getAuthedUserId()),
     })
-    const listWithTags = list.map((item) => ({
-      ...item,
-      relatedTagIds: item.relatedTagIds.map((el) => el.tId),
-    }))
-
     return {
-      list: await withBookmarkHostCheckSummaries(listWithTags),
+      list: list.map((item) => ({
+        ...item,
+        relatedTagIds: item.relatedTagIds.map((el) => el.tId),
+      })),
     }
   },
   /** 获取所有书签数量 */

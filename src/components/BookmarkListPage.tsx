@@ -136,6 +136,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
         keyword: state.keyword,
         sorterKey: state.sorterKey,
         hostCheckStatus: state.hostCheckStatus,
+        includeHostCheckSummary: true,
         ...(state.selectedTag && { tagIds: state.selectedTag }),
       }
       dataRef.current.loadingMutable && setState({ loading: true })

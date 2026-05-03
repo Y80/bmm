@@ -401,13 +401,25 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
     ])
 
     const uncheckedResult = await PublicBookmarkController.findMany(
-      findManyBookmarksSchema.parse({ keyword: prefix, hostCheckStatus: 'unchecked' })
+      findManyBookmarksSchema.parse({
+        keyword: prefix,
+        hostCheckStatus: 'unchecked',
+        includeHostCheckSummary: true,
+      })
     )
     const reachableResult = await PublicBookmarkController.findMany(
-      findManyBookmarksSchema.parse({ keyword: prefix, hostCheckStatus: 'reachable' })
+      findManyBookmarksSchema.parse({
+        keyword: prefix,
+        hostCheckStatus: 'reachable',
+        includeHostCheckSummary: true,
+      })
     )
     const unreachableResult = await PublicBookmarkController.findMany(
-      findManyBookmarksSchema.parse({ keyword: prefix, hostCheckStatus: 'unreachable' })
+      findManyBookmarksSchema.parse({
+        keyword: prefix,
+        hostCheckStatus: 'unreachable',
+        includeHostCheckSummary: true,
+      })
     )
 
     expect(uncheckedResult.list.map((item) => item.id)).toEqual([unchecked.id])
