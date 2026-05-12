@@ -34,7 +34,7 @@ const MOCK_HTML = `
 
 vi.mock('@/utils/fetch-html', () => ({
   default: vi.fn((url: string) =>
-    Promise.resolve({ html: MOCK_HTML, url })
+    Promise.resolve({ html: MOCK_HTML, finalUrl: url })
   ),
 }))
 
@@ -68,7 +68,7 @@ describe('G: UserReadLaterController', { sequential: true }, () => {
 
   beforeEach(async () => {
     authedUserId = userA
-    vi.mocked(fetchHtml).mockResolvedValue({ html: MOCK_HTML, url: faker.internet.url() })
+    vi.mocked(fetchHtml).mockResolvedValue({ html: MOCK_HTML, finalUrl: faker.internet.url() })
     await db.delete(userReadLaterItems).where(inArray(userReadLaterItems.userId, [userA, userB]))
   })
 
@@ -89,7 +89,7 @@ describe('G: UserReadLaterController', { sequential: true }, () => {
 
   test('same user cannot create duplicated url', async () => {
     const url = faker.internet.url()
-    vi.mocked(fetchHtml).mockResolvedValue({ html: MOCK_HTML, url })
+    vi.mocked(fetchHtml).mockResolvedValue({ html: MOCK_HTML, finalUrl: url })
     await UserReadLaterController.createFromUrl({ url })
 
     const [err, res] = await to(UserReadLaterController.createFromUrl({ url }))
@@ -100,7 +100,7 @@ describe('G: UserReadLaterController', { sequential: true }, () => {
 
   test('different users can create same url', async () => {
     const url = faker.internet.url()
-    vi.mocked(fetchHtml).mockResolvedValue({ html: MOCK_HTML, url })
+    vi.mocked(fetchHtml).mockResolvedValue({ html: MOCK_HTML, finalUrl: url })
     await UserReadLaterController.createFromUrl({ url })
     authedUserId = userB
 
@@ -133,7 +133,7 @@ describe('G: UserReadLaterController', { sequential: true }, () => {
 
   test('create item with html extracted content when ai analysis fails', async () => {
     const url = faker.internet.url()
-    vi.mocked(fetchHtml).mockResolvedValue({ html: MOCK_HTML, url })
+    vi.mocked(fetchHtml).mockResolvedValue({ html: MOCK_HTML, finalUrl: url })
     vi.mocked(analyzeReadLaterArticle).mockRejectedValueOnce(new Error('大模型供应商未启用'))
 
     const result = await UserReadLaterController.createFromUrl({ url })

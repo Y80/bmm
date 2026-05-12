@@ -125,17 +125,6 @@ export function pageSpace(urlOrPath?: 'auto' | (string & {}) | null) {
   }
 }
 
-export async function testUrl(url: string, opts?: { timeout?: number }) {
-  const [err] = await to(
-    fetch(url, {
-      method: 'HEAD',
-      mode: 'no-cors',
-      signal: AbortSignal.timeout(opts?.timeout || 5000),
-    })
-  )
-  return !err
-}
-
 export function getTagLinkAttrs(tag: SelectTag): Pick<HTMLAnchorElement, 'href' | 'title'> {
   return {
     href: PageRoutes.Public.tags([tag.name]),

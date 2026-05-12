@@ -36,7 +36,7 @@ const UserReadLaterController = {
     try {
       const res = await fetchHtml(input.url)
       html = res.html
-      url = res.url
+      url = res.finalUrl
     } catch {}
 
     const count = await db.$count(

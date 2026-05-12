@@ -1,7 +1,7 @@
-import { db, schema } from '@/db'
-import { createBrowserHeaders } from '@/utils/browser-request'
-import { getBookmarkHost } from '@/utils/bookmark-host'
 import { and, eq, inArray, isNull, notInArray, or } from 'drizzle-orm'
+import { db, schema } from '@/db'
+import { getBookmarkHost } from '@/utils/bookmark-host'
+import { createCuimpNetworkErrorMessage, cuimpRequest } from '@/utils/cuimp-http'
 
 const { bookmarkHostChecks, publicBookmarks, siteConfigs, userBookmarks, userConfigs } = schema
 
@@ -105,11 +105,10 @@ async function requestHost(hostKey: string, method: 'HEAD' | 'GET', timeout: num
     throw new DOMException('The operation was aborted due to timeout', 'TimeoutError')
   }
 
-  return await fetch(hostKey, {
+  return await cuimpRequest({
+    url: hostKey,
     method,
-    redirect: 'follow',
-    signal: AbortSignal.timeout(timeout),
-    headers: createBrowserHeaders(),
+    timeout,
   })
 }
 
@@ -143,8 +142,8 @@ function getErrorCode(error: unknown) {
 }
 
 function createNetworkErrorMessage(error: unknown) {
-  if (error instanceof DOMException && error.name === 'TimeoutError') return '请求超时'
-  if (error instanceof Error && error.name === 'AbortError') return '请求超时'
+  const cuimpMessage = createCuimpNetworkErrorMessage(error)
+  if (cuimpMessage) return cuimpMessage
 
   const code = getErrorCode(error)
   if (code === 'ENOTFOUND' || code === 'EAI_AGAIN') return '域名解析失败'

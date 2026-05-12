@@ -1,6 +1,6 @@
 import iconv from 'iconv-lite'
-import { to } from '.'
-import { createBrowserHeaders } from './browser-request'
+import { to } from '@/utils'
+import { cuimpHtmlRequest, getCuimpHeader, isCuimpTimeoutError } from '@/utils/cuimp-http'
 
 const FETCH_HTML_TIMEOUT = 15_000
 const FETCH_HTML_RETRIES = 2
@@ -9,16 +9,14 @@ const FETCH_HTML_RETRIES = 2
 export default async function fetchHtml(url: string) {
   if (!URL.canParse(url)) throw new Error('无效的 URL')
 
-  const headers = createBrowserHeaders()
-
   let lastErr: Error | undefined
 
   for (let attempt = 0; attempt <= FETCH_HTML_RETRIES; attempt++) {
     const [err, res] = await to(
-      fetch(url, {
-        headers,
-        signal: AbortSignal.timeout(FETCH_HTML_TIMEOUT),
-        redirect: 'follow',
+      cuimpHtmlRequest({
+        url,
+        timeout: FETCH_HTML_TIMEOUT,
+        captureEffectiveUrl: true,
       })
     )
 
@@ -27,20 +25,18 @@ export default async function fetchHtml(url: string) {
       continue
     }
 
-    if (!res.ok) {
+    if (res.status < 200 || res.status >= 300) {
       lastErr = new Error(`HTTP ${res.status}`)
       continue
     }
 
-    const buffer = Buffer.from(await res.arrayBuffer())
     return {
-      html: decodeHtml(buffer, res.headers.get('content-type')),
-      url: res.url, // 重定向后的最终 URL
+      html: decodeHtml(res.body, getCuimpHeader(res.headers, 'content-type')),
+      finalUrl: res.effectiveUrl || url,
     }
   }
 
-  const isTimeout = lastErr?.name === 'TimeoutError' || lastErr?.name === 'AbortError'
-  throw new Error(isTimeout ? '获取 HTML 超时' : '获取 HTML 失败')
+  throw new Error(isCuimpTimeoutError(lastErr) ? '获取 HTML 超时' : '获取 HTML 失败')
 }
 
 // --- 字符解码 ---

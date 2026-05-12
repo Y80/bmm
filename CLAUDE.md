@@ -88,6 +88,10 @@ import UserHomeBody from './components/UserHomeBody'
 - Do not place business logic in `src/actions/index.ts`.
 - Put action-specific handler logic, schemas, and `makeActionInput(...)` declarations in `src/actions/items/`, then export the final action from `src/actions/index.ts`.
 
+#### Async Error Handling
+
+使用 `to()` (`@/utils`) 代替 try-catch，返回 `[err, result]` 元组。
+
 #### Server Actions Pattern
 
 All server actions use the `makeAction` utility (`/src/utils/server-actions.ts`):

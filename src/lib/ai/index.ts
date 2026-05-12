@@ -18,8 +18,8 @@ import {
  * 分析网站，自动打标签、获取标题、描述、图标地址
  */
 export async function analyzeWebsite(inputUrl: string, tags: string[] = []) {
-  const { html, url } = await fetchHtml(inputUrl)
-  const payload = createWebsiteAnalysisPayload({ html, url, tags })
+  const { html, finalUrl } = await fetchHtml(inputUrl)
+  const payload = createWebsiteAnalysisPayload({ html, url: finalUrl, tags })
   return generateAiObject({
     schema: analyzeWebsiteSchema,
     schemaName: 'website_analysis',
