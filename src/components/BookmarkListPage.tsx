@@ -365,7 +365,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   }
 
   return (
-    <ListPageLayout title="书签列表">
+    <ListPageLayout title="书签列表" className="bg-white">
       <div
         className={cn(
           'flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end',

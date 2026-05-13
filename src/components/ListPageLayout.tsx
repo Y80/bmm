@@ -9,6 +9,7 @@ interface ListPageLayoutProps extends PropsWithChildren {
   title?: string
   surfaceExtra?: ReactNode
   bodyClassName?: string
+  className?: string
 }
 
 export default function ListPageLayout(props: ListPageLayoutProps) {
@@ -36,6 +37,7 @@ export default function ListPageLayout(props: ListPageLayoutProps) {
 
       <AdminSurfaceCard
         extra={props.surfaceExtra}
+        className={props.className}
         bodyClassName={props.bodyClassName || 'p-4 sm:p-5'}
       >
         {props.children}
