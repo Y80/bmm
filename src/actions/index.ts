@@ -5,6 +5,7 @@ import {
   CredentialsController,
   PublicBookmarkController,
   PublicTagController,
+  SiteSettingController,
   UserController,
   UserBookmarkController,
   UserReadLaterController,
@@ -15,6 +16,7 @@ import {
   createReadLaterItemSchema,
   findManyReadLaterItemsSchema,
   readLaterItemIdSchema,
+  siteProxyConfigSchema,
   testAiProviderSchema,
   updateReadLaterItemSchema,
 } from '@/controllers'
@@ -114,6 +116,13 @@ export const actListAiProviderModels = make(AiProviderController.listModels, {
   schema: listAiProviderModelsSchema,
 })
 export const actClearAiProvidersConfig = make(AiProviderController.clearConfig, { guard: 'admin' })
+
+/// 网站设置
+export const actGetSiteProxyConfig = make(SiteSettingController.getConfig, { guard: 'admin' })
+export const actSaveSiteProxyConfig = make(SiteSettingController.saveConfig, {
+  guard: 'admin',
+  schema: siteProxyConfigSchema,
+})
 
 /// 解析网站、标签
 export const actExtractHtmlInfo = make(extractHtmlInfoInput)

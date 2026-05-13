@@ -10,6 +10,8 @@ export { default as BookmarkHostCheckController } from './BookmarkHostCheck.cont
 export { default as CredentialsController } from './Credentials.controller'
 export { default as PublicBookmarkController } from './PublicBookmark.controller'
 export { default as PublicTagController } from './PublicTag.controller'
+export { default as SiteSettingController } from './SiteSetting.controller'
+export { siteProxyConfigSchema } from './SiteSetting.controller'
 export { default as UserController } from './User.controller'
 export { default as UserBookmarkController } from './UserBookmark.controller'
 export { default as UserReadLaterController } from './UserReadLater.controller'

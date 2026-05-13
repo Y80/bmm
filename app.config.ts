@@ -34,6 +34,7 @@ export const PageRoutes = {
     UPLOAD: '/admin/upload',
     USERS: '/admin/user/list',
     AI_PROVIDER: '/admin/ai-provider',
+    SITE_SETTING: '/admin/site-setting',
     tagSlug: (slug?: 'new' | TagId | 'list') => '/admin/tag/' + (slug || ''),
     bookmarkSlug: (slug: 'new' | 'list' | BookmarkId) => '/admin/bookmark/' + slug,
   },
@@ -203,6 +204,13 @@ export const ADMIN_NAV_LINKS = [
     icon: IconNames.Tabler.API,
     description: '维护站点可用的大模型接入配置',
     accent: 'from-violet-400 via-sky-400 to-cyan-500',
+  },
+  {
+    label: '网站设置',
+    href: PageRoutes.Admin.SITE_SETTING,
+    icon: IconNames.Huge.SETTINGS,
+    description: '配置网络代理等站点级参数',
+    accent: 'from-slate-400 via-zinc-500 to-gray-600',
   },
 ]
 

@@ -1,7 +1,8 @@
 import { and, eq, inArray, isNull, notInArray, or } from 'drizzle-orm'
 import { db, schema } from '@/db'
 import { getBookmarkHost } from '@/utils/bookmark-host'
-import { createCuimpNetworkErrorMessage, cuimpRequest } from '@/utils/cuimp-http'
+import { fetchRequest, createFetchNetworkErrorMessage } from '@/utils/http'
+import SiteSettingController from './SiteSetting.controller'
 
 const { bookmarkHostChecks, publicBookmarks, siteConfigs, userBookmarks, userConfigs } = schema
 
@@ -100,24 +101,25 @@ function appendHostCheckSummary<T extends BookmarkWithHostKey>(
   }
 }
 
-async function requestHost(hostKey: string, method: 'HEAD' | 'GET', timeout: number) {
+async function requestHost(hostKey: string, method: 'HEAD' | 'GET', timeout: number, proxyUrl?: string) {
   if (timeout <= 0) {
     throw new DOMException('The operation was aborted due to timeout', 'TimeoutError')
   }
 
-  return await cuimpRequest({
+  return await fetchRequest({
     url: hostKey,
     method,
     timeout,
+    proxyUrl,
   })
 }
 
-async function probeHost(hostKey: string, timeout: number) {
+async function probeHost(hostKey: string, timeout: number, proxyUrl?: string) {
   const startedAt = Date.now()
   const getRemainingTimeout = () => timeout - (Date.now() - startedAt)
 
   try {
-    const headResponse = await requestHost(hostKey, 'HEAD', getRemainingTimeout())
+    const headResponse = await requestHost(hostKey, 'HEAD', getRemainingTimeout(), proxyUrl)
     if (headResponse.status >= 200 && headResponse.status < 400) {
       return headResponse
     }
@@ -125,32 +127,16 @@ async function probeHost(hostKey: string, timeout: number) {
     // 部分站点拒绝 HEAD，请求失败时再用 GET 确认一次。
   }
 
-  return await requestHost(hostKey, 'GET', getRemainingTimeout())
+  return await requestHost(hostKey, 'GET', getRemainingTimeout(), proxyUrl)
 }
 
 function createHttpErrorMessage(status: number) {
   return `${status}：${HTTP_ERROR_MESSAGES[status] || 'HTTP 请求失败'}`
 }
 
-function getErrorCode(error: unknown) {
-  if (!error || typeof error !== 'object') return ''
-  const cause = 'cause' in error ? (error as { cause?: unknown }).cause : null
-  if (cause && typeof cause === 'object' && 'code' in cause) {
-    return String((cause as { code?: unknown }).code || '')
-  }
-  return ''
-}
-
 function createNetworkErrorMessage(error: unknown) {
-  const cuimpMessage = createCuimpNetworkErrorMessage(error)
-  if (cuimpMessage) return cuimpMessage
-
-  const code = getErrorCode(error)
-  if (code === 'ENOTFOUND' || code === 'EAI_AGAIN') return '域名解析失败'
-  if (code.startsWith('CERT_') || code.includes('SSL') || code.includes('TLS')) return '证书错误'
-  if (code === 'ECONNREFUSED') return '连接被拒绝'
-  if (code === 'ETIMEDOUT') return '请求超时'
-
+  const message = createFetchNetworkErrorMessage(error)
+  if (message) return message
   return '网络请求失败'
 }
 
@@ -313,11 +299,12 @@ async function executeCheckHostsTask(input: {
 }) {
   const { hostKeys, initialTask, saveTask } = input
   let checked = initialTask.checked
+  const proxyUrl = await SiteSettingController.getProxyUrl()
 
   try {
     await runConcurrent(hostKeys, CHECK_HOST_CONCURRENCY, async (hostKey) => {
       try {
-        await BookmarkHostCheckController.checkHost(hostKey, { timeout: CHECK_HOST_TIMEOUT })
+        await BookmarkHostCheckController.checkHost(hostKey, { timeout: CHECK_HOST_TIMEOUT, proxyUrl })
       } catch {
         // 单个 Host 的异常不应让整批任务卡住；可解析 Host 的网络失败会在 checkHost 内落库。
       }
@@ -374,14 +361,16 @@ async function startCheckHostsTask(input: {
 }
 
 const BookmarkHostCheckController = {
-  async checkHost(hostKey: string, opts: { timeout?: number } = {}) {
+  async checkHost(hostKey: string, opts: { timeout?: number; proxyUrl?: string } = {}) {
     const normalizedHostKey = getBookmarkHostKey(hostKey)
     if (!normalizedHostKey || normalizedHostKey !== hostKey) {
       throw new Error('无法检测无效的网站 Host')
     }
 
+    const proxyUrl = opts.proxyUrl ?? await SiteSettingController.getProxyUrl()
+
     try {
-      const response = await probeHost(hostKey, opts.timeout || 8000)
+      const response = await probeHost(hostKey, opts.timeout || 8000, proxyUrl)
       const reachable = response.status >= 200 && response.status < 400
       return await saveCheckResult({
         hostKey,

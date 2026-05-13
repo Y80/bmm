@@ -6,15 +6,19 @@ import { db, schema } from '@/db'
 import { findManyBookmarksSchema } from '../schemas'
 import BookmarkHostCheckController from '../BookmarkHostCheck.controller'
 import PublicBookmarkController from '../PublicBookmark.controller'
-import * as cuimpHttp from '@/utils/cuimp-http'
+import * as http from '@/utils/http'
 
-vi.mock('@/utils/cuimp-http', async () => {
-  const actual = await vi.importActual('@/utils/cuimp-http')
+vi.mock('@/utils/http', async () => {
+  const actual = await vi.importActual('@/utils/http')
   return {
     ...actual,
-    cuimpRequest: vi.fn(),
+    fetchRequest: vi.fn(),
   }
 })
+
+vi.mock('@/controllers/SiteSetting.controller', () => ({
+  default: { getProxyUrl: vi.fn(() => '') },
+}))
 
 const { bookmarkHostChecks, publicBookmarks, siteConfigs } = schema
 
@@ -30,14 +34,12 @@ function createUrl(host = faker.internet.domainName()) {
   return `https://${host}/docs/${faker.string.uuid()}`
 }
 
-function mockCuimpStatus(status: number) {
-  vi.mocked(cuimpHttp.cuimpRequest).mockResolvedValue({
+function mockFetchStatus(status: number) {
+  vi.mocked(http.fetchRequest).mockResolvedValue({
     status,
-    statusText: 'OK',
     headers: {},
-    rawBody: Buffer.from(''),
-    data: null,
-    request: { url: '', method: 'GET' as const, headers: {}, command: '' },
+    body: Buffer.from(''),
+    effectiveUrl: '',
   })
 }
 
@@ -104,7 +106,7 @@ async function markOtherPublicHostsFresh(pendingHostKeys: Set<string>) {
 describe('G: BookmarkHostCheckController', { sequential: true }, () => {
   beforeEach(async () => {
     vi.restoreAllMocks()
-    mockCuimpStatus(200)
+    mockFetchStatus(200)
     await db.delete(siteConfigs).where(eq(siteConfigs.key, CHECK_HOSTS_TASK_KEY))
   })
 
@@ -135,7 +137,7 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
   })
 
   test('2xx and 3xx responses are reachable', async () => {
-    mockCuimpStatus(302)
+    mockFetchStatus(302)
     const result = await BookmarkHostCheckController.checkHost('https://redirect.example')
     touchedHostKeys.add(result.hostKey)
 
@@ -145,12 +147,12 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
   })
 
   test('host check requests use browser-like headers', async () => {
-    mockCuimpStatus(200)
+    mockFetchStatus(200)
 
     const result = await BookmarkHostCheckController.checkHost('https://headers.example')
     touchedHostKeys.add(result.hostKey)
 
-    expect(cuimpHttp.cuimpRequest).toHaveBeenCalledWith(
+    expect(http.fetchRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         url: 'https://headers.example',
         method: 'HEAD',
@@ -159,22 +161,18 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
   })
 
   test('host check falls back to GET when HEAD is not reachable', async () => {
-    vi.mocked(cuimpHttp.cuimpRequest)
+    vi.mocked(http.fetchRequest)
       .mockResolvedValueOnce({
         status: 403,
-        statusText: 'Forbidden',
         headers: {},
-        rawBody: Buffer.from(''),
-        data: null,
-        request: { url: '', method: 'HEAD' as const, headers: {}, command: '' },
+        body: Buffer.from(''),
+        effectiveUrl: '',
       })
       .mockResolvedValueOnce({
         status: 200,
-        statusText: 'OK',
         headers: {},
-        rawBody: Buffer.from(''),
-        data: null,
-        request: { url: '', method: 'GET' as const, headers: {}, command: '' },
+        body: Buffer.from(''),
+        effectiveUrl: '',
       })
 
     const result = await BookmarkHostCheckController.checkHost('https://head-forbidden.example')
@@ -182,12 +180,12 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
 
     expect(result.status).toBe('reachable')
     expect(result.httpStatus).toBe(200)
-    expect(cuimpHttp.cuimpRequest).toHaveBeenCalledTimes(2)
-    expect(cuimpHttp.cuimpRequest).toHaveBeenNthCalledWith(
+    expect(http.fetchRequest).toHaveBeenCalledTimes(2)
+    expect(http.fetchRequest).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({ method: 'HEAD' })
     )
-    expect(cuimpHttp.cuimpRequest).toHaveBeenNthCalledWith(
+    expect(http.fetchRequest).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({ method: 'GET' })
     )
@@ -196,7 +194,7 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
   test('host check does not start GET after HEAD consumes the timeout budget', async () => {
     const nowSpy = vi.spyOn(Date, 'now')
     nowSpy.mockReturnValueOnce(0).mockReturnValueOnce(0).mockReturnValue(30_000)
-    vi.mocked(cuimpHttp.cuimpRequest).mockRejectedValue(
+    vi.mocked(http.fetchRequest).mockRejectedValue(
       new DOMException('The operation was aborted due to timeout', 'TimeoutError')
     )
 
@@ -207,11 +205,11 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
 
     expect(result.status).toBe('unreachable')
     expect(result.errorMessage).toBe('请求超时')
-    expect(cuimpHttp.cuimpRequest).toHaveBeenCalledTimes(1)
+    expect(http.fetchRequest).toHaveBeenCalledTimes(1)
   })
 
   test('4xx and 5xx responses are unreachable with chinese error message', async () => {
-    mockCuimpStatus(404)
+    mockFetchStatus(404)
     const result = await BookmarkHostCheckController.checkHost('https://missing.example')
     touchedHostKeys.add(result.hostKey)
 
@@ -221,7 +219,7 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
   })
 
   test('network errors are unreachable without http status', async () => {
-    vi.mocked(cuimpHttp.cuimpRequest).mockRejectedValue(
+    vi.mocked(http.fetchRequest).mockRejectedValue(
       Object.assign(new Error('fetch failed'), { cause: { code: 'ENOTFOUND' } })
     )
 
@@ -247,14 +245,14 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
     first.hostKey && touchedHostKeys.add(first.hostKey)
     second.hostKey && touchedHostKeys.add(second.hostKey)
 
-    mockCuimpStatus(200)
+    mockFetchStatus(200)
 
     const result = await PublicBookmarkController.batchCheckHosts(
       findManyBookmarksSchema.parse({ keyword: prefix })
     )
 
     expect(result).toMatchObject({ total: 1, reachable: 1, unreachable: 0, skipped: 1 })
-    expect(cuimpHttp.cuimpRequest).toHaveBeenCalledTimes(1)
+    expect(http.fetchRequest).toHaveBeenCalledTimes(1)
   })
 
   test('check all hosts task writes JSON config and skips fresh checked hosts', async () => {
@@ -293,7 +291,7 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
         },
       })
 
-    mockCuimpStatus(200)
+    mockFetchStatus(200)
 
     const startedTask = await BookmarkHostCheckController.startPublicCheckHostsTask()
     expect(startedTask).toMatchObject({
@@ -310,7 +308,7 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
       checked: 1,
       errorMessage: null,
     })
-    expect(cuimpHttp.cuimpRequest).toHaveBeenCalledTimes(1)
+    expect(http.fetchRequest).toHaveBeenCalledTimes(1)
 
     const row = await db.query.siteConfigs.findFirst({
       where: eq(siteConfigs.key, CHECK_HOSTS_TASK_KEY),
@@ -337,12 +335,12 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
       key: CHECK_HOSTS_TASK_KEY,
       value: runningTask,
     })
-    mockCuimpStatus(200)
+    mockFetchStatus(200)
 
     const task = await BookmarkHostCheckController.startPublicCheckHostsTask()
 
     expect(task).toEqual(runningTask)
-    expect(cuimpHttp.cuimpRequest).not.toHaveBeenCalled()
+    expect(http.fetchRequest).not.toHaveBeenCalled()
   })
 
   test('check all hosts task uses 30s timeout and at most 5 concurrent checks', async () => {

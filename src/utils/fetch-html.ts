@@ -1,6 +1,7 @@
 import iconv from 'iconv-lite'
 import { to } from '@/utils'
-import { cuimpHtmlRequest, getCuimpHeader, isCuimpTimeoutError } from '@/utils/cuimp-http'
+import { fetchHtmlRequest, getHeader, isFetchTimeoutError } from '@/utils/http'
+import SiteSettingController from '@/controllers/SiteSetting.controller'
 
 const FETCH_HTML_TIMEOUT = 15_000
 const FETCH_HTML_RETRIES = 2
@@ -9,14 +10,15 @@ const FETCH_HTML_RETRIES = 2
 export default async function fetchHtml(url: string) {
   if (!URL.canParse(url)) throw new Error('无效的 URL')
 
+  const proxyUrl = await SiteSettingController.getProxyUrl()
   let lastErr: Error | undefined
 
   for (let attempt = 0; attempt <= FETCH_HTML_RETRIES; attempt++) {
     const [err, res] = await to(
-      cuimpHtmlRequest({
+      fetchHtmlRequest({
         url,
         timeout: FETCH_HTML_TIMEOUT,
-        captureEffectiveUrl: true,
+        proxyUrl,
       })
     )
 
@@ -31,12 +33,12 @@ export default async function fetchHtml(url: string) {
     }
 
     return {
-      html: decodeHtml(res.body, getCuimpHeader(res.headers, 'content-type')),
+      html: decodeHtml(res.body, getHeader(res.headers, 'content-type')),
       finalUrl: res.effectiveUrl || url,
     }
   }
 
-  throw new Error(isCuimpTimeoutError(lastErr) ? '获取 HTML 超时' : '获取 HTML 失败')
+  throw new Error(isFetchTimeoutError(lastErr) ? '获取 HTML 超时' : '获取 HTML 失败')
 }
 
 // --- 字符解码 ---

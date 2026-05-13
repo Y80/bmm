@@ -1,14 +1,18 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest'
-import * as cuimpHttp from '@/utils/cuimp-http'
+import * as http from '@/utils/http'
 import fetchHtml from '@/utils/fetch-html'
 
-vi.mock('@/utils/cuimp-http', async () => {
-  const actual = await vi.importActual('@/utils/cuimp-http')
+vi.mock('@/utils/http', async () => {
+  const actual = await vi.importActual('@/utils/http')
   return {
     ...actual,
-    cuimpHtmlRequest: vi.fn(),
+    fetchHtmlRequest: vi.fn(),
   }
 })
+
+vi.mock('@/controllers/SiteSetting.controller', () => ({
+  default: { getProxyUrl: vi.fn(() => '') },
+}))
 
 function createHtmlResponse(body: Buffer, opts?: {
   status?: number
@@ -18,11 +22,7 @@ function createHtmlResponse(body: Buffer, opts?: {
   const { status = 200, headers = {}, effectiveUrl } = opts ?? {}
   return {
     status,
-    statusText: 'OK',
     headers,
-    rawBody: effectiveUrl ? Buffer.concat([body, Buffer.from(`\n__BMM_EFFECTIVE_URL__${effectiveUrl}`)]) : body,
-    data: null,
-    request: { url: 'https://example.com', method: 'GET' as const, headers: {}, command: '' },
     body,
     effectiveUrl: effectiveUrl || '',
   }
@@ -34,7 +34,7 @@ describe('fetchHtml', () => {
   })
 
   test('returns html and url on success', async () => {
-    vi.mocked(cuimpHttp.cuimpHtmlRequest).mockResolvedValue(
+    vi.mocked(http.fetchHtmlRequest).mockResolvedValue(
       createHtmlResponse(Buffer.from('<html><body>Hello</body></html>'))
     )
 
@@ -44,7 +44,7 @@ describe('fetchHtml', () => {
   })
 
   test('captures effective url on redirect', async () => {
-    vi.mocked(cuimpHttp.cuimpHtmlRequest).mockResolvedValue(
+    vi.mocked(http.fetchHtmlRequest).mockResolvedValue(
       createHtmlResponse(Buffer.from('content'), { effectiveUrl: 'https://example.com/redirected' })
     )
 
@@ -53,35 +53,35 @@ describe('fetchHtml', () => {
   })
 
   test('retries on error', async () => {
-    vi.mocked(cuimpHttp.cuimpHtmlRequest)
+    vi.mocked(http.fetchHtmlRequest)
       .mockRejectedValueOnce(new Error('network error'))
       .mockRejectedValueOnce(new Error('network error'))
       .mockResolvedValue(createHtmlResponse(Buffer.from('success')))
 
     const result = await fetchHtml('https://example.com')
     expect(result.html).toBe('success')
-    expect(cuimpHttp.cuimpHtmlRequest).toHaveBeenCalledTimes(3)
+    expect(http.fetchHtmlRequest).toHaveBeenCalledTimes(3)
   })
 
   test('retries on non-2xx status', async () => {
-    vi.mocked(cuimpHttp.cuimpHtmlRequest)
+    vi.mocked(http.fetchHtmlRequest)
       .mockResolvedValueOnce(createHtmlResponse(Buffer.from(''), { status: 500 }))
       .mockResolvedValue(createHtmlResponse(Buffer.from('success')))
 
     const result = await fetchHtml('https://example.com')
     expect(result.html).toBe('success')
-    expect(cuimpHttp.cuimpHtmlRequest).toHaveBeenCalledTimes(2)
+    expect(http.fetchHtmlRequest).toHaveBeenCalledTimes(2)
   })
 
   test('throws after exhausting retries', async () => {
-    vi.mocked(cuimpHttp.cuimpHtmlRequest).mockRejectedValue(new Error('persistent error'))
+    vi.mocked(http.fetchHtmlRequest).mockRejectedValue(new Error('persistent error'))
 
     await expect(fetchHtml('https://example.com')).rejects.toThrow('获取 HTML 失败')
-    expect(cuimpHttp.cuimpHtmlRequest).toHaveBeenCalledTimes(3)
+    expect(http.fetchHtmlRequest).toHaveBeenCalledTimes(3)
   })
 
   test('throws timeout message on timeout error', async () => {
-    vi.mocked(cuimpHttp.cuimpHtmlRequest).mockRejectedValue(
+    vi.mocked(http.fetchHtmlRequest).mockRejectedValue(
       new DOMException('timeout', 'TimeoutError')
     )
 
@@ -94,7 +94,7 @@ describe('fetchHtml', () => {
 
   test('decodes UTF-8 by default', async () => {
     const utf8Body = Buffer.from('<html><body>Hello World</body></html>', 'utf8')
-    vi.mocked(cuimpHttp.cuimpHtmlRequest).mockResolvedValue(createHtmlResponse(utf8Body))
+    vi.mocked(http.fetchHtmlRequest).mockResolvedValue(createHtmlResponse(utf8Body))
 
     const result = await fetchHtml('https://example.com')
     expect(result.html).toContain('Hello World')
@@ -102,7 +102,7 @@ describe('fetchHtml', () => {
 
   test('decodes GB18030 when charset specified in header', async () => {
     const gbBody = Buffer.from([0xb2, 0xe2, 0xca, 0xd4])
-    vi.mocked(cuimpHttp.cuimpHtmlRequest).mockResolvedValue(
+    vi.mocked(http.fetchHtmlRequest).mockResolvedValue(
       createHtmlResponse(gbBody, { headers: { 'content-type': 'text/html; charset=gb2312' } })
     )
 
