@@ -1,7 +1,12 @@
 import { db, schema } from '@/db'
+import { z } from '@/lib/zod'
 import { initGlobalData } from '@/utils/global-data'
 import { FieldConstraints } from '@cfg'
-import { and, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
+import { and, asc, count, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
+import { createTagFilterByKeyword } from './common'
+import { findManyTagsSchema } from './schemas'
+
+export const deletePublicTagsSchema = z.object({ ids: z.array(z.string()).min(1) })
 
 const { publicTagToTag, publicTags } = schema
 
@@ -112,9 +117,42 @@ namespace PublicTagController {
     return res
   }
 
+  export async function removeMany({ ids }: { ids: TagId[] }) {
+    cacheAllTags.reset()
+    return await db.delete(publicTags).where(inArray(publicTags.id, ids)).returning()
+  }
+
   /** 获取所有标签的名称 */
   export async function getAllNames() {
     return (await getAll()).map(({ name }) => name)
+  }
+
+  export async function findMany(query?: z.output<typeof findManyTagsSchema>) {
+    query ||= findManyTagsSchema.parse({})
+    const { page, limit, keyword, sorterKey } = query
+    const filters = keyword ? createTagFilterByKeyword(publicTags, keyword) : undefined
+    const [list, [{ total }]] = await Promise.all([
+      db.query.publicTags.findMany({
+        where: filters,
+        with: { relatedTagIds: { columns: { b: true } } },
+        limit,
+        offset: (page - 1) * limit,
+        orderBy: (() => {
+          const sort = sorterKey.startsWith('-') ? desc : asc
+          const field = sorterKey.includes('update') ? publicTags.updatedAt : publicTags.createdAt
+          return sort(field)
+        })(),
+      }),
+      db.select({ total: count() }).from(publicTags).where(filters),
+    ])
+    return {
+      total,
+      hasMore: total > page * limit,
+      list: list.map((tag) => ({
+        ...tag,
+        relatedTagIds: tag.relatedTagIds.map((el) => el.b),
+      })),
+    }
   }
 
   export async function sort(orders: { id: number; order: number }[]) {

@@ -1,6 +1,11 @@
 import { db, schema } from '@/db'
 import { getAuthedUserId } from '@/lib/auth'
-import { and, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
+import { z } from '@/lib/zod'
+import { and, asc, count, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
+import { createTagFilterByKeyword } from './common'
+import { findManyTagsSchema } from './schemas'
+
+export const deleteUserTagsSchema = z.object({ ids: z.array(z.string()).min(1) })
 
 const { userTagToTag, userTags } = schema
 
@@ -94,9 +99,45 @@ const UserTagController = {
     return res
   },
 
+  async removeMany({ ids }: { ids: TagId[] }) {
+    const userId = await getAuthedUserId()
+    return await db.delete(userTags).where(and(eq(userTags.userId, userId), inArray(userTags.id, ids))).returning()
+  },
+
   /** 获取所有标签的名称 */
   async getAllNames() {
     return (await this.getAll()).map(({ name }) => name)
+  },
+
+  async findMany(query?: z.output<typeof findManyTagsSchema>) {
+    const userId = await getAuthedUserId()
+    query ||= findManyTagsSchema.parse({})
+    const { page, limit, keyword, sorterKey } = query
+    const filters = keyword
+      ? and(limiter(userId), createTagFilterByKeyword(userTags, keyword))
+      : limiter(userId)
+    const [list, [{ total }]] = await Promise.all([
+      db.query.userTags.findMany({
+        where: filters,
+        with: { relatedTagIds: { columns: { b: true } } },
+        limit,
+        offset: (page - 1) * limit,
+        orderBy: (() => {
+          const sort = sorterKey.startsWith('-') ? desc : asc
+          const field = sorterKey.includes('update') ? userTags.updatedAt : userTags.createdAt
+          return sort(field)
+        })(),
+      }),
+      db.select({ total: count() }).from(userTags).where(filters),
+    ])
+    return {
+      total,
+      hasMore: total > page * limit,
+      list: list.map((tag) => ({
+        ...tag,
+        relatedTagIds: tag.relatedTagIds.map((el) => el.b),
+      })),
+    }
   },
 
   async sort(orders: { id: TagId; order: SelectTag['sortOrder'] }[]) {

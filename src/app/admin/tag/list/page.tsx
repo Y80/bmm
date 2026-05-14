@@ -1,6 +1,11 @@
 'use client'
 
-import { actDeletePublicTag, actUpdatePublicTag } from '@/actions'
+import {
+  actDeletePublicTag,
+  actDeletePublicTags,
+  actFindPublicTags,
+  actUpdatePublicTag,
+} from '@/actions'
 import TagListPage, { TagListPageProps } from '@/components/TagListPage'
 import { runAction } from '@/utils/client'
 import { useAdminContext } from '../../ctx'
@@ -9,10 +14,16 @@ export default function Page() {
   const { tags, setCtxValue, updateTags } = useAdminContext()
 
   const props: TagListPageProps = {
-    tags,
-    refreshTags: updateTags,
+    allTags: tags,
+    refreshAllTags: updateTags,
+    findTags: actFindPublicTags,
     removeTag: async (tag) => {
       await runAction(actDeletePublicTag({ id: tag.id }), {
+        onOk: () => updateTags(),
+      })
+    },
+    removeTags: async (ids) => {
+      await runAction(actDeletePublicTags({ ids }), {
         onOk: () => updateTags(),
       })
     },

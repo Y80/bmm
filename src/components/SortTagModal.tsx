@@ -82,7 +82,7 @@ export default function SortTagModal(props: Props) {
       >
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={tags}>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="max-h-[60vh] overflow-y-auto grid grid-cols-4 gap-3">
               {tags.map((tag) => (
                 <SortableTag key={tag.id} tag={tag} />
               ))}

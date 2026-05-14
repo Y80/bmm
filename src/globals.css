@@ -63,3 +63,15 @@ https://www.heroui.com/docs/guide/tailwind-v4
   display: flex;
   align-items: center;
 }
+
+/* 移除 Select/Listbox 选项 hover 时的蓝色轮廓 */
+[data-slot="listbox"] [data-focus-visible="true"] {
+  outline: none;
+}
+
+/* 分页器按钮 hover 时显示手型光标 */
+[role="navigation"] [data-slot="item"],
+[role="navigation"] [data-slot="prev"],
+[role="navigation"] [data-slot="next"] {
+  cursor: pointer;
+}

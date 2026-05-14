@@ -11,6 +11,8 @@ import {
   UserReadLaterController,
   UserTagController,
   aiProvidersConfigSchema,
+  deletePublicTagsSchema,
+  deleteUserTagsSchema,
   duplicateAiProviderSchema,
   listAiProviderModelsSchema,
   createReadLaterItemSchema,
@@ -50,17 +52,26 @@ export const actGetPublicBookmarkHostCheckTask = make(PublicBookmarkController.g
 
 /// PublicTag
 export const actGetAllPublicTags = make(PublicTagController.getAll, { guard: false })
+export const actFindPublicTags = make(PublicTagController.findMany, { guard: false })
 export const actInsertPublicTag = make(PublicTagController.insert, { guard: 'admin' })
 export const actDeletePublicTag = make(PublicTagController.remove, { guard: 'admin' })
+export const actDeletePublicTags = make(PublicTagController.removeMany, {
+  guard: 'admin',
+  schema: deletePublicTagsSchema,
+})
 export const actUpdatePublicTag = make(PublicTagController.update, { guard: 'admin' })
 export const actUpdatePublicTagSortOrders = make(PublicTagController.sort, { guard: 'admin' })
 export const actTryCreatePublicTags = make(PublicTagController.tryCreateTags, { guard: 'admin' })
 
 /// UserTag
 export const actGetAllUserTags = make(UserTagController.getAll)
+export const actFindUserTags = make(UserTagController.findMany)
 export const actInsertUserTag = make(UserTagController.insert)
 export const actUpdateUserTag = make(UserTagController.update)
 export const actDeleteUserTag = make(UserTagController.remove)
+export const actDeleteUserTags = make(UserTagController.removeMany, {
+  schema: deleteUserTagsSchema,
+})
 export const actUpdateUserTagSortOrders = make(UserTagController.sort)
 export const actTryCreateUserTags = make(UserTagController.tryCreateTags)
 

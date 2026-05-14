@@ -14,6 +14,14 @@ export function createBookmarkFilterByKeyword(
   )!
 }
 
+export function createTagFilterByKeyword(
+  table: typeof schema.publicTags | typeof schema.userTags,
+  kw: string
+) {
+  const sql = process.env.DB_DRIVER === 'postgresql' ? ilike : like
+  return or(sql(table.name, `%${kw}%`), sql(table.pinyin, `%${kw}%`))!
+}
+
 export function createUserFilterByKeyword(table: typeof schema.users, kw: string) {
   const sql = process.env.DB_DRIVER === 'postgresql' ? ilike : like
   return or(sql(table.name, `%${kw}%`), sql(table.email, `%${kw}%`))!

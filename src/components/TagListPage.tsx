@@ -6,11 +6,17 @@ import EmptyListPlaceholder from '@/components/EmptyListPlaceholder'
 import ListPageLayout from '@/components/ListPageLayout'
 import SortTagModal from '@/components/SortTagModal'
 import ReButton from '@/components/re-export/ReButton'
+import ReInput from '@/components/re-export/ReInput'
+import { PaginationControls } from '@/components/ui'
+import { findManyTagsSchema } from '@/controllers/schemas'
 import { usePageUtil } from '@/hooks'
+import { runAction } from '@/utils/client'
 import { IconNames, PageRoutes } from '@cfg'
 import {
   ButtonGroup,
   cn,
+  Selection,
+  Spinner,
   Switch,
   Table,
   TableBody,
@@ -19,30 +25,115 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/react'
-import { useSetState } from 'ahooks'
-import { useRouter } from 'next/navigation'
+import { useDebounceFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useState } from 'react'
+import type z from 'zod'
 
-// 定义组件的属性
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const
+const DEFAULT_PAGE_SIZE = 20
+const PAGE_SIZE_CACHE_PREFIX = 'bmm:page-size:'
+
+function getPageSizeCacheKey(pathname: string) {
+  return `${PAGE_SIZE_CACHE_PREFIX}${pathname}`
+}
+
+function getCachedPageSize(pathname: string) {
+  if (typeof window === 'undefined') return DEFAULT_PAGE_SIZE
+  const pageSize = Number(window.localStorage.getItem(getPageSizeCacheKey(pathname)))
+  return PAGE_SIZE_OPTIONS.includes(pageSize as (typeof PAGE_SIZE_OPTIONS)[number])
+    ? pageSize
+    : DEFAULT_PAGE_SIZE
+}
+
 export type TagListPageProps = {
-  tags: SelectTag[]
-  refreshTags: () => Promise<void>
+  allTags: SelectTag[]
+  refreshAllTags: () => Promise<void>
+  findTags: (input: z.input<typeof findManyTagsSchema>) => Promise<any>
   removeTag: (tag: SelectTag) => Promise<void>
+  removeTags: (ids: TagId[]) => Promise<void>
   changeTag: (changedTag: SelectTag) => Promise<void>
 }
 
 export default function TagListPage(props: TagListPageProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const isAdminSpace = usePageUtil().isAdminSpace
+  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set())
   const [colorPicker, setColorPicker] = useSetState({
     isOpen: false,
     defaultValue: '' as string | null,
     targetTagId: 0,
   })
+  const [state, setState] = useSetState({
+    loading: true,
+    keyword: searchParams.get('keyword') || '',
+    pageSize: Number(searchParams.get('pageSize')) || getCachedPageSize(pathname),
+    totalItems: 0,
+    pager: {
+      page: Number(searchParams.get('page')) || 1,
+      total: 1,
+    },
+  })
+
+  const {
+    refresh,
+    data: tags = [],
+  } = useRequest(
+    async () => {
+      const input = findManyTagsSchema.parse({
+        limit: state.pageSize,
+        page: state.pager.page,
+        keyword: state.keyword || undefined,
+      })
+      setState({ loading: true })
+      const res = await runAction(props.findTags(input))
+      setState({ loading: false })
+      if (!res.ok) return []
+      const totalItems = res.data.total
+      setState((s) => ({
+        totalItems,
+        pager: {
+          ...s.pager,
+          total: totalItems <= s.pageSize ? 1 : Math.ceil(totalItems / s.pageSize),
+        },
+      }))
+      return res.data.list
+    },
+    {
+      refreshDeps: [state.keyword, state.pageSize, state.pager.page],
+    }
+  )
+
+  useUpdateEffect(() => {
+    const payload: Record<string, string> = { page: state.pager.page.toString() }
+    state.keyword && (payload.keyword = state.keyword)
+    state.pageSize !== DEFAULT_PAGE_SIZE && (payload.pageSize = state.pageSize.toString())
+    router.push('?' + new URLSearchParams(payload).toString())
+  }, [state.keyword, state.pager.page, state.pageSize])
+
+  const { run: onKeywordChange } = useDebounceFn(
+    (keyword: string) => {
+      setState({ keyword, pager: { ...state.pager, page: 1 } })
+    },
+    { wait: 500, leading: false, trailing: true }
+  )
+
+  const isAllSelected = selectedKeys === 'all'
+  const selectedIds = isAllSelected ? tags.map((t) => t.id) : ([...selectedKeys] as TagId[])
+  const hasSelection = isAllSelected || selectedIds.length > 0
+
+  async function handleBatchDelete() {
+    await props.removeTags(selectedIds)
+    setSelectedKeys(new Set())
+    refresh()
+  }
 
   function getRelatedTagsName(tagsId?: TagId[]) {
     if (!tagsId?.length) return ''
     return tagsId
-      .map((id) => props.tags.find((tag) => tag.id === id))
+      .map((id) => props.allTags.find((tag) => tag.id === id))
       .map((tag) => tag?.name)
       .join('、')
   }
@@ -54,7 +145,7 @@ export default function TagListPage(props: TagListPageProps) {
   }
 
   function handleChangeColor(v: string) {
-    const tag = props.tags.find((e) => e.id === colorPicker.targetTagId)!
+    const tag = tags.find((e: SelectTag) => e.id === colorPicker.targetTagId)!
     if (tag.color === v) return
     tag.color = v
     props.changeTag(tag)
@@ -68,30 +159,84 @@ export default function TagListPage(props: TagListPageProps) {
     })
   }
 
+  function onPageChange(page: number) {
+    setState({ pager: { ...state.pager, page } })
+  }
+
+  function onPageSizeChange(pageSize: number) {
+    globalThis.localStorage?.setItem(getPageSizeCacheKey(pathname), String(pageSize))
+    setState({ pageSize, pager: { ...state.pager, page: 1 } })
+  }
+
   return (
-    <ListPageLayout title="标签列表">
-      <ButtonGroup variant="flat" size="sm" className="mb-3 flex justify-end">
-        <SortTagModal refreshTags={props.refreshTags} tags={props.tags}>
-          <ReButton
-            isDisabled={props.tags.length < 2}
-            startContent={<span className={cn(IconNames.Tabler.ARROWS_SORT, 'text-sm')} />}
-          >
-            排序
-          </ReButton>
-        </SortTagModal>
-      </ButtonGroup>
+    <ListPageLayout title="标签列表" className="bg-white">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="w-full sm:max-w-[400px]">
+          <ReInput
+            size="sm"
+            placeholder="输入名称或拼音"
+            labelPlacement="outside"
+            isClearable
+            defaultValue={state.keyword}
+            onValueChange={onKeywordChange}
+            onClear={() => onKeywordChange('')}
+          />
+        </div>
+        <div className="flex gap-2 sm:ml-auto">
+          {hasSelection && (
+            <ReButton
+              color="danger"
+              size="sm"
+              variant="flat"
+              startContent={<span className={cn(IconNames.Tabler.TRASH, 'text-sm')} />}
+              popoverContent={
+                <div className="flex max-w-[280px] flex-col gap-4 p-4">
+                  <p>确定删除选中的 {selectedIds.length} 个标签？</p>
+                  <ReButton color="danger" size="sm" variant="shadow" onClick={handleBatchDelete}>
+                    确定
+                  </ReButton>
+                </div>
+              }
+            >
+              删除 {selectedIds.length} 项
+            </ReButton>
+          )}
+          <ButtonGroup variant="flat" size="sm">
+            <SortTagModal refreshTags={props.refreshAllTags} tags={props.allTags}>
+              <ReButton
+                isDisabled={props.allTags.length < 2}
+                startContent={<span className={cn(IconNames.Tabler.ARROWS_SORT, 'text-sm')} />}
+              >
+                排序
+              </ReButton>
+            </SortTagModal>
+          </ButtonGroup>
+        </div>
+      </div>
+
       <div className="overflow-hidden">
-        <Table aria-label="tags table" removeWrapper>
+        <Table
+          aria-label="tags table"
+          removeWrapper
+          selectionMode="multiple"
+          selectedKeys={selectedKeys}
+          onSelectionChange={setSelectedKeys}
+        >
           <TableHeader>
-            <TableColumn>图标</TableColumn>
-            <TableColumn>名称</TableColumn>
-            <TableColumn className="max-xs:hidden">主题色</TableColumn>
-            <TableColumn className="max-xs:hidden">主标签</TableColumn>
-            <TableColumn>关联标签</TableColumn>
-            <TableColumn>操作</TableColumn>
+            <TableColumn className="px-3">图标</TableColumn>
+            <TableColumn className="px-3">名称</TableColumn>
+            <TableColumn className="max-xs:hidden px-3">主题色</TableColumn>
+            <TableColumn className="max-xs:hidden px-3">主标签</TableColumn>
+            <TableColumn className="px-3">关联标签</TableColumn>
+            <TableColumn className="px-3">操作</TableColumn>
           </TableHeader>
-          <TableBody emptyContent={<EmptyListPlaceholder target="tag" />}>
-            {props.tags.map((tag) => (
+          <TableBody
+            items={state.loading ? [] : tags}
+            isLoading={state.loading}
+            loadingContent={<Spinner className="mt-12" label="Loading..." />}
+            emptyContent={<EmptyListPlaceholder target="tag" />}
+          >
+            {(tag: SelectTag) => (
               <TableRow key={tag.id}>
                 <TableCell className="text-foreground-700 max-xs:text-xl text-3xl">
                   {tag.icon ? (
@@ -135,11 +280,10 @@ export default function TagListPage(props: TagListPageProps) {
                     {getRelatedTagsName(tag.relatedTagIds)}
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="flex gap-1">
                   <ReButton
                     variant="light"
-                    color="danger"
-                    className="text-2xl"
+                    className="text-default-500 text-xl hover:text-danger"
                     isIconOnly
                     startContent={<span className={IconNames.Tabler.TRASH} />}
                     popoverContent={
@@ -149,7 +293,7 @@ export default function TagListPage(props: TagListPageProps) {
                           color="danger"
                           size="sm"
                           variant="shadow"
-                          onClick={() => props.removeTag(tag)}
+                          onClick={() => props.removeTag(tag).then(refresh)}
                         >
                           确定
                         </ReButton>
@@ -158,9 +302,8 @@ export default function TagListPage(props: TagListPageProps) {
                   />
                   <ReButton
                     variant="light"
-                    className="text-2xl"
+                    className="text-default-500 text-xl hover:text-warning"
                     isIconOnly
-                    color="warning"
                     startContent={<span className={IconNames.Tabler.EDIT} />}
                     onClick={() =>
                       router.push(
@@ -170,10 +313,21 @@ export default function TagListPage(props: TagListPageProps) {
                   />
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
+      {!state.loading && tags.length > 0 && (
+        <PaginationControls
+          page={state.pager.page}
+          total={state.pager.total}
+          pageSize={state.pageSize}
+          pageSizeOptions={PAGE_SIZE_OPTIONS}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          totalItems={state.totalItems}
+        />
+      )}
       <ColorPicker
         {...colorPicker}
         onClose={() => setColorPicker({ isOpen: false })}
