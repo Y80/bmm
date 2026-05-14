@@ -1,11 +1,10 @@
 'use client'
 
-import { PropsWithChildren } from 'react'
-import { usePathname } from 'next/navigation'
-
-import CmsSidebarNav from '@/components/CmsSidebarNav'
+import CmsLayoutShell from '@/components/CmsLayoutShell'
 import { PublicAndUserNavbar } from '@/components/PublicAndUserNavBar'
 import { PageRoutes, USER_CMS_NAV_LINKS } from '@cfg'
+import { usePathname } from 'next/navigation'
+import { PropsWithChildren } from 'react'
 
 interface UserLayoutShellProps extends PropsWithChildren {
   tags: SelectTag[]
@@ -26,21 +25,19 @@ function isUserCmsPath(pathname: string) {
   return nestedCmsPaths.some((path) => pathname === path || pathname.startsWith(path + '/'))
 }
 
+/**
+ * UserLayoutShell - User 布局壳
+ *
+ * 根据当前路径决定渲染 CMS 布局还是普通布局：
+ * - CMS 路径：显示侧边栏导航（使用 CmsLayoutShell）
+ * - 非 CMS 路径：显示顶部导航栏（PublicAndUserNavbar）
+ */
 export default function UserLayoutShell(props: UserLayoutShellProps) {
   const pathname = usePathname()
   const showCmsLayout = isUserCmsPath(pathname)
 
   if (showCmsLayout) {
-    return (
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.12),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.1),transparent_34%),linear-gradient(135deg,rgba(248,250,252,0.96),rgba(241,245,249,0.92))] dark:bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.1),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.08),transparent_34%),linear-gradient(135deg,rgba(3,7,18,0.98),rgba(15,23,42,0.96))]">
-        <div className="flex min-h-screen">
-          <CmsSidebarNav links={USER_CMS_NAV_LINKS} brandHref={PageRoutes.User.INDEX} mode="user" />
-          <main className="min-w-0 flex-1 px-4 pb-5 pt-20 xs:px-6 xs:py-6">
-            <div className="mx-auto w-full max-w-7xl">{props.children}</div>
-          </main>
-        </div>
-      </div>
-    )
+    return <CmsLayoutShell>{props.children}</CmsLayoutShell>
   }
 
   return (

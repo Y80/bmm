@@ -10,6 +10,7 @@ interface ListPageLayoutProps extends PropsWithChildren {
   surfaceExtra?: ReactNode
   bodyClassName?: string
   className?: string
+  titleActions?: ReactNode
 }
 
 export default function ListPageLayout(props: ListPageLayoutProps) {
@@ -33,7 +34,7 @@ export default function ListPageLayout(props: ListPageLayoutProps) {
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-5">
-      <AdminPageTitle title={title} pathname={pathname} />
+      <AdminPageTitle title={title} pathname={pathname} actions={props.titleActions} />
 
       <AdminSurfaceCard
         extra={props.surfaceExtra}

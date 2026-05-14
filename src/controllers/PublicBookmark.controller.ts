@@ -40,8 +40,11 @@ export async function fullSetBookmarkToTag(bId: BookmarkId, tagIds: TagId[]) {
 }
 
 async function createFindManyFilters(query: z.output<typeof findManyBookmarksSchema>) {
-  const { keyword, tagIds = [], tagNames, hostCheckStatus } = query
+  const { keyword, tagIds = [], tagNames, hostCheckStatus, ids } = query
   const filters = []
+  if (ids?.length) {
+    filters.push(inArray(publicBookmarks.id, ids))
+  }
   if (keyword) {
     filters.push(createBookmarkFilterByKeyword(publicBookmarks, keyword))
   }
@@ -61,7 +64,7 @@ async function createFindManyFilters(query: z.output<typeof findManyBookmarksSch
       .having(sql`COUNT(DISTINCT ${publicBookmarkToTag.tId}) = ${tagIds.length}`)
     filters.push(inArray(publicBookmarks.id, findTargetBIds))
   }
-  const hostCheckFilter = createBookmarkHostCheckFilter(publicBookmarks, hostCheckStatus)
+  const hostCheckFilter = hostCheckStatus ? createBookmarkHostCheckFilter(publicBookmarks, hostCheckStatus) : undefined
   if (hostCheckFilter) {
     filters.push(hostCheckFilter)
   }
@@ -138,6 +141,13 @@ const PublicBookmarkController = {
       .returning()
     return res
   },
+  async removeMany({ ids }: { ids: BookmarkId[] }) {
+    const res = await db
+      .delete(publicBookmarks)
+      .where(inArray(publicBookmarks.id, ids))
+      .returning()
+    return res
+  },
   /**
    * 高级搜索书签列表
    */
@@ -187,9 +197,9 @@ const PublicBookmarkController = {
     if (!row.hostKey) throw new Error('当前书签无法解析出可检测的网站 Host')
     return await BookmarkHostCheckController.checkHost(row.hostKey)
   },
-  async batchCheckHosts(query?: z.output<typeof findManyBookmarksSchema>) {
-    query ||= findManyBookmarksSchema.parse({})
-    const filters = await createFindManyFilters(query)
+  async batchCheckHosts(query?: z.input<typeof findManyBookmarksSchema>) {
+    const parsedQuery = query ? findManyBookmarksSchema.parse(query) : findManyBookmarksSchema.parse({})
+    const filters = await createFindManyFilters(parsedQuery)
     const rows = await db
       .select({ hostKey: publicBookmarks.hostKey })
       .from(publicBookmarks)

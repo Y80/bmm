@@ -48,8 +48,11 @@ function userLimiter(userId: UserId, bookmarkId?: BookmarkId) {
 }
 
 async function createFindManyFilters(query: z.output<typeof findManyBookmarksSchema>, userId: UserId) {
-  const { keyword, tagIds = [], tagNames, hostCheckStatus } = query
+  const { keyword, tagIds = [], tagNames, hostCheckStatus, ids } = query
   const filters = [userLimiter(userId)]
+  if (ids?.length) {
+    filters.push(inArray(userBookmarks.id, ids))
+  }
   if (keyword) {
     filters.push(createBookmarkFilterByKeyword(userBookmarks, keyword))
   }
@@ -70,7 +73,7 @@ async function createFindManyFilters(query: z.output<typeof findManyBookmarksSch
       .having(sql`COUNT(DISTINCT ${userBookmarkToTag.tId}) = ${newTagIds.length}`)
     filters.push(inArray(userBookmarks.id, findTargetBIds))
   }
-  const hostCheckFilter = createBookmarkHostCheckFilter(userBookmarks, hostCheckStatus)
+  const hostCheckFilter = hostCheckStatus ? createBookmarkHostCheckFilter(userBookmarks, hostCheckStatus) : undefined
   if (hostCheckFilter) {
     filters.push(hostCheckFilter)
   }
@@ -148,6 +151,14 @@ const UserBookmarkController = {
       .returning()
     return res
   },
+  async removeMany({ ids }: { ids: BookmarkId[] }) {
+    const userId = await getAuthedUserId()
+    const res = await db
+      .delete(userBookmarks)
+      .where(and(userLimiter(userId), inArray(userBookmarks.id, ids)))
+      .returning()
+    return res
+  },
   /**
    * 高级搜索书签列表
    */
@@ -197,10 +208,10 @@ const UserBookmarkController = {
     if (!row.hostKey) throw new Error('当前书签无法解析出可检测的网站 Host')
     return await BookmarkHostCheckController.checkHost(row.hostKey)
   },
-  async batchCheckHosts(query?: z.output<typeof findManyBookmarksSchema>) {
-    query ||= findManyBookmarksSchema.parse({})
+  async batchCheckHosts(query?: z.input<typeof findManyBookmarksSchema>) {
+    const parsedQuery = query ? findManyBookmarksSchema.parse(query) : findManyBookmarksSchema.parse({})
     const userId = await getAuthedUserId()
-    const filters = await createFindManyFilters(query, userId)
+    const filters = await createFindManyFilters(parsedQuery, userId)
     const rows = await db.select({ hostKey: userBookmarks.hostKey }).from(userBookmarks).where(filters)
     return await BookmarkHostCheckController.checkHosts(rows.map((item) => item.hostKey))
   },

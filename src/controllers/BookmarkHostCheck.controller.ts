@@ -7,7 +7,7 @@ import SiteSettingController from './SiteSetting.controller'
 const { bookmarkHostChecks, publicBookmarks, siteConfigs, userBookmarks, userConfigs } = schema
 
 export type BookmarkHostCheckStatus = 'reachable' | 'unreachable'
-export type BookmarkHostCheckFilterStatus = BookmarkHostCheckStatus | 'unchecked' | 'all'
+export type BookmarkHostCheckFilterStatus = BookmarkHostCheckStatus | 'unchecked' | ''
 export type CheckHostsTaskValue = {
   startedAt: string
   finishedAt: string | null
@@ -56,7 +56,7 @@ export function createBookmarkHostCheckFilter(
   table: { hostKey: any },
   status: BookmarkHostCheckFilterStatus
 ) {
-  if (status === 'all') return undefined
+  if (!status) return undefined
 
   const checkedHostKeys = db.select({ hostKey: bookmarkHostChecks.hostKey }).from(bookmarkHostChecks)
 

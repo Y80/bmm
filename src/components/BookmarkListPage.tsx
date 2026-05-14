@@ -1,10 +1,14 @@
 'use client'
 
 import {
+  actBatchCheckPublicBookmarkHosts,
+  actBatchCheckUserBookmarkHosts,
   actCheckPublicBookmarkHost,
   actCheckUserBookmarkHost,
   actDeletePublicBookmark,
+  actDeletePublicBookmarks,
   actDeleteUserBookmark,
+  actDeleteUserBookmarks,
   actFindPublicBookmarks,
   actFindUserBookmarks,
   actGetPublicBookmarkHostCheckTask,
@@ -62,7 +66,6 @@ const SORTERS = [
 ] as const
 
 const HOST_CHECK_STATUSES = [
-  { name: '全部状态', key: 'all' },
   { name: '未检测', key: 'unchecked' },
   { name: '可访问', key: 'reachable' },
   { name: '不可访问', key: 'unreachable' },
@@ -110,7 +113,11 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     sorterKey: (searchParams.get('sorterKey') || SORTERS[0].key) as (typeof SORTERS)[number]['key'],
     keyword: searchParams.get('keyword') || '',
     selectedTag: searchParams.get('tag'),
-    hostCheckStatus: (searchParams.get('hostCheckStatus') || 'all') as (typeof HOST_CHECK_STATUSES)[number]['key'],
+    hostCheckStatus: (() => {
+      const status = searchParams.get('hostCheckStatus')
+      // 过滤掉已移除的 'all' 值
+      return status && status !== 'all' ? status as (typeof HOST_CHECK_STATUSES)[number]['key'] : ''
+    })(),
     checkingId: null as BookmarkId | null,
     checkHostsTask: null as CheckHostsTaskValue | null,
     startingCheckHostsTask: false,
@@ -120,6 +127,9 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       // 页码总数
       total: 1,
     },
+    selectedIds: new Set<BookmarkId>(),
+    isBatchDeleting: false,
+    isBatchChecking: false,
   })
   const dataRef = useRef({ loadingMutable: true })
   const taskRunningRef = useRef(false)
@@ -130,15 +140,15 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     mutate,
   } = useRequest(
     async () => {
-      const input: z.input<typeof findManyBookmarksSchema> = {
+      const input = {
         limit: state.pageSize,
         page: state.pager.page,
         keyword: state.keyword,
         sorterKey: state.sorterKey,
-        hostCheckStatus: state.hostCheckStatus,
         includeHostCheckSummary: true,
+        ...(state.hostCheckStatus && { hostCheckStatus: state.hostCheckStatus }),
         ...(state.selectedTag && { tagIds: state.selectedTag }),
-      }
+      } as z.input<typeof findManyBookmarksSchema>
       dataRef.current.loadingMutable && setState({ loading: true })
       const action = isUserSpace ? actFindUserBookmarks : actFindPublicBookmarks
       const res = await runAction(action(findManyBookmarksSchema.parse(input)))
@@ -209,7 +219,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     }
     state.selectedTag && (payload.tag = state.selectedTag)
     state.keyword && (payload.keyword = state.keyword)
-    state.hostCheckStatus !== 'all' && (payload.hostCheckStatus = state.hostCheckStatus)
+    state.hostCheckStatus && (payload.hostCheckStatus = state.hostCheckStatus)
     state.pageSize !== DEFAULT_PAGE_SIZE && (payload.pageSize = state.pageSize.toString())
     router.push('?' + new URLSearchParams(payload).toString())
   }, [
@@ -243,6 +253,36 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     })
   }
 
+  async function onBatchDelete() {
+    const ids = Array.from(state.selectedIds)
+    if (!ids.length) return
+    const action = isUserSpace ? actDeleteUserBookmarks : actDeletePublicBookmarks
+    setState({ isBatchDeleting: true })
+    await runAction(action({ ids }), {
+      okMsg: '书签已批量删除',
+      onOk: () => {
+        setState({ selectedIds: new Set() })
+        refresh()
+      },
+    })
+    setState({ isBatchDeleting: false })
+  }
+
+  async function onBatchCheckHosts() {
+    const ids = Array.from(state.selectedIds)
+    if (!ids.length) return
+    setState({ isBatchChecking: true })
+    const action = isUserSpace ? actBatchCheckUserBookmarkHosts : actBatchCheckPublicBookmarkHosts
+    await runAction(action({ ids }), {
+      okMsg: '站点检测完成',
+      onOk: () => {
+        setState({ selectedIds: new Set() })
+        refresh()
+      },
+    })
+    setState({ isBatchChecking: false })
+  }
+
   function onPageChange(page: number) {
     setState({ pager: { ...state.pager, page } })
   }
@@ -261,6 +301,10 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     dataRef.current.loadingMutable = false
     const action = isUserSpace ? actUpdateUserBookmark : actUpdatePublicBookmark
     runAction(action({ id: item.id, isPinned })).then(refresh)
+  }
+
+  function toNewBookmarkPage() {
+    router.push((isUserSpace ? PageRoutes.User : PageRoutes.Admin).bookmarkSlug('new'))
   }
 
   function toEditPage(item: SelectBookmark) {
@@ -365,7 +409,51 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   }
 
   return (
-    <ListPageLayout title="书签列表" className="bg-white">
+    <ListPageLayout
+      title="书签列表"
+      className="bg-white"
+      titleActions={
+        <div className="flex items-center gap-2">
+          <Button
+            color="primary"
+            size="sm"
+            startContent={<span className={IconNames.Tabler.PLUS} />}
+            onPress={toNewBookmarkPage}
+          >
+            新建书签
+          </Button>
+          <Tooltip content={<span className="whitespace-pre-line">{getCheckHostsTaskTooltip()}</span>}>
+            <Button
+              variant="flat"
+              size="sm"
+              isDisabled={isCheckingHosts}
+              isLoading={state.startingCheckHostsTask}
+              startContent={
+                isCheckingHosts || state.startingCheckHostsTask ? null : (
+                  <span className={cn(IconNames.Tabler.RADAR, 'text-base')} />
+                )
+              }
+              onPress={onStartCheckHostsTask}
+            >
+              {isCheckingHosts ? (
+                <span className="flex items-center gap-2">
+                  <Progress
+                    type="circle"
+                    percent={checkHostsPercent}
+                    size={18}
+                    showInfo={false}
+                    strokeWidth={12}
+                  />
+                  检测中
+                </span>
+              ) : (
+                '检测全部站点'
+              )}
+            </Button>
+          </Tooltip>
+        </div>
+      }
+    >
       <div
         className={cn(
           'flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end',
@@ -417,16 +505,17 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
             aria-label="选择检测状态"
             placeholder="检测状态"
             size="sm"
-            selectedKeys={[state.hostCheckStatus]}
+            selectedKeys={state.hostCheckStatus ? [state.hostCheckStatus] : []}
             onSelectionChange={(val) => {
+              const key = getSelectionKey(val)
               setState({
-                hostCheckStatus: (getSelectionKey(val) || 'all') as typeof state.hostCheckStatus,
+                hostCheckStatus: (key as typeof state.hostCheckStatus) || '',
                 pager: { ...state.pager, page: 1 },
               })
             }}
             onChange={(event) => {
               setState({
-                hostCheckStatus: (event.target.value || 'all') as typeof state.hostCheckStatus,
+                hostCheckStatus: (event.target.value as typeof state.hostCheckStatus) || '',
                 pager: { ...state.pager, page: 1 },
               })
             }}
@@ -472,40 +561,58 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
             ))}
           </DropdownMenu>
         </Dropdown>
-        <Tooltip content={<span className="whitespace-pre-line">{getCheckHostsTaskTooltip()}</span>}>
-          <Button
-            variant="flat"
-            size="sm"
-            className="justify-start sm:order-5"
-            isDisabled={isCheckingHosts}
-            isLoading={state.startingCheckHostsTask}
-            startContent={
-              isCheckingHosts || state.startingCheckHostsTask ? null : (
-                <span className={cn(IconNames.Tabler.RADAR, 'text-base')} />
-              )
-            }
-            onPress={onStartCheckHostsTask}
-          >
-            {isCheckingHosts ? (
-              <span className="flex items-center gap-2">
-                <Progress
-                  type="circle"
-                  percent={checkHostsPercent}
-                  size={18}
-                  showInfo={false}
-                  strokeWidth={12}
-                />
-                检测中
-              </span>
-            ) : (
-              '检测全部站点'
-            )}
-          </Button>
-        </Tooltip>
       </div>
 
       <div className="mt-3 overflow-hidden">
-        <Table aria-label="items table" className="px-0" key={props.tags?.length} removeWrapper>
+        {state.selectedIds.size > 0 && (
+          <div className="mb-3 flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
+            <span className="flex items-center gap-2 text-sm font-medium text-primary">
+              <span className={IconNames.Tabler.CHECKBOX} />
+              已选择 {state.selectedIds.size} 项
+            </span>
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="flat"
+                color="primary"
+                isLoading={state.isBatchChecking}
+                startContent={state.isBatchChecking ? null : <span className={IconNames.Tabler.RADAR} />}
+                onPress={onBatchCheckHosts}
+              >
+                检测站点
+              </Button>
+              <Button
+                size="sm"
+                variant="flat"
+                color="danger"
+                isLoading={state.isBatchDeleting}
+                startContent={state.isBatchDeleting ? null : <span className={IconNames.Tabler.TRASH} />}
+                onPress={onBatchDelete}
+              >
+                批量删除
+              </Button>
+              <Button
+                size="sm"
+                variant="light"
+                onPress={() => setState({ selectedIds: new Set() })}
+              >
+                取消选择
+              </Button>
+            </div>
+          </div>
+        )}
+        <Table
+          aria-label="items table"
+          className="px-0"
+          key={props.tags?.length}
+          removeWrapper
+          selectionMode="multiple"
+          selectedKeys={state.selectedIds}
+          onSelectionChange={(keys) => {
+            setState({ selectedIds: keys as Set<BookmarkId> })
+          }}
+          suppressHydrationWarning
+        >
           <TableHeader>
             <TableColumn className="w-[34%] min-w-40">网站</TableColumn>
             <TableColumn className="w-[16%] min-w-24">关联标签</TableColumn>
@@ -619,6 +726,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           pageSizeOptions={PAGE_SIZE_OPTIONS}
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
+          totalItems={props.totalBookmarks}
         />
       )}
     </ListPageLayout>

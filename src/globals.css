@@ -75,3 +75,23 @@ https://www.heroui.com/docs/guide/tailwind-v4
 [role="navigation"] [data-slot="next"] {
   cursor: pointer;
 }
+
+/* Select trigger hover 时显示手型光标 */
+[data-slot="trigger"][role="button"] {
+  cursor: pointer;
+}
+
+/* 移除 Select 选项点击时的黑色背景闪烁 */
+[data-slot="listbox"] [data-slot="option"]:active,
+[data-slot="listbox"] [data-slot="option"][data-pressed="true"] {
+  background-color: transparent !important;
+}
+
+/* 或者更精确地针对选中状态 */
+[data-slot="listbox"] [data-slot="option"] {
+  --tw-bg-opacity: 0 !important;
+}
+
+[data-slot="listbox"] [data-slot="option"][data-selected="true"] {
+  background-color: hsl(var(--heroui-primary) / 0.1) !important;
+}

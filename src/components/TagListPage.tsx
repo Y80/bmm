@@ -1,5 +1,7 @@
 'use client'
 
+import type z from 'zod'
+
 import ClientIcon from '@/components/ClientIcon'
 import ColorPicker from '@/components/ColorPicker'
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder'
@@ -13,7 +15,6 @@ import { usePageUtil } from '@/hooks'
 import { runAction } from '@/utils/client'
 import { IconNames, PageRoutes } from '@cfg'
 import {
-  ButtonGroup,
   cn,
   Selection,
   Spinner,
@@ -28,7 +29,6 @@ import {
 import { useDebounceFn, useRequest, useSetState, useUpdateEffect } from 'ahooks'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
-import type z from 'zod'
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const
 const DEFAULT_PAGE_SIZE = 20
@@ -46,10 +46,12 @@ function getCachedPageSize(pathname: string) {
     : DEFAULT_PAGE_SIZE
 }
 
+import type { ActionResult } from '@/actions/make-action'
+
 export type TagListPageProps = {
   allTags: SelectTag[]
   refreshAllTags: () => Promise<void>
-  findTags: (input: z.input<typeof findManyTagsSchema>) => Promise<any>
+  findTags: (input?: any) => ActionResult<any, any>
   removeTag: (tag: SelectTag) => Promise<void>
   removeTags: (ids: TagId[]) => Promise<void>
   changeTag: (changedTag: SelectTag) => Promise<void>
@@ -121,7 +123,7 @@ export default function TagListPage(props: TagListPageProps) {
   )
 
   const isAllSelected = selectedKeys === 'all'
-  const selectedIds = isAllSelected ? tags.map((t) => t.id) : ([...selectedKeys] as TagId[])
+  const selectedIds = isAllSelected ? tags.map((t: SelectTag) => t.id) : ([...selectedKeys] as TagId[])
   const hasSelection = isAllSelected || selectedIds.length > 0
 
   async function handleBatchDelete() {
@@ -168,8 +170,37 @@ export default function TagListPage(props: TagListPageProps) {
     setState({ pageSize, pager: { ...state.pager, page: 1 } })
   }
 
+  function toNewTagPage() {
+    router.push((isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug('new'))
+  }
+
   return (
-    <ListPageLayout title="标签列表" className="bg-white">
+    <ListPageLayout
+      title="标签列表"
+      className="bg-white"
+      titleActions={
+        <div className="flex items-center gap-2">
+          <ReButton
+            color="primary"
+            size="sm"
+            startContent={<span className={IconNames.Tabler.PLUS} />}
+            onClick={toNewTagPage}
+          >
+            新建标签
+          </ReButton>
+          <SortTagModal refreshTags={props.refreshAllTags} tags={props.allTags}>
+            <ReButton
+              variant="flat"
+              size="sm"
+              isDisabled={props.allTags.length < 2}
+              startContent={<span className={cn(IconNames.Tabler.ARROWS_SORT, 'text-sm')} />}
+            >
+              排序
+            </ReButton>
+          </SortTagModal>
+        </div>
+      }
+    >
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="w-full sm:max-w-[400px]">
           <ReInput
@@ -201,16 +232,6 @@ export default function TagListPage(props: TagListPageProps) {
               删除 {selectedIds.length} 项
             </ReButton>
           )}
-          <ButtonGroup variant="flat" size="sm">
-            <SortTagModal refreshTags={props.refreshAllTags} tags={props.allTags}>
-              <ReButton
-                isDisabled={props.allTags.length < 2}
-                startContent={<span className={cn(IconNames.Tabler.ARROWS_SORT, 'text-sm')} />}
-              >
-                排序
-              </ReButton>
-            </SortTagModal>
-          </ButtonGroup>
         </div>
       </div>
 

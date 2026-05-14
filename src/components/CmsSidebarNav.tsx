@@ -209,7 +209,7 @@ export default function CmsSidebarNav(props: CmsSidebarNavProps) {
     <>
       {/* 桌面端侧边栏 */}
       <aside className="xs:flex xs:w-60 xs:shrink-0 hidden">
-        <div className="sticky top-0 h-screen w-full px-4 py-6">
+        <div className="sticky top-0 h-screen w-full py-4 pl-4">
           <div className="border-divider/60 dark:bg-content1/80 relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white/88 shadow-[0_20px_48px_-34px_rgba(15,23,42,0.22)] backdrop-blur dark:shadow-xl dark:shadow-black/5">
             <div className={cn('absolute inset-0', tone.sidebarBackdrop)} />
             <Link

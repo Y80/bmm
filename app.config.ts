@@ -69,6 +69,7 @@ export const IconNames = {
     BOOKMARK: 'icon-[tabler--bookmark]',
     BRAND_GITHUB: 'icon-[tabler--brand-github]',
     CHECK: 'icon-[tabler--check]',
+    CHECKBOX: 'icon-[tabler--checkbox]',
     CIRCLE_CHECK: 'icon-[tabler--circle-check]',
     CIRCLE_X: 'icon-[tabler--circle-x]',
     CHEVRON_DOWN: 'icon-[tabler--chevron-down]',

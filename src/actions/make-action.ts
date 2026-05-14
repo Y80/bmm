@@ -38,7 +38,7 @@ export function makeAction<Args extends any[], Data>(...makeArgs: MakeActionArgs
   const handler = makeArgs[0] instanceof Function ? makeArgs[0] : makeArgs[0].handler
   const opts = (makeArgs[0] instanceof Function ? makeArgs[1] : omit(makeArgs[0], 'handler')) || {}
   opts.guard ??= 'user'
-  type ActionArgs = typeof opts.schema extends ZodSchema ? [z.infer<typeof opts.schema>] : Args
+  type ActionArgs = typeof opts.schema extends ZodSchema ? [z.input<typeof opts.schema>] : Args
   type ErrorResult = { error: { msg: string }; data?: undefined }
   async function action(...args: ActionArgs) {
     if (opts.schema) {

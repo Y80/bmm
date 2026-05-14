@@ -32,15 +32,14 @@ export default function PaginationControls(props: PaginationControlsProps) {
 
   return (
     <div className="flex flex-col items-center gap-3 pt-4 sm:flex-row sm:justify-center">
-      {props.totalItems != null && (
-        <div className="text-default-600 text-sm font-medium">共 {props.totalItems} 项</div>
-      )}
+      <div className="text-default-600 text-sm font-medium">共 {props.totalItems ?? 0} 项</div>
       <Pagination
         showShadow
         showControls
         page={props.page}
         total={props.total}
         onChange={props.onPageChange}
+        isDisabled={props.total <= 1}
       />
       <Select
         aria-label="选择每页条数"
@@ -51,6 +50,7 @@ export default function PaginationControls(props: PaginationControlsProps) {
         renderValue={() => `${props.pageSize} 条/页`}
         onSelectionChange={(val) => changePageSize(getSelectionKey(val))}
         onChange={(event) => changePageSize(event.target.value)}
+        isDisabled={props.total <= 1}
       >
         {props.pageSizeOptions.map((size) => (
           <SelectItem key={String(size)} textValue={`${size} 条/页`}>

@@ -13,10 +13,11 @@ export const findManyBookmarksSchema = z.object({
     .or(z.string().transform((v) => (v.includes(',') ? v.split(',') : [v])))
     .transform((v) => v.map((el) => Number(el)))
     .optional(),
+  ids: z.number().array().optional(),
   sorterKey: z
     .enum(['-updateTime', '+updateTime', '-createTime', '+createTime'])
     .default('-updateTime'),
-  hostCheckStatus: z.enum(['all', 'unchecked', 'reachable', 'unreachable']).default('all'),
+  hostCheckStatus: z.enum(['unchecked', 'reachable', 'unreachable']).optional(),
   includeHostCheckSummary: z.boolean().optional().default(false),
   limit: z
     .number()
