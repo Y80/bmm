@@ -1,7 +1,7 @@
 import { and, eq, inArray, isNull, notInArray, or } from 'drizzle-orm'
 import { db, schema } from '@/db'
 import { getBookmarkHost } from '@/utils/bookmark-host'
-import { fetchRequest, createFetchNetworkErrorMessage } from '@/utils/http'
+import { fetchRequest, createFetchNetworkErrorMessage, type FetchResponse } from '@/utils/http'
 import SiteSettingController from './SiteSetting.controller'
 
 const { bookmarkHostChecks, publicBookmarks, siteConfigs, userBookmarks, userConfigs } = schema
@@ -47,6 +47,20 @@ const HTTP_ERROR_MESSAGES: Record<number, string> = {
   503: '服务暂不可用',
   504: '网关超时',
 }
+
+const CLOUDFLARE_CHALLENGE_BODY_PATTERNS = [
+  '/cdn-cgi/challenge-platform/',
+  '__cf_chl_',
+  'cf-browser-verification',
+]
+
+const VERCEL_CHALLENGE_BODY_PATTERNS = [
+  '_vercel_challenge',
+  'vercel security checkpoint',
+  'vercel authentication',
+  'authentication required',
+  'protected deployment',
+]
 
 export function getBookmarkHostKey(url: string) {
   return getBookmarkHost(url)?.hostKey ?? null
@@ -120,7 +134,7 @@ async function probeHost(hostKey: string, timeout: number, proxyUrl?: string) {
 
   try {
     const headResponse = await requestHost(hostKey, 'HEAD', getRemainingTimeout(), proxyUrl)
-    if (headResponse.status >= 200 && headResponse.status < 400) {
+    if (isReachableResponse(headResponse)) {
       return headResponse
     }
   } catch {
@@ -128,6 +142,40 @@ async function probeHost(hostKey: string, timeout: number, proxyUrl?: string) {
   }
 
   return await requestHost(hostKey, 'GET', getRemainingTimeout(), proxyUrl)
+}
+
+function getResponseHeader(response: FetchResponse, name: string) {
+  const targetName = name.toLowerCase()
+  for (const [key, value] of Object.entries(response.headers)) {
+    if (key.toLowerCase() === targetName) return value
+  }
+  return ''
+}
+
+function getResponseBodyText(response: FetchResponse) {
+  return response.body.toString('utf8').toLowerCase()
+}
+
+function isCloudflareVerificationResponse(response: FetchResponse) {
+  if (getResponseHeader(response, 'cf-mitigated').toLowerCase() === 'challenge') return true
+
+  const body = getResponseBodyText(response)
+  if (CLOUDFLARE_CHALLENGE_BODY_PATTERNS.some((pattern) => body.includes(pattern))) return true
+  return body.includes('cloudflare') && body.includes('just a moment')
+}
+
+function isVercelVerificationResponse(response: FetchResponse) {
+  const body = getResponseBodyText(response)
+  if (!body.includes('vercel')) return false
+  return VERCEL_CHALLENGE_BODY_PATTERNS.some((pattern) => body.includes(pattern))
+}
+
+function isVerificationChallengeResponse(response: FetchResponse) {
+  return isCloudflareVerificationResponse(response) || isVercelVerificationResponse(response)
+}
+
+function isReachableResponse(response: FetchResponse) {
+  return (response.status >= 200 && response.status < 400) || isVerificationChallengeResponse(response)
 }
 
 function createHttpErrorMessage(status: number) {
@@ -371,7 +419,7 @@ const BookmarkHostCheckController = {
 
     try {
       const response = await probeHost(hostKey, opts.timeout || 8000, proxyUrl)
-      const reachable = response.status >= 200 && response.status < 400
+      const reachable = isReachableResponse(response)
       return await saveCheckResult({
         hostKey,
         status: reachable ? 'reachable' : 'unreachable',

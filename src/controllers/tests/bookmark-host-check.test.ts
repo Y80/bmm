@@ -146,6 +146,47 @@ describe('G: BookmarkHostCheckController', { sequential: true }, () => {
     expect(result.errorMessage).toBeNull()
   })
 
+  test('Cloudflare verification challenge responses are reachable', async () => {
+    vi.mocked(http.fetchRequest).mockResolvedValue({
+      status: 403,
+      headers: { 'cf-mitigated': 'challenge', server: 'cloudflare' },
+      body: Buffer.from(''),
+      effectiveUrl: '',
+    })
+
+    const result = await BookmarkHostCheckController.checkHost('https://cloudflare-challenge.example')
+    touchedHostKeys.add(result.hostKey)
+
+    expect(result.status).toBe('reachable')
+    expect(result.httpStatus).toBe(403)
+    expect(result.errorMessage).toBeNull()
+    expect(http.fetchRequest).toHaveBeenCalledTimes(1)
+  })
+
+  test('Vercel verification challenge responses are reachable', async () => {
+    vi.mocked(http.fetchRequest)
+      .mockResolvedValueOnce({
+        status: 403,
+        headers: {},
+        body: Buffer.from(''),
+        effectiveUrl: '',
+      })
+      .mockResolvedValueOnce({
+        status: 403,
+        headers: { 'x-vercel-id': 'iad1::demo' },
+        body: Buffer.from('<title>Vercel Security Checkpoint</title>'),
+        effectiveUrl: '',
+      })
+
+    const result = await BookmarkHostCheckController.checkHost('https://vercel-challenge.example')
+    touchedHostKeys.add(result.hostKey)
+
+    expect(result.status).toBe('reachable')
+    expect(result.httpStatus).toBe(403)
+    expect(result.errorMessage).toBeNull()
+    expect(http.fetchRequest).toHaveBeenCalledTimes(2)
+  })
+
   test('host check requests use browser-like headers', async () => {
     mockFetchStatus(200)
 
