@@ -136,6 +136,16 @@ export const actDeleteBookmark = makeAction(
 5. **Testing**: Run specific tests with `pnpm test -- <filename>`
 6. **Production flag**: Use `-P` for production environment variables
 
+## Design System
+
+See [DESIGN.md](./DESIGN.md) for comprehensive design system documentation including:
+- Color tokens and semantic colors
+- Typography and spacing guidelines
+- Component patterns (buttons, cards, inputs)
+- Icon system usage
+- Animation and transition specifications
+- Responsive breakpoint strategy
+
 ### Common Tasks
 
 **Adding a new server action**:
