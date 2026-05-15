@@ -1,386 +1,137 @@
-# AGENTS.md - Codebase Guide for AI Agents
+# AI 智能体开发指南
 
-## Build, Lint, and Test Commands
+## 项目概览
+
+BMM（Bookmark Manager）是一个基于 Next.js 16 的全栈 TypeScript 应用，支持用户管理、分享和浏览书签，并集成 AI 功能（网站分析、标签推荐等）。
+
+## 核心原则
+
+- **奥卡姆剃刀**：选择能解决问题的最简单方案
+- **如无必要，勿增实体**：不添加不需要的代码/功能
+- **英文思考，中文回复**：保持清晰简洁
+- **及时抛出用户指令中不合理的部分**：避免执行错误的操作
+- 为了更好的完成任务，务必参考 [karpathy-guidelines](./.agents/skills/karpathy-guidelines/SKILL.md)
+
+
+## 常用命令
 
 ```bash
-# Development
-pnpm dev              # Start dev server (runs db-init first)
-pnpm build            # Build for production
-pnpm start            # Start production server
+pnpm dev              # 开发服务器（自动运行 db-init）
+pnpm build            # 生产构建
+pnpm start            # 生产服务器
 
-# Quality
-pnpm lint             # Run ESLint
-pnpm test             # Run all Vitest tests
-pnpm test -- <file>   # Run specific test file (e.g., pnpm test -- index.test.ts)
+pnpm lint             # ESLint
+pnpm test             # 全部测试
+pnpm test -- <file>   # 指定测试文件
 
-# Database
-pnpm db:test          # Test database connection
-pnpm db:migrate       # Run database migrations
-pnpm db:push          # Push schema changes (use with caution)
-pnpm studio           # Open Drizzle Studio
+pnpm db:test          # 测试数据库连接
+pnpm db:migrate       # 执行迁移
+pnpm db:push          # 推送 schema 变更（谨慎使用）
+pnpm studio           # Drizzle Studio
 
-# Add -P or --production flag to any command for production environment
-# Example: pnpm db:test -P
+# 生产环境：添加 -P 或 --production 参数
 ```
 
-## Code Style Guidelines
+## 代码风格
 
-### Import Organization
+### 导入顺序
 
-**Order**: External dependencies → Internal modules → Local files
+外部依赖 → 内部模块（`@/`）→ 类型 → 组件
 
-```typescript
-// 1. External dependencies (React, Next.js, libraries)
-import { useState, useRef } from 'react'
-import { redirect } from 'next/navigation'
-import { Button, cn } from '@heroui/react'
-import { useRequest } from 'ahooks'
+- 仅使用绝对导入（`@/*` → `src/*`，`@cfg` → `app.config.ts`）
 
-// 2. Internal modules (@/ aliases)
-import { actDeleteUserBookmark, actFindUserBookmarks } from '@/actions'
-import { ClientIcon, EmptyListPlaceholder } from '@/components'
-import { findManyBookmarksSchema } from '@/controllers/schemas'
-import { runAction } from '@/utils/client'
+### 格式化（Prettier）
 
-// 3. Types and enums
-import type { SelectBookmark } from '@/controllers'
-import { IconNames, PageRoutes } from '@cfg'
+- 2 空格缩进，无分号，单引号，100 字符行宽
+- 代码修改完成后不要主动格式化，提交前再运行
 
-// 4. Component imports (if multiple components in one file)
-import UserHomeBody from './components/UserHomeBody'
-```
+### TypeScript
 
-**Absolute imports only**: Use `@/` alias for all internal imports. Never use relative imports like `../../utils`.
+- Strict mode 已启用，禁止 `as any`、`@ts-ignore`
 
-### Formatting (Prettier)
+### 命名规范
 
-```json
-{
-  "printWidth": 100,
-  "tabWidth": 2,
-  "useTabs": false,
-  "semi": false,
-  "singleQuote": true,
-  "trailingComma": "es5",
-  "arrowParens": "always"
-}
-```
+| 类型 | 规范 | 示例 |
+|------|------|------|
+| 组件 | PascalCase | `BookmarkListPage` |
+| 函数/变量 | camelCase | `parseWebsite`, `isUserSpace` |
+| 常量 | UPPER_SNAKE_CASE | `const PAGESIZE = 20` |
+| 类型/接口 | PascalCase | `type UserId` |
+| 文件 | 组件 PascalCase，工具 camelCase | `BookmarkListPage.tsx`, `utils.ts` |
 
-- 2 spaces indentation
-- No semicolons
-- Single quotes
-- 100 character line limit
-- 默认情况下，智能体完成代码修改后不要主动运行代码格式化；但在提交代码之前，一定要先运行代码格式化。
-
-### TypeScript Configuration
-
-- **Strict mode**: Enabled
-- **Module resolution**: `bundler`
-- **Path aliases**: `@/*` → `./src/*`, `@cfg` → `./app.config.ts`
-- **Never suppress errors**: No `as any`, `@ts-ignore`, or `@ts-expect-error`
-
-### Naming Conventions
-
-| Type             | Convention                                         | Examples                                         |
-| ---------------- | -------------------------------------------------- | ------------------------------------------------ |
-| Components       | PascalCase                                         | `BookmarkListPage`, `UserHomeBody`               |
-| Functions        | camelCase                                          | `parseWebsite`, `getPinyin`, `to()`              |
-| Variables        | camelCase                                          | `const isUserSpace = ...`                        |
-| Constants        | UPPER_SNAKE_CASE                                   | `const PAGESIZE = 20`                            |
-| Types/Interfaces | PascalCase                                         | `type UserId = string`, `interface ActionResult` |
-| Enums            | PascalCase                                         | `enum UploadStatus`                              |
-| File names       | PascalCase for components, camelCase for utilities | `BookmarkListPage.tsx`, `index.ts`, `utils.ts`   |
-
-### File Structure Patterns
+### 目录结构
 
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── (public)/          # Route groups
-│   ├── admin/             # Admin pages
-│   ├── user/              # User pages
-│   ├── api/               # API routes
-│   └── layout.tsx         # Root layouts
-├── components/            # React components
-│   ├── ui/               # UI primitives (HeroUI)
-│   ├── re-export/        # Re-exported components
-│   └── [Feature]/        # Feature components
-├── actions/              # Server actions
-│   ├── items/           # Individual action files
-│   ├── make-action.ts   # Action wrapper
-│   └── index.ts         # Exports
-├── controllers/          # Business logic
-│   ├── [Feature].controller.ts
-│   └── schemas.ts       # Zod schemas
-├── lib/                 # Library code (auth, AI, etc.)
-├── utils/               # Utility functions
-├── hooks/               # Custom React hooks
-└── db/                  # Database (Drizzle ORM)
+├── app/              # Next.js App Router
+├── components/       # 组件（ui/、re-export/、功能模块/）
+├── actions/          # Server actions（items/ 放具体逻辑）
+├── controllers/      # 业务逻辑 + schemas
+├── lib/              # 工具库（auth、AI 等）
+├── utils/            # 辅助函数
+├── hooks/            # 自定义 hooks
+└── db/               # Drizzle ORM
 ```
 
-### Action Module Rule
+## Actions 模块
 
-- `src/actions/index.ts` only serves as a module export surface. Do not place business logic in this file.
-- Put action-specific business logic, schemas, and `makeActionInput(...)` definitions under `src/actions/items/`, then export the final action from `src/actions/index.ts`.
+`src/actions/index.ts` 仅作导出入口，业务逻辑放在 `src/actions/items/`。
 
-### Server Actions Pattern
-
-**Always use `makeAction` wrapper** for server actions:
+Server actions 必须使用 `makeAction` 包装：
 
 ```typescript
-import { auth } from '@/lib/auth'
-import { makeAction, makeActionInput } from '@/actions/make-action'
-import { z } from 'zod'
-
-// Define schema
-const schema = z.object({
-  url: z.string().url(),
-  name: z.string().min(1),
-})
-
-// Define handler
-async function analyzeWebsite(input: z.infer<typeof schema>) {
-  // Handler logic here
-  // Use 'throw new Error()' for errors
-  return { result: 'success' }
-}
-
-// Create action
-export const aiAnalyzeWebsiteInput = makeActionInput({
-  handler: analyzeWebsite,
-  schema,
-  guard: 'user', // false | 'user' | 'admin'
-  name: 'analyzeWebsite', // For debugging
-})
-
-// Export action
-export const aiAnalyzeWebsite = makeAction(analyzeWebsite, { schema })
+export const actDeleteBookmark = makeAction(
+  deleteBookmarkSchema,
+  'admin', // 角色守卫：false | 'user' | 'admin'
+  async (input, userId) => { /* 逻辑 */ }
+)
 ```
 
-**Return format**: `{ error: { msg: string } | undefined, data: T | undefined }`
+## 错误处理
 
-### Error Handling
+**Controller/Handler**：抛出带中文消息的 `Error`
 
-**Controller/Handler Layer**: Throw `Error` with Chinese messages
-
-```typescript
-throw new Error('邮箱已被注册使用')
-throw new Error('书签已不存在')
-```
-
-**Database Layer**: Errors wrapped in `SqlXError` with parsing logic
-
-**Utility**: Use `to()` function for promise error handling
+**异步操作**：使用 `to()` 代替 try-catch
 
 ```typescript
 import { to } from '@/utils'
-
 const [error, data] = await to(someAsyncFunction())
-if (error) {
-  // Handle error
-}
 ```
 
-**Client Layer**: Use `runAction` wrapper for action results
+**客户端调用**：使用 `runAction`
 
 ```typescript
 import { runAction } from '@/utils/client'
-
-const res = await runAction(action({ id: 1 }), {
+const res = await runAction(actDeleteUserBookmark({ id: 1 }), {
   okMsg: '操作成功',
-  onOk: (data) => console.log(data),
-})
-
-if (res.ok) {
-  // Success
-} else {
-  // Error shown as toast automatically
-}
-```
-
-### Type Definitions
-
-**Global types** in `global.d.ts`:
-
-```typescript
-// Database types inferred from schema
-type UserId = (typeof schema.users.$inferSelect)['id']
-type TagId = (typeof schema.publicTags.$inferSelect)['id']
-type BookmarkId = (typeof schema.publicBookmarks.$inferSelect)['id']
-
-// Shared types
-type SelectTag = SelectPublicTag
-type SelectBookmark = SelectPublicBookmark
-```
-
-**Zod Integration**: Use Zod for validation and type inference
-
-```typescript
-const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-})
-
-type Input = z.infer<typeof schema>
-```
-
-### Component Structure
-
-```typescript
-'use client' // For client components
-
-// Imports
-import { useState } from 'react'
-
-// Constants
-const PAGESIZE = 20
-const SORTERS = [...]
-
-// Types
-type BookmarkListPageProps = {
-  tags: SelectTag[]
-  totalBookmarks: number
-}
-
-// Component
-export default function BookmarkListPage(props: BookmarkListPageProps) {
-  // Hooks
-  const [state, setState] = useState(...)
-
-  // Handlers
-  function handleRemove(item: SelectBookmark) { ... }
-
-  // Render
-  return (
-    <div>
-      {/* JSX */}
-    </div>
-  )
-}
-```
-
-### Client Components
-
-**Always add `'use client'` directive** at top of file for client components.
-
-**Use `runAction` utility** for calling server actions from client:
-
-```typescript
-import { runAction } from '@/utils/client'
-import { actDeleteUserBookmark } from '@/actions'
-
-async function onDelete(item: SelectBookmark) {
-  await runAction(actDeleteUserBookmark({ id: item.id }), {
-    okMsg: '书签已删除',
-    onOk: refresh,
-  })
-}
-```
-
-### Environment Variables
-
-**Required**: `DB_CONNECTION_URL`, `DB_DRIVER` (postgresql | sqlite)
-
-**Optional**: `AUTH_URL`, `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`
-
-**Loading**: Environment variables loaded via `scripts/utils.mjs` before server starts.
-
-### Testing
-
-**Framework**: Vitest
-
-**Pattern**:
-
-```typescript
-import { describe, expect, it, test } from 'vitest'
-
-describe('FeatureName', () => {
-  test('should do something', () => {
-    expect(1 + 2).toBe(3)
-  })
-
-  it('alternative test syntax', () => {
-    expect(true).toBe(true)
-  })
+  onOk: refresh,
 })
 ```
 
-**Run single test**:
+## 组件结构
 
-```bash
-pnpm test -- index.test.ts
-```
+- 服务端组件为默认，客户端组件文件后缀为 `ClientPage`
+- 客户端组件使用 `runAction` 调用 server actions
 
-### Database
+## 数据库
 
-**ORM**: Drizzle ORM
-
-**Migration**:
-
-- `pnpm db:migrate` - Create migrations
-- `pnpm db:push` - Push schema directly (use with caution)
-
-**Query patterns**:
+Drizzle ORM，支持 SQLite 和 PostgreSQL。
 
 ```typescript
 import { db, schema } from '@/db'
 import { eq } from 'drizzle-orm'
 
-// Insert
 await db.insert(schema.users).values({ name: 'John' })
-
-// Select
-const user = await db.query.users.findFirst({
-  where: eq(schema.users.id, userId),
-})
-
-// Update
+const user = await db.query.users.findFirst({ where: eq(schema.users.id, userId) })
 await db.update(schema.users).set({ name: 'Jane' }).where(eq(schema.users.id, userId))
 ```
 
-## Key Utilities
+## 设计系统
 
-### `to()` - Promise Error Handling
+所有涉及 UI、样式、配色、排版、图标、动效、响应式布局的任务，必须参考 [DESIGN.md](./DESIGN.md)。
 
-```typescript
-const [error, data] = await to(promise)
-if (error) {
-  /* handle */
-}
-```
+## 备注
 
-### `runAction()` - Server Action Wrapper
-
-```typescript
-const res = await runAction(action(args), {
-  okMsg: 'Success message',
-  onOk: (data) => {
-    /* success callback */
-  },
-})
-```
-
-### `pageSpace()` - Route Detection
-
-```typescript
-const { isAdmin, isUser } = pageSpace('auto')
-```
-
-### `isValidUrl()` / `robustUrl()` - URL Validation
-
-```typescript
-if (isValidUrl(url)) {
-  /* valid */
-}
-const fixedUrl = robustUrl(url) // Adds http/https if needed
-```
-
-## Additional Notes
-
-- **Package manager**: pnpm (required)
-- **Node version**: >=24.0.0
-- **Language**: Chinese error messages and UI text
-- **Database**: Supports SQLite (default) and PostgreSQL
-- **AI Integration**: OpenAI-compatible providers are configured in the admin dashboard
-- **Auth**: NextAuth v5 with GitHub OAuth and credentials
-- **Output mode**: `standalone` for Docker/serverless deployment
+- 包管理器：pnpm（必需）
+- Node 版本：>=24.0.0
+- 语言：错误消息和 UI 文案使用中文
