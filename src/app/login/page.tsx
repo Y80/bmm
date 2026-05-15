@@ -6,21 +6,17 @@ import ReInput from '@/components/re-export/ReInput'
 import { z, zodSchemas } from '@/lib/zod'
 import { runAction } from '@/utils/client'
 import type { ErrorPageParam, SignInPageErrorParam } from '@auth/core/types'
-import { Assets, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
-import { addToast, cn, Form, FormProps, Spinner, Switch } from '@heroui/react'
+import { IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
+import { addToast, cn, Form, FormProps, Spinner } from '@heroui/react'
 import { useMount, useSetState } from 'ahooks'
 import { signIn, useSession } from 'next-auth/react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { redirect, useSearchParams } from 'next/navigation'
 import { FormEvent, useRef, useState } from 'react'
-import { Velustro } from 'uvcanvas'
 
 // signIn() 登录失败不会报错，只会重定向到登录页面（当前页面）
 // 如果需要禁用这一行为，可在 signIn() 中添加 { redirect: false }
-// 登录异常时，会在重定向时带上参数，如：
-// - 账号密码登录失败 ?error=CredentialsSignin&code=credentials
-// - Github 授权登录失败 ?error=OAuthAccountNotLinked
+// 登录异常时，会在重定向时带上参数
 
 export default function Page() {
   const session = useSession()
@@ -28,21 +24,13 @@ export default function Page() {
 
   const [state, setState] = useSetState({
     isRedirecting: false,
-    showBg: true,
     isRegisterMode: false,
     loginRegisterLoading: false,
     authError: null as null | { title: string; desc: string },
   })
   const [validationErrors, setValidationErrors] = useState<FormProps['validationErrors']>()
-  const fieldErrors = validationErrors as Record<string, string | undefined> | undefined
 
   const formRef = useRef<HTMLFormElement>(null)
-
-  useMount(() => {
-    const value = globalThis.localStorage?.getItem('login-show-background')
-    if (value === null) return
-    setState({ showBg: value === 'true' })
-  })
 
   useMount(() => {
     const error = searchParams.get('error') as null | SignInPageErrorParam | ErrorPageParam
@@ -82,11 +70,6 @@ export default function Page() {
     }
     await signIn('github')
     setState({ isRedirecting: true })
-  }
-
-  function handleShowBgChange(val: boolean) {
-    setState({ showBg: val })
-    localStorage.setItem('login-show-background', String(val))
   }
 
   function toggleRegisterMode() {
@@ -151,32 +134,42 @@ export default function Page() {
   }
 
   return (
-    <div className="flex h-screen flex-col">
-      <div className="flex-items-center justify-between px-6 py-4">
-        <Link href={PageRoutes.INDEX} className="flex-center gap-4 rounded-xl">
-          <Image src={Assets.LOGO_SVG} width={32} height={32} alt="logo" />
-          <h3
-            className={cn(
-              'text-foreground-700 translate-y-0.5 font-mono text-2xl leading-none font-light',
-              state.showBg && 'text-white/90!'
-            )}
-          >
-            {WEBSITE_NAME}
-          </h3>
-        </Link>
-        <Switch size="sm" isSelected={state.showBg} onValueChange={handleShowBgChange} />
-      </div>
-      <div className="flex-center -mt-[10vh] grow flex-col">
-        <div className="bg-background/80 max-xs:w-[90%] w-96 rounded-xl border p-10 shadow-lg backdrop-blur-sm">
+    <main className="bg-background text-foreground relative grid min-h-screen place-items-center overflow-hidden px-5 py-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--heroui-primary)/0.1),transparent_34%),linear-gradient(145deg,hsl(var(--heroui-content2)/0.65),hsl(var(--heroui-background))_52%,hsl(var(--heroui-default-100)/0.42))]" />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-30"
+        style={{
+          backgroundImage:
+            'linear-gradient(#dde3ec 1px, transparent 1px), linear-gradient(90deg, #dde3ec 1px, transparent 1px)',
+          backgroundSize: '44px 44px',
+          maskImage: 'radial-gradient(circle at center, black, transparent 76%)',
+        }}
+      />
+      <section className="border-divider bg-content1/96 relative z-10 w-full max-w-[400px] overflow-hidden rounded-2xl border p-6 shadow-[0_30px_90px_-60px_rgba(15,23,42,0.42)] backdrop-blur-xl sm:p-7">
+        <div className="relative">
+          <div className="flex flex-col items-center text-center">
+            <div className="bg-content1 flex-center size-20 rounded-2xl border-1">
+              <Image src="/logo-no-bg.svg" width={62} height={62} alt="logo" priority />
+            </div>
+            <p className="mt-4 text-3xl leading-9 font-semibold">
+              {state.isRegisterMode ? `注册 ${WEBSITE_NAME}` : `登录 ${WEBSITE_NAME}`}
+            </p>
+          </div>
+
           {state.isRedirecting ? (
-            <div className="flex-center">
-              <Spinner color="current" size="lg">
-                <p className="mt-6 text-sm">正在等待 Github 授权</p>
-              </Spinner>
+            <div className="border-divider bg-content2 mt-7 rounded-2xl border px-8 py-12 text-center">
+              <Spinner color="current" size="lg" />
+              <p className="text-default-700 mt-6 text-sm font-medium">正在等待 Github 授权</p>
             </div>
           ) : (
-            <div>
-              <Form ref={formRef} validationErrors={validationErrors} onSubmit={handleSubmit}>
+            <>
+              <Form
+                ref={formRef}
+                validationErrors={validationErrors}
+                validationBehavior="aria"
+                onSubmit={handleSubmit}
+                className="mt-6 w-full items-stretch"
+              >
                 <ReInput label="邮箱" name="email" type="email" isRequired />
                 <ReInput
                   label="密码"
@@ -185,9 +178,6 @@ export default function Page() {
                   isRequired
                   minLength={6}
                   maxLength={32}
-                  description="6-32 位英文或数字"
-                  isInvalid={!!fieldErrors?.password}
-                  errorMessage={fieldErrors?.password}
                 />
                 {state.isRegisterMode && (
                   <ReInput
@@ -197,61 +187,62 @@ export default function Page() {
                     isRequired
                     minLength={6}
                     maxLength={32}
-                    isInvalid={!!fieldErrors?.confirmPassword}
-                    errorMessage={fieldErrors?.confirmPassword}
                   />
                 )}
-                <div className="mt-4 text-xs">
-                  <button
-                    type="button"
-                    className={cn(
-                      'text-primary flex-items-center space-x-1 transition-all hover:opacity-80',
-                      state.isRegisterMode && 'text-secondary'
-                    )}
-                    onClick={toggleRegisterMode}
-                  >
-                    {state.isRegisterMode && <span className={IconNames.Tabler.ARROW_LEFT} />}
-                    <span>{state.isRegisterMode ? '返回登录' : '还没账号？去注册'}</span>
-                    {!state.isRegisterMode && <span className={IconNames.Tabler.ARROW_RIGHT} />}
-                  </button>
+                <div className="mt-4">
+                  <ReButton buttonType="link" type="button" size="sm" onClick={toggleRegisterMode}>
+                    <span
+                      className={cn(IconNames.Tabler.ARROW_LEFT, !state.isRegisterMode && 'hidden')}
+                    />
+                    <span>{state.isRegisterMode ? '返回登录' : '还没有账号？注册'}</span>
+                    <span
+                      className={cn(IconNames.Tabler.ARROW_RIGHT, state.isRegisterMode && 'hidden')}
+                    />
+                  </ReButton>
                 </div>
                 <ReButton
                   type="submit"
                   fullWidth
                   color={state.isRegisterMode ? 'secondary' : 'primary'}
                   isLoading={state.loginRegisterLoading}
+                  className="mt-2 h-11 rounded-xl font-medium"
                 >
-                  {state.isRegisterMode ? '注册' : '登录'}
+                  {state.isRegisterMode ? '注册账号' : '登录'}
                 </ReButton>
               </Form>
 
+              <div className="my-5 flex items-center gap-3">
+                <div className="bg-divider h-px flex-1" />
+                <span className="text-default-400 text-xs font-medium">或</span>
+                <div className="bg-divider h-px flex-1" />
+              </div>
+
               <ReButton
-                className="bg-foreground text-background mt-8"
                 fullWidth
-                startContent={<span className={cn(IconNames.Mdi.GITHUB, 'text-2xl')} />}
+                variant="bordered"
+                className="border-divider bg-content1 text-default-700 hover:bg-content2 h-11 rounded-xl font-medium shadow-sm shadow-black/5"
+                startContent={<span className={cn(IconNames.Mdi.GITHUB, 'text-xl')} />}
                 onClick={handleGithubAuth}
               >
-                Github 授权登录（免注册）
+                Github 授权登录
               </ReButton>
 
               {state.authError && (
-                <div role="login-failed-message" className="mt-8 rounded-xl bg-red-50/70 p-4">
-                  <h3 className="text-danger-600 flex-items-center mb-2 gap-1 text-sm">
+                <div
+                  role="alert"
+                  className="border-danger-200 bg-danger-50 mt-5 rounded-2xl border p-4"
+                >
+                  <div className="text-danger-700 flex items-center gap-2 text-sm font-semibold">
                     <span className={IconNames.Tabler.EXCLAMATION_CIRCLE} />
                     <span>{state.authError.title}</span>
-                  </h3>
-                  <div className="text-danger-400 text-xs">{state.authError.desc}</div>
+                  </div>
+                  <p className="text-danger-600 mt-1 text-xs leading-5">{state.authError.desc}</p>
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
-      </div>
-      {state.showBg && (
-        <div className="fixed inset-0 -z-10">
-          <Velustro />
-        </div>
-      )}
-    </div>
+      </section>
+    </main>
   )
 }
