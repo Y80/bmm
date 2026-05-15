@@ -50,7 +50,6 @@ export default function PaginationControls(props: PaginationControlsProps) {
         renderValue={() => `${props.pageSize} 条/页`}
         onSelectionChange={(val) => changePageSize(getSelectionKey(val))}
         onChange={(event) => changePageSize(event.target.value)}
-        isDisabled={props.total <= 1}
       >
         {props.pageSizeOptions.map((size) => (
           <SelectItem key={String(size)} textValue={`${size} 条/页`}>
