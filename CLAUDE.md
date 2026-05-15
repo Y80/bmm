@@ -1,8 +1,8 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with code in this repository.
 
-## Core Development Principles
+## Core Principles
 
 - **Occam's Razor**: Choose the simplest solution that solves the problem
 - **No Unnecessary Entities**: Don't add code/features that aren't needed
@@ -12,156 +12,46 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 BMM (Bookmark Manager) is a full-stack TypeScript application built with Next.js 16.0.10 (App Router) that allows users to manage, share, and explore bookmarks with AI-powered features.
 
-## Common Development Commands
+## Coding Guidelines
 
-```bash
-# Development (automatically runs db-init)
-pnpm dev              # Start development server on http://localhost:3000
+详见 [AGENTS.md](./AGENTS.md)，包含完整的代码风格、命名规范、TypeScript 配置、测试模式、数据库操作等指南。
 
-# Building and Production
-pnpm build            # Build for production (runs db-init with production flag)
-pnpm start            # Start production server (runs db-init with production flag)
+## Architecture
 
-# Code Quality
-pnpm lint             # Run ESLint
-pnpm test             # Run all Vitest tests
-pnpm test -- <file>   # Run specific test file (e.g., pnpm test -- index.test.ts)
+### Authentication
 
-# Database Operations
-pnpm db:test          # Test database connection
-pnpm db:migrate       # Run database migrations
-pnpm db:push          # Push schema changes (dangerous - may lose data)
-pnpm studio           # Open Drizzle Studio for database management
+- NextAuth v5 (Beta) with GitHub OAuth + Credentials (email/password)
+- Role-based access: `user` and `admin` roles stored in JWT
+- First user becomes admin automatically
+- Use `getAuthedUserId()` helper for server-side auth checks
 
-# Environment Flags
-# Add -P or --production to any command for production environment
-# Example: pnpm db:test -P
-```
+### Database
 
-## High-Level Architecture
-
-### Authentication System
-
-- **NextAuth v5 (Beta)** with dual provider support:
-  - GitHub OAuth (`/src/lib/auth/github-provider.ts`)
-  - Credentials (email/password) (`/src/lib/auth/credentials-provider.ts`)
-- **Role-based access**: `user` and `admin` roles stored in JWT
-- **First user becomes admin** automatically
-- Use `getAuthedUserId()` helper for server-side authentication checks
-
-### Database Architecture
-
-- **ORM**: Drizzle with multi-database support (SQLite/PostgreSQL)
-- **Schema separation**: Different schemas for SQLite (`/src/db/sqlite/`) and PostgreSQL (`/src/db/postgres/`)
-- **Key tables**:
-  - User-scoped: `userTags`, `userBookmarks` with many-to-many relationships
-  - Public: `publicBookmarks`, `publicTags` (admin-managed)
-  - Auth: Standard NextAuth tables
-- **Many-to-many patterns**: Bookmark↔Tags, Tags↔Tags (related tags)
+- Drizzle ORM with SQLite/PostgreSQL support
+- Separate schemas: `src/db/sqlite/` and `src/db/postgres/`
+- User-scoped: `userTags`, `userBookmarks` (many-to-many)
+- Public: `publicBookmarks`, `publicTags` (admin-managed)
 
 ### AI Integration
 
-- **OpenAI-compatible APIs**: Any provider supporting OpenAI format
-- **Key functions** (`/src/lib/ai/index.ts`):
-  - `analyzeWebsite()`: Extracts title, description, favicon, suggests tags
-  - `analyzeRelatedTags()`: Finds semantic tag relationships, suggests theme colors
-- **Provider configuration**: Admin-managed in the dashboard and stored in `siteConfigs`
+- OpenAI-compatible APIs, provider configured in admin dashboard
+- `analyzeWebsite()`: extracts title, description, favicon, suggests tags
+- `analyzeRelatedTags()`: finds semantic tag relationships
 
-### Code Organization Patterns
+### Key Patterns
 
-#### Import Order
-
-```typescript
-// 1. External dependencies
-import { useState } from 'react'
-// 2. Internal modules (@/ aliases)
-import { actDeleteUserBookmark } from '@/actions'
-// 3. Types and enums
-import type { SelectBookmark } from '@/controllers'
-// 4. Component imports
-import UserHomeBody from './components/UserHomeBody'
-```
-
-#### Actions Module Boundary
-
-- `src/actions/index.ts` is only the export entry for actions.
-- Do not place business logic in `src/actions/index.ts`.
-- Put action-specific handler logic, schemas, and `makeActionInput(...)` declarations in `src/actions/items/`, then export the final action from `src/actions/index.ts`.
-
-#### Async Error Handling
-
-使用 `to()` (`@/utils`) 代替 try-catch，返回 `[err, result]` 元组。
-
-#### Server Actions Pattern
-
-All server actions use the `makeAction` utility (`/src/utils/server-actions.ts`):
-
-- Automatic Zod validation
-- Role-based guards (`false` | `'user'` | `'admin'`)
-- Standardized error handling
-- Automatic redirects for auth failures
-
-Example:
-
-```typescript
-export const actDeleteBookmark = makeAction(
-  deleteBookmarkSchema,
-  'admin', // role guard
-  async (input, userId) => {
-    // action logic
-  }
-)
-```
-
-#### Component Structure
-
-- **Server components**: Default, fetch initial data
-- **Client components**: Suffixed with "ClientPage", manage interactivity
-- **Context providers**: `/src/components/providers` for global state
-
-### Key Technical Decisions
-
-1. **No client state management**: React Context + server state via actions
-2. **Type safety**: Extensive Zod schemas, TypeScript strict mode
-3. **Path aliases**: `@/*` maps to `src/*`, `@cfg` maps to `app.config.ts`
-4. **Code style**: 2 spaces, no semicolons, single quotes (enforced by Prettier)
-5. **Chinese support**: Pinyin fields for tag search, Chinese AI prompts
-
-### Development Tips
-
-1. **Always use absolute imports** with `@/` alias, never relative paths
-2. **Check authentication** in server actions using the role guard parameter
-3. **AI features** require an active provider configured in the admin dashboard
-4. **Database changes**: Use migrations, avoid `db:push` in development
-5. **Testing**: Run specific tests with `pnpm test -- <filename>`
-6. **Production flag**: Use `-P` for production environment variables
+- Server actions use `makeAction` wrapper with Zod validation + role guards
+- Async error handling: use `to()` utility instead of try-catch
+- Client actions: use `runAction()` wrapper
+- Path aliases: `@/*` → `src/*`, `@cfg` → `app.config.ts`
 
 ## Design System
 
-See [DESIGN.md](./DESIGN.md) for comprehensive design system documentation including:
-- Color tokens and semantic colors
-- Typography and spacing guidelines
-- Component patterns (buttons, cards, inputs)
-- Icon system usage
-- Animation and transition specifications
-- Responsive breakpoint strategy
+See [DESIGN.md](./DESIGN.md) for color tokens, typography, component patterns.
 
-### Common Tasks
+## Common Tasks
 
-**Adding a new server action**:
-
-1. Create Zod schema in `/src/controllers/schemas/`
-2. Implement action in `/src/actions/`
-3. Use `makeAction` with appropriate role guard
-4. Import in client components and call via `runAction`
-
-**Working with bookmarks**:
-
-- User bookmarks: Use `userBookmarks` table, scoped to userId
-- Public bookmarks: Use `publicBookmarks` table, admin-managed
-- Search: Use `keywordSearch()` helper, supports pinyin and partial matches
-
-**AI features**:
-
-- Website analysis: Calls `analyzeWebsite()` with URL
-- Tag relations: Calls `analyzeRelatedTags()` for semantic grouping
+- **New server action**: schema in `src/controllers/schemas/` → handler in `src/actions/items/` → export from `src/actions/index.ts`
+- **Bookmarks**: user-scoped via `userBookmarks`, public via `publicBookmarks`
+- **Search**: use `keywordSearch()` helper (supports pinyin)
+- **Production flag**: add `-P` to any command
