@@ -2,6 +2,7 @@ import { useIsMobile } from '@/hooks'
 import {
   Button,
   ButtonProps,
+  cn,
   Popover,
   PopoverContent,
   PopoverProps,
@@ -12,10 +13,20 @@ import { omit } from 'lodash'
 import { ReactNode, forwardRef, useState } from 'react'
 import ReTooltip from './ReTooltip'
 
+const ICON_BUTTON_CLS =
+  'min-w-0 gap-0 rounded-xl bg-transparent px-0 text-default-600 transition-[background-color,color,box-shadow] hover:bg-default-100 hover:text-foreground data-[hover=true]:bg-default-100 data-[hover=true]:text-foreground dark:text-white/72 dark:hover:bg-white/[0.08] dark:hover:text-white dark:data-[hover=true]:bg-white/[0.08] dark:data-[hover=true]:text-white'
+
+const ICON_BUTTON_ADJACENT_CLS = '[&+&]:ml-0'
+
+const LINK_BUTTON_CLS =
+  'h-auto min-w-0 gap-1 rounded-md bg-transparent px-0 py-0 text-primary underline-offset-4 hover:bg-transparent hover:text-primary/80 hover:underline data-[hover=true]:bg-transparent data-[hover=true]:text-primary/80 data-[hover=true]:underline'
+
 // 在原本的 Button 组件上，添加 loading 状态、tooltip、popover 等功能
 // tooltip 和 popover 基本一致，只是触发时机不同
 // tooltip 鼠标 hover 上去就会展示，popover 点击后才会展示
 interface ReButtonProps extends ButtonProps {
+  buttonType?: 'button' | 'icon' | 'link'
+  icon?: ReactNode
   onClick?: () => any
   tooltip?: string | (TooltipProps & { adaptMobile?: boolean })
   popoverContent?: ReactNode
@@ -23,11 +34,23 @@ interface ReButtonProps extends ButtonProps {
 }
 
 function ReButton_(props: ReButtonProps, ref: any) {
-  const { onClick, tooltip, popoverContent, ...resetProps } = props
+  const { buttonType, icon, onClick, tooltip, popoverContent, ...resetProps } = props
   const isMobile = useIsMobile()
   const [loading, setLoading] = useState(false)
 
   const mergedLoading = props.isLoading || loading
+  const isIconButton = buttonType === 'icon' || props.isIconOnly
+  const isLinkButton = buttonType === 'link'
+  const children = icon || props.children
+  const startContent = icon || isIconButton ? undefined : resetProps.startContent
+  const variant = resetProps.variant || (isIconButton || isLinkButton ? 'light' : undefined)
+  const size = resetProps.size || (isIconButton ? 'sm' : undefined)
+  const className = cn(
+    isIconButton && ICON_BUTTON_CLS,
+    isIconButton && ICON_BUTTON_ADJACENT_CLS,
+    isLinkButton && LINK_BUTTON_CLS,
+    props.className
+  )
 
   function onClickWrapper() {
     if (mergedLoading) return
@@ -42,15 +65,19 @@ function ReButton_(props: ReButtonProps, ref: any) {
   const button = (
     <Button
       {...resetProps}
+      className={className}
       disableRipple
-      startContent={mergedLoading ? null : resetProps.startContent}
+      isIconOnly={isIconButton}
+      size={size}
+      startContent={mergedLoading ? null : startContent}
       as={props.href ? 'a' : undefined}
+      variant={variant}
       disabled={mergedLoading || props.disabled}
       isLoading={mergedLoading}
       onPress={onClickWrapper}
       ref={ref}
     >
-      {props.children}
+      {children}
     </Button>
   )
 
