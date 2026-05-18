@@ -5,6 +5,7 @@ import ClientIcon from '@/components/ClientIcon'
 import ColorPicker from '@/components/ColorPicker'
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder'
 import ListPageLayout from '@/components/ListPageLayout'
+import MyModal from '@/components/MyModal'
 import SortTagModal from '@/components/SortTagModal'
 import ReButton from '@/components/re-export/ReButton'
 import ReInput from '@/components/re-export/ReInput'
@@ -216,14 +217,18 @@ export default function TagListPage(props: TagListPageProps) {
               size="sm"
               variant="flat"
               startContent={<span className={cn(IconNames.Tabler.TRASH, 'text-sm')} />}
-              popoverContent={
-                <div className="flex max-w-[280px] flex-col gap-4 p-4">
-                  <p>确定删除选中的 {selectedIds.length} 个标签？</p>
-                  <ReButton color="danger" size="sm" variant="shadow" onPress={handleBatchDelete}>
-                    确定
-                  </ReButton>
-                </div>
-              }
+              onPress={() => {
+                MyModal.open({
+                  title: '确认删除',
+                  children: (
+                    <p>
+                      确定删除选中的 {selectedIds.length} 个标签？
+                    </p>
+                  ),
+                  okButtonProps: { color: 'danger' },
+                  onOk: handleBatchDelete,
+                })
+              }}
             >
               删除 {selectedIds.length} 项
             </ReButton>
@@ -308,19 +313,14 @@ export default function TagListPage(props: TagListPageProps) {
                       color="danger"
                       tooltip="删除标签"
                       aria-label={`删除标签 ${tag.name}`}
-                      popoverContent={
-                        <div className="flex max-w-[280px] flex-col gap-4 p-4">
-                          <p>确定删除标签「{tag.name}」？</p>
-                          <ReButton
-                            color="danger"
-                            size="sm"
-                            variant="shadow"
-                            onPress={() => props.removeTag(tag).then(refresh)}
-                          >
-                            确定
-                          </ReButton>
-                        </div>
-                      }
+                      onPress={() => {
+                        MyModal.open({
+                          title: '确认删除',
+                          children: <p>确定删除标签「{tag.name}」？</p>,
+                          okButtonProps: { color: 'danger' },
+                          onOk: () => props.removeTag(tag).then(refresh),
+                        })
+                      }}
                     >
                       <span className={IconNames.Tabler.TRASH} />
                     </ReButton>

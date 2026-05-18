@@ -10,6 +10,7 @@ import {
 } from '@/actions'
 import AdminPageTitle from '@/components/AdminPageTitle'
 import { AdminSurfaceCard } from '@/components/AdminPageShell'
+import MyModal from '@/components/MyModal'
 import ReButton from '@/components/re-export/ReButton'
 import ReInput from '@/components/re-export/ReInput'
 import type { SafeAiProviderConfig, SafeAiProvidersConfig } from '@/controllers'
@@ -367,14 +368,14 @@ export default function Page() {
               color="danger"
               isDisabled={!config.providers.length}
               startContent={<span className={IconNames.Tabler.TRASH} />}
-              popoverContent={
-                <div className="flex max-w-[280px] flex-col gap-4 p-4">
-                  <p>确定清空所有供应商配置？</p>
-                  <ReButton color="danger" size="sm" variant="shadow" onPress={clearConfig}>
-                    确定
-                  </ReButton>
-                </div>
-              }
+              onPress={() => {
+                MyModal.open({
+                  title: '确认清空',
+                  children: <p>确定清空所有供应商配置？</p>,
+                  okButtonProps: { color: 'danger' },
+                  onOk: clearConfig,
+                })
+              }}
             >
               清空配置
             </ReButton>
@@ -462,19 +463,14 @@ export default function Page() {
                         color="danger"
                         isIconOnly
                         className="text-lg"
-                        popoverContent={
-                          <div className="flex max-w-[280px] flex-col gap-4 p-4">
-                            <p>确定删除供应商「{item.name}」？</p>
-                            <ReButton
-                              color="danger"
-                              size="sm"
-                              variant="shadow"
-                              onPress={() => deleteProvider(item)}
-                            >
-                              确定
-                            </ReButton>
-                          </div>
-                        }
+                        onPress={() => {
+                          MyModal.open({
+                            title: '确认删除',
+                            children: <p>确定删除供应商「{item.name}」？</p>,
+                            okButtonProps: { color: 'danger' },
+                            onOk: () => deleteProvider(item),
+                          })
+                        }}
                       >
                         <span className={IconNames.Tabler.TRASH} />
                       </ReButton>

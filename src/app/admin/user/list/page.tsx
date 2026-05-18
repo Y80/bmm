@@ -3,6 +3,7 @@
 import { actDeleteUser, actFindUsers } from '@/actions'
 import { AdminSurfaceCard } from '@/components/AdminPageShell'
 import AdminPageTitle from '@/components/AdminPageTitle'
+import MyModal from '@/components/MyModal'
 import ReButton from '@/components/re-export/ReButton'
 import ReInput from '@/components/re-export/ReInput'
 import type { SelectUser } from '@/controllers/User.controller'
@@ -236,19 +237,18 @@ export default function Page() {
                       isIconOnly
                       tooltip="删除用户"
                       aria-label={`删除用户 ${getDisplayName(item)}`}
-                      popoverContent={
-                        <div className="flex max-w-[280px] flex-col gap-4 p-4">
-                          <p>确定删除用户「{getDisplayName(item)}」？</p>
-                          <ReButton
-                            color="danger"
-                            size="sm"
-                            variant="shadow"
-                            onClick={() => onDeleteUser(item)}
-                          >
-                            确定
-                          </ReButton>
-                        </div>
-                      }
+                      onPress={() => {
+                        MyModal.open({
+                          title: '确认删除',
+                          children: (
+                            <p>
+                              确定删除用户「{getDisplayName(item)}」？
+                            </p>
+                          ),
+                          okButtonProps: { color: 'danger' },
+                          onOk: () => onDeleteUser(item),
+                        })
+                      }}
                     >
                       <span className={IconNames.Tabler.TRASH} />
                     </ReButton>
