@@ -102,7 +102,6 @@ function getCachedPageSize(pathname: string) {
 
 export type BookmarkListPageProps = {
   tags: SelectTag[]
-  totalBookmarks: number
 }
 
 export default function BookmarkListPage(props: BookmarkListPageProps) {
@@ -130,6 +129,8 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       page: Number(searchParams.get('page')) || 1,
       // 页码总数
       total: 1,
+      // 筛选后的实际总数
+      totalItems: 0,
     },
     selectedKeys: new Set<BookmarkId>() as Selection,
     isBatchDeleting: false,
@@ -162,6 +163,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       setState((state) => ({
         pager: {
           ...state.pager,
+          totalItems: res.data.total,
           total: res.data.total <= state.pageSize ? 1 : Math.ceil(res.data.total / state.pageSize),
         },
       }))
@@ -468,7 +470,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       <div
         className={cn(
           'flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end',
-          !props.totalBookmarks && 'hidden'
+          !state.pager.totalItems && 'hidden'
         )}
       >
         <div className="w-full sm:order-1 sm:w-[220px]">
@@ -487,6 +489,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
             aria-label="选择标签"
             placeholder="选择标签"
             size="sm"
+            isClearable
             selectedKeys={state.selectedTag ? [state.selectedTag] : []}
             onSelectionChange={(val) => {
               setState({
@@ -516,6 +519,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
             aria-label="选择检测状态"
             placeholder="检测状态"
             size="sm"
+            isClearable
             selectedKeys={state.hostCheckStatus ? [state.hostCheckStatus] : []}
             onSelectionChange={(val) => {
               const key = getSelectionKey(val)
@@ -728,7 +732,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           </TableBody>
         </Table>
       </div>
-      {!state.loading && !!props.totalBookmarks && (
+      {!state.loading && !!state.pager.totalItems && (
         <PaginationControls
           page={state.pager.page}
           total={state.pager.total}
@@ -736,7 +740,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           pageSizeOptions={PAGE_SIZE_OPTIONS}
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
-          totalItems={props.totalBookmarks}
+          totalItems={state.pager.totalItems}
         />
       )}
     </ListPageLayout>

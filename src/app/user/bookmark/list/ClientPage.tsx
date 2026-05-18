@@ -4,7 +4,7 @@ import BookmarkListPage from '@/components/BookmarkListPage'
 import { useUserContext } from '../../ctx'
 
 export default function ClientPage() {
-  const { tags, totalBookmarks } = useUserContext()
+  const { tags } = useUserContext()
 
-  return <BookmarkListPage tags={tags} totalBookmarks={totalBookmarks} />
+  return <BookmarkListPage tags={tags} />
 }

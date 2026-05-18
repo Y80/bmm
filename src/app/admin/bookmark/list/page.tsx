@@ -4,12 +4,7 @@ import BookmarkListPage, { BookmarkListPageProps } from '@/components/BookmarkLi
 import { useAdminContext } from '../../ctx'
 
 export default function Page() {
-  const { tags, totalBookmarks } = useAdminContext()
+  const { tags } = useAdminContext()
 
-  const props: BookmarkListPageProps = {
-    tags,
-    totalBookmarks,
-  }
-
-  return <BookmarkListPage {...props} />
+  return <BookmarkListPage tags={tags} />
 }

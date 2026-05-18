@@ -264,12 +264,12 @@ export default function TagListPage(props: TagListPageProps) {
           >
             {(tag: SelectTag) => (
               <TableRow key={tag.id}>
-                <TableCell className="text-foreground-700 max-xs:text-xl text-3xl">
+                <TableCell className="text-foreground-700 text-lg">
                   {tag.icon ? (
                     <ClientIcon
                       icon={tag.icon}
                       color={tag.color || undefined}
-                      className="size-7 text-3xl"
+                      className="size-5"
                     />
                   ) : null}
                 </TableCell>
