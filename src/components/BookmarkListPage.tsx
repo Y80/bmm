@@ -25,15 +25,15 @@ import ListPageLayout from '@/components/ListPageLayout'
 import ReButton from '@/components/re-export/ReButton'
 import ReInput from '@/components/re-export/ReInput'
 import { PaginationControls } from '@/components/ui'
-import { findManyBookmarksSchema } from '@/controllers/schemas'
 import type { CheckHostsTaskValue } from '@/controllers'
+import { findManyBookmarksSchema } from '@/controllers/schemas'
 import { usePageUtil } from '@/hooks'
 import { runAction } from '@/utils/client'
 import { IconNames, PageRoutes } from '@cfg'
 import {
+  addToast,
   Button,
   Chip,
-  addToast,
   cn,
   Dropdown,
   DropdownItem,
@@ -116,7 +116,9 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     hostCheckStatus: (() => {
       const status = searchParams.get('hostCheckStatus')
       // 过滤掉已移除的 'all' 值
-      return status && status !== 'all' ? status as (typeof HOST_CHECK_STATUSES)[number]['key'] : ''
+      return status && status !== 'all'
+        ? (status as (typeof HOST_CHECK_STATUSES)[number]['key'])
+        : ''
     })(),
     checkingId: null as BookmarkId | null,
     checkHostsTask: null as CheckHostsTaskValue | null,
@@ -158,8 +160,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       setState((state) => ({
         pager: {
           ...state.pager,
-          total:
-            res.data.total <= state.pageSize ? 1 : Math.ceil(res.data.total / state.pageSize),
+          total: res.data.total <= state.pageSize ? 1 : Math.ceil(res.data.total / state.pageSize),
         },
       }))
       return res.data.list
@@ -422,7 +423,9 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
           >
             新建书签
           </Button>
-          <Tooltip content={<span className="whitespace-pre-line">{getCheckHostsTaskTooltip()}</span>}>
+          <Tooltip
+            content={<span className="whitespace-pre-line">{getCheckHostsTaskTooltip()}</span>}
+          >
             <Button
               variant="flat"
               size="sm"
@@ -565,8 +568,8 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
 
       <div className="mt-3 overflow-hidden">
         {state.selectedIds.size > 0 && (
-          <div className="mb-3 flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
-            <span className="flex items-center gap-2 text-sm font-medium text-primary">
+          <div className="border-primary/20 bg-primary/5 mb-3 flex items-center gap-3 rounded-lg border p-3">
+            <span className="text-primary flex items-center gap-2 text-sm font-medium">
               <span className={IconNames.Tabler.CHECKBOX} />
               已选择 {state.selectedIds.size} 项
             </span>
@@ -576,7 +579,9 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                 variant="flat"
                 color="primary"
                 isLoading={state.isBatchChecking}
-                startContent={state.isBatchChecking ? null : <span className={IconNames.Tabler.RADAR} />}
+                startContent={
+                  state.isBatchChecking ? null : <span className={IconNames.Tabler.RADAR} />
+                }
                 onPress={onBatchCheckHosts}
               >
                 检测站点
@@ -586,7 +591,9 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                 variant="flat"
                 color="danger"
                 isLoading={state.isBatchDeleting}
-                startContent={state.isBatchDeleting ? null : <span className={IconNames.Tabler.TRASH} />}
+                startContent={
+                  state.isBatchDeleting ? null : <span className={IconNames.Tabler.TRASH} />
+                }
                 onPress={onBatchDelete}
               >
                 批量删除
@@ -630,7 +637,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
               return (
                 <TableRow key={item.id}>
                   <TableCell>
-                    <div className="flex w-full min-w-0 max-w-[300px] items-center gap-3 max-xs:max-w-36">
+                    <div className="max-xs:max-w-36 flex w-full max-w-[300px] min-w-0 items-center gap-3">
                       <span className="shrink-0">
                         <Favicon src={item.icon} showErrorIconOnFailed showSpinner />
                       </span>
@@ -649,7 +656,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                   </TableCell>
                   <TableCell>
                     <div
-                      className="w-full min-w-0 max-w-36 truncate text-sm max-xs:max-w-20"
+                      className="max-xs:max-w-20 w-full max-w-36 min-w-0 truncate text-sm"
                       title={renderRelatedTags(item.relatedTagIds)}
                     >
                       {renderRelatedTags(item.relatedTagIds)}
@@ -675,10 +682,10 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                   <TableCell>
                     <div className="flex w-28 items-center">
                       <ReButton
-                        variant="light"
-                        className="text-2xl"
                         isIconOnly
                         color="primary"
+                        tooltip="检测站点"
+                        aria-label={`检测站点 ${item.name}`}
                         isLoading={state.checkingId === item.id}
                         onClick={() => onCheckHost(item)}
                       >
@@ -687,10 +694,10 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                         )}
                       </ReButton>
                       <ReButton
-                        color="danger"
-                        variant="light"
                         isIconOnly
-                        className="text-2xl"
+                        color="danger"
+                        tooltip="删除书签"
+                        aria-label={`删除书签 ${item.name}`}
                         popoverContent={
                           <div className="flex max-w-52 flex-col gap-4 p-4">
                             <p>确定删除「{item.name}」？</p>
@@ -703,10 +710,10 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                         <span className={IconNames.Tabler.TRASH} />
                       </ReButton>
                       <ReButton
-                        variant="light"
-                        className="text-2xl"
                         isIconOnly
                         color="warning"
+                        tooltip="编辑书签"
+                        aria-label={`编辑书签 ${item.name}`}
                         onClick={() => toEditPage(item)}
                       >
                         <span className={IconNames.Tabler.EDIT} />

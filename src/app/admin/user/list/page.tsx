@@ -1,8 +1,8 @@
 'use client'
 
 import { actDeleteUser, actFindUsers } from '@/actions'
-import AdminPageTitle from '@/components/AdminPageTitle'
 import { AdminSurfaceCard } from '@/components/AdminPageShell'
+import AdminPageTitle from '@/components/AdminPageTitle'
 import ReButton from '@/components/re-export/ReButton'
 import ReInput from '@/components/re-export/ReInput'
 import type { SelectUser } from '@/controllers/User.controller'
@@ -233,8 +233,9 @@ export default function Page() {
                       isLoading={state.deletingUserId === item.id}
                       variant="light"
                       color="danger"
-                      className="text-2xl"
                       isIconOnly
+                      tooltip="删除用户"
+                      aria-label={`删除用户 ${getDisplayName(item)}`}
                       popoverContent={
                         <div className="flex max-w-[280px] flex-col gap-4 p-4">
                           <p>确定删除用户「{getDisplayName(item)}」？</p>

@@ -422,6 +422,7 @@ export default function Page() {
                     <div className="flex items-center gap-0">
                       <ReButton
                         aria-label={`编辑供应商 ${item.name}`}
+                        tooltip="编辑供应商"
                         size="sm"
                         variant="light"
                         isIconOnly
@@ -432,6 +433,7 @@ export default function Page() {
                       </ReButton>
                       <ReButton
                         aria-label={`复制供应商 ${item.name}`}
+                        tooltip="复制供应商"
                         size="sm"
                         variant="light"
                         isIconOnly
@@ -442,6 +444,7 @@ export default function Page() {
                       </ReButton>
                       <ReButton
                         aria-label={`测试供应商 ${item.name}`}
+                        tooltip="测试供应商"
                         size="sm"
                         variant="light"
                         isIconOnly
@@ -452,6 +455,7 @@ export default function Page() {
                       </ReButton>
                       <ReButton
                         aria-label={`删除供应商 ${item.name}`}
+                        tooltip="删除供应商"
                         size="sm"
                         variant="light"
                         color="danger"

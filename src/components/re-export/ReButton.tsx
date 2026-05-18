@@ -10,11 +10,11 @@ import {
   TooltipProps,
 } from '@heroui/react'
 import { omit } from 'lodash'
-import { ReactNode, forwardRef, useState } from 'react'
+import { forwardRef, ReactNode, useState } from 'react'
 import ReTooltip from './ReTooltip'
 
 const ICON_BUTTON_CLS =
-  'min-w-0 gap-0 rounded-xl bg-transparent px-0 text-default-600 transition-[background-color,color,box-shadow] hover:bg-default-100 hover:text-foreground data-[hover=true]:bg-default-100 data-[hover=true]:text-foreground dark:text-white/72 dark:hover:bg-white/[0.08] dark:hover:text-white dark:data-[hover=true]:bg-white/[0.08] dark:data-[hover=true]:text-white [tr:hover_&:hover]:bg-default-200 [tr:hover_&[data-hover=true]]:bg-default-200 [tr[data-selected=true]_&:hover]:bg-default-300 [tr[data-selected=true]_&[data-hover=true]]:bg-default-300 [tr[aria-selected=true]_&:hover]:bg-default-300 [tr[aria-selected=true]_&[data-hover=true]]:bg-default-300 dark:[tr:hover_&:hover]:bg-white/[0.14] dark:[tr:hover_&[data-hover=true]]:bg-white/[0.14] dark:[tr[data-selected=true]_&:hover]:bg-white/[0.18] dark:[tr[data-selected=true]_&[data-hover=true]]:bg-white/[0.18] dark:[tr[aria-selected=true]_&:hover]:bg-white/[0.18] dark:[tr[aria-selected=true]_&[data-hover=true]]:bg-white/[0.18]'
+  'min-w-0 gap-0 rounded-xl px-0 text-lg'
 
 const ICON_BUTTON_ADJACENT_CLS = '[&+&]:ml-0'
 

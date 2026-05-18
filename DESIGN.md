@@ -316,6 +316,7 @@ className="border-divider/60 bg-white/38 backdrop-blur-md dark:bg-default-100/5"
 - 主要操作使用 HeroUI v2 `Button` 的 `color="primary"`。
 - 危险操作使用 `color="danger"`，并在批量或不可恢复操作中二次确认。
 - 工具按钮优先使用图标加 tooltip；语义不清时使用图标加文字。
+- 表格操作列中的纯图标按钮必须提供简短 tooltip，并保留可访问的 `aria-label`。
 - 按钮内文字不得换行或溢出，移动端可以缩短文案。
 
 ### 表单

@@ -298,39 +298,43 @@ export default function TagListPage(props: TagListPageProps) {
                     {getRelatedTagsName(tag.relatedTagIds)}
                   </div>
                 </TableCell>
-                <TableCell className="flex gap-1">
-                  <ReButton
-                    variant="light"
-                    className="text-default-500 hover:text-danger text-xl"
-                    isIconOnly
-                    popoverContent={
-                      <div className="flex max-w-[280px] flex-col gap-4 p-4">
-                        <p>确定删除标签「{tag.name}」？</p>
-                        <ReButton
-                          color="danger"
-                          size="sm"
-                          variant="shadow"
-                          onClick={() => props.removeTag(tag).then(refresh)}
-                        >
-                          确定
-                        </ReButton>
-                      </div>
-                    }
-                  >
-                    <span className={IconNames.Tabler.TRASH} />
-                  </ReButton>
-                  <ReButton
-                    variant="light"
-                    // className="text-default-500 hover:text-warning text-xl"
-                    isIconOnly
-                    onClick={() =>
-                      router.push(
-                        (isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug(tag.id)
-                      )
-                    }
-                  >
-                    <span className={IconNames.Tabler.EDIT} />
-                  </ReButton>
+                <TableCell>
+                  <div className="flex w-20 items-center">
+                    <ReButton
+                      isIconOnly
+                      color="danger"
+                      tooltip="删除标签"
+                      aria-label={`删除标签 ${tag.name}`}
+                      popoverContent={
+                        <div className="flex max-w-[280px] flex-col gap-4 p-4">
+                          <p>确定删除标签「{tag.name}」？</p>
+                          <ReButton
+                            color="danger"
+                            size="sm"
+                            variant="shadow"
+                            onClick={() => props.removeTag(tag).then(refresh)}
+                          >
+                            确定
+                          </ReButton>
+                        </div>
+                      }
+                    >
+                      <span className={IconNames.Tabler.TRASH} />
+                    </ReButton>
+                    <ReButton
+                      isIconOnly
+                      color="warning"
+                      tooltip="编辑标签"
+                      aria-label={`编辑标签 ${tag.name}`}
+                      onClick={() =>
+                        router.push(
+                          (isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug(tag.id)
+                        )
+                      }
+                    >
+                      <span className={IconNames.Tabler.EDIT} />
+                    </ReButton>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

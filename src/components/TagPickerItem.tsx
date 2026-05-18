@@ -21,10 +21,10 @@ export default function TagPickerItem({ tag, tags, onClick }: Props) {
     <a
       {...getTagLinkAttrs(tag)}
       className={cn(
-        'group relative flex h-10 w-full shrink-0 cursor-pointer items-center gap-3 overflow-hidden rounded-xl px-3 transition-[background-color,border-color,box-shadow,color,transform] duration-150',
-        'border border-transparent text-default-700 hover:translate-x-0.5 hover:border-slate-200/90 hover:bg-slate-100/78 dark:text-white/82 dark:hover:border-white/10 dark:hover:bg-white/[0.08]',
+        'group relative flex h-10 w-full shrink-0 cursor-pointer items-center gap-3 overflow-hidden rounded-xl px-3 transition-[background-color,box-shadow,color,transform] duration-150',
+        'text-default-700 hover:translate-x-0.5 hover:bg-slate-200/74 dark:text-white/82 dark:hover:bg-white/[0.12]',
         isSelected &&
-          'border-slate-300/90 bg-slate-100/88 text-slate-900 shadow-[0_12px_30px_-22px_rgba(15,23,42,0.12)] dark:border-white/10 dark:bg-white/10 dark:text-white'
+          'bg-slate-200/86 text-slate-900 shadow-[0_12px_30px_-22px_rgba(15,23,42,0.12)] hover:bg-slate-200/92 dark:bg-white/[0.14] dark:text-white dark:hover:bg-white/[0.18]'
       )}
       onClick={(e) => {
         onClick?.()

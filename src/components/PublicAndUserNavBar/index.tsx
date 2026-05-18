@@ -1,10 +1,10 @@
 'use client'
 
+import { IconButtonProps, NavBarProps } from '@/components/common'
+import { MobileTagPicker } from '@/components/MobileTagPicker'
 import { NavUser } from '@/components/NavUser'
 import ReButton from '@/components/re-export/ReButton'
 import ThemeToggle from '@/components/ThemeToggle'
-import { IconButtonProps, NavBarProps } from '@/components/common'
-import { MobileTagPicker } from '@/components/MobileTagPicker'
 import { usePageUtil } from '@/hooks'
 import { getTagLinkAttrs } from '@/utils'
 import { Assets, Background, ExternalLinks, IconNames, PageRoutes, WEBSITE_NAME } from '@cfg'
@@ -81,8 +81,9 @@ export function PublicAndUserNavbar(props: Props) {
           className={cn(IconButtonProps.className, !totalBookmarks && 'hidden', 'max-xs:hidden')}
           href={isUserSpace ? PageRoutes.User.RANDOM : PageRoutes.Public.RANDOM}
           tooltip="随便看看"
-          startContent={<span className={IconNames.Tabler.DICE_3} />}
-        />
+        >
+          <span className={IconNames.Tabler.DICE_3} />
+        </ReButton>
         <ThemeToggle />
         <ReButton
           {...IconButtonProps}
