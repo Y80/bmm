@@ -14,7 +14,7 @@ import { ReactNode, forwardRef, useState } from 'react'
 import ReTooltip from './ReTooltip'
 
 const ICON_BUTTON_CLS =
-  'min-w-0 gap-0 rounded-xl bg-transparent px-0 text-default-600 transition-[background-color,color,box-shadow] hover:bg-default-100 hover:text-foreground data-[hover=true]:bg-default-100 data-[hover=true]:text-foreground dark:text-white/72 dark:hover:bg-white/[0.08] dark:hover:text-white dark:data-[hover=true]:bg-white/[0.08] dark:data-[hover=true]:text-white'
+  'min-w-0 gap-0 rounded-xl bg-transparent px-0 text-default-600 transition-[background-color,color,box-shadow] hover:bg-default-100 hover:text-foreground data-[hover=true]:bg-default-100 data-[hover=true]:text-foreground dark:text-white/72 dark:hover:bg-white/[0.08] dark:hover:text-white dark:data-[hover=true]:bg-white/[0.08] dark:data-[hover=true]:text-white [tr:hover_&:hover]:bg-default-200 [tr:hover_&[data-hover=true]]:bg-default-200 [tr[data-selected=true]_&:hover]:bg-default-300 [tr[data-selected=true]_&[data-hover=true]]:bg-default-300 [tr[aria-selected=true]_&:hover]:bg-default-300 [tr[aria-selected=true]_&[data-hover=true]]:bg-default-300 dark:[tr:hover_&:hover]:bg-white/[0.14] dark:[tr:hover_&[data-hover=true]]:bg-white/[0.14] dark:[tr[data-selected=true]_&:hover]:bg-white/[0.18] dark:[tr[data-selected=true]_&[data-hover=true]]:bg-white/[0.18] dark:[tr[aria-selected=true]_&:hover]:bg-white/[0.18] dark:[tr[aria-selected=true]_&[data-hover=true]]:bg-white/[0.18]'
 
 const ICON_BUTTON_ADJACENT_CLS = '[&+&]:ml-0'
 
@@ -25,7 +25,7 @@ const LINK_BUTTON_CLS =
 // tooltip 和 popover 基本一致，只是触发时机不同
 // tooltip 鼠标 hover 上去就会展示，popover 点击后才会展示
 interface ReButtonProps extends ButtonProps {
-  buttonType?: 'button' | 'icon' | 'link'
+  buttonType?: 'link'
   icon?: ReactNode
   onClick?: () => any
   tooltip?: string | (TooltipProps & { adaptMobile?: boolean })
@@ -39,7 +39,7 @@ function ReButton_(props: ReButtonProps, ref: any) {
   const [loading, setLoading] = useState(false)
 
   const mergedLoading = props.isLoading || loading
-  const isIconButton = buttonType === 'icon' || props.isIconOnly
+  const isIconButton = props.isIconOnly
   const isLinkButton = buttonType === 'link'
   const children = icon || props.children
   const startContent = icon || isIconButton ? undefined : resetProps.startContent
@@ -52,8 +52,9 @@ function ReButton_(props: ReButtonProps, ref: any) {
     props.className
   )
 
-  function onClickWrapper() {
+  function onClickWrapper(event: any) {
     if (mergedLoading) return
+    resetProps.onPress?.(event)
     const result = props.onClick?.()
     // 在 Promise 实例 resolved 之前，展示加载动画加载、禁用点击
     if (result instanceof Promise) {
@@ -74,7 +75,7 @@ function ReButton_(props: ReButtonProps, ref: any) {
       variant={variant}
       disabled={mergedLoading || props.disabled}
       isLoading={mergedLoading}
-      onPress={onClickWrapper}
+      onPress={props.onClick ? onClickWrapper : resetProps.onPress}
       ref={ref}
     >
       {children}

@@ -10,6 +10,7 @@ import {
 } from '@/actions'
 import BookmarkIconDropdown from '@/components/BookmarkIconDropdown'
 import Favicon from '@/components/Favicon'
+import ReButton from '@/components/re-export/ReButton'
 import ReInput from '@/components/re-export/ReInput'
 import ReTextarea from '@/components/re-export/ReTextarea'
 import SlugPageLayout from '@/components/SlugPageLayout'
@@ -20,7 +21,6 @@ import { z } from '@/lib/zod'
 import { runAction } from '@/utils/client'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
 import {
-  Button,
   cn,
   Dropdown,
   DropdownItem,
@@ -147,16 +147,17 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     return (
       <Dropdown placement="right-start">
         <DropdownTrigger>
-          <Button
+          <ReButton
             isIconOnly
             size="sm"
             isLoading={state.loading}
-            className={cn('bg-transparent text-xl', !hasValidUrl && 'scale-0')}
+            aria-label="解析网站信息"
+            className={cn('text-xl', !hasValidUrl && 'scale-0')}
           >
             <span
               className={cn('bg-linear-to-r from-pink-500 to-violet-500', IconNames.Mdi.STARS)}
             />
-          </Button>
+          </ReButton>
         </DropdownTrigger>
         <DropdownMenu>
           <DropdownItem key="parse" onClick={parseWebsite}>

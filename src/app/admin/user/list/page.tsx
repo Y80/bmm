@@ -235,7 +235,6 @@ export default function Page() {
                       color="danger"
                       className="text-2xl"
                       isIconOnly
-                      startContent={<span className={IconNames.Tabler.TRASH} />}
                       popoverContent={
                         <div className="flex max-w-[280px] flex-col gap-4 p-4">
                           <p>确定删除用户「{getDisplayName(item)}」？</p>
@@ -249,7 +248,9 @@ export default function Page() {
                           </ReButton>
                         </div>
                       }
-                    />
+                    >
+                      <span className={IconNames.Tabler.TRASH} />
+                    </ReButton>
                   </TableCell>
                 </TableRow>
               )}

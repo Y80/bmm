@@ -270,14 +270,14 @@ export default function CmsSidebarNav(props: CmsSidebarNavProps) {
       {/* 移动端顶部导航栏 */}
       <div className="border-divider bg-background/95 xs:hidden fixed inset-x-0 top-0 z-40 border-b backdrop-blur">
         <div className="flex items-center gap-3 px-4 py-3">
-          <Button
+          <ReButton
             isIconOnly
-            variant="light"
             size="sm"
-            onPress={() => setIsMobileMenuOpen((value) => !value)}
+            aria-label="切换导航菜单"
+            onClick={() => setIsMobileMenuOpen((value) => !value)}
           >
             <span className={cn(IconNames.Tabler.LIST, 'text-lg')} />
-          </Button>
+          </ReButton>
           <Link
             href={brandHref}
             color="foreground"
@@ -308,14 +308,14 @@ export default function CmsSidebarNav(props: CmsSidebarNavProps) {
               <span className="text-default-400 text-xs font-medium tracking-wider uppercase">
                 Navigation
               </span>
-              <Button
+              <ReButton
                 isIconOnly
-                variant="light"
                 size="sm"
-                onPress={() => setIsMobileMenuOpen(false)}
+                aria-label="关闭导航菜单"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 <span className={IconNames.Tabler.X} />
-              </Button>
+              </ReButton>
             </div>
             <nav className="grid gap-1">{renderLinks(true)}</nav>
           </div>

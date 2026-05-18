@@ -680,19 +680,17 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                         isIconOnly
                         color="primary"
                         isLoading={state.checkingId === item.id}
-                        startContent={
-                          state.checkingId === item.id ? null : (
-                            <span className={IconNames.Tabler.RADAR} />
-                          )
-                        }
                         onClick={() => onCheckHost(item)}
-                      />
+                      >
+                        {state.checkingId === item.id ? null : (
+                          <span className={IconNames.Tabler.RADAR} />
+                        )}
+                      </ReButton>
                       <ReButton
                         color="danger"
                         variant="light"
                         isIconOnly
                         className="text-2xl"
-                        startContent={<span className={IconNames.Tabler.TRASH} />}
                         popoverContent={
                           <div className="flex max-w-52 flex-col gap-4 p-4">
                             <p>确定删除「{item.name}」？</p>
@@ -701,15 +699,18 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                             </ReButton>
                           </div>
                         }
-                      />
+                      >
+                        <span className={IconNames.Tabler.TRASH} />
+                      </ReButton>
                       <ReButton
                         variant="light"
                         className="text-2xl"
                         isIconOnly
                         color="warning"
-                        startContent={<span className={IconNames.Tabler.EDIT} />}
                         onClick={() => toEditPage(item)}
-                      />
+                      >
+                        <span className={IconNames.Tabler.EDIT} />
+                      </ReButton>
                     </div>
                   </TableCell>
                 </TableRow>

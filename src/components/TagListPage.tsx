@@ -1,7 +1,5 @@
 'use client'
 
-import type z from 'zod'
-
 import ClientIcon from '@/components/ClientIcon'
 import ColorPicker from '@/components/ColorPicker'
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder'
@@ -79,10 +77,7 @@ export default function TagListPage(props: TagListPageProps) {
     },
   })
 
-  const {
-    refresh,
-    data: tags = [],
-  } = useRequest(
+  const { refresh, data: tags = [] } = useRequest(
     async () => {
       const input = findManyTagsSchema.parse({
         limit: state.pageSize,
@@ -123,7 +118,9 @@ export default function TagListPage(props: TagListPageProps) {
   )
 
   const isAllSelected = selectedKeys === 'all'
-  const selectedIds = isAllSelected ? tags.map((t: SelectTag) => t.id) : ([...selectedKeys] as TagId[])
+  const selectedIds = isAllSelected
+    ? tags.map((t: SelectTag) => t.id)
+    : ([...selectedKeys] as TagId[])
   const hasSelection = isAllSelected || selectedIds.length > 0
 
   async function handleBatchDelete() {
@@ -304,9 +301,8 @@ export default function TagListPage(props: TagListPageProps) {
                 <TableCell className="flex gap-1">
                   <ReButton
                     variant="light"
-                    className="text-default-500 text-xl hover:text-danger"
+                    className="text-default-500 hover:text-danger text-xl"
                     isIconOnly
-                    startContent={<span className={IconNames.Tabler.TRASH} />}
                     popoverContent={
                       <div className="flex max-w-[280px] flex-col gap-4 p-4">
                         <p>确定删除标签「{tag.name}」？</p>
@@ -320,18 +316,21 @@ export default function TagListPage(props: TagListPageProps) {
                         </ReButton>
                       </div>
                     }
-                  />
+                  >
+                    <span className={IconNames.Tabler.TRASH} />
+                  </ReButton>
                   <ReButton
                     variant="light"
-                    className="text-default-500 text-xl hover:text-warning"
+                    // className="text-default-500 hover:text-warning text-xl"
                     isIconOnly
-                    startContent={<span className={IconNames.Tabler.EDIT} />}
                     onClick={() =>
                       router.push(
                         (isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug(tag.id)
                       )
                     }
-                  />
+                  >
+                    <span className={IconNames.Tabler.EDIT} />
+                  </ReButton>
                 </TableCell>
               </TableRow>
             )}

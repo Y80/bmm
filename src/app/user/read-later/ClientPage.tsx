@@ -189,15 +189,14 @@ export default function ClientPage(props: ClientPageProps) {
                   ref={inputRef}
                   className="border-divider/70 h-10 min-w-0 flex-1 rounded-xl border bg-white/70 px-3 text-sm outline-hidden transition focus:border-sky-500/50 focus:ring-2 focus:ring-sky-500/20 dark:bg-white/[0.06]"
                 />
-                <button
+                <ReButton
                   type="button"
-                  disabled={isCreating}
+                  isDisabled={isCreating}
+                  isIconOnly={isCreating}
+                  color="primary"
                   onClick={handleCreate}
                   aria-label={isCreating ? '正在添加' : undefined}
-                  className={cn(
-                    'bg-primary text-primary-foreground flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-80',
-                    isCreating ? 'w-10 px-0' : 'px-5'
-                  )}
+                  className={cn('h-10 shrink-0 rounded-xl', isCreating ? 'min-w-10' : 'px-5')}
                 >
                   {isCreating ? (
                     <span className={cn(IconNames.Tabler.LOADER_2, 'animate-spin text-base')} />
@@ -207,7 +206,7 @@ export default function ClientPage(props: ClientPageProps) {
                       <span>添加</span>
                     </>
                   )}
-                </button>
+                </ReButton>
               </form>
             </div>
           </div>
@@ -336,11 +335,10 @@ function ReadLaterCard(props: {
                   target="_blank"
                   rel="noreferrer"
                   size="md"
-                  variant="light"
                   isIconOnly
                   tooltip="打开链接"
                   aria-label="打开链接"
-                  className="text-default-500 size-9 min-w-9 border border-transparent bg-white/40 hover:border-slate-200 hover:bg-slate-100/80 hover:text-slate-700 dark:bg-white/[0.03] dark:hover:border-white/10 dark:hover:bg-white/[0.08] dark:hover:text-white"
+                  className="size-9 min-w-9"
                 >
                   <span className={cn(IconNames.Tabler.EXTERNAL_LINK, 'text-lg')} />
                 </ReButton>
@@ -348,24 +346,23 @@ function ReadLaterCard(props: {
                 {props.onMarkRead ? (
                   <ReButton
                     size="md"
-                    variant="light"
                     isIconOnly
                     tooltip="标记已读"
                     aria-label="标记已读"
                     onClick={props.onMarkRead}
-                    className="text-default-500 size-9 min-w-9 border border-transparent bg-white/40 hover:border-slate-200 hover:bg-slate-100/80 hover:text-slate-700 dark:bg-white/[0.03] dark:hover:border-white/10 dark:hover:bg-white/[0.08] dark:hover:text-white"
+                    className="size-9 min-w-9"
                   >
                     <span className={cn(IconNames.Tabler.CHECK, 'text-lg')} />
                   </ReButton>
                 ) : null}
                 <ReButton
                   size="md"
-                  variant="light"
                   isIconOnly
+                  color="danger"
                   tooltip="删除"
                   aria-label="删除"
                   onClick={props.onDelete}
-                  className="text-default-500 size-9 min-w-9 border border-transparent bg-white/40 hover:border-red-200/80 hover:bg-red-50/80 hover:text-red-600 dark:bg-white/[0.03] dark:hover:border-red-400/20 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+                  className="size-9 min-w-9"
                 >
                   <span className={cn(IconNames.Tabler.TRASH, 'text-lg')} />
                 </ReButton>
@@ -484,12 +481,11 @@ function ReadLaterEditButton(props: {
     <>
       <ReButton
         size="md"
-        variant="light"
         isIconOnly
         tooltip="编辑"
         aria-label="编辑"
         onClick={() => setIsOpen(true)}
-        className="text-default-500 size-9 min-w-9 border border-transparent bg-white/40 hover:border-slate-200 hover:bg-slate-100/80 hover:text-slate-700 dark:bg-white/[0.03] dark:hover:border-white/10 dark:hover:bg-white/[0.08] dark:hover:text-white"
+        className="size-9 min-w-9"
       >
         <span className={cn(IconNames.Tabler.EDIT, 'text-lg')} />
       </ReButton>

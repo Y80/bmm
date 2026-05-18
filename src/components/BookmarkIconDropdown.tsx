@@ -1,6 +1,7 @@
 'use client'
 
 import Favicon from '@/components/Favicon'
+import ReButton from '@/components/re-export/ReButton'
 import { buildWebsiteIconCandidates, probeWebsiteIcon } from '@/utils/website-icon'
 import { IconNames } from '@cfg'
 import {
@@ -429,9 +430,9 @@ export default function BookmarkIconDropdown(props: Props) {
         }}
       >
         <DropdownTrigger>
-          <Button isIconOnly size="sm" className="bg-transparent">
+          <ReButton isIconOnly size="sm" aria-label="获取网站图标">
             <span className={cn(IconNames.Tabler.API, 'text-2xl')} />
-          </Button>
+          </ReButton>
         </DropdownTrigger>
         <DropdownMenu>
           <DropdownSection title="站点路径探测">
@@ -482,16 +483,15 @@ export default function BookmarkIconDropdown(props: Props) {
           >
             <div className="flex-items-center justify-between gap-2">
               <span className="text-foreground-500 text-sm">第三方 API 获取图标</span>
-              <Button
+              <ReButton
                 isIconOnly
                 size="sm"
-                variant="light"
                 aria-label="设置图标"
-                className="text-foreground-500 -mr-1 h-6"
-                onPress={openThirdPartyIconApiConfig}
+                className="text-foreground-500 -mr-1 h-6 min-w-6"
+                onClick={openThirdPartyIconApiConfig}
               >
                 <span className={cn(IconNames.Huge.SETTINGS, 'text-base')} />
-              </Button>
+              </ReButton>
             </div>
           </DropdownItem>
           <DropdownSection aria-label="第三方 API 获取图标">
@@ -673,28 +673,26 @@ function SortableThirdPartyIconApiCard(props: SortableThirdPartyIconApiCardProps
           onValueChange={(value) => onChange(item.id, 'srcTemplate', value)}
         />
         <div className="flex items-center justify-end gap-1 self-start pt-6">
-          <Button
+          <ReButton
             isIconOnly
             size="sm"
-            variant="light"
             color="danger"
             aria-label="删除 API"
             className="h-8 min-w-8"
             onClick={() => onRemove(item.id)}
           >
             <span className={cn(IconNames.Tabler.TRASH, 'text-lg')} />
-          </Button>
-          <Button
+          </ReButton>
+          <ReButton
             isIconOnly
             size="sm"
-            variant="light"
             aria-label="拖拽排序"
             className="text-foreground-500 h-8 min-w-8 cursor-grab"
             {...attributes}
             {...listeners}
           >
             <span className={cn(IconNames.Tabler.ARROWS_MOVE_VERTICAL, 'text-base')} />
-          </Button>
+          </ReButton>
         </div>
       </div>
     </div>

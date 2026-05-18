@@ -1,10 +1,8 @@
 import { ButtonProps, NavbarProps } from '@heroui/react'
 
 export const IconButtonProps = {
-  className:
-    'text-xl text-default-600 border border-transparent bg-transparent outline-hidden transition-[background-color,color,box-shadow] hover:text-foreground hover:bg-white/70 hover:shadow-[0_14px_28px_-22px_rgba(15,23,42,0.18)] dark:text-white/72 dark:hover:text-white dark:hover:bg-white/[0.08] dark:hover:shadow-none rounded-xl',
+  className: 'text-xl',
   isIconOnly: true,
-  variant: 'light',
 } satisfies ButtonProps
 
 export const NavBarProps = {

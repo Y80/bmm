@@ -263,15 +263,15 @@ export default function Page() {
         onOpenChange={setIsModelDropdownOpen}
       >
         <DropdownTrigger>
-          <Button
+          <ReButton
             aria-label="选择模型"
             isIconOnly
             size="sm"
-            variant="light"
             className="min-w-7 text-lg"
+            onClick={() => setIsModelDropdownOpen((value) => !value)}
           >
             <span className={IconNames.Tabler.CHEVRON_DOWN} />
-          </Button>
+          </ReButton>
         </DropdownTrigger>
         <DropdownMenu
           aria-label="模型列表"
@@ -426,27 +426,30 @@ export default function Page() {
                         variant="light"
                         isIconOnly
                         className="text-lg"
-                        startContent={<span className={IconNames.Tabler.EDIT} />}
                         onClick={() => openEditModal(item)}
-                      />
+                      >
+                        <span className={IconNames.Tabler.EDIT} />
+                      </ReButton>
                       <ReButton
                         aria-label={`复制供应商 ${item.name}`}
                         size="sm"
                         variant="light"
                         isIconOnly
                         className="text-lg"
-                        startContent={<span className={IconNames.Tabler.COPY} />}
                         onClick={() => duplicateProvider(item)}
-                      />
+                      >
+                        <span className={IconNames.Tabler.COPY} />
+                      </ReButton>
                       <ReButton
                         aria-label={`测试供应商 ${item.name}`}
                         size="sm"
                         variant="light"
                         isIconOnly
                         className="text-lg"
-                        startContent={<span className={IconNames.Tabler.PLUG_CONNECTED} />}
                         onClick={() => testProvider(item)}
-                      />
+                      >
+                        <span className={IconNames.Tabler.PLUG_CONNECTED} />
+                      </ReButton>
                       <ReButton
                         aria-label={`删除供应商 ${item.name}`}
                         size="sm"
@@ -454,7 +457,6 @@ export default function Page() {
                         color="danger"
                         isIconOnly
                         className="text-lg"
-                        startContent={<span className={IconNames.Tabler.TRASH} />}
                         popoverContent={
                           <div className="flex max-w-[280px] flex-col gap-4 p-4">
                             <p>确定删除供应商「{item.name}」？</p>
@@ -468,7 +470,9 @@ export default function Page() {
                             </ReButton>
                           </div>
                         }
-                      />
+                      >
+                        <span className={IconNames.Tabler.TRASH} />
+                      </ReButton>
                     </div>
                   </TableCell>
                 </TableRow>
