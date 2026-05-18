@@ -51,7 +51,7 @@ export default function TagPicker(props: Props) {
   return (
     <div
       className={cn(
-        'relative flex h-full flex-col overflow-hidden rounded-[26px] border border-slate-200/85 bg-white/[0.26] shadow-[0_18px_42px_-34px_rgba(15,23,42,0.14)] backdrop-blur-md dark:border-white/8 dark:bg-white/[0.035] dark:shadow-none',
+        'relative flex h-full flex-col overflow-hidden rounded-[26px] border border-slate-200/85 bg-white/26 backdrop-blur-md dark:border-white/8 dark:bg-white/4',
         props.className
       )}
       style={props.style}
@@ -69,7 +69,7 @@ export default function TagPicker(props: Props) {
             placeholder="过滤标签"
             classNames={{
               inputWrapper:
-                'h-8 border border-slate-200/80 bg-white/[0.36] px-2.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.12)] data-[hover=true]:bg-white/[0.46] data-[focus=true]:border-slate-300/95 data-[focus=true]:bg-white/[0.54] dark:border-white/8 dark:bg-white/[0.03] dark:shadow-none',
+                'h-8 border border-slate-200/80 bg-white/36 px-2.5 data-[hover=true]:bg-white/46 data-[focus=true]:border-slate-300/95 data-[focus=true]:bg-white/54 dark:border-white/8 dark:bg-white/3',
               input: 'text-sm',
               clearButton: 'text-default-400',
             }}
