@@ -51,12 +51,12 @@ export default function TagPicker(props: Props) {
   return (
     <div
       className={cn(
-        'relative flex h-full flex-col overflow-hidden rounded-[26px] border border-slate-200/85 bg-white/26 backdrop-blur-md dark:border-white/8 dark:bg-white/4',
+        'relative flex h-full flex-col overflow-hidden rounded-[26px] border border-slate-200/85 bg-white/26 backdrop-blur-md dark:border-white/10 dark:bg-content1/55',
         props.className
       )}
       style={props.style}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent_24%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.03),transparent_20%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,white/12,transparent_24%)] dark:hidden" />
 
       <div className="relative border-b border-slate-200/80 px-3 py-3.5 dark:border-white/8">
         <div className="px-1">
@@ -69,7 +69,7 @@ export default function TagPicker(props: Props) {
             placeholder="过滤标签"
             classNames={{
               inputWrapper:
-                'h-8 border border-slate-200/80 bg-white/36 px-2.5 data-[hover=true]:bg-white/46 data-[focus=true]:border-slate-300/95 data-[focus=true]:bg-white/54 dark:border-white/8 dark:bg-white/3',
+                'h-8 border border-slate-200/80 bg-white/36 px-2.5 data-[hover=true]:bg-white/46 data-[focus=true]:border-slate-300/95 data-[focus=true]:bg-white/54 dark:border-white/10 dark:bg-content2/40',
               input: 'text-sm',
               clearButton: 'text-default-400',
             }}

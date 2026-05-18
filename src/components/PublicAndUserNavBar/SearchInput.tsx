@@ -91,7 +91,7 @@ export function SearchInput(props: Props) {
         !props.compact &&
         !state.focusInput &&
         !state.input && (
-          <Kbd className="text-default-400 rounded-xl border border-slate-200/80 bg-slate-100/90 px-2.5 py-0 dark:border-white/8 dark:bg-white/[0.06]">
+          <Kbd className="text-default-400 rounded-xl border border-slate-200/80 bg-slate-100/90 px-2.5 py-0 dark:border-white/10 dark:bg-content2/50">
             /
           </Kbd>
         )

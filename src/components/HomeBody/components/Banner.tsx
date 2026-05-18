@@ -12,11 +12,11 @@ function Wrapper(props: PropsWithChildren) {
 
 const H1_CLS = 'text-3xl font-bold flex-center text-foreground-700'
 const SURFACE_CLS =
-  'relative w-full overflow-hidden rounded-[28px] border border-slate-200/85 bg-white/[0.3] shadow-[0_20px_48px_-34px_rgba(15,23,42,0.16)] backdrop-blur-md dark:border-white/8 dark:bg-white/[0.045] dark:shadow-none'
+  'relative w-full overflow-hidden rounded-[28px] border border-slate-200/85 bg-white/30 backdrop-blur-md dark:border-white/10 dark:bg-content1/62'
 const SURFACE_HIGHLIGHT_CLS =
-  'absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.14),transparent_34%,rgba(148,163,184,0.08))] dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_38%,rgba(34,211,238,0.04))]'
+  'absolute inset-0 bg-[linear-gradient(135deg,white/14,transparent_34%,slate-400/8)] dark:hidden'
 const INNER_PANEL_CLS =
-  'rounded-[22px] border border-slate-200/75 bg-white/[0.34] px-3.5 py-3.5 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.1)] backdrop-blur-sm dark:border-white/8 dark:bg-white/[0.03] dark:shadow-none sm:px-4.5'
+  'rounded-[22px] border border-slate-200/75 bg-white/34 px-3.5 py-3.5 backdrop-blur-sm dark:border-white/10 dark:bg-content2/50 sm:px-4.5'
 
 interface Props {
   tags: SelectTag[]
@@ -126,7 +126,7 @@ export default function Banner(props: Props) {
               <Chip
                 key={tag.id}
                 variant="flat"
-                className="text-foreground-500 hover:text-foreground-800 cursor-pointer bg-white/60 dark:bg-white/[0.06]"
+                className="text-foreground-500 hover:text-foreground-800 cursor-pointer bg-white/60 dark:bg-content2/60"
                 onClose={
                   isIntersected
                     ? () => {
@@ -170,7 +170,7 @@ export default function Banner(props: Props) {
                     <Chip
                       key={id}
                       variant="flat"
-                      className="text-foreground-500 hover:text-foreground-800 cursor-pointer bg-white/60 active:opacity-50 dark:bg-white/[0.06]"
+                      className="text-foreground-500 hover:text-foreground-800 cursor-pointer bg-white/60 active:opacity-50 dark:bg-content2/60"
                       as="a"
                       {...getTagLinkAttrs(tag)}
                       onClick={(e) => onClickTag({ tag, event: e as any })}
@@ -215,7 +215,7 @@ export default function Banner(props: Props) {
           <div className="mt-4 flex flex-wrap gap-2">
             <Chip
               variant="flat"
-              className="text-foreground-600 border-none bg-white/60 text-sm font-medium dark:bg-white/[0.06]"
+              className="text-foreground-600 border-none bg-white/60 text-sm font-medium dark:bg-content2/60"
             >
               {keyword || '未输入关键词'}
             </Chip>
