@@ -72,11 +72,11 @@ importers:
         specifier: 0.31.5
         version: 0.31.5
       drizzle-orm:
-        specifier: 0.44.5
-        version: 0.44.5(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5)
+        specifier: 0.45.2
+        version: 0.45.2(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5)
       drizzle-zod:
         specifier: 0.8.3
-        version: 0.8.3(drizzle-orm@0.44.5(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5))(zod@4.1.11)
+        version: 0.8.3(drizzle-orm@0.45.2(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5))(zod@4.1.11)
       framer-motion:
         specifier: ^12.23.26
         version: 12.38.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -3466,8 +3466,8 @@ packages:
     resolution: {integrity: sha512-+CHgPFzuoTQTt7cOYCV6MOw2w8vqEn/ap1yv4bpZOWL03u7rlVRQhUY0WYT3rHsgVTXwYQDZaSUJSQrMBUKuWg==}
     hasBin: true
 
-  drizzle-orm@0.44.5:
-    resolution: {integrity: sha512-jBe37K7d8ZSKptdKfakQFdeljtu3P2Cbo7tJoJSVZADzIKOBo9IAJPOmMsH2bZl90bZgh8FQlD8BjxXA/zuBkQ==}
+  drizzle-orm@0.45.2:
+    resolution: {integrity: sha512-kY0BSaTNYWnoDMVoyY8uxmyHjpJW1geOmBMdSSicKo9CIIWkSxMIj2rkeSR51b8KAPB7m+qysjuHme5nKP+E5Q==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -9188,15 +9188,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.44.5(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5):
+  drizzle-orm@0.45.2(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5):
     optionalDependencies:
       '@libsql/client': 0.15.1
       '@opentelemetry/api': 1.9.0
       postgres: 3.4.5
 
-  drizzle-zod@0.8.3(drizzle-orm@0.44.5(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5))(zod@4.1.11):
+  drizzle-zod@0.8.3(drizzle-orm@0.45.2(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5))(zod@4.1.11):
     dependencies:
-      drizzle-orm: 0.44.5(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5)
+      drizzle-orm: 0.45.2(@libsql/client@0.15.1)(@opentelemetry/api@1.9.0)(postgres@3.4.5)
       zod: 4.1.11
 
   dunder-proto@1.0.1:

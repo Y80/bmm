@@ -47,7 +47,7 @@
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
     "drizzle-kit": "0.31.5",
-    "drizzle-orm": "0.44.5",
+    "drizzle-orm": "0.45.2",
     "drizzle-zod": "0.8.3",
     "framer-motion": "^12.23.26",
     "i18next": "^24.2.3",
