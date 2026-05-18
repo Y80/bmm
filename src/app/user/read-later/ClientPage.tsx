@@ -194,7 +194,7 @@ export default function ClientPage(props: ClientPageProps) {
                   isDisabled={isCreating}
                   isIconOnly={isCreating}
                   color="primary"
-                  onClick={handleCreate}
+                  onPress={handleCreate}
                   aria-label={isCreating ? '正在添加' : undefined}
                   className={cn('h-10 shrink-0 rounded-xl', isCreating ? 'min-w-10' : 'px-5')}
                 >
@@ -349,7 +349,7 @@ function ReadLaterCard(props: {
                     isIconOnly
                     tooltip="标记已读"
                     aria-label="标记已读"
-                    onClick={props.onMarkRead}
+                    onPress={props.onMarkRead}
                     className="size-9 min-w-9"
                   >
                     <span className={cn(IconNames.Tabler.CHECK, 'text-lg')} />
@@ -361,7 +361,7 @@ function ReadLaterCard(props: {
                   color="danger"
                   tooltip="删除"
                   aria-label="删除"
-                  onClick={props.onDelete}
+                  onPress={props.onDelete}
                   className="size-9 min-w-9"
                 >
                   <span className={cn(IconNames.Tabler.TRASH, 'text-lg')} />
@@ -484,7 +484,7 @@ function ReadLaterEditButton(props: {
         isIconOnly
         tooltip="编辑"
         aria-label="编辑"
-        onClick={() => setIsOpen(true)}
+        onPress={() => setIsOpen(true)}
         className="size-9 min-w-9"
       >
         <span className={cn(IconNames.Tabler.EDIT, 'text-lg')} />
@@ -546,7 +546,7 @@ function ReadLaterEditButton(props: {
             <Button variant="light" onPress={() => setIsOpen(false)}>
               取消
             </Button>
-            <ReButton color="primary" onClick={handleSave} isLoading={isSaving}>
+            <ReButton color="primary" onPress={handleSave} isLoading={isSaving}>
               保存
             </ReButton>
           </ModalFooter>

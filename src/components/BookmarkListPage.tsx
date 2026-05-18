@@ -689,7 +689,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                         tooltip="检测站点"
                         aria-label={`检测站点 ${item.name}`}
                         isLoading={state.checkingId === item.id}
-                        onClick={() => onCheckHost(item)}
+                        onPress={() => onCheckHost(item)}
                       >
                         {state.checkingId === item.id ? null : (
                           <span className={IconNames.Tabler.RADAR} />
@@ -703,7 +703,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                         popoverContent={
                           <div className="flex max-w-52 flex-col gap-4 p-4">
                             <p>确定删除「{item.name}」？</p>
-                            <ReButton color="danger" size="sm" onClick={() => onRemove(item)}>
+                            <ReButton color="danger" size="sm" onPress={() => onRemove(item)}>
                               确定
                             </ReButton>
                           </div>
@@ -716,7 +716,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
                         color="warning"
                         tooltip="编辑书签"
                         aria-label={`编辑书签 ${item.name}`}
-                        onClick={() => toEditPage(item)}
+                        onPress={() => toEditPage(item)}
                       >
                         <span className={IconNames.Tabler.EDIT} />
                       </ReButton>

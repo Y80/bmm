@@ -219,7 +219,7 @@ export default function TagListPage(props: TagListPageProps) {
               popoverContent={
                 <div className="flex max-w-[280px] flex-col gap-4 p-4">
                   <p>确定删除选中的 {selectedIds.length} 个标签？</p>
-                  <ReButton color="danger" size="sm" variant="shadow" onClick={handleBatchDelete}>
+                  <ReButton color="danger" size="sm" variant="shadow" onPress={handleBatchDelete}>
                     确定
                   </ReButton>
                 </div>
@@ -282,7 +282,7 @@ export default function TagListPage(props: TagListPageProps) {
                       variant="ghost"
                       className="w-full"
                       size="sm"
-                      onClick={() => changeColor(tag)}
+                      onPress={() => changeColor(tag)}
                     >
                       设 置
                     </ReButton>
@@ -315,7 +315,7 @@ export default function TagListPage(props: TagListPageProps) {
                             color="danger"
                             size="sm"
                             variant="shadow"
-                            onClick={() => props.removeTag(tag).then(refresh)}
+                            onPress={() => props.removeTag(tag).then(refresh)}
                           >
                             确定
                           </ReButton>
@@ -329,7 +329,7 @@ export default function TagListPage(props: TagListPageProps) {
                       color="warning"
                       tooltip="编辑标签"
                       aria-label={`编辑标签 ${tag.name}`}
-                      onClick={() =>
+                      onPress={() =>
                         router.push(
                           (isAdminSpace ? PageRoutes.Admin : PageRoutes.User).tagSlug(tag.id)
                         )

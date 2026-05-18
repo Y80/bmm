@@ -476,7 +476,7 @@ export default function UploadPage() {
               </div>
             </div>
 
-            <ReButton fullWidth size="lg" className="mt-8" onClick={submitConfig}>
+            <ReButton fullWidth size="lg" className="mt-8" onPress={submitConfig}>
               确认配置，预览上传列表
             </ReButton>
           </Panel>
@@ -630,7 +630,7 @@ export default function UploadPage() {
             </div>
           </div>
 
-          <ReButton fullWidth size="lg" className="mt-10" onClick={submitConfig}>
+          <ReButton fullWidth size="lg" className="mt-10" onPress={submitConfig}>
             确认配置，预览上传列表
           </ReButton>
         </Panel>

@@ -27,14 +27,13 @@ const LINK_BUTTON_CLS =
 interface ReButtonProps extends ButtonProps {
   buttonType?: 'link'
   icon?: ReactNode
-  onClick?: () => any
   tooltip?: string | (TooltipProps & { adaptMobile?: boolean })
   popoverContent?: ReactNode
   popoverProps?: Partial<PopoverProps>
 }
 
 function ReButton_(props: ReButtonProps, ref: any) {
-  const { buttonType, icon, onClick, tooltip, popoverContent, ...resetProps } = props
+  const { buttonType, icon, tooltip, popoverContent, ...resetProps } = props
   const isMobile = useIsMobile()
   const [loading, setLoading] = useState(false)
 
@@ -54,8 +53,7 @@ function ReButton_(props: ReButtonProps, ref: any) {
 
   function onClickWrapper(event: any) {
     if (mergedLoading) return
-    resetProps.onPress?.(event)
-    const result = props.onClick?.()
+    const result: unknown = resetProps.onPress?.(event)
     // 在 Promise 实例 resolved 之前，展示加载动画加载、禁用点击
     if (result instanceof Promise) {
       setLoading(true)
@@ -75,7 +73,7 @@ function ReButton_(props: ReButtonProps, ref: any) {
       variant={variant}
       disabled={mergedLoading || props.disabled}
       isLoading={mergedLoading}
-      onPress={props.onClick ? onClickWrapper : resetProps.onPress}
+      onPress={onClickWrapper}
       ref={ref}
     >
       {children}

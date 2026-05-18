@@ -268,7 +268,6 @@ export default function Page() {
             isIconOnly
             size="sm"
             className="min-w-7 text-lg"
-            onClick={() => setIsModelDropdownOpen((value) => !value)}
           >
             <span className={IconNames.Tabler.CHEVRON_DOWN} />
           </ReButton>
@@ -371,7 +370,7 @@ export default function Page() {
               popoverContent={
                 <div className="flex max-w-[280px] flex-col gap-4 p-4">
                   <p>确定清空所有供应商配置？</p>
-                  <ReButton color="danger" size="sm" variant="shadow" onClick={clearConfig}>
+                  <ReButton color="danger" size="sm" variant="shadow" onPress={clearConfig}>
                     确定
                   </ReButton>
                 </div>
@@ -428,7 +427,7 @@ export default function Page() {
                         color="warning"
                         isIconOnly
                         className="text-lg"
-                        onClick={() => openEditModal(item)}
+                        onPress={() => openEditModal(item)}
                       >
                         <span className={IconNames.Tabler.EDIT} />
                       </ReButton>
@@ -439,7 +438,7 @@ export default function Page() {
                         variant="light"
                         isIconOnly
                         className="text-lg"
-                        onClick={() => duplicateProvider(item)}
+                        onPress={() => duplicateProvider(item)}
                       >
                         <span className={IconNames.Tabler.COPY} />
                       </ReButton>
@@ -451,7 +450,7 @@ export default function Page() {
                         color="primary"
                         isIconOnly
                         className="text-lg"
-                        onClick={() => testProvider(item)}
+                        onPress={() => testProvider(item)}
                       >
                         <span className={IconNames.Tabler.PLUG_CONNECTED} />
                       </ReButton>
@@ -470,7 +469,7 @@ export default function Page() {
                               color="danger"
                               size="sm"
                               variant="shadow"
-                              onClick={() => deleteProvider(item)}
+                              onPress={() => deleteProvider(item)}
                             >
                               确定
                             </ReButton>
@@ -534,7 +533,7 @@ export default function Page() {
             <Button variant="light" onPress={() => setIsModalOpen(false)}>
               取消
             </Button>
-            <ReButton color="primary" onClick={submitForm}>
+            <ReButton color="primary" onPress={submitForm}>
               保存
             </ReButton>
           </ModalFooter>

@@ -190,7 +190,7 @@ export default function Page() {
                   />
                 )}
                 <div className="mt-4">
-                  <ReButton buttonType="link" type="button" size="sm" onClick={toggleRegisterMode}>
+                  <ReButton buttonType="link" type="button" size="sm" onPress={toggleRegisterMode}>
                     <span
                       className={cn(IconNames.Tabler.ARROW_LEFT, !state.isRegisterMode && 'hidden')}
                     />

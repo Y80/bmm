@@ -183,13 +183,13 @@ export default function UploadList(props: Props) {
           <span className={cn('text-xl', IconNames.Huge.LIST)} />
           <span>上传列表</span>
         </h2>
-        <ReButton size="sm" onClick={props.onCancel} className={cn(!pending && 'hidden')}>
+        <ReButton size="sm" onPress={props.onCancel} className={cn(!pending && 'hidden')}>
           返回
         </ReButton>
         <ReButton
           size="sm"
           color="primary"
-          onClick={submit}
+          onPress={submit}
           className={cn(finished && 'hidden', 'px-6')}
         >
           {pending ? '🚀 开始上传' : '上传中'}

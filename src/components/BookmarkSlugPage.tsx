@@ -46,6 +46,18 @@ type Bookmark = Pick<
   'url' | 'name' | 'icon' | 'description' | 'relatedTagIds' | 'isPinned'
 >
 
+function normalizeBookmarkInput(bookmark: Partial<Bookmark>): Bookmark {
+  return {
+    ...bookmark,
+    url: bookmark.url ?? '',
+    name: bookmark.name ?? '',
+    icon: bookmark.icon ?? '',
+    description: bookmark.description ?? '',
+    relatedTagIds: bookmark.relatedTagIds ?? [],
+    isPinned: bookmark.isPinned ?? false,
+  }
+}
+
 export interface BookmarkSlugPageProps {
   bookmark: SelectBookmark | null
   tags: SelectTag[]
@@ -104,15 +116,15 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     setState({ loading: false })
     if (!data) return
     setBookmark({
-      name: data.title,
-      icon: data.favicon,
-      description: data.description,
+      name: data.title || '',
+      icon: data.favicon || '',
+      description: data.description || '',
       relatedTagIds: props.tags.filter((tag) => data.tags.includes(tag.name)).map((tag) => tag.id),
     })
   }
 
   useUpdateEffect(() => {
-    props.bookmark && setBookmark({ ...props.bookmark })
+    props.bookmark && setBookmark(normalizeBookmarkInput(props.bookmark))
   }, [props.bookmark])
 
   useUpdateEffect(() => {
@@ -201,7 +213,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
         isInvalid={!!invalidInfos.icon}
         errorMessage={invalidInfos.icon}
         onBlur={() => validateItem('icon')}
-        value={bookmark.icon!}
+        value={bookmark.icon || ''}
         onValueChange={(v) => setBookmark({ icon: v })}
         startContent={
           bookmark.icon ? (
