@@ -1,5 +1,6 @@
 'use client'
 
+import type { ActionResult } from '@/actions/make-action'
 import ClientIcon from '@/components/ClientIcon'
 import ColorPicker from '@/components/ColorPicker'
 import EmptyListPlaceholder from '@/components/EmptyListPlaceholder'
@@ -43,8 +44,6 @@ function getCachedPageSize(pathname: string) {
     ? pageSize
     : DEFAULT_PAGE_SIZE
 }
-
-import type { ActionResult } from '@/actions/make-action'
 
 export type TagListPageProps = {
   allTags: SelectTag[]
@@ -235,6 +234,10 @@ export default function TagListPage(props: TagListPageProps) {
       <div className="overflow-hidden">
         <Table
           aria-label="tags table"
+          classNames={{
+            th: 'first:w-10 first:min-w-10 first:px-2',
+            td: 'first:w-10 first:min-w-10 first:px-2',
+          }}
           removeWrapper
           selectionMode="multiple"
           selectedKeys={selectedKeys}

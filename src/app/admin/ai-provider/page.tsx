@@ -425,6 +425,7 @@ export default function Page() {
                         tooltip="编辑供应商"
                         size="sm"
                         variant="light"
+                        color="warning"
                         isIconOnly
                         className="text-lg"
                         onClick={() => openEditModal(item)}
@@ -447,6 +448,7 @@ export default function Page() {
                         tooltip="测试供应商"
                         size="sm"
                         variant="light"
+                        color="primary"
                         isIconOnly
                         className="text-lg"
                         onClick={() => testProvider(item)}

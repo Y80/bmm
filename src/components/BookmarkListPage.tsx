@@ -42,6 +42,7 @@ import {
   Link,
   Select,
   SelectItem,
+  Selection,
   Spinner,
   Switch,
   Table,
@@ -129,7 +130,7 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       // 页码总数
       total: 1,
     },
-    selectedIds: new Set<BookmarkId>(),
+    selectedKeys: new Set<BookmarkId>() as Selection,
     isBatchDeleting: false,
     isBatchChecking: false,
   })
@@ -254,15 +255,21 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     })
   }
 
+  const isAllSelected = state.selectedKeys === 'all'
+  const selectedIds = isAllSelected
+    ? bookmarks.map((bookmark) => bookmark.id)
+    : ([...state.selectedKeys] as BookmarkId[])
+  const hasSelection = isAllSelected || selectedIds.length > 0
+
   async function onBatchDelete() {
-    const ids = Array.from(state.selectedIds)
+    const ids = selectedIds
     if (!ids.length) return
     const action = isUserSpace ? actDeleteUserBookmarks : actDeletePublicBookmarks
     setState({ isBatchDeleting: true })
     await runAction(action({ ids }), {
       okMsg: '书签已批量删除',
       onOk: () => {
-        setState({ selectedIds: new Set() })
+        setState({ selectedKeys: new Set<BookmarkId>() })
         refresh()
       },
     })
@@ -270,14 +277,14 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
   }
 
   async function onBatchCheckHosts() {
-    const ids = Array.from(state.selectedIds)
+    const ids = selectedIds
     if (!ids.length) return
     setState({ isBatchChecking: true })
     const action = isUserSpace ? actBatchCheckUserBookmarkHosts : actBatchCheckPublicBookmarkHosts
     await runAction(action({ ids }), {
       okMsg: '站点检测完成',
       onOk: () => {
-        setState({ selectedIds: new Set() })
+        setState({ selectedKeys: new Set<BookmarkId>() })
         refresh()
       },
     })
@@ -567,11 +574,11 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
       </div>
 
       <div className="mt-3 overflow-hidden">
-        {state.selectedIds.size > 0 && (
+        {hasSelection && (
           <div className="border-primary/20 bg-primary/5 mb-3 flex items-center gap-3 rounded-lg border p-3">
             <span className="text-primary flex items-center gap-2 text-sm font-medium">
               <span className={IconNames.Tabler.CHECKBOX} />
-              已选择 {state.selectedIds.size} 项
+              已选择 {selectedIds.length} 项
             </span>
             <div className="ml-auto flex items-center gap-2">
               <Button
@@ -598,26 +605,21 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
               >
                 批量删除
               </Button>
-              <Button
-                size="sm"
-                variant="light"
-                onPress={() => setState({ selectedIds: new Set() })}
-              >
-                取消选择
-              </Button>
             </div>
           </div>
         )}
         <Table
           aria-label="items table"
           className="px-0"
+          classNames={{
+            th: 'first:w-10 first:min-w-10 first:px-2',
+            td: 'first:w-10 first:min-w-10 first:px-2',
+          }}
           key={props.tags?.length}
           removeWrapper
           selectionMode="multiple"
-          selectedKeys={state.selectedIds}
-          onSelectionChange={(keys) => {
-            setState({ selectedIds: keys as Set<BookmarkId> })
-          }}
+          selectedKeys={state.selectedKeys}
+          onSelectionChange={(keys) => setState({ selectedKeys: keys })}
           suppressHydrationWarning
         >
           <TableHeader>
