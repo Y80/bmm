@@ -24,7 +24,7 @@ export default function AiAnalyzeButton(props: Props) {
       size="sm"
       className={cn('text-foreground-600 bg-transparent text-xl', !props.tagName && 'scale-0')}
       tooltip="AI 智能解析"
-      onClick={onAnalyze}
+      onPress={onAnalyze}
     >
       <span className={cn('bg-linear-to-r from-pink-500 to-violet-500', IconNames.Mdi.STARS)} />
     </ReButton>

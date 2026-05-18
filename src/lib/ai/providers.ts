@@ -1,6 +1,6 @@
-import { extractJsonMiddleware, extractReasoningMiddleware, wrapLanguageModel } from 'ai'
-import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import AiProviderController from '@/controllers/AiProvider.controller'
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
+import { extractJsonMiddleware, extractReasoningMiddleware, wrapLanguageModel } from 'ai'
 import { extractAiJsonText } from './extractJsonText'
 
 export async function getOpenAICompatibleModel() {
