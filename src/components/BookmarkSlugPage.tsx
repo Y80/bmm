@@ -2,7 +2,8 @@
 
 import {
   actAnalyzeWebsite,
-  actExtractHtmlInfo,
+  actQueryPublicBookmark,
+  actQueryUserBookmark,
   actInsertPublicBookmark,
   actInsertUserBookmark,
   actUpdatePublicBookmark,
@@ -20,16 +21,10 @@ import { usePageUtil, useSlug } from '@/hooks'
 import { z } from '@/lib/zod'
 import { runAction } from '@/utils/client'
 import { FieldConstraints, IconNames, PageRoutes } from '@cfg'
-import {
-  cn,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Switch,
-} from '@heroui/react'
-import { useSetState, useUpdateEffect } from 'ahooks'
+import { cn, Switch } from '@heroui/react'
+import { useSetState } from 'ahooks'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { fromZodError } from 'zod-validation-error'
 
 const formSchema = z.object({
@@ -59,15 +54,21 @@ function normalizeBookmarkInput(bookmark: Partial<Bookmark>): Bookmark {
 }
 
 export interface BookmarkSlugPageProps {
-  bookmark: SelectBookmark | null
   tags: SelectTag[]
+  refreshTags: () => Promise<void>
   afterSave: () => Promise<void>
 }
 
 export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
+  const { refreshTags, tags } = props
   const slug = useSlug()
   const pageUtil = usePageUtil()
   const router = useRouter()
+  const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>(
+    slug.isNew ? 'ready' : 'loading'
+  )
+  const [loadError, setLoadError] = useState('')
+  const [previousBookmark, setPreviousBookmark] = useState<Bookmark | null>(null)
 
   const [bookmark, setBookmark] = useSetState<Bookmark>({
     url: '',
@@ -85,7 +86,35 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   const [state, setState] = useSetState({
     loading: false,
   })
-  const hasValidUrl = !!bookmark.url && !invalidInfos.url
+  const hasValidUrl = formSchema.shape.url.safeParse(bookmark.url).success
+
+  useEffect(() => {
+    if (tags.length) return
+    const handleFocus = () => {
+      void refreshTags()
+    }
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [tags.length, refreshTags])
+
+  useEffect(() => {
+    if (slug.isNew) return
+    let active = true
+    const action = pageUtil.isAdminSpace ? actQueryPublicBookmark : actQueryUserBookmark
+    runAction(action({ id: slug.number! }), { errToast: { hidden: true } }).then((res) => {
+      if (!active) return
+      if (!res.ok || !res.data) {
+        setLoadError(res.ok ? '书签不存在' : res.message)
+        setLoadState('error')
+        return
+      }
+      setBookmark(normalizeBookmarkInput(res.data))
+      setLoadState('ready')
+    })
+    return () => {
+      active = false
+    }
+  }, [slug.isNew, slug.number, pageUtil.isAdminSpace, setBookmark])
 
   function validateItem(key: keyof typeof invalidInfos) {
     const res = formSchema.shape[key].safeParse(bookmark[key])
@@ -102,19 +131,15 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       .every((v) => v)
   }
 
-  async function parseWebsite() {
-    setState({ loading: true })
-    const res = await runAction(actExtractHtmlInfo(bookmark.url))
-    setState({ loading: false })
-    if (!res.ok) return
-    setBookmark(res.data)
-  }
-
   async function aiAnalyzeWebsite() {
+    if (!hasValidUrl || state.loading) return
+    const originalBookmark = { ...bookmark }
     setState({ loading: true })
     const { data } = await runAction(actAnalyzeWebsite(bookmark.url))
     setState({ loading: false })
     if (!data) return
+    setPreviousBookmark(originalBookmark)
+    setInvalidInfos({ name: '', icon: '' })
     setBookmark({
       name: data.title || '',
       icon: data.favicon || '',
@@ -123,17 +148,8 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     })
   }
 
-  useUpdateEffect(() => {
-    props.bookmark && setBookmark(normalizeBookmarkInput(props.bookmark))
-  }, [props.bookmark])
-
-  useUpdateEffect(() => {
-    if (!state.loading) {
-      validateAll()
-    }
-  }, [state.loading])
-
   async function onSave() {
+    if (state.loading || loadState !== 'ready') return
     if (!validateAll()) return
     const action = slug.isNew
       ? pageUtil.isAdminSpace
@@ -155,48 +171,103 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     })
   }
 
-  function renderParseWebsiteDropdown() {
+  if (loadState !== 'ready') {
     return (
-      <Dropdown placement="right-start">
-        <DropdownTrigger>
-          <ReButton
-            isIconOnly
-            size="sm"
-            isLoading={state.loading}
-            aria-label="解析网站信息"
-            className={cn('text-xl', !hasValidUrl && 'scale-0')}
-          >
-            <span
-              className={cn('bg-linear-to-r from-pink-500 to-violet-500', IconNames.Mdi.STARS)}
-            />
-          </ReButton>
-        </DropdownTrigger>
-        <DropdownMenu>
-          <DropdownItem key="parse" onClick={parseWebsite}>
-            解析 HTML
-          </DropdownItem>
-          <DropdownItem key="ai" onClick={aiAnalyzeWebsite}>
-            AI 智能解析
-          </DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
+      <div
+        className="border-divider bg-content1 mx-auto max-w-4xl rounded-2xl border p-6"
+        role="status"
+      >
+        <h1 className="text-xl font-semibold">
+          {loadState === 'loading' ? '正在加载书签…' : '无法打开书签'}
+        </h1>
+        {loadState === 'error' && (
+          <>
+            <p className="text-default-600 my-4">{loadError}</p>
+            <ReButton
+              href={
+                pageUtil.isAdminSpace
+                  ? PageRoutes.Admin.bookmarkSlug('list')
+                  : PageRoutes.User.bookmarkSlug('list')
+              }
+              color="primary"
+            >
+              返回书签列表
+            </ReButton>
+          </>
+        )}
+      </div>
+    )
+  }
+
+  function renderAiButton(className: string) {
+    return (
+      <ReButton
+        size="sm"
+        variant="light"
+        isLoading={state.loading}
+        isDisabled={!hasValidUrl}
+        aria-label="AI 智能解析"
+        onPress={aiAnalyzeWebsite}
+        className={cn(
+          'text-foreground data-[hover=true]:bg-default-100 shrink-0 gap-1.5 rounded-lg bg-transparent px-2',
+          className
+        )}
+      >
+        <span className={cn('text-secondary text-base', IconNames.Mdi.STARS)} />
+        AI 解析
+      </ReButton>
     )
   }
 
   return (
-    <SlugPageLayout onSave={onSave} title={slug.isNew ? '新建书签' : '编辑书签'}>
-      <ReInput
-        label="网址"
-        type="url"
-        isRequired
-        maxLength={FieldConstraints.MaxLen.URL}
-        isInvalid={!!invalidInfos.url}
-        errorMessage={invalidInfos.url}
-        endContent={renderParseWebsiteDropdown()}
-        value={bookmark.url}
-        onChange={(e) => setBookmark({ url: e.target.value })}
-        onBlur={() => validateItem('url')}
-      />
+    <SlugPageLayout
+      onSave={onSave}
+      isSaveDisabled={state.loading}
+      title={slug.isNew ? '新建书签' : '编辑书签'}
+    >
+      <div className="flex flex-col gap-2">
+        <ReInput
+          label="网址"
+          type="url"
+          isReadOnly={state.loading}
+          isRequired
+          maxLength={FieldConstraints.MaxLen.URL}
+          isInvalid={!!invalidInfos.url}
+          errorMessage={invalidInfos.url}
+          classNames={{ inputWrapper: 'xs:pr-1' }}
+          endContent={renderAiButton('hidden h-8 min-h-8 min-w-20 xs:inline-flex')}
+          value={bookmark.url}
+          onChange={(e) => {
+            setBookmark({ url: e.target.value })
+            setPreviousBookmark(null)
+            setInvalidInfos({ url: '' })
+          }}
+          onBlur={() => validateItem('url')}
+        />
+        <div className="xs:hidden flex justify-end">{renderAiButton('min-h-11 min-w-24')}</div>
+      </div>
+      {(state.loading || previousBookmark) && (
+        <div role="status" aria-live="polite" className="text-default-600 text-sm">
+          {state.loading
+            ? '正在解析网站，请稍候…'
+            : previousBookmark && (
+                <div className="xs:flex-row xs:items-center xs:gap-3 flex flex-col items-start gap-2">
+                  <span>已填充网站信息，请确认后保存。</span>
+                  <ReButton
+                    variant="light"
+                    size="sm"
+                    className="xs:min-h-8 min-h-11"
+                    onPress={() => {
+                      setBookmark(previousBookmark)
+                      setPreviousBookmark(null)
+                    }}
+                  >
+                    撤销本次填充
+                  </ReButton>
+                </div>
+              )}
+        </div>
+      )}
       <ReInput
         label="名称"
         isRequired
@@ -234,15 +305,55 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
       />
       <div className="flex flex-col gap-2">
         <label className="text-sm">关联标签</label>
-        <TagSelect
-          tags={props.tags}
-          value={bookmark.relatedTagIds}
-          onChange={(v) => setBookmark({ relatedTagIds: v })}
-        />
+        {props.tags.length ? (
+          <TagSelect
+            tags={props.tags}
+            value={bookmark.relatedTagIds}
+            onChange={(v) => setBookmark({ relatedTagIds: v })}
+          />
+        ) : (
+          <div className="flex flex-col items-start gap-3">
+            <p className="text-default-600 text-sm leading-6">
+              暂无标签，可先创建，当前填写内容会保留。
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <ReButton
+                href={
+                  pageUtil.isAdminSpace
+                    ? PageRoutes.Admin.tagSlug('new')
+                    : PageRoutes.User.tagSlug('new')
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="flat"
+                size="sm"
+                className="xs:min-h-8 min-h-11"
+                aria-label="新建标签（在新窗口打开）"
+                endContent={
+                  <span
+                    className={cn(IconNames.Tabler.EXTERNAL_LINK, 'text-base')}
+                    aria-hidden="true"
+                  />
+                }
+              >
+                新建标签
+              </ReButton>
+              <ReButton
+                variant="light"
+                size="sm"
+                className="text-primary xs:min-h-8 min-h-11"
+                onPress={props.refreshTags}
+              >
+                刷新标签
+              </ReButton>
+            </div>
+          </div>
+        )}
       </div>
       <div className="flex-items-center justify-between">
         <label className="text-sm">置顶书签</label>
         <Switch
+          aria-label="置顶书签"
           isSelected={bookmark.isPinned || false}
           onValueChange={(v) => setBookmark({ isPinned: v })}
         />

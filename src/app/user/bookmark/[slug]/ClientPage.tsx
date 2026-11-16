@@ -1,29 +1,18 @@
 'use client'
 
-import { actQueryUserBookmark } from '@/actions'
 import BookmarkSlugPage, { BookmarkSlugPageProps } from '@/components/BookmarkSlugPage'
-import { useSlug } from '@/hooks'
-import { runAction } from '@/utils/client'
-import { useEffect, useState } from 'react'
-import { useUserContext } from '../../ctx'
+import { useUserContext } from '@/app/user/ctx'
+import { usePathname } from 'next/navigation'
 
 export default function ClientPage() {
-  const slug = useSlug()
-  const { tags, totalBookmarks, updateTotalBookmarks } = useUserContext()
-  const [bookmark, setBookmark] = useState<SelectBookmark | null>(null)
-
-  useEffect(() => {
-    if (!slug.number) return
-    runAction(actQueryUserBookmark({ id: slug.number }), {
-      onOk: (data) => setBookmark(data),
-    })
-  }, [slug.number])
+  const pathname = usePathname()
+  const { tags, totalBookmarks, updateTotalBookmarks, updateTags } = useUserContext()
 
   const props: BookmarkSlugPageProps = {
     tags,
-    bookmark,
+    refreshTags: updateTags,
     afterSave: () => updateTotalBookmarks(totalBookmarks + 1),
   }
 
-  return <BookmarkSlugPage {...props} />
+  return <BookmarkSlugPage key={pathname} {...props} />
 }

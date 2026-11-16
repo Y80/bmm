@@ -613,124 +613,132 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
             </div>
           </div>
         )}
-        <Table
-          aria-label="items table"
-          className="px-0"
-          classNames={{
-            th: 'first:w-10 first:min-w-10 first:px-2',
-            td: 'first:w-10 first:min-w-10 first:px-2',
-          }}
-          key={props.tags?.length}
-          removeWrapper
-          selectionMode="multiple"
-          selectedKeys={state.selectedKeys}
-          onSelectionChange={(keys) => setState({ selectedKeys: keys })}
-        >
-          <TableHeader>
-            <TableColumn className="w-[34%] min-w-40">网站</TableColumn>
-            <TableColumn className="w-[16%] min-w-24">关联标签</TableColumn>
-            <TableColumn className="w-[18%] min-w-24">检测状态</TableColumn>
-            <TableColumn className="w-16">置顶</TableColumn>
-            <TableColumn className="w-28">操作</TableColumn>
-          </TableHeader>
-          <TableBody<SelectBookmark>
-            items={state.loading ? [] : bookmarks}
-            isLoading={state.loading}
-            loadingContent={<Spinner className="mt-12" label="Loading..." />}
-            emptyContent={<EmptyListPlaceholder target="bookmark" />}
-          >
-            {(item) => {
-              return (
-                <TableRow key={item.id}>
-                  <TableCell>
-                    <div className="max-xs:max-w-36 flex w-full max-w-[300px] min-w-0 items-center gap-3">
-                      <span className="shrink-0">
-                        <Favicon src={item.icon} showErrorIconOnFailed showSpinner />
-                      </span>
-                      <Tooltip content={item.url}>
-                        <Link
-                          href={item.url}
-                          color="foreground"
-                          isExternal
-                          size="sm"
-                          className="block min-w-0 truncate font-medium"
-                        >
-                          {item.name}
-                        </Link>
-                      </Tooltip>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div
-                      className="max-xs:max-w-20 w-full max-w-36 min-w-0 truncate text-sm"
-                      title={renderRelatedTags(item.relatedTagIds)}
-                    >
-                      {renderRelatedTags(item.relatedTagIds)}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex min-w-24 flex-col gap-1">
-                      {renderHostCheckStatus(item)}
-                      {item.hostCheckedAt && (
-                        <span className="text-default-400 text-xs">
-                          {formatCheckedAt(item.hostCheckedAt)}
-                        </span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Switch
-                      size="sm"
-                      isSelected={item.isPinned || false}
-                      onValueChange={(v) => onChangeIsPinned(item, v)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex w-28 items-center">
-                      <ReButton
-                        isIconOnly
-                        color="primary"
-                        tooltip="检测站点"
-                        aria-label={`检测站点 ${item.name}`}
-                        isLoading={state.checkingId === item.id}
-                        onPress={() => onCheckHost(item)}
-                      >
-                        {state.checkingId === item.id ? null : (
-                          <span className={IconNames.Tabler.RADAR} />
-                        )}
-                      </ReButton>
-                      <ReButton
-                        isIconOnly
-                        color="danger"
-                        tooltip="删除书签"
-                        aria-label={`删除书签 ${item.name}`}
-                        onPress={() => {
-                          MyModal.open({
-                            title: '确认删除',
-                            children: <p>确定删除「{item.name}」？</p>,
-                            okButtonProps: { color: 'danger' },
-                            onOk: () => onRemove(item),
-                          })
-                        }}
-                      >
-                        <span className={IconNames.Tabler.TRASH} />
-                      </ReButton>
-                      <ReButton
-                        isIconOnly
-                        color="warning"
-                        tooltip="编辑书签"
-                        aria-label={`编辑书签 ${item.name}`}
-                        onPress={() => toEditPage(item)}
-                      >
-                        <span className={IconNames.Tabler.EDIT} />
-                      </ReButton>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )
+        <p className="text-default-600 xs:hidden mb-2 text-sm leading-6">
+          左右滑动查看检测状态；右侧可编辑或删除书签。
+        </p>
+        <div className="overflow-x-auto">
+          <Table
+            aria-label="items table"
+            className="px-0"
+            classNames={{
+              th: 'first:w-10 first:min-w-10 first:px-2',
+              td: 'first:w-10 first:min-w-10 first:px-2',
+              table:
+                'max-xs:min-w-[640px] [&_tr>*:last-child]:max-xs:sticky [&_tr>*:last-child]:max-xs:right-0 [&_tr>*:last-child]:max-xs:bg-content1 [&_tr>*:last-child]:max-xs:z-10',
             }}
-          </TableBody>
-        </Table>
+            key={props.tags?.length}
+            removeWrapper
+            selectionMode="multiple"
+            selectedKeys={state.selectedKeys}
+            onSelectionChange={(keys) => setState({ selectedKeys: keys })}
+          >
+            <TableHeader>
+              <TableColumn className="w-[34%] min-w-40">网站</TableColumn>
+              <TableColumn className="w-[16%] min-w-24">关联标签</TableColumn>
+              <TableColumn className="w-[18%] min-w-24">检测状态</TableColumn>
+              <TableColumn className="w-16">置顶</TableColumn>
+              <TableColumn className="w-28">操作</TableColumn>
+            </TableHeader>
+            <TableBody<SelectBookmark>
+              items={state.loading ? [] : bookmarks}
+              isLoading={state.loading}
+              loadingContent={<Spinner className="mt-12" label="Loading..." />}
+              emptyContent={<EmptyListPlaceholder target="bookmark" />}
+            >
+              {(item) => {
+                return (
+                  <TableRow key={item.id}>
+                    <TableCell>
+                      <div className="max-xs:max-w-36 flex w-full max-w-[300px] min-w-0 items-center gap-3">
+                        <span className="shrink-0">
+                          <Favicon src={item.icon} showErrorIconOnFailed showSpinner />
+                        </span>
+                        <Tooltip content={item.url}>
+                          <Link
+                            href={item.url}
+                            color="foreground"
+                            isExternal
+                            size="sm"
+                            className="block min-w-0 truncate font-medium"
+                          >
+                            {item.name}
+                          </Link>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div
+                        className="max-xs:max-w-20 w-full max-w-36 min-w-0 truncate text-sm"
+                        title={renderRelatedTags(item.relatedTagIds)}
+                      >
+                        {renderRelatedTags(item.relatedTagIds)}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex min-w-24 flex-col gap-1">
+                        {renderHostCheckStatus(item)}
+                        {item.hostCheckedAt && (
+                          <span className="text-default-400 text-xs">
+                            {formatCheckedAt(item.hostCheckedAt)}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        aria-label={`置顶书签 ${item.name}`}
+                        size="sm"
+                        isSelected={item.isPinned || false}
+                        onValueChange={(v) => onChangeIsPinned(item, v)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex w-28 items-center">
+                        <ReButton
+                          isIconOnly
+                          color="primary"
+                          tooltip="检测站点"
+                          aria-label={`检测站点 ${item.name}`}
+                          isLoading={state.checkingId === item.id}
+                          onPress={() => onCheckHost(item)}
+                        >
+                          {state.checkingId === item.id ? null : (
+                            <span className={IconNames.Tabler.RADAR} />
+                          )}
+                        </ReButton>
+                        <ReButton
+                          isIconOnly
+                          color="danger"
+                          tooltip="删除书签"
+                          aria-label={`删除书签 ${item.name}`}
+                          onPress={() => {
+                            MyModal.open({
+                              title: '确认删除',
+                              children: <p>确定删除「{item.name}」？</p>,
+                              okButtonProps: { color: 'danger' },
+                              onOk: () => onRemove(item),
+                            })
+                          }}
+                        >
+                          <span className={IconNames.Tabler.TRASH} />
+                        </ReButton>
+                        <ReButton
+                          isIconOnly
+                          color="warning"
+                          tooltip="编辑书签"
+                          aria-label={`编辑书签 ${item.name}`}
+                          onPress={() => toEditPage(item)}
+                        >
+                          <span className={IconNames.Tabler.EDIT} />
+                        </ReButton>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              }}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       {!state.loading && !!state.pager.totalItems && (
         <PaginationControls

@@ -70,13 +70,8 @@ export default function TagSelect(props: Props) {
 
   return (
     <div role="tag-select">
-      <div
-        className={cn(
-          'rounded-medium bg-default-50 text-foreground-400 relative cursor-not-allowed overflow-hidden p-4 py-3 text-center text-xs',
-          tags.length && 'hidden'
-        )}
-      >
-        暂不可用，请先创建一些标签
+      <div className={cn('text-default-600 text-sm leading-6', tags.length && 'hidden')}>
+        暂无可选标签，请先创建标签。
       </div>
       <div
         className={cn(
@@ -86,6 +81,7 @@ export default function TagSelect(props: Props) {
         )}
       >
         <RcSelect<ValueType, (typeof filteredOptions)[number]>
+          aria-label="关联标签"
           mode="multiple"
           showSearch
           maxCount={6}

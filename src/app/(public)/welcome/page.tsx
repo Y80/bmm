@@ -12,7 +12,8 @@ export default function Page() {
   const { totalBookmarks } = usePublicContext()
 
   return (
-    <div className="flex-center -mt-[10vh] h-full flex-col gap-4">
+    <div className="flex-center mx-auto max-w-xl flex-col gap-4 px-4 py-16 text-center">
+      <h1 className="text-2xl font-semibold">收藏与整理常用网站</h1>
       {!totalBookmarks && (
         <>
           <Image src={Assets.BOX_EMPTY_PNG} alt="empty" width={128} height={128} />
@@ -21,7 +22,9 @@ export default function Page() {
       )}
       {session.status === 'authenticated' ? (
         <>
-          <span className="mt-6" />
+          <ReButton color="primary" href={PageRoutes.User.bookmarkSlug('new')}>
+            新建个人书签
+          </ReButton>
           <span hidden={!session.data.user.isAdmin}>
             您可前往
             <Link className="mx-1" href={PageRoutes.Admin.INDEX}>

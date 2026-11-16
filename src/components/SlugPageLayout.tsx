@@ -10,6 +10,7 @@ import { ReButton } from './re-export'
 
 interface Props {
   isSaving?: boolean
+  isSaveDisabled?: boolean
   onSave?: () => void
   onCancel?: () => void
   title?: string
@@ -51,6 +52,7 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
           color="primary"
           className="mt-4 w-full shadow-lg"
           onClick={props.onSave}
+          isDisabled={props.isSaveDisabled}
         >
           保 存
         </ReButton>
@@ -72,6 +74,7 @@ export default function SlugPageLayout(props: PropsWithChildren<Props>) {
             color="primary"
             className="min-w-28"
             isLoading={props.isSaving}
+            isDisabled={props.isSaveDisabled}
             onClick={props.onSave}
           >
             保存

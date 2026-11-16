@@ -19,7 +19,7 @@ export default function CmsLayoutShell(props: PropsWithChildren) {
     <div className={cn('min-h-screen', userCmsBackground)}>
       <div className="flex min-h-screen gap-4">
         <CmsSidebarNav links={USER_CMS_NAV_LINKS} brandHref={PageRoutes.User.INDEX} mode="user" />
-        <main className="min-w-0 flex-1 py-4 pr-4">
+        <main className="xs:pl-0 xs:pt-4 min-w-0 flex-1 px-4 pt-20 pb-4">
           <div className="mx-auto w-full max-w-7xl">{props.children}</div>
         </main>
       </div>

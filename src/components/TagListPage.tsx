@@ -220,11 +220,7 @@ export default function TagListPage(props: TagListPageProps) {
               onPress={() => {
                 MyModal.open({
                   title: '确认删除',
-                  children: (
-                    <p>
-                      确定删除选中的 {selectedIds.length} 个标签？
-                    </p>
-                  ),
+                  children: <p>确定删除选中的 {selectedIds.length} 个标签？</p>,
                   okButtonProps: { color: 'danger' },
                   onOk: handleBatchDelete,
                 })
@@ -266,11 +262,7 @@ export default function TagListPage(props: TagListPageProps) {
               <TableRow key={tag.id}>
                 <TableCell className="text-foreground-700 text-lg">
                   {tag.icon ? (
-                    <ClientIcon
-                      icon={tag.icon}
-                      color={tag.color || undefined}
-                      className="size-5"
-                    />
+                    <ClientIcon icon={tag.icon} color={tag.color || undefined} className="size-5" />
                   ) : null}
                 </TableCell>
                 <TableCell className="max-xs:text-sm">{tag.name}</TableCell>
@@ -295,7 +287,7 @@ export default function TagListPage(props: TagListPageProps) {
                 </TableCell>
                 <TableCell className="max-xs:hidden">
                   <Switch
-                    aria-label="is main switch"
+                    aria-label={`主标签 ${tag.name}`}
                     size="sm"
                     isSelected={tag.isMain || false}
                     onValueChange={(v) => handleChangeIsMain(v, tag)}

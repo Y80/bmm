@@ -32,6 +32,7 @@ export default function ThemeToggle() {
       {/* 仅在 Mobile + Dark 条件下展示 */}
       <ReButton
         role="mobile-dark-button"
+        aria-label="切换为浅色主题"
         {...IconButtonProps}
         className={cn(IconButtonProps.className, 'max-xs:dark:flex hidden')}
         onClick={cycleTheme}
@@ -41,6 +42,7 @@ export default function ThemeToggle() {
       {/* 仅在 Mobile + Light 条件下展示 */}
       <ReButton
         role="mobile-light-button"
+        aria-label="切换为深色主题"
         {...IconButtonProps}
         className={cn(IconButtonProps.className, 'max-xs:light:flex hidden')}
         onClick={cycleTheme}
@@ -51,6 +53,7 @@ export default function ThemeToggle() {
       <ReButton
         {...IconButtonProps}
         className={cn(IconButtonProps.className, 'max-xs:hidden')}
+        aria-label="切换主题"
         onClick={cycleTheme}
         tooltip={{
           placement: 'bottom-end',

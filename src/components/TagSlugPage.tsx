@@ -164,6 +164,7 @@ export default function TagSlugPage(props: TagSlugPageProps) {
                 </ReTooltip>
               </label>
               <Switch
+                aria-label="主标签"
                 isSelected={tag.isMain || false}
                 onValueChange={(isMain) => setTag({ isMain })}
               />
