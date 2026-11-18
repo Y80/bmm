@@ -63,7 +63,7 @@ export function PublicAndUserNavbar(props: Props) {
           href={homeHref}
           className="group flex min-w-0 shrink-0 items-center gap-2.5 rounded-2xl px-1 py-1.5 no-underline sm:gap-3"
         >
-          <div className="relative flex size-10 shrink-0 items-center justify-center rounded-[20px] border border-slate-200/65 bg-white/34 backdrop-blur-md transition-[background-color,transform] duration-150 group-hover:bg-white/48 sm:size-11 sm:rounded-2xl dark:border-white/14 dark:bg-white/[0.07] dark:group-hover:bg-white/[0.1]">
+          <div className="relative flex size-10 shrink-0 items-center justify-center rounded-[20px] border border-slate-200/65 bg-white/34 backdrop-blur-md transition-[background-color,transform] duration-150 group-hover:bg-white/48 sm:size-11 sm:rounded-2xl dark:border-neutral-800 dark:bg-neutral-900 dark:backdrop-filter-none dark:group-hover:bg-neutral-800">
             <Image src={Assets.LOGO_SVG} width={24} height={24} alt="logo" priority />
           </div>
           <h3 className="text-foreground max-xs:hidden translate-y-0.5 truncate text-lg font-semibold tracking-tight sm:text-xl">
@@ -72,9 +72,8 @@ export function PublicAndUserNavbar(props: Props) {
         </Link>
       </NavbarBrand>
       <NavbarContent justify="end" className="gap-1.5 sm:gap-2">
-        {/* pathname 发生变化时，重新渲染 SearchInput */}
         {showSearchInput() && (
-          <SearchInput key={pathname} className="max-xs:hidden mr-1 w-[min(36vw,460px)]" />
+          <SearchInput className="max-xs:hidden mr-1 w-[min(36vw,460px)]" />
         )}
         <ReButton
           {...IconButtonProps}
@@ -106,7 +105,6 @@ export function PublicAndUserNavbar(props: Props) {
       </NavbarContent>
       {showSearchInput() && (
         <SearchInput
-          key={`${pathname}-mobile`}
           className="xs:hidden w-[5.75rem] shrink-0"
           compact
         />

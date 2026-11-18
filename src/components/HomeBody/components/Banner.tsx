@@ -12,9 +12,12 @@ function Wrapper(props: PropsWithChildren) {
 
 const H1_CLS = 'text-3xl font-bold flex-center text-foreground-700'
 const SURFACE_CLS =
-  'relative w-full overflow-hidden rounded-[28px] border border-slate-200/65 bg-white/20 backdrop-blur-md dark:border-white/14 dark:bg-white/[0.06]'
+  'relative w-full overflow-hidden rounded-[28px] border border-slate-200/65 bg-white/20 backdrop-blur-md dark:border-neutral-800 dark:bg-[#141414] dark:backdrop-filter-none'
+const BANNER_GRID_CLS =
+  'grid gap-3.5 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.95fr)] xl:items-start'
+const SUMMARY_GRID_CLS = 'grid grid-cols-2 gap-2.5 xl:grid-cols-1 xl:gap-3'
 const INNER_PANEL_CLS =
-  'rounded-[22px] border border-slate-200/60 bg-white/16 px-3.5 py-3.5 backdrop-blur-sm dark:border-white/12 dark:bg-white/[0.045] sm:px-4.5'
+  'rounded-[22px] border border-slate-200/60 bg-white/16 px-3.5 py-3.5 backdrop-blur-sm dark:border-neutral-800 dark:bg-[#101010] dark:backdrop-filter-none sm:px-4.5'
 
 interface Props {
   tags: SelectTag[]
@@ -47,7 +50,7 @@ export default function Banner(props: Props) {
 
   function renderWideCard(content: ReactNode) {
     return (
-      <header className="py-3 sm:py-4">
+      <header className="pt-[calc(1.125rem-0.5px)] pb-3 sm:pt-[calc(1.5rem-0.5px)] sm:pb-4">
         <div className={SURFACE_CLS}>
           <div className="relative px-4 py-4 sm:px-6 sm:py-5">{content}</div>
         </div>
@@ -63,7 +66,7 @@ export default function Banner(props: Props) {
     const recentUpdatedText = formatRecentUpdatedAt(props.recentUpdatedAt)
 
     return renderWideCard(
-      <div className="grid gap-3.5 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.95fr)] xl:items-start">
+      <div className={BANNER_GRID_CLS}>
         <div className="min-w-0">
           <div className="text-default-500 text-[0.68rem] font-semibold tracking-[0.26em] uppercase">
             Bookmark Atlas
@@ -77,7 +80,7 @@ export default function Banner(props: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-1 xl:gap-3">
+        <div className={SUMMARY_GRID_CLS}>
           <div className={INNER_PANEL_CLS}>
             <div className="text-default-500 text-[0.68rem] font-medium tracking-[0.24em] uppercase">
               书签
@@ -110,7 +113,7 @@ export default function Banner(props: Props) {
     const relatedTags = relatedTagIds.map((id) => tags.find((t) => t.id === id)).filter(Boolean) as SelectTag[]
 
     return renderWideCard(
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.9fr)] xl:items-start">
+      <div className={BANNER_GRID_CLS}>
         <div>
           <div className="text-default-500 text-[0.68rem] font-semibold tracking-[0.26em] uppercase">
             Tag View
@@ -128,7 +131,7 @@ export default function Banner(props: Props) {
               <Chip
                 key={tag.id}
                 variant="flat"
-                className="text-foreground-600 hover:text-foreground-800 cursor-pointer border border-slate-200/60 bg-white/52 dark:border-white/12 dark:bg-white/[0.08]"
+                className="text-foreground-600 hover:text-foreground-800 cursor-pointer border border-slate-200/60 bg-white/52 dark:border-neutral-700 dark:bg-neutral-900"
                 onClose={() => {
                   const tagNames = selectedTags
                     .map((t) => (t.name === tag.name ? null : t.name))
@@ -142,7 +145,7 @@ export default function Banner(props: Props) {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+        <div className={SUMMARY_GRID_CLS}>
           <div className={INNER_PANEL_CLS}>
             <div className="text-default-500 text-[0.68rem] font-medium tracking-[0.24em] uppercase">
               结果规模
@@ -163,7 +166,7 @@ export default function Banner(props: Props) {
                     <Chip
                       key={tag.id}
                       variant="flat"
-                      className="text-foreground-600 hover:text-foreground-800 cursor-pointer border border-slate-200/60 bg-white/52 active:opacity-50 dark:border-white/12 dark:bg-white/[0.08]"
+                      className="text-foreground-600 hover:text-foreground-800 cursor-pointer border border-slate-200/60 bg-white/52 active:opacity-50 dark:border-neutral-700 dark:bg-neutral-900"
                       as="a"
                       {...getTagLinkAttrs(tag)}
                       onClick={(e) => onClickTag({ tag, event: e as any })}
@@ -199,7 +202,7 @@ export default function Banner(props: Props) {
   if (pathname.startsWith(routes.SEARCH)) {
     const keyword = searchParams.get('keyword')
     return renderWideCard(
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.9fr)] xl:items-start">
+      <div className={BANNER_GRID_CLS}>
         <div>
           <div className="text-default-500 text-[0.68rem] font-semibold tracking-[0.26em] uppercase">
             Search
@@ -211,14 +214,14 @@ export default function Banner(props: Props) {
           <div className="mt-4 flex flex-wrap gap-2">
             <Chip
               variant="flat"
-              className="text-foreground-600 border border-slate-200/60 bg-white/52 text-sm font-medium dark:border-white/12 dark:bg-white/[0.08]"
+              className="text-foreground-600 border border-slate-200/60 bg-white/52 text-sm font-medium dark:border-neutral-700 dark:bg-neutral-900"
             >
               {keyword || '未输入关键词'}
             </Chip>
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+        <div className={SUMMARY_GRID_CLS}>
           <div className={INNER_PANEL_CLS}>
             <div className="text-default-500 text-[0.68rem] font-medium tracking-[0.24em] uppercase">
               命中书签

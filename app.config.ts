@@ -9,11 +9,11 @@ export const WEBSITE_KEYWORDS =
 export const IS_DEV = process.env.NODE_ENV === 'development'
 
 export const Background = {
-  CLASS: 'light:bg-slate-50 dark:bg-[#06111b]',
+  CLASS: 'light:bg-slate-50 dark:bg-neutral-950',
   LIGHT_HEX: '#f8fafc',
   LIGHT_CLASS: 'bg-slate-50',
-  DARK_HEX: '#06111b',
-  DARK_CLASS: 'bg-[#06111b]',
+  DARK_HEX: '#0a0a0a',
+  DARK_CLASS: 'bg-neutral-950',
 }
 
 export const PageRoutes = {

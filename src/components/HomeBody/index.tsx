@@ -75,7 +75,7 @@ export default function HomeBody(props: Props) {
 
   return (
     <HomeBodyProvider value={homeBodyCtx}>
-      <aside className="max-xs:hidden fixed top-20 bottom-4 w-60 pl-4">
+      <aside className="max-xs:hidden fixed top-[calc(5.5rem-0.5px)] bottom-4 w-60 pl-4">
         <TagPicker />
       </aside>
       <div className="xs:ml-60">

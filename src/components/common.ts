@@ -8,7 +8,7 @@ export const IconButtonProps = {
 export const NavBarProps = {
   maxWidth: 'full',
   className:
-    'fixed border-b border-slate-200/55 bg-white/28 backdrop-blur-xl dark:border-white/12 dark:bg-white/[0.045]',
+    'fixed border-b border-slate-200/55 bg-white/28 backdrop-blur-xl dark:border-neutral-800 dark:bg-[#101010] dark:backdrop-filter-none',
   isBlurred: true,
   isBordered: false,
 } satisfies NavbarProps

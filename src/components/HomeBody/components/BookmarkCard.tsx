@@ -28,7 +28,7 @@ export default function BookmarkCard(props: Props) {
 
   return (
     <div
-      className="max-xs:pb-3 max-xs:dark:border-white/12 max-xs:dark:bg-white/[0.045] xs:hover:-translate-y-0.5 xs:hover:border-slate-200/70 xs:hover:bg-white/26 dark:xs:hover:border-white/16 dark:xs:hover:bg-white/[0.08] flex cursor-pointer flex-col gap-2 rounded-3xl border border-slate-200/65 bg-white/16 p-4 backdrop-blur-md transition-[background-color,border-color,transform] duration-150 dark:border-white/12 dark:bg-white/[0.05]"
+      className="max-xs:pb-3 xs:hover:-translate-y-0.5 xs:hover:border-slate-200/70 xs:hover:bg-white/26 dark:xs:hover:border-neutral-700 dark:xs:hover:bg-[#191919] flex cursor-pointer flex-col gap-2 rounded-3xl border border-slate-200/65 bg-white/16 p-4 backdrop-blur-md transition-[background-color,border-color,transform] duration-150 dark:border-neutral-800 dark:bg-[#111111] dark:backdrop-filter-none"
       onClick={() => window.open(props.url, '_blank')}
     >
       <a
@@ -50,7 +50,7 @@ export default function BookmarkCard(props: Props) {
         {(() => {
           const desc = props.description
           if (!desc) {
-            return <p className="text-default-400 text-xs leading-5.5">打开站点查看详情与内容。</p>
+            return <p className="text-default-400 text-xs leading-5.5 dark:text-neutral-400">打开站点查看详情与内容。</p>
           }
           const node = (
             <p
@@ -95,7 +95,7 @@ export default function BookmarkCard(props: Props) {
               as="a"
               {...getTagLinkAttrs(tag)}
               onClick={(event) => onClickTag({ tag, event: event as any })}
-              className="text-foreground-500 xs:hover:text-foreground-700 h-6 cursor-pointer border-none bg-slate-200/42 px-2 text-xs transition active:opacity-50 dark:bg-white/[0.07]"
+              className="text-foreground-500 xs:hover:text-foreground-700 h-6 cursor-pointer border-none bg-slate-200/42 px-2 text-xs transition active:opacity-50 dark:bg-neutral-800"
             >
               {tag.name}
             </Chip>

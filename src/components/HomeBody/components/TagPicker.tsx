@@ -51,12 +51,12 @@ export default function TagPicker(props: Props) {
   return (
     <div
       className={cn(
-        'relative flex h-full flex-col overflow-hidden rounded-[26px] border border-slate-200/65 bg-white/18 backdrop-blur-md dark:border-white/14 dark:bg-white/[0.06]',
+        'relative flex h-full flex-col overflow-hidden rounded-[26px] border border-slate-200/65 bg-white/18 backdrop-blur-md dark:border-neutral-800 dark:bg-[#111111] dark:backdrop-filter-none',
         props.className
       )}
       style={props.style}
     >
-      <div className="relative border-b border-slate-200/60 px-3 py-3.5 dark:border-white/12">
+      <div className="relative border-b border-slate-200/60 px-3 py-3.5 dark:border-neutral-800">
         <div className="px-1">
           <div className="text-sm font-semibold">标签池</div>
         </div>
@@ -67,7 +67,7 @@ export default function TagPicker(props: Props) {
             placeholder="过滤标签"
             classNames={{
               inputWrapper:
-                'h-8 border border-slate-200/65 bg-white/26 px-2.5 data-[hover=true]:bg-white/34 data-[focus=true]:border-slate-300/80 data-[focus=true]:bg-white/42 dark:border-white/12 dark:bg-white/[0.06] dark:data-[hover=true]:bg-white/[0.08] dark:data-[focus=true]:bg-white/[0.1]',
+                'h-8 border border-slate-200/65 bg-white/26 px-2.5 data-[hover=true]:bg-white/34 data-[focus=true]:border-slate-300/80 data-[focus=true]:bg-white/42 dark:border-neutral-800 dark:bg-neutral-900 dark:data-[hover=true]:bg-neutral-800 dark:data-[focus=true]:border-neutral-500 dark:data-[focus=true]:bg-neutral-900',
               input: 'text-sm',
               clearButton: 'text-default-400',
             }}
@@ -75,10 +75,6 @@ export default function TagPicker(props: Props) {
             value={state.filterTagInput}
             onValueChange={(v) => setState({ filterTagInput: v })}
           />
-        </div>
-
-        <div className="text-default-500 mt-2.5 px-1 text-[11px] leading-5">
-          共 {tags.length} 个标签，可快速筛选当前书签
         </div>
       </div>
 
@@ -95,7 +91,7 @@ export default function TagPicker(props: Props) {
       </div>
 
       {!state.filterTagInput && (
-        <div className="relative border-t border-slate-200/60 px-4 py-3 dark:border-white/12">
+        <div className="relative border-t border-slate-200/60 px-4 py-3 dark:border-neutral-800">
           <div className="-ml-1 flex items-center gap-2">
             <Switch
               size="sm"
@@ -113,7 +109,7 @@ export default function TagPicker(props: Props) {
               仅展示主标签
             </span>
           </div>
-          <div className="text-default-400 mt-1 text-[11px] leading-4.5">
+          <div className="text-default-400 mt-1 text-[11px] leading-4.5 dark:text-neutral-400">
             点击标签时，按住 <Kbd className="scale-75 opacity-75" keys={['alt']} />{' '}
             可多选，实现交叉筛选书签。
           </div>
