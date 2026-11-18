@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: bmm
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 666888
+      POSTGRES_PASSWORD: ${BMM_POSTGRES_PASSWORD:?Set BMM_POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     # 如果需要外部链接当前数据库，可以放开这里的端口映射
@@ -17,10 +17,15 @@ services:
       retries: 3
 
   app:
-    image: lcclcc/bmm
+    image: ${BMM_IMAGE:-lcclcc/bmm:latest}
     environment:
-      - DB_DRIVER=postgresql
-      - DB_CONNECTION_URL=postgresql://postgres:666888@postgres:5432/bmm
+      DB_DRIVER: postgresql
+      DB_CONNECTION_URL: postgresql://postgres@postgres:5432/bmm
+      PGPASSWORD: ${BMM_POSTGRES_PASSWORD:?Set BMM_POSTGRES_PASSWORD}
+      AUTH_URL: ${AUTH_URL:?Set AUTH_URL}
+      AUTH_SECRET: ${AUTH_SECRET:?Set AUTH_SECRET}
+      AUTH_GITHUB_ID: ${AUTH_GITHUB_ID:-}
+      AUTH_GITHUB_SECRET: ${AUTH_GITHUB_SECRET:-}
     ports:
       - 3000:3000
     depends_on:

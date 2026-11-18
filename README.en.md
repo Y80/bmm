@@ -170,18 +170,51 @@ pnpm start
 
 ### Docker Deployment
 
-The repository includes a ready-to-use [`Dockerfile`](./Dockerfile). The example below uses SQLite with a mounted volume:
+Use the [official BMM image on Docker Hub](https://hub.docker.com/r/lcclcc/bmm/tags), `lcclcc/bmm:latest`. The prebuilt image currently supports `linux/amd64`. The `latest` tag tracks `main`. To pin a build, use its full Git commit SHA as the image tag.
+
+Create `.env.docker.local` and keep it when recreating the container. For a new local installation, generate the config with:
 
 ```bash
-docker build -t bmm .
+(umask 077; set -C; printf 'AUTH_URL=http://localhost:3000\nAUTH_SECRET=%s\n' \
+  "$(openssl rand -hex 32)" > .env.docker.local)
+```
 
-docker run --rm \
+If you use a domain, set `AUTH_URL` to the actual site URL. To enable GitHub sign-in, add your OAuth client ID and secret as described in the [auth configuration](#oauth) and set the matching callback URL.
+
+#### SQLite
+
+```bash
+docker pull lcclcc/bmm:latest
+docker run -d --name bmm --restart unless-stopped \
+  --env-file .env.docker.local \
   -e DB_DRIVER=sqlite \
   -e DB_CONNECTION_URL=file:/app/volume/sqlite.db \
   -v bmm:/app/volume \
   -p 3000:3000 \
-  bmm
+  lcclcc/bmm:latest
 ```
+
+SQLite data lives in the named volume `bmm`. To update, back up the database and pull the new image. Remove the old app container, then run the same `docker run` command with the existing volume and environment file.
+
+#### PostgreSQL
+
+Use the repository's [`docker-compose.yml`](./docker-compose.yml). For a fresh installation, generate a `BMM_POSTGRES_PASSWORD` as shown below. If you already have a PostgreSQL volume, use the database user's current password.
+
+```bash
+printf 'BMM_POSTGRES_PASSWORD=%s\n' "$(openssl rand -hex 24)" >> .env.docker.local
+docker compose --env-file .env.docker.local up -d
+```
+
+PostgreSQL data lives in the `postgres_data` volume. Back up your data and review the release notes for migration requirements before updating. To update only the application container:
+
+```bash
+docker compose --env-file .env.docker.local pull app
+docker compose --env-file .env.docker.local up -d --no-deps app
+```
+
+Set `BMM_IMAGE=lcclcc/bmm:<full-commit-SHA>` in `.env.docker.local` to pin the Compose image. If you configure an auto-updater, track only the BMM container and schedule a maintenance window for releases that require manual migration. Rolling back the image restores the application version. Database schema rollback is a separate operation.
+
+For custom build settings, you can also build your own image using the repository's [`Dockerfile`](./Dockerfile).
 
 ### Vercel Deployment
 

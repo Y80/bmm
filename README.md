@@ -170,18 +170,51 @@ pnpm start
 
 ### Docker 部署
 
-项目自带 [`Dockerfile`](./Dockerfile)。下面示例使用 SQLite 挂载数据卷：
+使用 Docker Hub 上的 [BMM 官方镜像](https://hub.docker.com/r/lcclcc/bmm/tags) `lcclcc/bmm:latest`。该镜像目前支持 `linux/amd64`，可直接拉取。`latest` 跟随 `main` 更新。需要固定版本时，在镜像地址中使用发布记录对应的完整 Git 提交 SHA 标签。
+
+先创建 `.env.docker.local`，并保留它以便重建容器。首次在本机运行时可用以下命令生成配置：
 
 ```bash
-docker build -t bmm .
+(umask 077; set -C; printf 'AUTH_URL=http://localhost:3000\nAUTH_SECRET=%s\n' \
+  "$(openssl rand -hex 32)" > .env.docker.local)
+```
 
-docker run --rm \
+如果通过域名访问，将 `AUTH_URL` 改为实际访问地址。启用 GitHub 登录时，按[认证配置](#oauth)添加 OAuth Client ID 和 Secret，并设置对应的回调地址。
+
+#### SQLite
+
+```bash
+docker pull lcclcc/bmm:latest
+docker run -d --name bmm --restart unless-stopped \
+  --env-file .env.docker.local \
   -e DB_DRIVER=sqlite \
   -e DB_CONNECTION_URL=file:/app/volume/sqlite.db \
   -v bmm:/app/volume \
   -p 3000:3000 \
-  bmm
+  lcclcc/bmm:latest
 ```
+
+SQLite 数据保存在名为 `bmm` 的数据卷。更新时先备份数据库，拉取镜像后删除旧应用容器，再执行相同的 `docker run` 命令，继续使用原数据卷和环境文件。
+
+#### PostgreSQL
+
+使用仓库中的 [`docker-compose.yml`](./docker-compose.yml)。首次安装时向 `.env.docker.local` 添加 `BMM_POSTGRES_PASSWORD`，可用下列命令生成。已有 PostgreSQL 数据卷时，填写该数据库用户当前的密码。
+
+```bash
+printf 'BMM_POSTGRES_PASSWORD=%s\n' "$(openssl rand -hex 24)" >> .env.docker.local
+docker compose --env-file .env.docker.local up -d
+```
+
+PostgreSQL 数据保存在 `postgres_data` 数据卷。更新前先备份数据并查看版本说明中的迁移要求。只更新应用容器时执行：
+
+```bash
+docker compose --env-file .env.docker.local pull app
+docker compose --env-file .env.docker.local up -d --no-deps app
+```
+
+可在 `.env.docker.local` 设置 `BMM_IMAGE=lcclcc/bmm:<完整提交SHA>` 来固定 Compose 镜像版本。自行配置自动更新工具时，只跟踪 BMM 容器，并在需要手动迁移的版本上安排维护窗口。镜像回退只恢复应用版本，数据库结构需单独处理。
+
+使用自定义构建配置时，也可以通过仓库的 [`Dockerfile`](./Dockerfile) 构建镜像。
 
 ### Vercel 部署
 
