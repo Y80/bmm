@@ -1,6 +1,7 @@
 import GithubProvider from 'next-auth/providers/github'
 
 export const githubProvider = GithubProvider({
+  issuer: 'https://github.com/login/oauth',
   // async profile(profile) {
   //   return {
   //     ...pick(profile, ['email', 'name']),
