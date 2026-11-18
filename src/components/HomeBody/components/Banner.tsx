@@ -12,9 +12,9 @@ function Wrapper(props: PropsWithChildren) {
 
 const H1_CLS = 'text-3xl font-bold flex-center text-foreground-700'
 const SURFACE_CLS =
-  'relative w-full overflow-hidden rounded-[28px] border border-slate-200/65 bg-white/20 backdrop-blur-md dark:border-white/10 dark:bg-content1/36'
+  'relative w-full overflow-hidden rounded-[28px] border border-slate-200/65 bg-white/20 backdrop-blur-md dark:border-white/14 dark:bg-white/[0.06]'
 const INNER_PANEL_CLS =
-  'rounded-[22px] border border-slate-200/60 bg-white/16 px-3.5 py-3.5 backdrop-blur-sm dark:border-white/10 dark:bg-content2/24 sm:px-4.5'
+  'rounded-[22px] border border-slate-200/60 bg-white/16 px-3.5 py-3.5 backdrop-blur-sm dark:border-white/12 dark:bg-white/[0.045] sm:px-4.5'
 
 interface Props {
   tags: SelectTag[]
@@ -128,7 +128,7 @@ export default function Banner(props: Props) {
               <Chip
                 key={tag.id}
                 variant="flat"
-                className="text-foreground-600 hover:text-foreground-800 cursor-pointer border border-slate-200/60 bg-white/52 dark:border-white/10 dark:bg-content2/52"
+                className="text-foreground-600 hover:text-foreground-800 cursor-pointer border border-slate-200/60 bg-white/52 dark:border-white/12 dark:bg-white/[0.08]"
                 onClose={() => {
                   const tagNames = selectedTags
                     .map((t) => (t.name === tag.name ? null : t.name))
@@ -163,7 +163,7 @@ export default function Banner(props: Props) {
                     <Chip
                       key={tag.id}
                       variant="flat"
-                      className="text-foreground-600 hover:text-foreground-800 cursor-pointer border border-slate-200/60 bg-white/52 active:opacity-50 dark:border-white/10 dark:bg-content2/52"
+                      className="text-foreground-600 hover:text-foreground-800 cursor-pointer border border-slate-200/60 bg-white/52 active:opacity-50 dark:border-white/12 dark:bg-white/[0.08]"
                       as="a"
                       {...getTagLinkAttrs(tag)}
                       onClick={(e) => onClickTag({ tag, event: e as any })}
@@ -211,7 +211,7 @@ export default function Banner(props: Props) {
           <div className="mt-4 flex flex-wrap gap-2">
             <Chip
               variant="flat"
-              className="text-foreground-600 border border-slate-200/60 bg-white/52 text-sm font-medium dark:border-white/10 dark:bg-content2/52"
+              className="text-foreground-600 border border-slate-200/60 bg-white/52 text-sm font-medium dark:border-white/12 dark:bg-white/[0.08]"
             >
               {keyword || '未输入关键词'}
             </Chip>

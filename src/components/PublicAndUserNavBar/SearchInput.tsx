@@ -78,9 +78,9 @@ export function SearchInput(props: Props) {
       classNames={{
         base: props.className,
         inputWrapper: cn(
-          'border border-slate-200/80 bg-white/50 backdrop-blur-md data-[hover=true]:bg-white/60 data-[focus=true]:border-slate-300/95 data-[focus=true]:bg-white/68 dark:border-white/8 dark:bg-white/4 dark:data-[hover=true]:bg-white/6 dark:data-[focus=true]:bg-white/7 dark:shadow-none',
+          'border border-slate-200/80 bg-white/50 backdrop-blur-md data-[hover=true]:bg-white/60 data-[focus=true]:border-slate-300/95 data-[focus=true]:bg-white/68 dark:border-white/12 dark:bg-white/[0.055] dark:data-[hover=true]:bg-white/[0.075] dark:data-[focus=true]:bg-white/[0.095] dark:shadow-none',
           props.compact
-            ? 'h-10 rounded-[18px] border-white/10 bg-white/6 px-2 data-[hover=true]:bg-white/9 data-[focus=true]:border-white/18 data-[focus=true]:bg-white/10 dark:border-white/10 dark:bg-white/6 dark:data-[hover=true]:bg-white/8 dark:data-[focus=true]:bg-white/10'
+            ? 'h-10 rounded-[18px] border-white/10 bg-white/6 px-2 data-[hover=true]:bg-white/9 data-[focus=true]:border-white/18 data-[focus=true]:bg-white/10 dark:border-white/14 dark:bg-white/[0.07] dark:data-[hover=true]:bg-white/[0.09] dark:data-[focus=true]:bg-white/[0.11]'
             : 'h-11 rounded-2xl'
         ),
         input: cn('text-sm', props.compact && 'text-[13px] font-medium'),
@@ -91,7 +91,7 @@ export function SearchInput(props: Props) {
         !props.compact &&
         !state.focusInput &&
         !state.input && (
-          <Kbd className="text-default-400 rounded-xl border border-slate-200/80 bg-slate-100/90 px-2.5 py-0 dark:border-white/10 dark:bg-content2/50">
+          <Kbd className="text-default-400 rounded-xl border border-slate-200/80 bg-slate-100/90 px-2.5 py-0 dark:border-white/12 dark:bg-white/[0.08]">
             /
           </Kbd>
         )
