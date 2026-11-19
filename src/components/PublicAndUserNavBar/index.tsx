@@ -101,7 +101,7 @@ export function PublicAndUserNavbar(props: Props) {
         >
           <span className={IconNames.Tabler.BRAND_GITHUB} />
         </ReButton>
-        <NavUser />
+        <NavUser isUserSpace={isUserSpace} />
       </NavbarContent>
       {showSearchInput() && (
         <SearchInput

@@ -172,25 +172,11 @@ export const ADMIN_NAV_LINKS = [
     accent: 'from-sky-400 via-cyan-400 to-blue-500',
   },
   {
-    label: '新建书签',
-    href: PageRoutes.Admin.bookmarkSlug('new'),
-    icon: IconNames.Huge.ADD_SQUARE,
-    description: '录入单条书签并补全网站信息',
-    accent: 'from-fuchsia-400 via-pink-500 to-rose-500',
-  },
-  {
     label: '标签列表',
     href: PageRoutes.Admin.tagSlug('list'),
     icon: IconNames.Tabler.TAG,
     description: '整理标签结构、颜色和关联关系',
     accent: 'from-emerald-300 via-teal-400 to-cyan-500',
-  },
-  {
-    label: '新建标签',
-    href: PageRoutes.Admin.tagSlug('new'),
-    icon: IconNames.Huge.ADD_SQUARE,
-    description: '创建新标签并设置图标、颜色与主标签属性',
-    accent: 'from-lime-300 via-green-400 to-emerald-500',
   },
   {
     label: '批量导入',
@@ -263,25 +249,11 @@ export const USER_CMS_NAV_LINKS = [
     accent: 'from-sky-400 via-cyan-400 to-blue-500',
   },
   {
-    label: '新建书签',
-    href: PageRoutes.User.bookmarkSlug('new'),
-    icon: IconNames.Huge.ADD_SQUARE,
-    description: '录入单条书签并补全网站信息',
-    accent: 'from-fuchsia-400 via-pink-500 to-rose-500',
-  },
-  {
     label: '标签列表',
     href: PageRoutes.User.tagSlug('list'),
     icon: IconNames.Tabler.TAG,
     description: '整理你的标签结构、颜色和关联关系',
     accent: 'from-emerald-300 via-teal-400 to-cyan-500',
-  },
-  {
-    label: '新建标签',
-    href: PageRoutes.User.tagSlug('new'),
-    icon: IconNames.Huge.ADD_SQUARE,
-    description: '创建新标签并设置图标、颜色与主标签属性',
-    accent: 'from-lime-300 via-green-400 to-emerald-500',
   },
   {
     label: '批量导入',

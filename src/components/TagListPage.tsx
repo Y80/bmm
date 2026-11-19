@@ -176,32 +176,21 @@ export default function TagListPage(props: TagListPageProps) {
       title="标签列表"
       className="bg-white"
       titleActions={
-        <div className="flex items-center gap-2">
-          <ReButton
-            color="primary"
-            size="sm"
-            startContent={<span className={IconNames.Tabler.PLUS} />}
-            onClick={toNewTagPage}
-          >
-            新建标签
-          </ReButton>
-          <SortTagModal refreshTags={props.refreshAllTags} tags={props.allTags}>
-            <ReButton
-              variant="flat"
-              size="sm"
-              isDisabled={props.allTags.length < 2}
-              startContent={<span className={cn(IconNames.Tabler.ARROWS_SORT, 'text-sm')} />}
-            >
-              排序
-            </ReButton>
-          </SortTagModal>
-        </div>
+        <ReButton
+          color="primary"
+          size="sm"
+          startContent={<span className={IconNames.Tabler.PLUS} />}
+          onPress={toNewTagPage}
+        >
+          新建标签
+        </ReButton>
       }
     >
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="w-full sm:max-w-[400px]">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
+        <div className="w-full sm:w-[220px]">
           <ReInput
             size="sm"
+            aria-label="搜索标签"
             placeholder="输入名称或拼音"
             labelPlacement="outside"
             isClearable
@@ -210,12 +199,31 @@ export default function TagListPage(props: TagListPageProps) {
             onClear={() => onKeywordChange('')}
           />
         </div>
-        <div className="flex gap-2 sm:ml-auto">
-          {hasSelection && (
+        <SortTagModal refreshTags={props.refreshAllTags} tags={props.allTags}>
+          <ReButton
+            variant="flat"
+            size="sm"
+            className="justify-start"
+            isDisabled={props.allTags.length < 2}
+            startContent={<span className={cn(IconNames.Tabler.ARROWS_SORT, 'text-base')} />}
+          >
+            排序
+          </ReButton>
+        </SortTagModal>
+      </div>
+
+      <div className="mt-3 overflow-hidden">
+        {hasSelection && (
+          <div className="border-primary/20 bg-primary/5 mb-3 flex items-center gap-3 rounded-lg border p-3">
+            <span className="text-primary flex items-center gap-2 text-sm font-medium">
+              <span className={IconNames.Tabler.CHECKBOX} />
+              已选择 {selectedIds.length} 项
+            </span>
             <ReButton
               color="danger"
               size="sm"
               variant="flat"
+              className="ml-auto"
               startContent={<span className={cn(IconNames.Tabler.TRASH, 'text-sm')} />}
               onPress={() => {
                 MyModal.open({
@@ -226,13 +234,10 @@ export default function TagListPage(props: TagListPageProps) {
                 })
               }}
             >
-              删除 {selectedIds.length} 项
+              批量删除
             </ReButton>
-          )}
-        </div>
-      </div>
-
-      <div className="overflow-hidden">
+          </div>
+        )}
         <Table
           aria-label="tags table"
           classNames={{

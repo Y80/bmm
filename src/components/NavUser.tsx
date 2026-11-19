@@ -6,7 +6,7 @@ import { IconButtonProps } from './common'
 
 const MENU_ITEM_ICON_CLS = 'text-base translate-y-0.5'
 
-export function NavUser() {
+export function NavUser({ isUserSpace }: { isUserSpace: boolean }) {
   const session = useSession()
   const user = session.data?.user
   const isAuthenticated = session.status === 'authenticated'
@@ -53,12 +53,14 @@ export function NavUser() {
             }
           >
             <ListboxSection showDivider>
-              <ListboxItem
-                href={PageRoutes.User.SPACE}
-                startContent={<span className={cn(IconNames.Tabler.USER, MENU_ITEM_ICON_CLS)} />}
-              >
-                个人空间
-              </ListboxItem>
+              {!isUserSpace ? (
+                <ListboxItem
+                  href={PageRoutes.User.SPACE}
+                  startContent={<span className={cn(IconNames.Tabler.USER, MENU_ITEM_ICON_CLS)} />}
+                >
+                  个人空间
+                </ListboxItem>
+              ) : null}
               <ListboxItem
                 href={PageRoutes.User.INDEX}
                 target="_blank"
@@ -72,6 +74,18 @@ export function NavUser() {
                 </span>
               </ListboxItem>
             </ListboxSection>
+            {isUserSpace ? (
+              <ListboxSection showDivider>
+                <ListboxItem
+                  href={PageRoutes.INDEX}
+                  startContent={
+                    <span className={cn(IconNames.Huge.INTERNET, MENU_ITEM_ICON_CLS)} aria-hidden />
+                  }
+                >
+                  网站首页
+                </ListboxItem>
+              </ListboxSection>
+            ) : null}
             <ListboxSection showDivider hidden={!user.isAdmin} className="max-xs:hidden">
               <ListboxItem
                 href={PageRoutes.Admin.INDEX}
