@@ -9,7 +9,7 @@ function createValidPassword() {
   return faker.string.alphanumeric(12)
 }
 
-describe('G: Credentials Controller', { sequential: true }, () => {
+describe('G: Credentials Controller', { concurrent: false }, () => {
   const email = faker.internet.email()
   const password = createValidPassword()
 
@@ -29,7 +29,7 @@ describe('G: Credentials Controller', { sequential: true }, () => {
   })
 })
 
-describe('G: 创建账户时的各种异常', { sequential: true }, () => {
+describe('G: 创建账户时的各种异常', { concurrent: false }, () => {
   const email = faker.internet.email()
   const password = createValidPassword()
 
@@ -66,7 +66,7 @@ describe('G: 创建账户时的各种异常', { sequential: true }, () => {
   })
 })
 
-describe('G: 删除用户时清理关联数据', { sequential: true }, () => {
+describe('G: 删除用户时清理关联数据', { concurrent: false }, () => {
   const email = faker.internet.email()
   const password = createValidPassword()
 
@@ -128,7 +128,7 @@ describe('G: 删除用户时清理关联数据', { sequential: true }, () => {
   })
 })
 
-describe('G: 重设密码', { sequential: true }, () => {
+describe('G: 重设密码', { concurrent: false }, () => {
   const email = faker.internet.email()
   const oldPassword = createValidPassword()
   const newPassword = createValidPassword()
@@ -154,7 +154,7 @@ describe('G: 重设密码', { sequential: true }, () => {
   })
 })
 
-describe('G: 为第三方账号补建密码登录', { sequential: true }, () => {
+describe('G: 为第三方账号补建密码登录', { concurrent: false }, () => {
   const email = faker.internet.email()
   const password = createValidPassword()
 

@@ -41,7 +41,7 @@ describe('userTags CRUD', async () => {
     await expect(task).rejects.toThrowError(/Failed query|UNIQUE constraint failed/)
   })
 
-  test.sequential('update', async () => {
+  test('update', { concurrent: false }, async () => {
     const name = faker.word.noun()
     const data = await db
       .update(schema.userTags)
@@ -51,7 +51,7 @@ describe('userTags CRUD', async () => {
     expect(data?.pop()?.name).toBe(name)
   })
 
-  test.sequential('delete', async () => {
+  test('delete', { concurrent: false }, async () => {
     const data = await db.delete(schema.userTags).where(eq(schema.userTags.id, tag.id)).returning()
     expect(data?.pop()?.id).toBe(tag.id)
   })

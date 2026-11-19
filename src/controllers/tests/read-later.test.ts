@@ -50,7 +50,7 @@ vi.mock('@/lib/ai', () => ({
 
 const { userReadLaterItems, users } = schema
 
-describe('G: UserReadLaterController', { sequential: true }, () => {
+describe('G: UserReadLaterController', { concurrent: false }, () => {
   let userA = ''
   let userB = ''
 

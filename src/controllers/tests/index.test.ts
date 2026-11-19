@@ -9,7 +9,7 @@ import PublicTagController from '../PublicTag.controller'
 
 const { publicBookmarks, publicTags, publicBookmarkToTag, publicTagToTag } = schema
 
-describe('G: PublicTagController', { sequential: true }, () => {
+describe('G: PublicTagController', { concurrent: false }, () => {
   let id = 0
 
   test('Insert a Tag', async () => {
@@ -39,7 +39,7 @@ describe('G: PublicTagController', { sequential: true }, () => {
   })
 })
 
-describe('G: PublicBookmarkController', { sequential: true }, () => {
+describe('G: PublicBookmarkController', { concurrent: false }, () => {
   const ctl = PublicBookmarkController
   let bookmarkId = 0
 

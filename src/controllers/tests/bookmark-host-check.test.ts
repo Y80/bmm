@@ -103,7 +103,7 @@ async function markOtherPublicHostsFresh(pendingHostKeys: Set<string>) {
     })
 }
 
-describe('G: BookmarkHostCheckController', { sequential: true }, () => {
+describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
   beforeEach(async () => {
     vi.restoreAllMocks()
     mockFetchStatus(200)

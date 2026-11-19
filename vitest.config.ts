@@ -1,6 +1,5 @@
 /// <reference types="vitest" />
 
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 import { declareLocalType, loadEnv } from './scripts/utils.mjs'
 
@@ -10,11 +9,10 @@ export default defineConfig(async () => {
   await declareLocalType()
 
   return {
-    plugins: [tsconfigPaths()],
+    resolve: { tsconfigPaths: true },
     test: {
       fileParallelism: false,
       maxWorkers: 1,
-      minWorkers: 1,
     },
   }
 })
