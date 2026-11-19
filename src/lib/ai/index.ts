@@ -29,17 +29,13 @@ export async function analyzeWebsite(inputUrl: string, tags: string[] = []) {
 }
 
 /**
- * 传入一个标签名称，从数据库中读取所有标签名称，根据名字语义分析和传入标签相关的书签
+ * 根据标签名称推荐主题色、图标和已有的关联标签
  */
 export async function analyzeRelatedTags(tag: string, tags: string[]) {
   const payload = {
     targetTag: tag,
     tags,
   }
-  if (!payload.tags.length) {
-    throw new Error('数据库标签数据为空，请先创建标签再调用当前 AI 功能')
-  }
-
   return generateAiObject({
     schema: analyzeRelatedTagsSchema,
     schemaName: 'related_tags_analysis',

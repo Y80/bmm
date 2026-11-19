@@ -121,11 +121,7 @@ export default function TagSlugPage(props: TagSlugPageProps) {
         maxLength={FieldConstraints.MaxLen.TAG_NAME}
         value={tag.name}
         onValueChange={(name) => setTag({ name })}
-        endContent={
-          !!props.tags.length && (
-            <AiAnalyzeRelatedTagButton tagName={tag.name} onOk={onReceiveRelatedTags} />
-          )
-        }
+        endContent={<AiAnalyzeRelatedTagButton tagName={tag.name} onOk={onReceiveRelatedTags} />}
       />
       <ReInput
         label="图标"

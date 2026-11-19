@@ -83,7 +83,7 @@ export function createAnalyzeRelatedTagsPrompt(payload: { targetTag: string; tag
   "themeColor": "#RRGGBB",
   "icon": "最符合 targetTag 语义的 Iconify 图标名称"
 字段要求：
-- relatedTags: 最多 5 个；按相关性从高到低排序；只包含输入 tags 中存在的字符串；没有合适项时返回空数组。
+- relatedTags: 最多 5 个；按相关性从高到低排序；只包含输入 tags 中存在的字符串；tags 为空或没有合适项时返回空数组。
 - themeColor: 使用 HEX 色值格式。优先选择 targetTag 对应品牌、产品、框架或技术社区常见主色；没有明确品牌色时，选择一个符合该标签语义且辨识度好的颜色。
 - icon: 返回 Iconify 上真实存在、最符合 targetTag 名称语义的图标名称，格式为 "图标集:图标名"，例如 "tabler:ad-circle"、"simple-icons:react"、"mdi:database"；优先选择语义清晰、通用、适合标签展示的图标；不要返回 SVG、URL、emoji、HTML 或解释文本。
 
