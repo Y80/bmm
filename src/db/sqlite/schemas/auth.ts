@@ -13,6 +13,7 @@ export const users = sqliteTable('user', {
   image: text('image'),
   role: text({ enum: ['user', 'admin'] }).default('user'),
   createdAt: integer('createdAt', { mode: 'timestamp_ms' }).$defaultFn(() => new Date()),
+  lastLoginAt: integer('lastLoginAt', { mode: 'timestamp_ms' }),
 })
 
 export const accounts = sqliteTable(

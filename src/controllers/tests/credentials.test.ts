@@ -104,14 +104,52 @@ describe('G: 删除用户时清理关联数据', { concurrent: false }, () => {
       { bId: bookmark.id, tId: tagB.id },
     ])
 
+    const expires = new Date(Date.now() + 60_000)
+    await db.insert(schema.userReadLaterItems).values({
+      userId: user.id,
+      url: 'https://example.com/read-later',
+      title: '稍后阅读',
+      summary: '测试摘要',
+    })
+    await db.insert(schema.userConfigs).values({ userId: user.id, key: 'test', value: true })
+    await db.insert(schema.sessions).values({
+      userId: user.id,
+      sessionToken: faker.string.uuid(),
+      expires,
+    })
+    await db.insert(schema.authenticators).values({
+      userId: user.id,
+      providerAccountId: email,
+      credentialID: faker.string.uuid(),
+      credentialPublicKey: 'fixture-key',
+      counter: 0,
+      credentialDeviceType: 'singleDevice',
+      credentialBackedUp: false,
+    })
+    await db.insert(schema.verificationTokens).values({
+      identifier: email,
+      token: faker.string.uuid(),
+      expires,
+    })
+
     await UserController.delete(user.id)
 
     await expect(db.$count(schema.users, eq(schema.users.id, user.id))).resolves.toBe(0)
-    await expect(db.$count(schema.credentials, eq(schema.credentials.userId, user.id))).resolves.toBe(0)
-    await expect(db.$count(schema.accounts, eq(schema.accounts.userId, user.id))).resolves.toBe(0)
-    await expect(db.$count(schema.userTags, eq(schema.userTags.userId, user.id))).resolves.toBe(0)
+    const ownedTables = [
+      schema.credentials,
+      schema.accounts,
+      schema.sessions,
+      schema.authenticators,
+      schema.userTags,
+      schema.userBookmarks,
+      schema.userReadLaterItems,
+      schema.userConfigs,
+    ]
+    for (const table of ownedTables) {
+      await expect(db.$count(table, eq(table.userId, user.id))).resolves.toBe(0)
+    }
     await expect(
-      db.$count(schema.userBookmarks, eq(schema.userBookmarks.userId, user.id))
+      db.$count(schema.verificationTokens, eq(schema.verificationTokens.identifier, email))
     ).resolves.toBe(0)
 
     const [{ totalTagRefs }] = await db

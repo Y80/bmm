@@ -132,7 +132,7 @@ const CredentialsController = {
     if (!user) {
       throw new Error('用户不存在')
     }
-    await db.delete(schema.users).where(eq(schema.users.id, user.id))
+    await UserController.delete(user.id)
   },
 }
 

@@ -154,6 +154,18 @@ pnpm db:test
 pnpm db:migrate
 ```
 
+从旧版升级时，请先为用户表迁移 `lastLoginAt` 字段，再启动新版。保留了 Drizzle 迁移历史的实例可使用 `pnpm db:migrate`，生产配置使用 `pnpm db:migrate -P`。使用独立迁移账号的 PostgreSQL 实例需用该账号生成和执行迁移。
+
+如果已有数据库只有表结构、没有可用的迁移快照，可在尚未添加该字段时执行对应 SQL：
+
+```sql
+-- PostgreSQL
+ALTER TABLE "user" ADD COLUMN IF NOT EXISTS "lastLoginAt" timestamp with time zone;
+
+-- SQLite 或 Turso
+ALTER TABLE "user" ADD COLUMN "lastLoginAt" integer;
+```
+
 <a id="deployment"></a>
 
 ## 部署

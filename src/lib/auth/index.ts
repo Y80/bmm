@@ -1,6 +1,7 @@
 import UserController from '@/controllers/User.controller'
 import { db, schema } from '@/db'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
+import { eq } from 'drizzle-orm'
 import NextAuth, { NextAuthConfig } from 'next-auth'
 import { authConfig } from './config'
 
@@ -24,6 +25,26 @@ adapter.createUser = async (data) => {
 const nextAuthOptions: NextAuthConfig = {
   ...authConfig,
   adapter,
+  callbacks: {
+    ...authConfig.callbacks,
+    async jwt(params) {
+      if (!params.user) {
+        const userId = params.token.sub
+        if (!userId) return null
+        const user = await db.query.users.findFirst({
+          where: eq(schema.users.id, userId),
+          columns: { id: true },
+        })
+        if (!user) return null
+      }
+      return authConfig.callbacks.jwt(params)
+    },
+  },
+  events: {
+    async signIn({ user }) {
+      if (user.id) await UserController.recordLogin(user.id)
+    },
+  },
 }
 
 export const nextAuthLib = NextAuth(nextAuthOptions)

@@ -59,7 +59,7 @@ export const publicBookmarks = sqliteTable('publicBookmarks', {
 
 export const bookmarkHostChecks = sqliteTable('bookmarkHostChecks', {
   hostKey: text('hostKey').primaryKey(),
-  status: text('status', { enum: ['reachable', 'unreachable'] }).notNull(),
+  status: text('status', { enum: ['reachable', 'restricted', 'unreachable'] }).notNull(),
   httpStatus: integer('httpStatus'),
   errorMessage: text('errorMessage'),
   checkedAt: integer('checkedAt', { mode: 'timestamp' })

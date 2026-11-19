@@ -9,6 +9,7 @@ import {
   actUpdatePublicBookmark,
   actUpdateUserBookmark,
 } from '@/actions'
+import AiAnalyzeButton from '@/components/AiAnalyzeButton'
 import BookmarkIconDropdown from '@/components/BookmarkIconDropdown'
 import Favicon from '@/components/Favicon'
 import ReButton from '@/components/re-export/ReButton'
@@ -83,9 +84,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     name: '',
     icon: '',
   })
-  const [state, setState] = useSetState({
-    loading: false,
-  })
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
   const hasValidUrl = formSchema.shape.url.safeParse(bookmark.url).success
 
   useEffect(() => {
@@ -132,11 +131,12 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   }
 
   async function aiAnalyzeWebsite() {
-    if (!hasValidUrl || state.loading) return
+    if (!hasValidUrl || isAnalyzing) return
     const originalBookmark = { ...bookmark }
-    setState({ loading: true })
-    const { data } = await runAction(actAnalyzeWebsite(bookmark.url))
-    setState({ loading: false })
+    setIsAnalyzing(true)
+    const { data } = await runAction(actAnalyzeWebsite(bookmark.url)).finally(() => {
+      setIsAnalyzing(false)
+    })
     if (!data) return
     setPreviousBookmark(originalBookmark)
     setInvalidInfos({ name: '', icon: '' })
@@ -149,7 +149,7 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
   }
 
   async function onSave() {
-    if (state.loading || loadState !== 'ready') return
+    if (isAnalyzing || loadState !== 'ready') return
     if (!validateAll()) return
     const action = slug.isNew
       ? pageUtil.isAdminSpace
@@ -199,43 +199,34 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
     )
   }
 
-  function renderAiButton(className: string) {
+  function renderAiButton(className?: string) {
     return (
-      <ReButton
-        size="sm"
-        variant="light"
-        isLoading={state.loading}
+      <AiAnalyzeButton
+        isAnalyzing={isAnalyzing}
         isDisabled={!hasValidUrl}
-        aria-label="AI 智能解析"
-        onPress={aiAnalyzeWebsite}
-        className={cn(
-          'text-foreground data-[hover=true]:bg-default-100 shrink-0 gap-1.5 rounded-lg bg-transparent px-2',
-          className
-        )}
-      >
-        <span className={cn('text-secondary text-base', IconNames.Mdi.STARS)} />
-        AI 解析
-      </ReButton>
+        onAnalyze={aiAnalyzeWebsite}
+        className={className}
+      />
     )
   }
 
   return (
     <SlugPageLayout
       onSave={onSave}
-      isSaveDisabled={state.loading}
+      isSaveDisabled={isAnalyzing}
       title={slug.isNew ? '新建书签' : '编辑书签'}
     >
       <div className="flex flex-col gap-2">
         <ReInput
           label="网址"
           type="url"
-          isReadOnly={state.loading}
+          isReadOnly={isAnalyzing}
           isRequired
           maxLength={FieldConstraints.MaxLen.URL}
           isInvalid={!!invalidInfos.url}
           errorMessage={invalidInfos.url}
           classNames={{ inputWrapper: 'xs:pr-1' }}
-          endContent={renderAiButton('hidden h-8 min-h-8 min-w-20 xs:inline-flex')}
+          endContent={renderAiButton('hidden xs:inline-flex')}
           value={bookmark.url}
           onChange={(e) => {
             setBookmark({ url: e.target.value })
@@ -244,11 +235,11 @@ export default function BookmarkSlugPage(props: BookmarkSlugPageProps) {
           }}
           onBlur={() => validateItem('url')}
         />
-        <div className="xs:hidden flex justify-end">{renderAiButton('min-h-11 min-w-24')}</div>
+        <div className="xs:hidden flex justify-end">{renderAiButton()}</div>
       </div>
-      {(state.loading || previousBookmark) && (
+      {(isAnalyzing || previousBookmark) && (
         <div role="status" aria-live="polite" className="text-default-600 text-sm">
-          {state.loading
+          {isAnalyzing
             ? '正在解析网站，请稍候…'
             : previousBookmark && (
                 <div className="xs:flex-row xs:items-center xs:gap-3 flex flex-col items-start gap-2">

@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNull, notInArray, or } from 'drizzle-orm'
+import { and, eq, inArray, isNull, notInArray, or, sql } from 'drizzle-orm'
 import { db, schema } from '@/db'
 import { getBookmarkHost } from '@/utils/bookmark-host'
 import { fetchRequest, createFetchNetworkErrorMessage, type FetchResponse } from '@/utils/http'
@@ -6,7 +6,7 @@ import SiteSettingController from './SiteSetting.controller'
 
 const { bookmarkHostChecks, publicBookmarks, siteConfigs, userBookmarks, userConfigs } = schema
 
-export type BookmarkHostCheckStatus = 'reachable' | 'unreachable'
+export type BookmarkHostCheckStatus = (typeof bookmarkHostChecks.$inferSelect)['status']
 export type BookmarkHostCheckFilterStatus = BookmarkHostCheckStatus | 'unchecked' | ''
 export type CheckHostsTaskValue = {
   startedAt: string
@@ -27,7 +27,6 @@ type BookmarkWithHostKey = {
   hostKey?: string | null
 }
 
-type CheckHostResult = typeof bookmarkHostChecks.$inferSelect
 type SaveCheckHostsTask = (task: CheckHostsTaskValue) => Promise<CheckHostsTaskValue>
 
 export const CHECK_HOSTS_TASK_KEY = 'checkHostsTask'
@@ -35,10 +34,18 @@ export const CHECK_HOST_TIMEOUT = 30 * 1000
 export const CHECK_HOST_CONCURRENCY = 5
 const HOST_CHECK_FRESH_MS = 24 * 60 * 60 * 1000
 
+const FORBIDDEN_MESSAGE = '检测请求被拒绝（HTTP 403），实际访问情况请在浏览器中确认'
+const CHALLENGE_MESSAGE = '需要在浏览器中完成验证'
+
+// 历史 403 未保存挑战信息，列表和筛选都按访问受限处理。
+const effectiveHostCheckStatus = sql<BookmarkHostCheckStatus>`case
+  when ${bookmarkHostChecks.httpStatus} = 403 then 'restricted'
+  else ${bookmarkHostChecks.status}
+end`
+
 const HTTP_ERROR_MESSAGES: Record<number, string> = {
   400: '请求错误',
   401: '需要登录',
-  403: '访问被拒绝',
   404: '网页未找到',
   408: '请求超时',
   429: '请求过于频繁',
@@ -81,38 +88,42 @@ export function createBookmarkHostCheckFilter(
   const targetHostKeys = db
     .select({ hostKey: bookmarkHostChecks.hostKey })
     .from(bookmarkHostChecks)
-    .where(eq(bookmarkHostChecks.status, status))
-  return and(inArray(table.hostKey, targetHostKeys))
+    .where(eq(effectiveHostCheckStatus, status))
+  return inArray(table.hostKey, targetHostKeys)
 }
 
 export async function withBookmarkHostCheckSummaries<T extends BookmarkWithHostKey>(
   list: T[]
 ): Promise<Array<T & BookmarkHostCheckSummary>> {
   const hostKeys = [...new Set(list.map((item) => item.hostKey).filter(Boolean))] as string[]
-  if (!hostKeys.length) {
-    return list.map((item) => appendHostCheckSummary(item, null))
-  }
-
-  const checks = await db
-    .select()
-    .from(bookmarkHostChecks)
-    .where(inArray(bookmarkHostChecks.hostKey, hostKeys))
+  const checks = hostKeys.length
+    ? await db
+        .select({
+          hostKey: bookmarkHostChecks.hostKey,
+          storedStatus: bookmarkHostChecks.status,
+          status: effectiveHostCheckStatus,
+          checkedAt: bookmarkHostChecks.checkedAt,
+          httpStatus: bookmarkHostChecks.httpStatus,
+          errorMessage: bookmarkHostChecks.errorMessage,
+        })
+        .from(bookmarkHostChecks)
+        .where(inArray(bookmarkHostChecks.hostKey, hostKeys))
+    : []
   const checkMap = new Map(checks.map((item) => [item.hostKey, item]))
 
-  return list.map((item) => appendHostCheckSummary(item, item.hostKey ? checkMap.get(item.hostKey) : null))
-}
-
-function appendHostCheckSummary<T extends BookmarkWithHostKey>(
-  item: T,
-  check: CheckHostResult | null | undefined
-): T & BookmarkHostCheckSummary {
-  return {
-    ...item,
-    hostCheckStatus: (check?.status ?? 'unchecked') as BookmarkHostCheckSummary['hostCheckStatus'],
-    hostCheckedAt: check?.checkedAt ?? null,
-    hostCheckHttpStatus: check?.httpStatus ?? null,
-    hostCheckErrorMessage: check?.errorMessage ?? null,
-  }
+  return list.map((item) => {
+    const check = item.hostKey ? checkMap.get(item.hostKey) : undefined
+    return {
+      ...item,
+      hostCheckStatus: check?.status ?? 'unchecked',
+      hostCheckedAt: check?.checkedAt ?? null,
+      hostCheckHttpStatus: check?.httpStatus ?? null,
+      hostCheckErrorMessage:
+        check?.status === 'restricted' && check.storedStatus !== 'restricted'
+          ? FORBIDDEN_MESSAGE
+          : (check?.errorMessage ?? null),
+    }
+  })
 }
 
 async function requestHost(hostKey: string, method: 'HEAD' | 'GET', timeout: number, proxyUrl?: string) {
@@ -134,7 +145,7 @@ async function probeHost(hostKey: string, timeout: number, proxyUrl?: string) {
 
   try {
     const headResponse = await requestHost(hostKey, 'HEAD', getRemainingTimeout(), proxyUrl)
-    if (isReachableResponse(headResponse)) {
+    if (isSuccessfulResponse(headResponse) || isVerificationChallengeResponse(headResponse)) {
       return headResponse
     }
   } catch {
@@ -152,30 +163,33 @@ function getResponseHeader(response: FetchResponse, name: string) {
   return ''
 }
 
-function getResponseBodyText(response: FetchResponse) {
-  return response.body.toString('utf8').toLowerCase()
-}
-
-function isCloudflareVerificationResponse(response: FetchResponse) {
-  if (getResponseHeader(response, 'cf-mitigated').toLowerCase() === 'challenge') return true
-
-  const body = getResponseBodyText(response)
-  if (CLOUDFLARE_CHALLENGE_BODY_PATTERNS.some((pattern) => body.includes(pattern))) return true
-  return body.includes('cloudflare') && body.includes('just a moment')
-}
-
-function isVercelVerificationResponse(response: FetchResponse) {
-  const body = getResponseBodyText(response)
-  if (!body.includes('vercel')) return false
-  return VERCEL_CHALLENGE_BODY_PATTERNS.some((pattern) => body.includes(pattern))
-}
-
 function isVerificationChallengeResponse(response: FetchResponse) {
-  return isCloudflareVerificationResponse(response) || isVercelVerificationResponse(response)
+  if (getResponseHeader(response, 'cf-mitigated').trim().toLowerCase() === 'challenge') return true
+  if (response.status < 400 || !response.body.length) return false
+  const body = response.body.toString('utf8').toLowerCase()
+  if (CLOUDFLARE_CHALLENGE_BODY_PATTERNS.some((pattern) => body.includes(pattern))) return true
+  if (body.includes('cloudflare') && body.includes('just a moment')) return true
+  return body.includes('vercel') && VERCEL_CHALLENGE_BODY_PATTERNS.some((pattern) => body.includes(pattern))
 }
 
-function isReachableResponse(response: FetchResponse) {
-  return (response.status >= 200 && response.status < 400) || isVerificationChallengeResponse(response)
+function isSuccessfulResponse(response: FetchResponse) {
+  return response.status >= 200 && response.status < 400
+}
+
+function classifyHostResponse(response: FetchResponse): {
+  status: BookmarkHostCheckStatus
+  errorMessage: string | null
+} {
+  if (isVerificationChallengeResponse(response)) {
+    return { status: 'restricted', errorMessage: CHALLENGE_MESSAGE }
+  }
+  if (response.status === 403) {
+    return { status: 'restricted', errorMessage: FORBIDDEN_MESSAGE }
+  }
+  if (isSuccessfulResponse(response)) {
+    return { status: 'reachable', errorMessage: null }
+  }
+  return { status: 'unreachable', errorMessage: createHttpErrorMessage(response.status) }
 }
 
 function createHttpErrorMessage(status: number) {
@@ -419,12 +433,10 @@ const BookmarkHostCheckController = {
 
     try {
       const response = await probeHost(hostKey, opts.timeout || 8000, proxyUrl)
-      const reachable = isReachableResponse(response)
       return await saveCheckResult({
         hostKey,
-        status: reachable ? 'reachable' : 'unreachable',
         httpStatus: response.status,
-        errorMessage: reachable ? null : createHttpErrorMessage(response.status),
+        ...classifyHostResponse(response),
       })
     } catch (error) {
       return await saveCheckResult({
@@ -441,13 +453,14 @@ const BookmarkHostCheckController = {
     const result = {
       total: normalizedHostKeys.length,
       reachable: 0,
+      restricted: 0,
       unreachable: 0,
       skipped: hostKeys.filter((hostKey) => !hostKey).length,
     }
 
     for (const hostKey of normalizedHostKeys) {
       const row = await this.checkHost(hostKey, opts)
-      result[row.status as BookmarkHostCheckStatus] += 1
+      result[row.status] += 1
     }
 
     return result

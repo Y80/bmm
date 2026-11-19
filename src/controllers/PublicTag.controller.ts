@@ -6,8 +6,6 @@ import { and, asc, count, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
 import { createTagFilterByKeyword } from './common'
 import { findManyTagsSchema } from './schemas'
 
-export const deletePublicTagsSchema = z.object({ ids: z.array(z.string()).min(1) })
-
 const { publicTagToTag, publicTags } = schema
 
 export type { SelectTag as SelectPublicTag }

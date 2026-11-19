@@ -38,7 +38,6 @@ export default function TagSlugPage(props: TagSlugPageProps) {
     selectedIcon: null as null | SelectedIcon,
     selectedTags: [] as number[],
     isSaving: false,
-    analyzing: false,
   })
   const slug = useSlug()
 

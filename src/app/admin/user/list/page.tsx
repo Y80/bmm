@@ -36,16 +36,19 @@ import z from 'zod'
 const SORTERS = [
   { name: '注册时间降序', key: '-createTime', iconCls: IconNames.Tabler.SORT_DESC },
   { name: '注册时间升序', key: '+createTime', iconCls: IconNames.Tabler.SORT_ASC },
+  { name: '上次登录时间降序', key: '-lastLoginTime', iconCls: IconNames.Tabler.SORT_DESC },
+  { name: '上次登录时间升序', key: '+lastLoginTime', iconCls: IconNames.Tabler.SORT_ASC },
 ] as const
 
 const PAGESIZE = 20
 
-function formatDate(date: Date | null | undefined) {
-  if (!date) return '-'
+function formatDate(date: Date | null, includeTime = false) {
+  if (!date) return includeTime ? '暂无记录' : '-'
   return new Intl.DateTimeFormat('zh-CN', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
+    ...(includeTime && { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }),
   }).format(date)
 }
 
@@ -59,7 +62,7 @@ export default function Page() {
   const session = useSession()
   const [state, setState] = useSetState({
     loading: true,
-    sorterKey: (searchParams.get('sorterKey') || SORTERS[0].key) as (typeof SORTERS)[number]['key'],
+    sorterKey: SORTERS.find(({ key }) => key === searchParams.get('sorterKey'))?.key ?? SORTERS[0].key,
     keyword: searchParams.get('keyword') || '',
     deletingUserId: '',
     pager: {
@@ -189,6 +192,7 @@ export default function Page() {
               <TableColumn className="max-xs:hidden">邮箱</TableColumn>
               <TableColumn>角色</TableColumn>
               <TableColumn className="max-xs:hidden">注册时间</TableColumn>
+              <TableColumn className="max-xs:hidden">上次登录</TableColumn>
               <TableColumn>操作</TableColumn>
             </TableHeader>
             <TableBody<SelectUser>
@@ -212,6 +216,9 @@ export default function Page() {
                         <div className="text-default-500 xs:hidden truncate text-xs">
                           {item.email}
                         </div>
+                        <div className="text-default-500 xs:hidden text-xs">
+                          上次登录 {formatDate(item.lastLoginAt, true)}
+                        </div>
                       </div>
                     </div>
                   </TableCell>
@@ -228,6 +235,9 @@ export default function Page() {
                     </Chip>
                   </TableCell>
                   <TableCell className="max-xs:hidden">{formatDate(item.createdAt)}</TableCell>
+                  <TableCell className="max-xs:hidden whitespace-nowrap">
+                    {formatDate(item.lastLoginAt, true)}
+                  </TableCell>
                   <TableCell>
                     <ReButton
                       isDisabled={session.data?.user.id === item.id}
@@ -242,7 +252,7 @@ export default function Page() {
                           title: '确认删除',
                           children: (
                             <p>
-                              确定删除用户「{getDisplayName(item)}」？
+                              确定删除用户「{getDisplayName(item)}」及其所有个人数据？此操作无法撤销。
                             </p>
                           ),
                           okButtonProps: { color: 'danger' },

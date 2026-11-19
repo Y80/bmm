@@ -15,6 +15,7 @@ export const users = pgTable('user', {
   image: text('image'),
   role: roleEnum('role').default('user'),
   createdAt: timestamp('createdAt', { mode: 'date' }).$defaultFn(() => new Date()),
+  lastLoginAt: timestamp('lastLoginAt', { mode: 'date', withTimezone: true }),
 })
 
 export const accounts = pgTable(

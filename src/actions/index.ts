@@ -11,8 +11,7 @@ import {
   UserReadLaterController,
   UserTagController,
   aiProvidersConfigSchema,
-  deletePublicTagsSchema,
-  deleteUserTagsSchema,
+  deleteTagsSchema,
   duplicateAiProviderSchema,
   listAiProviderModelsSchema,
   createReadLaterItemSchema,
@@ -58,7 +57,7 @@ export const actInsertPublicTag = make(PublicTagController.insert, { guard: 'adm
 export const actDeletePublicTag = make(PublicTagController.remove, { guard: 'admin' })
 export const actDeletePublicTags = make(PublicTagController.removeMany, {
   guard: 'admin',
-  schema: deletePublicTagsSchema,
+  schema: deleteTagsSchema,
 })
 export const actUpdatePublicTag = make(PublicTagController.update, { guard: 'admin' })
 export const actUpdatePublicTagSortOrders = make(PublicTagController.sort, { guard: 'admin' })
@@ -71,7 +70,7 @@ export const actInsertUserTag = make(UserTagController.insert)
 export const actUpdateUserTag = make(UserTagController.update)
 export const actDeleteUserTag = make(UserTagController.remove)
 export const actDeleteUserTags = make(UserTagController.removeMany, {
-  schema: deleteUserTagsSchema,
+  schema: deleteTagsSchema,
 })
 export const actUpdateUserTagSortOrders = make(UserTagController.sort)
 export const actTryCreateUserTags = make(UserTagController.tryCreateTags)

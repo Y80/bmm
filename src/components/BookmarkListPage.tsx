@@ -70,6 +70,7 @@ const SORTERS = [
 const HOST_CHECK_STATUSES = [
   { name: '未检测', key: 'unchecked' },
   { name: '可访问', key: 'reachable' },
+  { name: '访问受限', key: 'restricted' },
   { name: '不可访问', key: 'unreachable' },
 ] as const
 
@@ -285,8 +286,12 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
     setState({ isBatchChecking: true })
     const action = isUserSpace ? actBatchCheckUserBookmarkHosts : actBatchCheckPublicBookmarkHosts
     await runAction(action({ ids }), {
-      okMsg: '站点检测完成',
-      onOk: () => {
+      onOk: ({ reachable, restricted, unreachable }) => {
+        addToast({
+          color: 'success',
+          title: '站点检测完成',
+          description: `可访问 ${reachable}，访问受限 ${restricted}，不可访问 ${unreachable}`,
+        })
         setState({ selectedKeys: new Set<BookmarkId>() })
         refresh()
       },
@@ -394,6 +399,24 @@ export default function BookmarkListPage(props: BookmarkListPageProps) {
         >
           可访问
         </Chip>
+      )
+    }
+
+    if (item.hostCheckStatus === 'restricted') {
+      return (
+        <Tooltip content={item.hostCheckErrorMessage || '访问受限'}>
+          <Chip
+            size="sm"
+            color="warning"
+            variant="flat"
+            aria-label={
+              item.hostCheckErrorMessage ? `访问受限：${item.hostCheckErrorMessage}` : undefined
+            }
+            startContent={<span className={IconNames.Tabler.ALERT_TRIANGLE} aria-hidden="true" />}
+          >
+            访问受限
+          </Chip>
+        </Tooltip>
       )
     }
 

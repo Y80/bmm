@@ -5,8 +5,6 @@ import { and, asc, count, desc, eq, inArray, notInArray, or } from 'drizzle-orm'
 import { createTagFilterByKeyword } from './common'
 import { findManyTagsSchema } from './schemas'
 
-export const deleteUserTagsSchema = z.object({ ids: z.array(z.string()).min(1) })
-
 const { userTagToTag, userTags } = schema
 
 /** 在 SelectTag 基础上扩展了 `{ relatedTagIds: id[] }` */

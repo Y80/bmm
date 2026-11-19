@@ -3,9 +3,11 @@ import { eq, inArray } from 'drizzle-orm'
 import { afterAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { db, schema } from '@/db'
+import { getAuthedUserId } from '@/lib/auth'
 import { findManyBookmarksSchema } from '../schemas'
 import BookmarkHostCheckController from '../BookmarkHostCheck.controller'
 import PublicBookmarkController from '../PublicBookmark.controller'
+import UserBookmarkController from '../UserBookmark.controller'
 import * as http from '@/utils/http'
 
 vi.mock('@/utils/http', async () => {
@@ -20,14 +22,16 @@ vi.mock('@/controllers/SiteSetting.controller', () => ({
   default: { getProxyUrl: vi.fn(() => '') },
 }))
 
-const { bookmarkHostChecks, publicBookmarks, siteConfigs } = schema
+vi.mock('@/lib/auth', () => ({ getAuthedUserId: vi.fn() }))
+
+const { bookmarkHostChecks, publicBookmarks, siteConfigs, userBookmarks, users } = schema
 
 const createdBookmarkIds: number[] = []
 const touchedHostKeys = new Set<string>()
 const CHECK_HOSTS_TASK_KEY = 'checkHostsTask'
 
 function createBookmarkName(prefix = 'host-check') {
-  return `${prefix}-${faker.string.uuid()}`
+  return `${prefix}-${faker.string.alphanumeric(12)}`
 }
 
 function createUrl(host = faker.internet.domainName()) {
@@ -146,10 +150,10 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
     expect(result.errorMessage).toBeNull()
   })
 
-  test('Cloudflare verification challenge responses are reachable', async () => {
+  test.each([200, 403, 503])('Cloudflare challenge header marks HTTP %i as restricted', async (status) => {
     vi.mocked(http.fetchRequest).mockResolvedValue({
-      status: 403,
-      headers: { 'cf-mitigated': 'challenge', server: 'cloudflare' },
+      status,
+      headers: { 'CF-Mitigated': 'challenge', server: 'cloudflare' },
       body: Buffer.from(''),
       effectiveUrl: '',
     })
@@ -157,13 +161,21 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
     const result = await BookmarkHostCheckController.checkHost('https://cloudflare-challenge.example')
     touchedHostKeys.add(result.hostKey)
 
-    expect(result.status).toBe('reachable')
-    expect(result.httpStatus).toBe(403)
-    expect(result.errorMessage).toBeNull()
+    expect(result.status).toBe('restricted')
+    expect(result.httpStatus).toBe(status)
+    expect(result.errorMessage).toBe('需要在浏览器中完成验证')
     expect(http.fetchRequest).toHaveBeenCalledTimes(1)
   })
 
-  test('Vercel verification challenge responses are reachable', async () => {
+  test.each([
+    [
+      'Cloudflare',
+      '<script src="/cdn-cgi/challenge-platform/check.js"></script>',
+      '需要在浏览器中完成验证',
+    ],
+    ['Vercel', '<title>Vercel Security Checkpoint</title>', '需要在浏览器中完成验证'],
+    ['plain', '<title>Forbidden</title>', '检测请求被拒绝（HTTP 403），实际访问情况请在浏览器中确认'],
+  ])('recognizes %s HTTP 403 after falling back to GET', async (kind, html, message) => {
     vi.mocked(http.fetchRequest)
       .mockResolvedValueOnce({
         status: 403,
@@ -173,17 +185,19 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
       })
       .mockResolvedValueOnce({
         status: 403,
-        headers: { 'x-vercel-id': 'iad1::demo' },
-        body: Buffer.from('<title>Vercel Security Checkpoint</title>'),
+        headers: { 'content-type': 'text/html', server: kind === 'Vercel' ? 'Vercel' : 'cloudflare' },
+        body: Buffer.from(html),
         effectiveUrl: '',
       })
 
-    const result = await BookmarkHostCheckController.checkHost('https://vercel-challenge.example')
+    const result = await BookmarkHostCheckController.checkHost(
+      `https://${kind.toLowerCase()}-body.example`
+    )
     touchedHostKeys.add(result.hostKey)
 
-    expect(result.status).toBe('reachable')
+    expect(result.status).toBe('restricted')
     expect(result.httpStatus).toBe(403)
-    expect(result.errorMessage).toBeNull()
+    expect(result.errorMessage).toBe(message)
     expect(http.fetchRequest).toHaveBeenCalledTimes(2)
   })
 
@@ -232,6 +246,27 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
     )
   })
 
+  test('a successful GET stays reachable when HTML only references challenge scripts', async () => {
+    vi.mocked(http.fetchRequest)
+      .mockResolvedValueOnce({
+        status: 405,
+        headers: {},
+        body: Buffer.alloc(0),
+        effectiveUrl: '',
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        headers: { 'content-type': 'text/html' },
+        body: Buffer.from('<script src="/cdn-cgi/challenge-platform/injected.js"></script>'),
+        effectiveUrl: '',
+      })
+
+    const result = await BookmarkHostCheckController.checkHost('https://successful-body.example')
+    touchedHostKeys.add(result.hostKey)
+
+    expect(result).toMatchObject({ status: 'reachable', httpStatus: 200, errorMessage: null })
+  })
+
   test('host check does not start GET after HEAD consumes the timeout budget', async () => {
     const nowSpy = vi.spyOn(Date, 'now')
     nowSpy.mockReturnValueOnce(0).mockReturnValueOnce(0).mockReturnValue(30_000)
@@ -249,14 +284,17 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
     expect(http.fetchRequest).toHaveBeenCalledTimes(1)
   })
 
-  test('4xx and 5xx responses are unreachable with chinese error message', async () => {
-    mockFetchStatus(404)
-    const result = await BookmarkHostCheckController.checkHost('https://missing.example')
+  test.each([
+    [404, '404：网页未找到'],
+    [500, '500：服务器内部错误'],
+  ])('plain HTTP %i is unreachable with the existing message', async (status, message) => {
+    mockFetchStatus(status)
+    const result = await BookmarkHostCheckController.checkHost(`https://http-${status}.example`)
     touchedHostKeys.add(result.hostKey)
 
     expect(result.status).toBe('unreachable')
-    expect(result.httpStatus).toBe(404)
-    expect(result.errorMessage).toBe('404：网页未找到')
+    expect(result.httpStatus).toBe(status)
+    expect(result.errorMessage).toBe(message)
   })
 
   test('network errors are unreachable without http status', async () => {
@@ -277,6 +315,7 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
     const urlHost = `${faker.string.uuid()}.example.com`
     const first = await createPublicBookmark({ name: `${prefix}-a`, url: `https://${urlHost}/a` })
     const second = await createPublicBookmark({ name: `${prefix}-b`, url: `https://${urlHost}/b` })
+    const restricted = await createPublicBookmark({ name: `${prefix}-restricted` })
     const invalid = await db
       .insert(publicBookmarks)
       .values({ name: `${prefix}-null`, url: `https://${faker.string.uuid()}.example.com/null` })
@@ -286,14 +325,19 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
     first.hostKey && touchedHostKeys.add(first.hostKey)
     second.hostKey && touchedHostKeys.add(second.hostKey)
 
-    mockFetchStatus(200)
+    vi.mocked(http.fetchRequest).mockImplementation(async ({ url }) => ({
+      status: url === restricted.hostKey ? 403 : 200,
+      headers: {},
+      body: Buffer.alloc(0),
+      effectiveUrl: url,
+    }))
 
     const result = await PublicBookmarkController.batchCheckHosts(
       findManyBookmarksSchema.parse({ keyword: prefix })
     )
 
-    expect(result).toMatchObject({ total: 1, reachable: 1, unreachable: 0, skipped: 1 })
-    expect(http.fetchRequest).toHaveBeenCalledTimes(1)
+    expect(result).toEqual({ total: 2, reachable: 1, restricted: 1, unreachable: 0, skipped: 1 })
+    expect(http.fetchRequest).toHaveBeenCalledTimes(3)
   })
 
   test('check all hosts task writes JSON config and skips fresh checked hosts', async () => {
@@ -332,7 +376,7 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
         },
       })
 
-    mockFetchStatus(200)
+    mockFetchStatus(403)
 
     const startedTask = await BookmarkHostCheckController.startPublicCheckHostsTask()
     expect(startedTask).toMatchObject({
@@ -349,7 +393,11 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
       checked: 1,
       errorMessage: null,
     })
-    expect(http.fetchRequest).toHaveBeenCalledTimes(1)
+    expect(http.fetchRequest).toHaveBeenCalledTimes(2)
+    const check = await db.query.bookmarkHostChecks.findFirst({
+      where: eq(bookmarkHostChecks.hostKey, pendingA.hostKey!),
+    })
+    expect(check).toMatchObject({ status: 'restricted', httpStatus: 403 })
 
     const row = await db.query.siteConfigs.findFirst({
       where: eq(siteConfigs.key, CHECK_HOSTS_TASK_KEY),
@@ -428,14 +476,16 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
     expect(maxActive).toBeLessThanOrEqual(5)
   })
 
-  test('findMany can filter unchecked reachable and unreachable bookmarks', async () => {
+  test('both bookmark lists group saved and historical restricted results consistently', async () => {
     const prefix = createBookmarkName('filter-host')
     const unchecked = await createPublicBookmark({ name: `${prefix}-unchecked` })
     const reachable = await createPublicBookmark({ name: `${prefix}-reachable` })
     const unreachable = await createPublicBookmark({ name: `${prefix}-unreachable` })
+    const historical = await createPublicBookmark({ name: `${prefix}-historical-403` })
+    const previouslyReachable = await createPublicBookmark({ name: `${prefix}-reachable-403` })
+    const restricted = await createPublicBookmark({ name: `${prefix}-restricted` })
+    const oldCheckedAt = new Date('2026-01-01T00:00:00Z')
 
-    touchedHostKeys.add(reachable.hostKey!)
-    touchedHostKeys.add(unreachable.hostKey!)
     await db.insert(bookmarkHostChecks).values([
       {
         hostKey: reachable.hostKey!,
@@ -449,34 +499,69 @@ describe('G: BookmarkHostCheckController', { concurrent: false }, () => {
         httpStatus: 500,
         errorMessage: '500：服务器内部错误',
       },
+      {
+        hostKey: historical.hostKey!,
+        status: 'unreachable',
+        httpStatus: 403,
+        errorMessage: '403：访问被拒绝',
+        checkedAt: oldCheckedAt,
+      },
+      {
+        hostKey: previouslyReachable.hostKey!,
+        status: 'reachable',
+        httpStatus: 403,
+        errorMessage: null,
+      },
+      {
+        hostKey: restricted.hostKey!,
+        status: 'restricted',
+        httpStatus: 503,
+        errorMessage: '需要在浏览器中完成验证',
+      },
     ])
 
-    const uncheckedResult = await PublicBookmarkController.findMany(
-      findManyBookmarksSchema.parse({
-        keyword: prefix,
-        hostCheckStatus: 'unchecked',
-        includeHostCheckSummary: true,
-      })
-    )
-    const reachableResult = await PublicBookmarkController.findMany(
-      findManyBookmarksSchema.parse({
-        keyword: prefix,
-        hostCheckStatus: 'reachable',
-        includeHostCheckSummary: true,
-      })
-    )
-    const unreachableResult = await PublicBookmarkController.findMany(
-      findManyBookmarksSchema.parse({
-        keyword: prefix,
-        hostCheckStatus: 'unreachable',
-        includeHostCheckSummary: true,
-      })
-    )
+    const [owner] = await db.insert(users).values({ email: faker.internet.email() }).returning()
+    vi.mocked(getAuthedUserId).mockResolvedValue(owner.id)
+    try {
+      await db.insert(userBookmarks).values(
+        [unchecked, reachable, unreachable, historical, previouslyReachable, restricted].map(
+          ({ name, url, hostKey }) => ({ name, url, hostKey, userId: owner.id })
+        )
+      )
 
-    expect(uncheckedResult.list.map((item) => item.id)).toEqual([unchecked.id])
-    expect(reachableResult.list.map((item) => item.id)).toEqual([reachable.id])
-    expect(reachableResult.list[0].hostCheckStatus).toBe('reachable')
-    expect(unreachableResult.list.map((item) => item.id)).toEqual([unreachable.id])
-    expect(unreachableResult.list[0].hostCheckErrorMessage).toBe('500：服务器内部错误')
+      const groups = [
+        ['unchecked', [unchecked.name]],
+        ['reachable', [reachable.name]],
+        ['unreachable', [unreachable.name]],
+        ['restricted', [historical.name, previouslyReachable.name, restricted.name]],
+      ] as const
+      for (const controller of [PublicBookmarkController, UserBookmarkController]) {
+        for (const [status, names] of groups) {
+          const result = await controller.findMany(
+            findManyBookmarksSchema.parse({
+              keyword: prefix,
+              hostCheckStatus: status,
+              includeHostCheckSummary: true,
+            })
+          )
+          expect(result.total).toBe(names.length)
+          expect(result.list.map((item) => item.name).sort()).toEqual([...names].sort())
+          expect(result.list.every((item) => item.hostCheckStatus === status)).toBe(true)
+          if (status === 'restricted') {
+            expect(result.list.find((item) => item.name === historical.name)).toMatchObject({
+              hostCheckedAt: oldCheckedAt,
+              hostCheckHttpStatus: 403,
+              hostCheckErrorMessage: '检测请求被拒绝（HTTP 403），实际访问情况请在浏览器中确认',
+            })
+            expect(
+              result.list.find((item) => item.name === restricted.name)?.hostCheckErrorMessage
+            ).toBe('需要在浏览器中完成验证')
+          }
+        }
+      }
+    } finally {
+      await db.delete(userBookmarks).where(eq(userBookmarks.userId, owner.id))
+      await db.delete(users).where(eq(users.id, owner.id))
+    }
   })
 })

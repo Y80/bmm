@@ -84,7 +84,7 @@ export const publicBookmarks = pgTable('publicBookmarks', {
 
 export const bookmarkHostChecks = pgTable('bookmarkHostChecks', {
   hostKey: varchar('hostKey', { length: FieldConstraints.MaxLen.URL }).primaryKey(),
-  status: varchar('status', { length: 20 }).notNull(),
+  status: varchar('status', { length: 20, enum: ['reachable', 'restricted', 'unreachable'] }).notNull(),
   httpStatus: integer('httpStatus'),
   errorMessage: varchar('errorMessage', { length: FieldConstraints.MaxLen.BOOKMARK_DESC }),
   checkedAt: timestamp('checkedAt', { mode: 'date' })

@@ -1,16 +1,23 @@
 name: Build and Push Docker Image
 
+# main 更新时自动发布，也可在 Actions 页面手动触发。
 on:
   push:
     branches:
       - main
   workflow_dispatch:
 
+# GITHUB_TOKEN 只需读取仓库代码，Docker Hub 使用独立凭据。
+permissions:
+  contents: read
+
+# 同一个 Git ref 有新运行时，取消尚未完成的旧运行。
 concurrency:
   group: docker-build-push-${{ github.ref }}
   cancel-in-progress: true
 
 env:
+  # 镜像发布到 Docker Hub 账号下的 bmm 仓库。
   IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/bmm
 
 jobs:
@@ -24,6 +31,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      # 使用仓库 Secrets 登录 Docker Hub，授权推送镜像。
       - name: Log in to Docker Hub
         uses: docker/login-action@v4
         with:
@@ -35,11 +43,14 @@ jobs:
         with:
           context: .
           push: true
+          # latest 跟随最近一次发布，提交 SHA 标签可用于部署指定版本。
           tags: |
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          # OCI 标签记录镜像对应的仓库和源码提交。
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
+          # 复用 GitHub Actions 中的构建缓存，避免重复构建未变更的层。
           cache-from: type=gha
           cache-to: type=gha,mode=max

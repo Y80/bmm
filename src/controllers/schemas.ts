@@ -17,7 +17,7 @@ export const findManyBookmarksSchema = z.object({
   sorterKey: z
     .enum(['-updateTime', '+updateTime', '-createTime', '+createTime'])
     .default('-updateTime'),
-  hostCheckStatus: z.enum(['unchecked', 'reachable', 'unreachable']).optional(),
+  hostCheckStatus: z.enum(['unchecked', 'reachable', 'restricted', 'unreachable']).optional(),
   includeHostCheckSummary: z.boolean().optional().default(false),
   limit: z
     .number()
@@ -48,9 +48,17 @@ export const findManyTagsSchema = z.object({
     .transform((v) => Number(v) || 1),
 })
 
+export const deleteTagsSchema = z.object({
+  ids: z
+    .array(z.union([z.number(), z.string().regex(/^-?\d+$/).transform(Number)]).pipe(z.int()))
+    .min(1),
+})
+
 export const findManyUsersSchema = z.object({
   keyword: z.string().optional(),
-  sorterKey: z.enum(['-createTime', '+createTime']).default('-createTime'),
+  sorterKey: z
+    .enum(['-createTime', '+createTime', '-lastLoginTime', '+lastLoginTime'])
+    .default('-createTime'),
   limit: z
     .number()
     .or(z.string())
