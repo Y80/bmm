@@ -7,7 +7,7 @@ import usePageUtil from './usePageUtil'
 type OnClickTag = (arg: {
   tag: SelectTag
   isIntersected?: boolean
-  event?: MouseEvent<HTMLAnchorElement>
+  event?: MouseEvent
 }) => void
 
 export function useOnClickTag({ tags }: { tags: SelectTag[] }) {

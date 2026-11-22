@@ -1,4 +1,5 @@
 import Favicon from '@/components/Favicon'
+import { HOME_CONTENT_LIGHT_BACKGROUND_CLS } from '@/components/HomeBody/styles'
 import { useIsMobile } from '@/hooks'
 import { useOnClickTag } from '@/hooks/useOnClickTag'
 import { getTagLinkAttrs } from '@/utils'
@@ -28,7 +29,7 @@ export default function BookmarkCard(props: Props) {
 
   return (
     <div
-      className="max-xs:pb-3 xs:hover:-translate-y-0.5 xs:hover:border-slate-200/70 xs:hover:bg-white/26 dark:xs:hover:border-neutral-700 dark:xs:hover:bg-[#191919] flex cursor-pointer flex-col gap-2 rounded-3xl border border-slate-200/65 bg-white/16 p-4 backdrop-blur-md transition-[background-color,border-color,transform] duration-150 dark:border-neutral-800 dark:bg-[#111111] dark:backdrop-filter-none"
+      className={`max-xs:pb-3 flex cursor-pointer flex-col gap-2 rounded-3xl border border-slate-200/65 p-4 backdrop-blur-md dark:border-neutral-800 dark:bg-[#111111] dark:backdrop-filter-none ${HOME_CONTENT_LIGHT_BACKGROUND_CLS}`}
       onClick={() => window.open(props.url, '_blank')}
     >
       <a

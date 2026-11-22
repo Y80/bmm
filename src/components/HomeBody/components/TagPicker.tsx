@@ -1,11 +1,14 @@
 import { TagPickerBox } from '@/components/common'
+import { HOME_CONTENT_LIGHT_BACKGROUND_CLS } from '@/components/HomeBody/styles'
 import ReInput from '@/components/re-export/ReInput'
+import ReTooltip from '@/components/re-export/ReTooltip'
 import TagPickerItem from '@/components/TagPickerItem'
 import { testTagNameOrPinyin } from '@/utils'
+import { IconNames } from '@cfg'
 import { Kbd, ScrollShadow, Switch, cn } from '@heroui/react'
 import { useMount, useSetState, useUpdateEffect } from 'ahooks'
 import { isEqual } from 'lodash'
-import { CSSProperties, useLayoutEffect, useRef } from 'react'
+import { CSSProperties, useId, useLayoutEffect, useRef } from 'react'
 import { useHomePageContext } from '../ctx'
 
 interface Props {
@@ -14,6 +17,7 @@ interface Props {
 }
 export default function TagPicker(props: Props) {
   const { tags } = useHomePageContext()
+  const onlyMainLabelId = useId()
   const scrollDivRef = useRef<null | HTMLDivElement>(null)
   const [state, setState] = useSetState({
     filterTagInput: '',
@@ -51,7 +55,8 @@ export default function TagPicker(props: Props) {
   return (
     <div
       className={cn(
-        'relative flex h-full flex-col overflow-hidden rounded-[26px] border border-slate-200/65 bg-white/18 backdrop-blur-md dark:border-neutral-800 dark:bg-[#111111] dark:backdrop-filter-none',
+        'relative flex h-full flex-col overflow-hidden rounded-[26px] border border-slate-200/65 backdrop-blur-md dark:border-neutral-800 dark:bg-[#111111] dark:backdrop-filter-none',
+        HOME_CONTENT_LIGHT_BACKGROUND_CLS,
         props.className
       )}
       style={props.style}
@@ -91,28 +96,43 @@ export default function TagPicker(props: Props) {
       </div>
 
       {!state.filterTagInput && (
-        <div className="relative border-t border-slate-200/60 px-4 py-3 dark:border-neutral-800">
-          <div className="-ml-1 flex items-center gap-2">
-            <Switch
-              size="sm"
-              className="scale-70"
-              key={Number(state.onlyMain)}
-              isSelected={state.onlyMain}
-              onValueChange={(v) => setState({ onlyMain: v })}
-            />
+        <div className="relative flex items-center justify-between gap-2 border-t border-slate-200/60 px-4 py-3 dark:border-neutral-800">
+          <ReTooltip
+            placement="top"
+            classNames={{ content: 'max-w-60 px-3 py-2' }}
+            content={
+              <span className="text-xs leading-5">
+                点击标签时，按住 <Kbd className="scale-75" keys={['alt']} />{' '}
+                可多选，实现交叉筛选书签。
+              </span>
+            }
+          >
             <span
+              id={onlyMainLabelId}
+              tabIndex={0}
               className={cn(
-                'text-[11px]',
-                state.onlyMain ? 'text-foreground-700 dark:text-white' : 'text-default-500'
+                'focus-visible:outline-focus inline-flex cursor-help items-center gap-1.5 rounded-sm text-xs focus-visible:outline-2 focus-visible:outline-offset-2',
+                state.onlyMain ? 'text-foreground-700 dark:text-white' : 'text-default-600'
               )}
             >
               仅展示主标签
+              <span
+                aria-hidden="true"
+                className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-full border border-current"
+              >
+                <span className={cn(IconNames.Tabler.QUESTION_MARK, 'size-2.5')} />
+              </span>
             </span>
-          </div>
-          <div className="text-default-400 mt-1 text-[11px] leading-4.5 dark:text-neutral-400">
-            点击标签时，按住 <Kbd className="scale-75 opacity-75" keys={['alt']} />{' '}
-            可多选，实现交叉筛选书签。
-          </div>
+          </ReTooltip>
+          <Switch
+            aria-labelledby={onlyMainLabelId}
+            size="sm"
+            className="shrink-0 origin-right scale-70"
+            classNames={{ wrapper: 'mr-0' }}
+            key={Number(state.onlyMain)}
+            isSelected={state.onlyMain}
+            onValueChange={(v) => setState({ onlyMain: v })}
+          />
         </div>
       )}
     </div>
