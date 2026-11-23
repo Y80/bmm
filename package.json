@@ -67,9 +67,9 @@
     "react-dom": "^19.2.5",
     "sharp": "0.35.5",
     "tsx": "4.19.3",
-    "zod": " 4.1.11 ",
+    "zod": "4.6.6",
     "zod-validation-error": "4.0.2",
-    "zx": "8.1.5"
+    "zx": "8.8.5"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
@@ -97,8 +97,7 @@
     "tsx": "4.19.3",
     "typescript": "6.0.2",
     "vite": "^8.3.8",
-    "vitest": "5.1.1",
-    "zx": "8.1.5"
+    "vitest": "5.1.1"
   },
   "prettier": {
     "printWidth": 100,
